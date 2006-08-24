@@ -1,0 +1,109 @@
+======
+PyMite
+======
+
+:Author:    Dean Hall
+:Copyright: Copyright 2002 Dean Hall.
+            See `License`_ for details.
+:Release:   02
+:Site:      http://sourceforge.net/projects/thmonkeeproject/
+:Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
+
+Purpose
+-------
+
+PyMite is a flyweight Python interpreter written from scratch
+to execute on 8-bit microcontrollers.  PyMite supports a subset
+of the Python 2.0 syntax and can execute a subset of the
+Python 2.0 bytecodes.  PyMite can be compiled, tested and
+executed on a desktop computer and also targeted for 8-bit
+embedded systems with resources as limited as 64 KiB of
+program memory (flash) and 4 KiB of RAM.
+
+License
+-------
+
+Copyright 2002 Dean Hall.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of version 2 of the GNU General
+Public License as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public
+License along with this program; if not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+Boston, MA  02110-1301, USA
+
+Build
+-----
+
+Perform the following steps to build PyMite and the included
+sample application for the desktop:
+
+    1. In the project root, run ``make`` to create ``libpmvm.a``
+    2. In the project root, run ``make check`` to make an executable for
+       ``src/tests/t003.*``
+
+To build for the ATmega103:
+
+    1. In the project root, run ``make clean; make check TARGET=ATMEGA103``
+       to make an executable for ``src/tests/t003.*``
+
+The development system should have installed the GNU Compiler
+Collection version 3.4 or later and Python 2.0 or later.
+The author also uses avr-gcc to target Atmel AVR
+microcontrollers.
+
+PyMite is developed on Mac OS X 10.4 and should also compile on
+GNU/Linux and Cygwin operating systems.  Since PyMite is so
+deeply embedded, it does not rely on many libraries.
+When compiling for the AVR, it will need avr-libc.
+
+PyMite builds as an archive.  The user should then build his
+own main() function following given examples and link in
+``libpymvm.a`` and the appropriate PyMite native libraries.
+
+Contact
+-------
+
+Please use the `sourceforge project
+<http://sourceforge.net/projects/thmonkeeproject/>`_
+space for all communications concerning PyMite.
+This will ensure that any email is forwarded to an up-to-date
+address and all comments and issues are recorded.
+
+Release Notes
+-------------
+
+This is PyMite release 02
+
+* Release 02, 2006/08/11
+
+    - #27:  Create Release v 02 package.
+    - N/A:  VM funcs modified so that return objects are by
+      reference and funcs return a PyReturn_t for internal
+      error checking.  Library modules are broken until they
+      are modified similarly (issue #28).
+    - N/A:  The pmImgCreator.py script was modified to work via
+      the command line. pmImgCreator GUI is deprecated.
+    - N/A:  Converted many files' EOLs to Unix.
+
+* Release 01, 2003/03/18
+
+    - N/A:  Initial release made for PyCon 2003.
+    - N/A:  Compiles for desktop and Atmel ATmega103.
+
+Thanks
+------
+
+My personal thanks go out to these people for their contribution to PyMite:
+
+    - Philipp Adelt: Enhancements to pmImgCreator.py and reports on general use.
+
+
+.. :mode=rest:

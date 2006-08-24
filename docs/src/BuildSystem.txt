@@ -1,0 +1,101 @@
+=======================
+The PyMite Build System
+=======================
+
+:Author:    Dean Hall
+:Id:        $Id: BuildSystem.txt 112 2006-08-21 09:00:19Z dwhall $
+
+Purpose
+-------
+
+This document describes the build system for the PyMite project.
+In doing so, it serves both as a design document for the PyMite
+developer and a user manual for the PyMite user.
+
+Overview
+--------
+
+PyMite shall use a makefile based build system with an emphasis
+on using features of `GNU make`_.  The project shall have a
+``Makefile`` in the project root directory that, when called by
+typing ``make`` at the command prompt, will compile:
+
+    - the PyMite library to an image file, ``src/lib/pmstdlib.h``,
+      and native code file, ``src/lib/pmstdlib.c``
+    - the PyMite VM to an archive, ``libpmvm.a``.
+      that must be included by PyMite end-user programs.
+
+More options for building the project are available by using the available
+``make`` targets as explained in the next section.
+
+The PyMite project has a ``src/lib/`` directory that differs in meaning from
+most software projects.  Most projects compile source code to create a library
+as a product and put that library in a ``lib/`` directory.  PyMite, on the
+other hand, converts Python code that is meant to run inside the PyMite VM
+to an `image`, an equivalent to a ``.pyc`` file.  The `image` is usually in the
+form of an array of bytes listed in a C-style header file, ``pmstdlib.h``.
+This header file containing the image of the PyMite libraries is what is built
+in ``src/lib/``.
+
+.. _`GNU make`: http://www.gnu.org/software/make/
+
+
+Available Targets
+-----------------
+
+GNU ``make`` has a set of standard targets for users.
+One builds a target by typing ``make`` `<target>` at the command prompt.
+The PyMite build system shall support the following set of targets:
+
+``all``:
+    Compiles the entire program.  This should be the default target.
+
+``clean``:
+    Deletes all files in the current directory that are normally created by
+    building the program. Also deletes files in other directories if they are
+    created by this makefile.
+
+``TAGS``:
+    Updates a tags table for this program.
+    Also updates a cscope database for the VM and pmstdlib source code.
+
+``html``:
+    Generates the documentation files from ``docs/src/`` and
+    places the output HTML files in ``docs/html/``.
+
+``dist``:
+    Create a distribution tar file for this program.
+    *This target should only be used by the PyMite developer.*
+
+``check``:
+    Compiles and executes PyMite self-tests found in ``src/tests/``.
+
+
+Testing
+-------
+
+While it is possible to write unit tests for PyMite's VM.  It is often more
+effective to write small Python programs to run on the PyMite VM to test the
+VM and libraries.  The tests in ``src/tests/`` do exactly this.  By running
+``make check``, the VM, pmstdlib, and all programs in ``src/tests/`` are built.
+
+Testing the VM is primarily intended for the desktop target because the desktop
+offers greater resources (size and execution speed) and can quickly run all
+test programs in a batch and report any failures through the command interface.
+
+Running individual test programs on the target device is possible, but one must
+either painstakingly step through the program using a debugger or devise a
+way to determine the exit code of the VM.  Perhaps running on a device simulator
+is a better option.
+
+Distribution
+------------
+
+The PyMite developer should be the only one who needs to use the distribution
+target.  The makefiles shall be set up in such a way that all the developer
+must do is update the PyMite revision number in the root makefile and type
+``make dist`` to create a file fit for release, ``pymite-RR.tar.gz``
+where `RR` is the release number.
+
+The project documentation is pre-built for a release and included in the
+distributiion file.
