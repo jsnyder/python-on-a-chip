@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        func.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/04   First.
  */
 
@@ -59,7 +62,7 @@ func_new(pPyObj_t pco, pPyObj_t * r_pfunc)
     }
 
     /* allocate a func obj */
-    retval = heap_getChunk(sizeof(PyFunc_t), (P_VOID *)&pfunc);
+    retval = heap_getChunk(sizeof(PyFunc_t), (P_U8 *)&pfunc);
     PY_RETURN_IF_ERROR(retval);
 
     /* init func */
@@ -94,8 +97,8 @@ class_new(pPyObj_t pmeths,
 {
     PyReturn_t retval = PY_RET_OK;
     pPyObj_t pkey = C_NULL;
-    P_S8 btstr = (P_S8)"__bt";
-    P_S8 nmstr = (P_S8)"__nm";
+    P_U8 btstr = (P_U8)"__bt";
+    P_U8 nmstr = (P_U8)"__nm";
 
     /* ensure types */
     if ((pmeths->od.od_type != OBJ_TYPE_DIC) ||
@@ -106,7 +109,7 @@ class_new(pPyObj_t pmeths,
     }
 
     /* allocate a class obj */
-    retval = heap_getChunk(sizeof(PyFunc_t), (P_VOID *)r_pclass);
+    retval = heap_getChunk(sizeof(PyFunc_t), (P_U8 *)r_pclass);
     PY_RETURN_IF_ERROR(retval);
     (*r_pclass)->od.od_type = OBJ_TYPE_CLO;
     /* class has no access to its CO */

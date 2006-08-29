@@ -11,8 +11,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        heap.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2003/02/10   Started GC marking fxns.
  * 2002/08/31   Implemented freelist when chunk is deleted.
  * 2002/04/30   First.
@@ -379,7 +382,7 @@ heap_init(void)
  */
 static
 PyReturn_t
-heap_getChunk0(U8 size, P_VOID * r_pchunk)
+heap_getChunk0(U8 size, P_U8 * r_pchunk)
 {
     pPyHeapDesc_t pchunk1 = C_NULL;
     pPyHeapDesc_t pchunk2 = C_NULL;
@@ -412,7 +415,7 @@ heap_getChunk0(U8 size, P_VOID * r_pchunk)
             pfreelist = pfreelist->next;
             /* reduce heap available amount */
             gVmGlobal.heapavail -= pchunk1->od.od_size;
-            *r_pchunk = pchunk1;
+            *r_pchunk = (P_U8)pchunk1;
             return PY_RET_OK;
         }
 
@@ -437,7 +440,7 @@ heap_getChunk0(U8 size, P_VOID * r_pchunk)
             pchunk1->next = pchunk1->next->next;
             /* reduce heap available amount */
             gVmGlobal.heapavail -= pchunk2->od.od_size;
-            *r_pchunk = pchunk2;
+            *r_pchunk = (P_U8)pchunk2;
             return PY_RET_OK;
         }
     }
@@ -487,7 +490,7 @@ heap_getChunk0(U8 size, P_VOID * r_pchunk)
 
             /* reduce heap available amount */
             gVmGlobal.heapavail -= size;
-            *r_pchunk = pchunk2;
+            *r_pchunk = (P_U8)pchunk2;
             return PY_RET_OK;
         }
     }
@@ -504,7 +507,7 @@ heap_getChunk0(U8 size, P_VOID * r_pchunk)
         pchunk1->next = pchunk1->next->next;
         /* reduce heap available amount */
         gVmGlobal.heapavail -= pchunk2->od.od_size;
-        *r_pchunk = pchunk2;
+        *r_pchunk = (P_U8)pchunk2;
         return PY_RET_OK;
     }
 
@@ -520,7 +523,7 @@ heap_getChunk0(U8 size, P_VOID * r_pchunk)
  * from the heap.  Perform GC if necessary.
  */
 PyReturn_t
-heap_getChunk(U8 size, P_VOID * r_pchunk)
+heap_getChunk(U8 size, P_U8 *r_pchunk)
 {
     PyReturn_t retval;
 

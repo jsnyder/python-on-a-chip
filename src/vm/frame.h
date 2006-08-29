@@ -8,8 +8,11 @@
  * @author      Dean Hall
  * @file        frame.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/12/15   Frame's memspace set to use one byte.
  * 2002/04/20   First.
  */
@@ -70,7 +73,7 @@ typedef struct PyBlock_s
     /** ptr to backup stack ptr */
     pPyObj_t       *b_sp;
     /** handler fxn obj */
-    P_S8            b_handler;
+    P_U8            b_handler;
     /** block type */
     PyBlockType_t   b_type:8;
     /** next block in stack */
@@ -100,7 +103,7 @@ typedef struct PyFrame_s
     /** mem space where func's CO comes from */
     PyMemSpace_t    fo_memspace:8;
     /** instrxn ptr (pts into memspace) */
-    P_S8            fo_ip;
+    P_U8            fo_ip;
     /** current source line num */
     U16             fo_line;
     /** linked list of blocks */

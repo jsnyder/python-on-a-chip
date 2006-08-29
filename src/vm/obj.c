@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        obj.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/04   First.
  */
 
@@ -46,17 +49,15 @@
  **************************************************************/
 
 PyReturn_t
-obj_loadFromImg(PyMemSpace_t memspace,
-                P_VOID *paddr,
-                pPyObj_t * r_pobj)
+obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
 {
     PyReturn_t retval = PY_RET_OK;
     PyObjDesc_t od;
-    P_S8        pdest = C_NULL;
+    P_U8 pdest = C_NULL;
 
 
     /* get the object descriptor */
-    od.od_type = (PyType_t)mem_getByte(memspace, (P_S8 *)paddr);
+    od.od_type = (PyType_t)mem_getByte(memspace, paddr);
 
     switch (od.od_type)
     {
@@ -70,14 +71,14 @@ obj_loadFromImg(PyMemSpace_t memspace,
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
             /* allocate simple obj */
-            retval = heap_getChunk(sizeof(PyInt_t), (P_VOID *)r_pobj);
+            retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pobj);
             PY_RETURN_IF_ERROR(retval);
 
             (*r_pobj)->od.od_type = od.od_type;
             /* set ptr to dest address */
-            pdest = (P_S8)&(((pPyInt_t)*r_pobj)->val);
+            pdest = (P_U8)&(((pPyInt_t)*r_pobj)->val);
             /* copy obj img into object's value space (little endien) */
-            mem_copy(memspace, &pdest, (P_S8 *)paddr, 4);
+            mem_copy(memspace, &pdest, paddr, 4);
 #if defined __osx__
             /* reverse bytes in the word (change endienness) */
             mem_reverseWord(&((pPyInt_t)*r_pobj)->val);
@@ -85,15 +86,11 @@ obj_loadFromImg(PyMemSpace_t memspace,
             break;
 
         case OBJ_TYPE_STR:
-            retval = string_loadFromImg(memspace,
-                                        (P_S8 *)paddr,
-                                        r_pobj);
+            retval = string_loadFromImg(memspace, paddr, r_pobj);
             break;
 
         case OBJ_TYPE_TUP:
-            retval = tuple_loadFromImg(memspace,
-                                       paddr,
-                                       r_pobj);
+            retval = tuple_loadFromImg(memspace, paddr, r_pobj);
             break;
 
         case OBJ_TYPE_LST:

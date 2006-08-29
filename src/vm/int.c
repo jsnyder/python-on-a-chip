@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        int.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/04   First.
  */
 
@@ -51,7 +54,7 @@ int_dup(pPyObj_t pint, pPyObj_t * r_pint)
     PyReturn_t retval = PY_RET_OK;
 
     /* allocate new int */
-    retval = heap_getChunk(sizeof(PyInt_t), (P_VOID *)r_pint);
+    retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pint);
     PY_RETURN_IF_ERROR(retval);
 
     /* copy value */
@@ -86,7 +89,7 @@ int_new(S32 n, pPyObj_t * r_pint)
     /* XXX search for int in pool? */
 
     /* else create and return new int obj */
-    retval = heap_getChunk(sizeof(PyInt_t), (P_VOID *)r_pint);
+    retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pint);
     PY_RETURN_IF_ERROR(retval);
     (*r_pint)->od.od_type = OBJ_TYPE_INT;
     ((pPyInt_t)*r_pint)->val = n;

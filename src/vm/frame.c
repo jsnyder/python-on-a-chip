@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        frame.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/20   First.
  */
 
@@ -54,7 +57,7 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     S8 nlocals = 0;
     pPyCo_t pco = C_NULL;
     pPyFrame_t pframe = C_NULL;
-    P_S8 paddr = C_NULL;
+    P_U8 paddr = C_NULL;
 
     /* get fxn's code obj */
     pco = ((pPyFunc_t)pfunc)->f_co;
@@ -72,7 +75,7 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     fsize = sizeof(PyFrame_t) + (stacksz + nlocals) *
             sizeof(pPyObj_t);
     /* allocate a frame */
-    retval = heap_getChunk(fsize, (P_VOID *)&pframe);
+    retval = heap_getChunk(fsize, (P_U8 *)&pframe);
     PY_RETURN_IF_ERROR(retval);
 
     /* set frame fields */

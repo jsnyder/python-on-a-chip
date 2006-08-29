@@ -11,8 +11,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        mem.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/27   Added access to Flash and EEPROM.
  * 2002/04/21   First.
  */
@@ -23,7 +26,7 @@
 
 #include "py.h"
 
-#ifdef HOST_ATMEGA103
+#ifdef TARGET_ATMEGA103
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #endif /* atmega103 */
@@ -53,10 +56,10 @@
  * Functions
  **************************************************************/
 
-S8
-mem_getByte(PyMemSpace_t memspace, P_S8 *paddr)
+U8
+mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
 {
-    S8 b = 0;
+    U8 b = 0;
 
     switch (memspace)
     {
@@ -66,17 +69,17 @@ mem_getByte(PyMemSpace_t memspace, P_S8 *paddr)
             return b;
 
         case MEMSPACE_FLASH:
-#ifdef HOST_ATMEGA103
+#ifdef TARGET_ATMEGA103
             b = pgm_read_byte(*paddr);
             *paddr += 1;
-#endif /* HOST_ATMEGA103 */
+#endif /* TARGET_ATMEGA103 */
             return b;
 
         case MEMSPACE_EEPROM:
-#ifdef HOST_ATMEGA103
+#ifdef TARGET_ATMEGA103
             b = eeprom_read_byte((U16)*paddr);
             *paddr += 1;
-#endif /* HOST_ATMEGA103 */
+#endif /* TARGET_ATMEGA103 */
             return b;
 
         case MEMSPACE_SEEPROM:
@@ -91,21 +94,21 @@ mem_getByte(PyMemSpace_t memspace, P_S8 *paddr)
 
 
 INLINE
-S16
-mem_getWord(PyMemSpace_t memspace, P_S8 *paddr)
+U16
+mem_getWord(PyMemSpace_t memspace, P_U8 *paddr)
 {
     /* PyMite is little endien; get lo byte first */
-    S8 blo = mem_getByte(memspace, paddr);
-    S8 bhi = mem_getByte(memspace, paddr);
-    return (S16)(blo | (bhi << 8));
+    U8 blo = mem_getByte(memspace, paddr);
+    U8 bhi = mem_getByte(memspace, paddr);
+    return (U16)(blo | (bhi << 8));
 }
 
 
 void
 mem_copy(PyMemSpace_t memspace,
-         P_S8 *pdest,
-         P_S8 *psrc,
-         S16 count)
+         P_U8 *pdest,
+         P_U8 *psrc,
+         U16 count)
 {
 
     /* copy memory from RAM */
@@ -120,7 +123,7 @@ mem_copy(PyMemSpace_t memspace,
     /* copy memory from non-RAM to RAM */
     else
     {
-        S8 b;
+        U8 b;
 
         for ( ; count > 0; count--)
         {
@@ -133,17 +136,17 @@ mem_copy(PyMemSpace_t memspace,
 }
 
 
-S16
-mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_S8 *psrc)
+U16
+mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc)
 {
-    P_S8 pbase = *psrc;
+    P_U8 pbase = *psrc;
     while(mem_getByte(memspace, psrc) != 0);
     return *psrc - pbase - 1;
 }
 
 
 void
-mem_reverseWord(P_S32 pword)
+mem_reverseWord(P_U32 pword)
 {
     P_U8 pbyte = (P_U8)pword;
     U8 temp = 0;

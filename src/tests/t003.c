@@ -50,12 +50,12 @@
 int main(void)
 {
     /* ptr to code imgs */
-    P_VOID pimg = (P_VOID)lib_img;
+    P_U8 pimg = (P_U8)lib_img;
     pPyObj_t pstring = C_NULL;
     /* ptr to module obj */
     pPyFunc_t pmod;
     /* name of module to run */
-    P_S8 modstr = (P_S8)"t003";
+    P_U8 modstr = (P_U8)"t003";
     PyReturn_t retval = PY_RET_OK;
 
     /* heap pointers are a part of globals, so init globals first */

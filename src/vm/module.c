@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        module.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/04   First.
  */
 
@@ -53,7 +56,7 @@ mod_new(pPyCo_t pco, pPyFunc_t * pmod)
     /* XXX ensure pco pts to code obj? */
 
     /* alloc and init func obj */
-    retval = heap_getChunk(sizeof(PyFunc_t), (P_VOID *)pmod);
+    retval = heap_getChunk(sizeof(PyFunc_t), (P_U8 *)pmod);
     PY_RETURN_IF_ERROR(retval);
     (*pmod)->od.od_type = OBJ_TYPE_MOD;
     (*pmod)->f_co = pco;
@@ -68,7 +71,7 @@ PyReturn_t
 mod_import(pPyObj_t pstr, pPyFunc_t * pmod)
 {
     pPyImgInfo_t pii = C_NULL;
-    P_VOID imgaddr = C_NULL;
+    P_U8 imgaddr = C_NULL;
     pPyCo_t pco = C_NULL;
     PyReturn_t retval = PY_RET_OK;
 

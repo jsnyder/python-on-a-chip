@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        string.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/28   First.
  */
 
@@ -37,7 +40,7 @@
  * @param paddr address in memoryspace of source string
  */
 #define string_loadFromImg(ms, paddr, r_pstring) \
-            string_create((ms), (paddr), 1, (r_pstring))
+            string_create((ms), (paddr), (U8)1, (r_pstring))
 
 /** 
  * create string from UTF-8 string in RAM
@@ -63,7 +66,7 @@ typedef struct PyString_s
     PyObjDesc_t od;
 
     /** length of string */
-    S8 length;
+    U8 length;
 
 #if USE_STRING_CACHE
     /** ptr to next string in cache */
@@ -110,9 +113,9 @@ typedef struct PyString_s
  * @return  Return status
  */
 PyReturn_t string_create(PyMemSpace_t memspace,
-                          P_S8 * paddr,
-                          S8 isimg,
-                          pPyObj_t * r_pstring);
+                          P_U8 *paddr,
+                          U8 isimg,
+                          pPyObj_t *r_pstring);
 
 /**
  * Compare two String objects for equality.
@@ -131,7 +134,7 @@ S8 string_isEqual(pPyObj_t, pPyObj_t);
  * @param   Return arg; Ptr to the new string obj.
  * @return  Return status
  */
-PyReturn_t string_copy(pPyObj_t pstr, pPyObj_t * r_pstring);
+PyReturn_t string_copy(pPyObj_t pstr, pPyObj_t *r_pstring);
 
 
 #endif /* __STRING_H__ */

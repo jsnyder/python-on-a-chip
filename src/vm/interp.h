@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        interp.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/04   First.
  */
 
@@ -55,7 +58,7 @@
 /** pushes an obj on the stack */
 #define PY_PUSH(pobj)   (*(SP++) = (pobj))
 /** gets the argument (S16) from the instruction stream */
-#define GET_ARG()       mem_getWord(MS, (P_VOID *)&IP)
+#define GET_ARG()       mem_getWord(MS, &IP)
 
 /** pushes an obj in the only stack slot of the native frame */
 #define NATIVE_SET_TOS(pobj) (gVmGlobal.nativeframe.nf_stack = \

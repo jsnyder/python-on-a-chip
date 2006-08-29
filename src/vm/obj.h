@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        obj.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/12/16   OD's order changed to size-first to assist GC.
  * 2002/05/04   First.
  */
@@ -71,13 +74,13 @@ typedef enum PyType_e
     /** Native function object */
     OBJ_TYPE_NOB = 0x0C,
     OBJ_TYPE_HASHABLE_MAX = 0x0C,
-    
+
     /* All types after this are not hashable */
     /** List (mutable sequence) */
     OBJ_TYPE_LST = 0x10,
     /** Dictionary (hash table) */
     OBJ_TYPE_DIC = 0x11,
-    
+
     /* All types after this are not accessable to the programmer */
     /** Frame type */
     OBJ_TYPE_FRM = 0x12,
@@ -119,7 +122,7 @@ typedef struct PyObjDesc_s
     U8          od_gcval:2;
 
     /** constant pool object flag */
-    S8          od_const:1;
+    U8          od_const:1;
 
 } PyObjDesc_t, *pPyObjDesc_t;
 
@@ -175,8 +178,8 @@ typedef struct PyObj_s
  * @param   r_pobj Return arg, the loaded object.
  * @return  Return status
  */
-PyReturn_t obj_loadFromImg(PyMemSpace_t memspace, 
-                           P_VOID *paddr, 
+PyReturn_t obj_loadFromImg(PyMemSpace_t memspace,
+                           P_U8 *paddr,
                            pPyObj_t * r_pobj);
 
 /**

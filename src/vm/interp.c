@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        interp.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/12/08   Print statement support removed,
  *              use platform native function to print instead.
  * 2002/11/10   Fixed BREAK_LOOP to jump to handler.
@@ -368,7 +371,7 @@ interpret(pPyFunc_t pfunc)
                     t8 = (U8)((pPyString_t)pobj2)->
                                  val[((pPyInt_t)pobj1)->val];
                     /* create object from substring */
-                    retval = string_new((P_S8 *)&t8, &pobj3);
+                    retval = string_new((P_U8 *)&t8, &pobj3);
                     PY_BREAK_IF_ERROR(retval);
                 }
 
@@ -1547,8 +1550,7 @@ interpret(pPyFunc_t pfunc)
                 /* get block span (bytes) */
                 t16 = GET_ARG();
                 /* create block */
-                retval = heap_getChunk(sizeof(PyBlock_t),
-                                       (P_VOID *)&pobj1);
+                retval = heap_getChunk(sizeof(PyBlock_t), (P_U8 *)&pobj1);
                 PY_BREAK_IF_ERROR(retval);
                 ((pPyBlock_t)pobj1)->od.od_type = OBJ_TYPE_BLK;
                 /* store current stack pointer */

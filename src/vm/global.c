@@ -10,8 +10,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        global.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/22   First.
  */
 
@@ -103,8 +106,8 @@ global_loadBuiltins(pPyFunc_t pmod)
 {
     PyReturn_t retval = PY_RET_OK;
     pPyObj_t pkey = C_NULL;
-    P_S8 bistr = (P_S8)"__bi";
-    P_S8 nonestr = (P_S8)"None";
+    P_U8 bistr = (P_U8)"__bi";
+    P_U8 nonestr = (P_U8)"None";
     pPyObj_t pstr = C_NULL;
     pPyFunc_t pbimod = C_NULL;
 

@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        heap.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/08/31   Implemented freelist when chunk is deleted.
  * 2002/04/30   First.
  */
@@ -94,7 +97,7 @@ void heap_init(void);
  * @param   r_pchunk Addr of ptr to chunk (return).
  * @return  Return code
  */
-PyReturn_t heap_getChunk(U8 size, P_VOID * r_pchunk);
+PyReturn_t heap_getChunk(U8 size, P_U8 *r_pchunk);
 
 /**
  * Place the chunk back in the heap.

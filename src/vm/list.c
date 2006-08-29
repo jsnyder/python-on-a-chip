@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        list.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/22   First.
  */
 
@@ -130,7 +133,7 @@ list_new(pPyObj_t *r_pobj)
     pPyList_t plist = C_NULL;
 
     /* allocate a list */
-    retval = heap_getChunk(sizeof(PyList_t), (P_VOID *)r_pobj);
+    retval = heap_getChunk(sizeof(PyList_t), (P_U8 *)r_pobj);
     PY_RETURN_IF_ERROR(retval);
 
     /* set list type, empty the contents */

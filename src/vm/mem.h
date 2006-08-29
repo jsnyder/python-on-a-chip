@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        mem.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/21   First.
  */
 
@@ -72,7 +75,7 @@ typedef enum PyMemSpace_e
  * @return  byte from memory.
  *          paddr - points to the next byte
  */
-S8 mem_getByte(PyMemSpace_t memspace, P_S8 *paddr);
+U8 mem_getByte(PyMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Return the word at the given address in memspace.
@@ -85,7 +88,7 @@ S8 mem_getByte(PyMemSpace_t memspace, P_S8 *paddr);
  * @return  word from memory.
  *          addr - points one byte past the word
  */
-INLINE S16 mem_getWord(PyMemSpace_t memspace, P_S8 *paddr);
+INLINE U16 mem_getWord(PyMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Copy count number of bytes
@@ -101,9 +104,9 @@ INLINE S16 mem_getWord(PyMemSpace_t memspace, P_S8 *paddr);
  * @see     sli_memcpy
  */
 void mem_copy(PyMemSpace_t memspace,
-              P_S8 *pdest,
-              P_S8 *psrc,
-              S16 count);
+              P_U8 *pdest,
+              P_U8 *psrc,
+              U16 count);
 
 /**
  * Return the number of bytes in the UTF-8 string
@@ -115,7 +118,7 @@ void mem_copy(PyMemSpace_t memspace,
  * @param   psrc  ptr to source address
  * @return  Number of bytes in UTF-8 string.
  */
-S16 mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_S8 *psrc);
+U16 mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc);
 
 /**
  * Performs byte reversal with the word
@@ -125,6 +128,6 @@ S16 mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_S8 *psrc);
  * @param   pword ptr to word to change
  * @return  nothing; work is done in-place
  */
-void mem_reverseWord(P_S32 pword);
+void mem_reverseWord(P_U32 pword);
 
 #endif /* __MEM_H__ */

@@ -29,8 +29,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        seglist.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/12/20   First.
  */
 
@@ -78,14 +81,13 @@ seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj)
 {
     PyReturn_t retval = PY_RET_OK;
     pSegment_t pseg = C_NULL;
-    S8 i = 0;
+    U8 i = 0;
 
     /* if this is first item in seg, alloc and link seg */
     if (pseglist->sl_lastindx == 0)
     {
         /* alloc and init new segment */
-        retval = heap_getChunk(sizeof(Segment_t),
-                               (P_VOID *)&pseg);
+        retval = heap_getChunk(sizeof(Segment_t), (P_U8 *)&pseg);
         PY_RETURN_IF_ERROR(retval);
         pseg->od.od_type = OBJ_TYPE_SEG;
         for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
@@ -264,7 +266,8 @@ seglist_insertItem(pSeglist_t pseglist,
     {
         /* alloc and init segment */
         retval = heap_getChunk(sizeof(Segment_t),
-                               (P_VOID *)&pseglist->sl_rootseg);
+                               (P_U8 *)&pseglist->sl_rootseg
+                              );
         PY_RETURN_IF_ERROR(retval);
         pseglist->sl_rootseg->od.od_type = OBJ_TYPE_SEG;
 
@@ -324,7 +327,7 @@ seglist_insertItem(pSeglist_t pseglist,
             if (pseg->next == C_NULL)
             {
                 retval = heap_getChunk(sizeof(Segment_t),
-                                       (P_VOID *)&pseg->next);
+                                       (P_U8 *)&pseg->next);
                 /* 
                  * XXX exception with hosed list,
                  * need to roll-back!
@@ -364,8 +367,7 @@ seglist_new(pSeglist_t * r_pseglist)
 {
     PyReturn_t retval = PY_RET_OK;
 
-    retval = heap_getChunk(sizeof(Seglist_t),
-                           (P_VOID *)r_pseglist);
+    retval = heap_getChunk(sizeof(Seglist_t), (P_U8 *)r_pseglist);
     PY_RETURN_IF_ERROR(retval);
 
     (*r_pseglist)->od.od_type = OBJ_TYPE_SGL;

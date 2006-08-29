@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        string.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/12/15   string_isEqual() now compares against string's
  *              length, not the chunk's size.
  * 2002/04/28   First.
@@ -60,14 +63,14 @@ static pPyString_t pstrcache = C_NULL;
  */
 PyReturn_t
 string_create(PyMemSpace_t memspace,
-              P_S8 * paddr,
-              S8 isimg,
+              P_U8 * paddr,
+              U8 isimg,
               pPyObj_t * r_pstring)
 {
     PyReturn_t retval = PY_RET_OK;
-    S8 len = 0;
+    U8 len = 0;
     pPyString_t pstr = C_NULL;
-    P_S8 pdst = C_NULL;
+    P_U8 pdst = C_NULL;
 #if USE_STRING_CACHE
     pPyString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
@@ -76,7 +79,7 @@ string_create(PyMemSpace_t memspace,
     if (isimg == 0)
     {
         /* get length of string */
-        len = mem_getNumUtf8Bytes(memspace, (P_S8 *)paddr);
+        len = mem_getNumUtf8Bytes(memspace, paddr);
         /* backup ptr to beginning of string */
         *paddr -= len + 1;
     }
@@ -85,20 +88,19 @@ string_create(PyMemSpace_t memspace,
     else
     {
         /* get length of string */
-        len = mem_getByte(memspace, (P_S8 *)paddr);
+        len = mem_getByte(memspace, paddr);
     }
 
     /* get space for String obj */
-    retval = heap_getChunk(sizeof(PyString_t) + len,
-                           (P_VOID *)&pstr);
+    retval = heap_getChunk(sizeof(PyString_t) + len, (P_U8 *)&pstr);
     PY_RETURN_IF_ERROR(retval);
 
     /* fill the string obj */
     pstr->od.od_type = OBJ_TYPE_STR;
     pstr->length = len;
     /* copy C-string into String obj */
-    pdst = (P_S8)&(pstr->val);
-    mem_copy(memspace, (P_S8 *)&pdst, paddr, len);
+    pdst = (P_U8)&(pstr->val);
+    mem_copy(memspace, &pdst, paddr, len);
     /* zero-pad end of string */
     for ( ; (S16)pdst < (S16)pstr + pstr->od.od_size; pdst++)
     {
@@ -174,9 +176,9 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
     }
 
     /* allocate string obj */
-    retval = heap_getChunk(sizeof(PyString_t)
-                           + ((pPyString_t)pstr)->length,
-                           (P_VOID *)&pnew);
+    retval = heap_getChunk(sizeof(PyString_t) + ((pPyString_t)pstr)->length,
+                           (P_U8 *)&pnew
+                          );
     /* XXX handle retval */
     pnew->od.od_const = 0;
     pnew->od.od_type = OBJ_TYPE_STR;
@@ -187,9 +189,10 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
 #endif
     /* copy string contents (and null term) */
     mem_copy(MEMSPACE_RAM,
-             (P_S8 *)&(pnew->val),
-             (P_S8 *)&(((pPyString_t)pstr)->val),
-             ((pPyString_t)pstr)->length + 1);
+             (P_U8 *)&(pnew->val),
+             (P_U8 *)&(((pPyString_t)pstr)->val),
+             ((pPyString_t)pstr)->length + 1
+            );
     *r_pstring = (pPyObj_t)pnew;
     return PY_RET_OK;
 }

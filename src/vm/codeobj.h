@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        codeobj.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/06/04   making co_names a tuple,
  *              removing nameoff and codeoff from img.
  * 2002/05/04   First.
@@ -60,13 +63,13 @@ typedef struct PyCo_s
     /** memory space selector */
     PyMemSpace_t    co_memspace:8;
     /** address in memspace of code image */
-    P_VOID          co_codeimgaddr;
+    P_U8            co_codeimgaddr;
     /** address in RAM of names tuple */
     pPyTuple_t      co_names;
     /** address in RAM of constants tuple */
     pPyTuple_t      co_consts;
     /** address in memspace of bytecode (or native function) */
-    P_VOID          co_codeaddr;
+    P_U8            co_codeaddr;
 } PyCo_t, *pPyCo_t;
 
 /**
@@ -133,20 +136,20 @@ typedef struct PyNo_s
  * @param   paddr ptr to ptr to code img in memspace
  *          return by reference: paddr points one byte
  *          past end of code img
- * @param   r_pco Return arg.  New code object with fields 
+ * @param   r_pco Return arg.  New code object with fields
  *          filled in.
  * @return  Return status
  */
 PyReturn_t
 co_loadFromImg(PyMemSpace_t memspace,
-               P_VOID *paddr, 
+               P_U8 *paddr,
                pPyObj_t * r_pco);
 
 /**
  * Create a Native code object by loading a native image.
  *
  * An image is a static representation of a Python object.
- * A native image is much smaller than a regular image 
+ * A native image is much smaller than a regular image
  * because only two items of data are needed after the type:
  * the number of args the func expects and the index into
  * the native function table.
@@ -170,8 +173,8 @@ co_loadFromImg(PyMemSpace_t memspace,
  *          return by reference: paddr points one byte
  *          past end of code img
  */
-PyReturn_t no_loadFromImg(PyMemSpace_t memspace, 
-                          P_VOID * paddr, 
+PyReturn_t no_loadFromImg(PyMemSpace_t memspace,
+                          P_U8 * paddr,
                           pPyObj_t * r_pno);
 
 

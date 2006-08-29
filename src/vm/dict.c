@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        dict.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/30   First.
  */
 
@@ -52,7 +55,7 @@ dict_new(pPyObj_t * r_pdict)
     pPyDict_t pdict = C_NULL;
 
     /* allocate a dict */
-    retval = heap_getChunk(sizeof(PyDict_t), (P_VOID *)r_pdict);
+    retval = heap_getChunk(sizeof(PyDict_t), (P_U8 *)r_pdict);
     PY_RETURN_IF_ERROR(retval);
 
     /* init dict fields */

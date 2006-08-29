@@ -9,8 +9,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        tuple.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/04/28   First.
  */
 
@@ -40,10 +43,10 @@ typedef struct PyTuple_s
 {
     /** object descriptor */
     PyObjDesc_t od;
-    /** 
+    /**
 	 * length of tuple
      * I don't expect a tuple to ever exceed 255 elements,
-     * but if I set this type to S8, a 0-element tuple 
+     * but if I set this type to S8, a 0-element tuple
 	 * is to small to be allocated.
 	 */
     S16         length;
@@ -79,9 +82,9 @@ typedef struct PyTuple_s
  *          return by reference: paddr points one byte
  *          past end of last obj in tuple.
  */
-PyReturn_t tuple_loadFromImg(PyMemSpace_t, 
-                             P_VOID *, 
-                             pPyObj_t * r_ptuple);
+PyReturn_t tuple_loadFromImg(PyMemSpace_t memspace,
+                             P_U8 *paddr,
+                             pPyObj_t *r_ptuple);
 
 /**
  * Allocate space for a new Tuple.
@@ -91,7 +94,7 @@ PyReturn_t tuple_loadFromImg(PyMemSpace_t,
  * @param   r_ptuple Return by ref, ptr to new tuple
  * @return  Return status
  */
-PyReturn_t tuple_new(S16 n, pPyObj_t * r_ptuple);
+PyReturn_t tuple_new(U16 n, pPyObj_t *r_ptuple);
 
 /**
  * Create a copy of the tuple.
@@ -103,6 +106,6 @@ PyReturn_t tuple_new(S16 n, pPyObj_t * r_ptuple);
  * @param   r_ptuple Return arg; Ptr to new tuple.
  * @return  Return status
  */
-PyReturn_t tuple_copy(pPyObj_t ptup, pPyObj_t * r_ptuple);
+PyReturn_t tuple_copy(pPyObj_t ptup, pPyObj_t *r_ptuple);
 
 #endif /* __TUPLE_H__ */

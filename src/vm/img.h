@@ -3,15 +3,18 @@
 /**
  * Image header
  *
- * Created to eliminate a circular include 
+ * Created to eliminate a circular include
  * among mem, string and obj.
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        img.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/17   First.
  */
 
@@ -46,7 +49,7 @@
     /** the memory space in which the image is located */
     PyMemSpace_t        ii_memspace:8;
     /** the starting address of the image */
-    P_VOID              ii_addr;
+    P_U8                ii_addr;
     /** ptr to next image ID struct */
     struct PyImgInfo_s  *next;
  } PyImgInfo_t, *pPyImgInfo_t;
@@ -71,7 +74,7 @@
  * @param   paddr ptr to address value to start search.
  * @return  Return status
  */
-PyReturn_t img_findInMem(PyMemSpace_t, P_VOID *);
+PyReturn_t img_findInMem(PyMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Load a string obj from the names tuple at the given index.
@@ -82,9 +85,9 @@ PyReturn_t img_findInMem(PyMemSpace_t, P_VOID *);
  * @param   r_pname Return parm, name string
  * @return  Return status
  */
-PyReturn_t img_getName(PyMemSpace_t memspace, 
-                       P_VOID *paddr, 
-                       S8 n, 
+PyReturn_t img_getName(PyMemSpace_t memspace,
+                       P_U8 *paddr,
+                       U8 n,
                        pPyObj_t * r_pname);
 
 

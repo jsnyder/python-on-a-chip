@@ -10,8 +10,11 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        img.c
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
+ *              unsigned not signed or void
  * 2002/05/17   First.
  */
 
@@ -71,10 +74,10 @@
  * without filling memory.
  */
 PyReturn_t
-img_findInMem(PyMemSpace_t memspace, P_VOID *paddr)
+img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
 {
     PyReturn_t retval = PY_RET_ERR;
-    P_VOID imgtop = 0;
+    P_U8 imgtop = 0;
     PyType_t type = 0;
     S16 size = 0;
     S8 n = 0;
@@ -84,25 +87,25 @@ img_findInMem(PyMemSpace_t memspace, P_VOID *paddr)
     /* addr is top of img */
     imgtop = *paddr;
     /* get img's type byte */
-    type = (PyType_t)mem_getByte(memspace, (P_S8 *)paddr);
+    type = (PyType_t)mem_getByte(memspace, paddr);
 
     /* get all sequential images */
     while (type == OBJ_TYPE_CIM)
     {
         /* use size field to calc addr of next potential img */
-        size = mem_getWord(memspace, (P_S8 *)paddr);
+        size = mem_getWord(memspace, paddr);
         
         /* get name of img */
         /* point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
         /* ensure it's a tuple */
-        type = mem_getByte(memspace, (P_S8 *)paddr);
+        type = mem_getByte(memspace, paddr);
         if (type != OBJ_TYPE_TUP)
         {
             return PY_RET_EX_TYPE;
         }
         /* get index of last obj in tuple */
-        n = mem_getByte(memspace, (P_S8 *)paddr) - 1;
+        n = mem_getByte(memspace, paddr) - 1;
         /* point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
         /* load name at index */
@@ -110,8 +113,7 @@ img_findInMem(PyMemSpace_t memspace, P_VOID *paddr)
         PY_RETURN_IF_ERROR(retval);
 
         /* alloc and fill imginfo struct */
-        retval = heap_getChunk(sizeof(PyImgInfo_t), 
-                               (P_VOID *)&pii);
+        retval = heap_getChunk(sizeof(PyImgInfo_t), (P_U8 *)&pii);
         PY_RETURN_IF_ERROR(retval);
         pii->ii_name = (pPyString_t)pnamestr;
         pii->ii_memspace = memspace;
@@ -126,17 +128,17 @@ img_findInMem(PyMemSpace_t memspace, P_VOID *paddr)
         /* point to next potential img */
         *paddr = imgtop;
         /* check if next is img */
-        type = mem_getByte(memspace, (P_S8 *)paddr);
+        type = mem_getByte(memspace, paddr);
     }
     return retval;
 }
 
 
 PyReturn_t
-img_getName(PyMemSpace_t memspace, P_VOID *paddr, S8 n, pPyObj_t * r_pname)
+img_getName(PyMemSpace_t memspace, P_U8 *paddr, U8 n, pPyObj_t * r_pname)
 {
     PyType_t type;
-    S8 b;
+    U8 b;
     
     /* XXX ensure it's a tuple */
     /* skip past type and size bytes */
@@ -148,12 +150,12 @@ img_getName(PyMemSpace_t memspace, P_VOID *paddr, S8 n, pPyObj_t * r_pname)
         /* skip type byte, assuming string */
         (*paddr)++;
         /* skip the length of the string */
-        b = mem_getByte(memspace, (P_S8 *)paddr);
+        b = mem_getByte(memspace, paddr);
         (*paddr) += b;
     }
 
     /* ensure it's a string */
-    type = mem_getByte(memspace, (P_S8 *)paddr);
+    type = mem_getByte(memspace, paddr);
     if (type != OBJ_TYPE_STR)
     {
         return PY_RET_EX_TYPE;
