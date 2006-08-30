@@ -13,6 +13,7 @@
  * Log
  * ---
  *
+ * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/22   First.
@@ -130,17 +131,13 @@ global_loadBuiltins(pPyFunc_t pmod)
     /* set None manually */
     retval = string_new(&nonestr, &pkey);
     PY_RETURN_IF_ERROR(retval);
-    retval = dict_setItem((pPyObj_t)PY_PBUILTINS,
-                          pkey,
-                          PY_NONE);
+    retval = dict_setItem(PY_PBUILTINS, pkey, PY_NONE);
     PY_RETURN_IF_ERROR(retval);
 
     /* put builtins module in the module's attrs dict */
     retval = string_new(&bistr, &pkey);
     PY_RETURN_IF_ERROR(retval);
-    retval = dict_setItem((pPyObj_t)pmod->f_attrs,
-                          pkey,
-                          (pPyObj_t)PY_PBUILTINS);
+    retval = dict_setItem((pPyObj_t)pmod->f_attrs, pkey, PY_PBUILTINS);
     PY_RETURN_IF_ERROR(retval);
 
     /* deallocate builtins module */

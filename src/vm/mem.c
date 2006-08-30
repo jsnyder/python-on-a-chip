@@ -14,6 +14,7 @@
  * Log
  * ---
  *
+ * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/05/27   Added access to Flash and EEPROM.
@@ -71,8 +72,12 @@ mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
         case MEMSPACE_FLASH:
 #ifdef TARGET_ATMEGA103
             b = pgm_read_byte(*paddr);
-            *paddr += 1;
+#elif defined(TARGET_DESKTOP)
+            b = **paddr;
+#else
+#error Undefined TARGET
 #endif /* TARGET_ATMEGA103 */
+            *paddr += 1;
             return b;
 
         case MEMSPACE_EEPROM:

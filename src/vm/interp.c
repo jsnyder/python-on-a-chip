@@ -12,6 +12,7 @@
  * Log
  * ---
  *
+ * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/12/08   Print statement support removed,
@@ -1250,10 +1251,7 @@ interpret(pPyFunc_t pfunc)
                     if (retval == PY_RET_EX_KEY)
                     {
                         /* get val from builtins */
-                        retval = dict_getItem(
-                                        (pPyObj_t)PY_PBUILTINS,
-                                        pobj1,
-                                        &pobj2);
+                        retval = dict_getItem(PY_PBUILTINS, pobj1, &pobj2);
                         if (retval == PY_RET_EX_KEY)
                         {
                             /* name not defined, raise NameError */
@@ -1525,9 +1523,7 @@ interpret(pPyFunc_t pfunc)
                 /* if that didn't work, try builtins */
                 if (retval == PY_RET_EX_KEY)
                 {
-                    retval = dict_getItem((pPyObj_t)PY_PBUILTINS,
-                                          pobj1,
-                                          &pobj2);
+                    retval = dict_getItem(PY_PBUILTINS, pobj1, &pobj2);
                     /* no such global, raise NameError */
                     if (retval == PY_RET_EX_KEY)
                     {

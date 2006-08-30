@@ -7,15 +7,16 @@
  * Log
  * ---
  *
+ * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/22   Creation
  */
+
 
 #if defined(__AVR__)
 #include <avr/pgmspace.h>
 #endif
 
 #include "py.h"
-
 
 /* include code img (built by pmImgCreator.py) */
 #include "sample_img.h"
@@ -37,13 +38,7 @@ int main(void)
     heap_init();
 
     /* get image info into global struct */
-#if defined(__AVR__)
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);
-#else
-    retval = img_findInMem(MEMSPACE_RAM, &pimg);
-#endif
-
-    /* any img loading error causes early exit */
     PY_RETURN_IF_ERROR(retval);
 
     /* import module from global struct */
@@ -52,11 +47,8 @@ int main(void)
     retval = mod_import(pstring, &pmod);
     PY_RETURN_IF_ERROR(retval);
     /* load builtins into root module */
-    /* TODO: Trac #28 - Adapt native libs to used changed func calls */
-    /*
     retval = global_loadBuiltins(pmod);
     PY_RETURN_IF_ERROR(retval);
-    */
 
     /* XXX set "__name__" == "__main__" in mod's attrs here? */
 

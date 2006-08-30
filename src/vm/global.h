@@ -9,8 +9,10 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        global.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2002/04/22   First.
  */
 
@@ -23,7 +25,7 @@
  **************************************************************/
 
 /** The global root PyGlobals Dict object */
-#define PY_PBUILTINS    (pPyObj_t)&(gVmGlobal.builtins)
+#define PY_PBUILTINS    (pPyObj_t)(gVmGlobal.builtins)
 
 /** The global None object */
 #define PY_NONE         (pPyObj_t)&(gVmGlobal.none)
