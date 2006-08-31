@@ -1,0 +1,168 @@
+==========================
+PyMite Development Process
+==========================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the process used to make changes to the PyMite
+project.  In doing so, it serves as a how-to manual for the PyMite
+developer and can be ignored by the PyMite user.
+
+This document is incomplete and subject to change.  Please suggest improvements.
+
+Overview
+--------
+
+Software quality is enhanced when the project developers consistently
+employ a defined software process.  The process should enhance the development
+of the software and not burden it.  This process takes ideas from popular
+standard processes, with specific attention to `Divmod's process`_, UQDS.
+If this document does not explain your question, refer to UQDS for the answer.
+Since long process documents often go unread, this document should be as
+concise as possible.
+
+.. _`Divmod's Process`: http://divmod.org/trac/wiki/UltimateQualityDevelopmentSystem
+
+Here is a brief description of the process:
+
+    1. All changes must be documented, so create a ticket in Trac.
+    2. Do the work and provide a change-set for review.
+    3. Apply feedback from review, run tests and mainline.
+
+Creating a Ticket
+-----------------
+
+Submit all defects, issues and tickets to PyMite's Trac at:
+http://pymite.python-hosting.com.  Or go straight to `create a new ticket`_.
+
+.. _`create a new ticket`: http://pymite.python-hosting.com/newticket
+
+The following table explains what to enter in the fields when creating a ticket:
+
+=========== =================================== ================================
+Field       What to enter                       Example
+=========== =================================== ================================
+Summary     Short sentence starting with verb   Enable compiler warnings as
+            that explains the issue             errors
+Type        If available, select one of the     Defect
+            available options from the list
+Priority    Select one of the options from the  Standard
+            list
+Milestone   Leave blank.  Project manager
+            selects this
+Component   Select the best option from the     pmvm
+            list
+Version     Leave blank.
+Keywords    Fill in keywords in singular noun   make compiler warning error
+            form
+Assign to   If you want it, take it.  Otherwise dwhall
+            leave it blank.
+=========== =================================== ================================
+
+The `Summary` field is often copied into the release notes' change log, with
+the opening verb changed to the past tense.  Conceive your `Summary` from that
+point of view.  The `Milestone` field is used by the project manager to know
+what issues should be resolved for what releases.  Leave the `Milestone` field
+blank unless you've been told to do otherwise.  Select the most appropriate
+component from the `Component` list.  Even if the resolution touches more
+than one component, select the one that applies best.
+
+Doing the Work
+--------------
+
+If the work involved is a defect, the first step is to create the smallest
+unit test possible that exposes the defect.  This regression test should be put
+into the project's automated test system.
+
+If the work involved is an enhancement or a defect that requires a significant
+change, a document should be created which explains the architecture or design
+of the work.  This document should be put into the project's automated
+documentation build system.
+
+If the work only involves a small change, or a similar small change across
+many files, then the work can be done on a working copy of the project
+``trunk/`` and the code review can be performed by attaching the output of
+``svn diff`` to the ticket.
+
+If there are more than a few changes, make a branch to work in::
+
+    svn cp https://svn.pymite.python-hosting.com/trunk \
+           https://svn.pymite.python-hosting.com/branches/issue_00NN_userid_brief_description \
+           -m "Issue #NN - creating branch for work"
+
+If you've already made changes to a working copy that isn't the new branch,
+it's easy to switch to the new branch and keep your changes::
+
+    svn switch https://svn.pymite.python-hosting.com/branches/issue_00NN_userid_brief_description
+
+During this phase, if the trunk is updated, you should merge those changes into
+your branch so that your working copy is always up-to-date.  Doing this
+merge-forward step avoids the problem of when you mainline your branch and your
+changes don't work with the modified trunk.  Use the following command to
+merge-forward changes from the trunk::
+
+    TBD
+
+.. WARNING:: the `mainlining step`_ described below will merge improperly
+             if you do not keep your branch up-to-date using the merge-forward
+             process.
+
+.. _`mainlining step`: Mainlining_
+
+Testing
+-------
+
+The project should have an automated test system that is run by typing
+``make check``.  These tests must pass before a ticket can be mainlined,
+but passing these tests doesn't automatically mean a ticket is mainlined.
+If the work done impacted any of the project source code, then testing should
+also be performed on all targets, desktop and device.  If the ticket described
+a defect, then you should have already made a test to put in the automated
+test system, so that test will already be in the set run by ``make check``.
+
+Reviewing
+---------
+
+After the developer does the work, runs the tests he checks in the branch.
+When the developer goes to post the differences for review,
+the differences should be from the head of the branch to the head of the
+trunk.  It is a common mistake to take the difference from the head of the
+branch to the origin on the branch.  That is a mistake because the trunk
+may have progressed since then and the developer should have upmerged
+throughout the lifetime of the branch.  Diffing to the head of the trunk shows
+that the developer kept up-to-date with the current code and gives the proper
+change-set to merge the branch into the trunk.  The following command line will
+create a diff between the head of the branch and the head of the trunk::
+
+    svn diff . https://svn.pymite.python-hosting.com/trunk
+
+TBD: More about the post-review process.
+
+Mainlining
+----------
+
+Mainlining happens after the change-set is reviewed.  It is the process of
+applying the reviewed and corrected change-set to the trunk.  This is one of
+the few not-so-intuitive processes of Subversion.  Start by ensuring your branch
+has merged-forward all changes to the trunk since the branch was created.
+Switch to the project trunk::
+
+    svn switch https://svn.pymite.python-hosting.com/trunk
+
+Merge the differences between trunk and the branch into your working copy
+of the trunk::
+
+    svn merge https://svn.pymite.python-hosting.com/trunk \
+        https://svn.pymite.python-hosting.com/branches/issue_00NN_userid_brief_description .
+
+Inspect and test the working copy, then commit it to the trunk::
+
+    svn ci -m "Mainlining issue #00NN"
+
+Finally, update the ticket to set the `Action` to Resolved as Fixed.
+
+.. :mode=rest:

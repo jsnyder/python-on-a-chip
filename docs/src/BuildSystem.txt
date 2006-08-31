@@ -3,7 +3,7 @@ The PyMite Build System
 =======================
 
 :Author:    Dean Hall
-:Id:        $Id: BuildSystem.txt 112 2006-08-21 09:00:19Z dwhall $
+:Id:        $Id$
 
 Purpose
 -------
