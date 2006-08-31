@@ -12,6 +12,7 @@
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/05/04   First.
@@ -85,7 +86,7 @@ mod_import(pPyObj_t pstr, pPyFunc_t * pmod)
     pii = gVmGlobal.pimglist;
     /* while not at end of list and string doesn't match */
     while ((pii != C_NULL)
-           && (!obj_isEqual(pstr, (pPyObj_t)pii->ii_name)))
+           && (string_compare((pPyString_t)pstr, pii->ii_name) == C_DIFFER))
     {
         pii = pii->next;
     }

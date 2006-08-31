@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        string.c
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/12/15   string_isEqual() now compares against string's
@@ -116,7 +116,7 @@ string_create(PyMemSpace_t memspace,
          pcacheentry = pcacheentry->next)
     {
         /* if string already exists */
-        if (obj_isEqual((pPyObj_t)pcacheentry, (pPyObj_t)pstr))
+        if (string_compare(pcacheentry, pstr) == C_SAME)
         {
             /* free the string */
             heap_freeChunk((pPyObj_t)pstr);
@@ -137,29 +137,69 @@ string_create(PyMemSpace_t memspace,
 }
 
 
-S8
-string_isEqual(pPyObj_t pstr1, pPyObj_t pstr2)
+PyReturn_t
+string_newFromChar(U8 c, pPyObj_t *r_pstring)
 {
-    /* if one or both are not a string obj, return false */
-    if ((obj_isType(pstr1, OBJ_TYPE_STR) == C_FALSE) ||
-        (obj_isType(pstr2, OBJ_TYPE_STR) == C_FALSE))
+    PyReturn_t retval;
+    pPyString_t pstr;
+#if USE_STRING_CACHE
+    pPyString_t pcacheentry = C_NULL;
+#endif /* USE_STRING_CACHE */
+
+    /* Get space for String obj */
+    retval = heap_getChunk(sizeof(PyString_t) + 1, (P_U8 *)&pstr);
+    PY_RETURN_IF_ERROR(retval);
+
+    /* Fill the string obj */
+    pstr->od.od_type = OBJ_TYPE_STR;
+    pstr->length = 1;
+    pstr->val[0] = c;
+    pstr->val[1] = '\0';
+
+#if USE_STRING_CACHE
+    /* XXX uses linear search... could improve */
+
+    /* check for twin string in cache */
+    for (pcacheentry = pstrcache;
+         pcacheentry != C_NULL;
+         pcacheentry = pcacheentry->next)
     {
-        return C_FALSE;
+        /* if string already exists */
+        if (string_compare(pcacheentry, pstr) == C_SAME)
+        {
+            /* free the string */
+            heap_freeChunk((pPyObj_t)pstr);
+            /* return ptr to old */
+            *r_pstring = (pPyObj_t)pcacheentry;
+            return PY_RET_OK;
+        }
     }
 
-    /* return false if lengths are not equal */
-    if (((pPyString_t)pstr1)->length !=
-        ((pPyString_t)pstr2)->length)
+    /* insert string obj into cache */
+    pstr->next = pstrcache;
+    pstrcache = pstr;
+
+#endif /* USE_STRING_CACHE */
+
+    *r_pstring = (pPyObj_t)pstr;
+    return retval;
+}
+
+
+S8
+string_compare(pPyString_t pstr1, pPyString_t pstr2)
+{
+    /* Return false if lengths are not equal */
+    if (pstr1->length != pstr2->length)
     {
-        return C_FALSE;
+        return C_DIFFER;
     }
 
-    /* compare the strings' contents */
-    return sli_strncmp((const char *)
-                       &(((pPyString_t)pstr1)->val),
-                       (const char *)
-                       &(((pPyString_t)pstr2)->val),
-                       ((pPyString_t)pstr1)->length) == 0;
+    /* Compare the strings' contents */
+    return sli_strncmp((const char *)&(pstr1->val),
+                       (const char *)&(pstr2->val),
+                       pstr1->length
+                      ) == 0 ? C_SAME : C_DIFFER;
 }
 
 

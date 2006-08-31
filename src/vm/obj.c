@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        obj.c
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/05/04   First.
@@ -53,8 +53,6 @@ obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
 {
     PyReturn_t retval = PY_RET_OK;
     PyObjDesc_t od;
-    P_U8 pdest = C_NULL;
-
 
     /* get the object descriptor */
     od.od_type = (PyType_t)mem_getByte(memspace, paddr);
@@ -74,15 +72,11 @@ obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
             retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pobj);
             PY_RETURN_IF_ERROR(retval);
 
+            /* Set the object's type */
             (*r_pobj)->od.od_type = od.od_type;
-            /* set ptr to dest address */
-            pdest = (P_U8)&(((pPyInt_t)*r_pobj)->val);
-            /* copy obj img into object's value space (little endien) */
-            mem_copy(memspace, &pdest, paddr, 4);
-#if defined __osx__
-            /* reverse bytes in the word (change endienness) */
-            mem_reverseWord(&((pPyInt_t)*r_pobj)->val);
-#endif
+
+            /* Read in the object's value (little endian) */
+            ((pPyInt_t)*r_pobj)->val = mem_getInt(memspace, paddr);
             break;
 
         case OBJ_TYPE_STR:
@@ -181,51 +175,51 @@ obj_isFalse(pPyObj_t pobj)
 
 
 S8
-obj_isEqual(pPyObj_t pobj1, pPyObj_t pobj2)
+obj_compare(pPyObj_t pobj1, pPyObj_t pobj2)
 {
     /* null pointers are invalid */
     if ((pobj1 == C_NULL) || (pobj2 == C_NULL))
     {
-        return C_FALSE;
+        return C_DIFFER;
     }
 
     /* check if pointers are same */
     if (pobj1 == pobj2)
     {
-        return C_TRUE;
+        return C_SAME;
     }
 
     /* if types are different, return false */
     if (pobj1->od.od_type != pobj2->od.od_type)
     {
-        return C_FALSE;
+        return C_DIFFER;
     }
 
     /* else handle types individually */
     switch (pobj1->od.od_type)
     {
         case OBJ_TYPE_NON:
-            return C_TRUE;
+            return C_SAME;
 
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
             return ((pPyInt_t)pobj1)->val ==
-                   ((pPyInt_t)pobj2)->val;
+                   ((pPyInt_t)pobj2)->val ? C_SAME : C_DIFFER;
 
         case OBJ_TYPE_STR:
-            return string_isEqual(pobj1, pobj2);
+            return string_compare((pPyString_t)pobj1, (pPyString_t)pobj2);
 
         case OBJ_TYPE_TUP:
         case OBJ_TYPE_LST:
         case OBJ_TYPE_DIC:
         default:
             /* XXX fix these */
-            return C_FALSE;
+            return C_DIFFER;
     }
 
     /* XXX fix these */
     /* all other types would need same pointer to be true */
-    return C_FALSE;
+    return C_DIFFER;
 }
 
 

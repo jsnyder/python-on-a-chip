@@ -12,6 +12,7 @@
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -53,8 +54,7 @@
  * Prototypes
  **************************************************************/
 
-/* declaration is in libnative.h */
-extern void (* nat_fxn_table[])(pPyFrame_t, signed char);
+extern PyReturn_t (* nat_fxn_table[])(pPyFrame_t, signed char);
 
 /***************************************************************
  * Functions
@@ -370,12 +370,13 @@ interpret(pPyFunc_t pfunc)
                         retval = PY_RET_EX_TYPE;
                         break;
                     }
-                    /* get the substring */
-                    /* XXX issue #9: this use of t8 is an error */
+
+                    /* Get the character from the string */
                     t8 = (U8)((pPyString_t)pobj2)->
                                  val[((pPyInt_t)pobj1)->val];
-                    /* create object from substring */
-                    retval = string_new((P_U8 *)&t8, &pobj3);
+
+                    /* Create a new string from the character */
+                    retval = string_newFromChar(t8, &pobj3);
                     PY_BREAK_IF_ERROR(retval);
                 }
 
@@ -1364,7 +1365,28 @@ interpret(pPyFunc_t pfunc)
                     }
                     pobj3 = (t8) ? PY_TRUE : PY_FALSE;
                 }
-                /* XXX non int is error, for now */
+                else if (t16 == COMP_EQ)
+                {
+                    if (obj_compare(pobj1, pobj2) == C_SAME)
+                    {
+                        pobj3 = PY_TRUE;
+                    }
+                    else
+                    {
+                        pobj3 = PY_FALSE;
+                    }
+                }
+                else if (t16 == COMP_NE)
+                {
+                    if (obj_compare(pobj1, pobj2) == C_DIFFER)
+                    {
+                        pobj3 = PY_TRUE;
+                    }
+                    else
+                    {
+                        pobj3 = PY_FALSE;
+                    }
+                }
                 /* XXX TODO: goto slow_compare */
                 else
                 {
@@ -1661,13 +1683,14 @@ interpret(pPyFunc_t pfunc)
                      * CALL NATIVE FXN
                      * pass caller's frame and numargs
                      */
-                    nat_fxn_table[t16](FP, t8);
+                    retval = nat_fxn_table[t16](FP, t8);
                     /*
                      * RETURN FROM NATIVE FXN
                      */
 
                     /* pop func, push result */
                     TOS = gVmGlobal.nativeframe.nf_stack;
+                    PY_BREAK_IF_ERROR(retval);
                 }
                 continue;
 
@@ -1785,7 +1808,7 @@ interpret(pPyFunc_t pfunc)
          * It attempts to do something useful
          * for debugging purposes.
          */
-        switch(retval)
+        switch (retval)
         {
             case PY_RET_OK:
                 /* normal interpreter exit */
@@ -1807,8 +1830,13 @@ interpret(pPyFunc_t pfunc)
                 break;
 
             case PY_RET_EX_EXIT:
+                /* TODO: Check for catch before exiting */
                 /* SystemExit exception was raised */
-                gVmGlobal.interpctrl = INTERP_CTRL_EXIT;
+                /* If TOS is an int, return its value to main */
+                if (obj_isType(TOS, OBJ_TYPE_INT))
+                {
+                    return (PyReturn_t)((pPyInt_t)TOS)->val;
+                }
                 break;
 
             case PY_RET_EX_FLOAT:
@@ -1892,7 +1920,7 @@ interpret(pPyFunc_t pfunc)
 
     } /* while */
 
-    return PY_RET_OK;
+    return retval;
 }
 
 

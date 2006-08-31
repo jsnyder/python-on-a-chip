@@ -11,6 +11,7 @@
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
  * 2002/05/04   Merged most of contents to respective files.
  *              Started doxygen comments.
@@ -61,6 +62,12 @@
 
 /** true for C code */
 #define C_TRUE          (!C_FALSE)
+
+/** Comparison result is that items are the same */
+#define C_SAME 0
+
+/** Comparison result is that items differ */
+#define C_DIFFER -1
 
 /** PORT inline for C code */
 #define INLINE          __inline__

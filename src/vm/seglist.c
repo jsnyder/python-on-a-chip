@@ -27,11 +27,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        seglist.c
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/12/20   First.
@@ -200,7 +200,7 @@ seglist_findEqual(pSeglist_t pseglist,
              * if the two objs are equal, return affirmation
              * with segnum and indx referring to matching obj.
              */
-            if (obj_isEqual(pobj, pseg->s_val[*r_indx]))
+            if (obj_compare(pobj, pseg->s_val[*r_indx]) == C_SAME)
             {
                 return PY_RET_OK;
             }

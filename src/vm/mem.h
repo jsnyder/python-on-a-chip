@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        mem.h
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/21   First.
@@ -78,7 +78,7 @@ typedef enum PyMemSpace_e
 U8 mem_getByte(PyMemSpace_t memspace, P_U8 *paddr);
 
 /**
- * Return the word at the given address in memspace.
+ * Return the 2-byte word at the given address in memspace.
  *
  * Word obtained in LITTLE ENDIAN order (per Python convention).
  * afterward, addr points one byte past the word.
@@ -89,6 +89,19 @@ U8 mem_getByte(PyMemSpace_t memspace, P_U8 *paddr);
  *          addr - points one byte past the word
  */
 INLINE U16 mem_getWord(PyMemSpace_t memspace, P_U8 *paddr);
+
+/**
+ * Return the 4-byte int at the given address in memspace.
+ *
+ * Int obtained in LITTLE ENDIAN order (per Python convention).
+ * afterward, addr points one byte past the int.
+ *
+ * @param   memspace memory space
+ * @param   paddr ptr to address
+ * @return  int from memory.
+ *          addr - points one byte past the word
+ */
+INLINE U32 mem_getInt(PyMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Copy count number of bytes
@@ -119,15 +132,5 @@ void mem_copy(PyMemSpace_t memspace,
  * @return  Number of bytes in UTF-8 string.
  */
 U16 mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc);
-
-/**
- * Performs byte reversal with the word
- *
- * Changes the endienness of the word
- *
- * @param   pword ptr to word to change
- * @return  nothing; work is done in-place
- */
-void mem_reverseWord(P_U32 pword);
 
 #endif /* __MEM_H__ */

@@ -9,11 +9,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        mem.c
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -109,6 +109,17 @@ mem_getWord(PyMemSpace_t memspace, P_U8 *paddr)
 }
 
 
+INLINE
+U32
+mem_getInt(PyMemSpace_t memspace, P_U8 *paddr)
+{
+    /* PyMite is little endien; get low word first */
+    U16 wlo = mem_getWord(memspace, paddr);
+    U16 whi = mem_getWord(memspace, paddr);
+    return (U32)(wlo | (whi << 8));
+}
+
+
 void
 mem_copy(PyMemSpace_t memspace,
          P_U8 *pdest,
@@ -147,21 +158,6 @@ mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc)
     P_U8 pbase = *psrc;
     while(mem_getByte(memspace, psrc) != 0);
     return *psrc - pbase - 1;
-}
-
-
-void
-mem_reverseWord(P_U32 pword)
-{
-    P_U8 pbyte = (P_U8)pword;
-    U8 temp = 0;
-    
-    temp = pbyte[3];
-    pbyte[3] = pbyte[0];
-    pbyte[0] = temp;
-    temp = pbyte[2];
-    pbyte[2] = pbyte[1];
-    pbyte[1] = temp;
 }
 
 

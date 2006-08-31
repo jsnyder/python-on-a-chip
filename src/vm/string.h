@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        string.h
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/28   First.
@@ -123,14 +123,22 @@ PyReturn_t string_create(PyMemSpace_t memspace,
                           pPyObj_t *r_pstring);
 
 /**
+ * Create a new String object from a single character.
+ *
+ * @param   c the character to become the string
+ * @param   r_psting Return arg; ptr to String obj
+ * @return  Return status
+ */
+PyReturn_t string_newFromChar(U8 c, pPyObj_t *r_pstring);
+
+/**
  * Compare two String objects for equality.
  *
  * @param   pstr1 Ptr to first string
  * @param   pstr2 Ptr to second string
- * @return  C_TRUE if both objs are strings and are equal,
- *          C_FALSE otherwise.
+ * @return  C_SAME if the strings are equivalent, C_DIFFER otherwise
  */
-S8 string_isEqual(pPyObj_t, pPyObj_t);
+S8 string_compare(pPyString_t, pPyString_t);
 
 /**
  * Create a copy of the given string obj.

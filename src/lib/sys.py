@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# :mode=c:
 #
 # Provides PyMite's system module, sys
 #
@@ -12,7 +13,8 @@
 # LOG
 # ---
 #
-# 2006/08/21    #28: Adapt native libs to use the changed func calls
+# 2006/08/31    #9: Fix BINARY_SUBSCR for case stringobj[intobj]
+# 2006/08/21    Adapt native libs to use the changed func calls
 # 2002/09/07    Created.
 #
 
@@ -32,16 +34,28 @@ maxint = 0x7FFFFFFF     # 2147483647
 
 def exit(val):
     """__NATIVE__
-    PyReturn_t retval = 0;
     pPyObj_t pval = C_NULL;
+
+    /* If no arg given, assume return 0 */
+    if (NATIVE_GET_NUM_ARGS() == 0)
+    {
+        NATIVE_SET_TOS(PY_ZERO);
+    }
     
-    /* Get the given exit value */
-    pval = NATIVE_GET_LOCAL(0);
-    NATIVE_SET_TOS(pval);
-    retval = (S16)((pPyInt_t)pval)->val;
-    
-    /* Set the interpreter to exit */
-    gVmGlobal.interpctrl = INTERP_CTRL_EXIT;
-    return retval;
+    /* If 1 arg given, put it on stack */
+    else if (NATIVE_GET_NUM_ARGS() == 1)
+    {
+        pval = NATIVE_GET_LOCAL(0);
+        NATIVE_SET_TOS(pval);
+    }
+
+    /* If wrong number of args, raise TypeError */
+    else
+    {
+        return PY_RET_EX_TYPE;
+    }
+
+    /* Raise the SystemExit exception */
+    return PY_RET_EX_EXIT;
     """
     pass

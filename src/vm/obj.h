@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        obj.h
  *
  * Log
  * ---
  *
+ * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/12/16   OD's order changed to size-first to assist GC.
@@ -191,7 +191,7 @@ PyReturn_t obj_loadFromImg(PyMemSpace_t memspace,
  * @param   type expected type of obj
  * @return  boolean if types match
  */
-S8 obj_isType(pPyObj_t, PyType_t);
+S8 obj_isType(pPyObj_t pobj, PyType_t type);
 
 /**
  * Find the boolean value of the given object.
@@ -199,15 +199,15 @@ S8 obj_isType(pPyObj_t, PyType_t);
  * @param   pobj Ptr to object to test.
  * @return  Nonzero value if object is False.
  */
-S8 obj_isFalse(pPyObj_t);
+S8 obj_isFalse(pPyObj_t pobj);
 
 /**
  * Compare two objects for equality.
  *
  * @param   pobj1 Ptr to first object.
  * @param   pobj2 Ptr to second object.
- * @return  Nonzero of objects are equivalent.
+ * @return  C_SAME if the items are equivalent, C_DIFFER otherwise.
  */
-S8 obj_isEqual(pPyObj_t, pPyObj_t);
+S8 obj_compare(pPyObj_t pobj1, pPyObj_t pobj2);
 
 #endif /* __OBJ_H__ */
