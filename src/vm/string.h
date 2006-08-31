@@ -73,7 +73,12 @@ typedef struct PyString_s
     struct PyString_s * next;
 #endif /* USE_STRING_CACHE */
 
-    /** null-term char array */
+    /** 
+     * Null-term char array
+     *
+     * Use length 1 here so that string-alloc function can use
+     * "sizeof(PyString_t) + len" and there will be room for the null-term
+     */
     U8          val[1];
 } PyString_t, *pPyString_t;
 

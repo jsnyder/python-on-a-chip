@@ -1,10 +1,6 @@
 #
-# tests003.py
-#
 # A module that has two simple functions,
 # and calls them via main().
-# This file is used with tests003.py
-# to test pymite.
 #
 
 

@@ -1,0 +1,61 @@
+====================
+PyMite Module Images
+====================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the use of module images in the PyMite virtual machine
+(VM).  In doing so, it serves as a design document for the PyMite
+developer and, to some extent, a user manual for the PyMite user.
+
+Overview
+--------
+
+In PyMite, a module image is created by the tool, `pmImgCreator`.  Two groups
+of modules images are used by the VM, the PyMite standard library (`pmstdlib`)
+and the user library (`usrlib`).  A group of module images is simply a
+contiguous array of module images in a memory space with a null byte as a
+terminator.  During initialization, the VM scans both groups of module
+images to create a dict used to lookup modules throughout the life of the
+VM's execution.
+
+Creating Module Images
+----------------------
+
+The `pmImgCreator` tool takes as input command line options and file name
+arguments.  The command line options determine the type of image output file
+to create (C language array of bytes or raw binary), the file name to use for the
+native functions (optional), the memory space that the images should be
+placed in and whether the output image is to become the VM's standard library,
+`pmstdlib`, or the user library, `usrlib`.
+
+The `pmstdlib`
+--------------
+
+The PyMite build system creates `pmstdlib` from a defined set of module source
+files found in ``src/lib/``.  The list of modules used to create `pmstdlib`
+can be modified by changing the file list in ``src/lib/Makefile``.  The
+standard VM build process uses `pmImgCreator` to generate the C files
+``pmstdlib_img.c`` and ``pmstdlib_nat.c`` which are built into the VM
+automatically during a typical build.  The `pmstdlib` images are always located
+in program (Flash) memory.
+
+The `usrlib`
+------------
+
+When building a PyMite application, the Python application source code files are
+converted into a sequence images that can be located in any memory space:
+program memory, RAM, EEPROM or even external memories such as serial EEPROMs.
+The images must be contiguous and all in the same memory space.
+
+The typical way to build an application is to generate ``usrlib_img.c`` and
+``usrlib_nat.c`` using `pmImgCreator`, and link that with your application's
+main C file and the PyMite library, ``libpmvm.a``.  Then, in the main C file,
+the name of the module to execute is given to the VM via an obvious API call
+(TBD).
+
+.. :mode=rest:

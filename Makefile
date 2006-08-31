@@ -40,18 +40,19 @@ export  AR ARFLAGS CC CFLAGS HEAP_SIZE PRODUCT_VM SIZE TARGET
 
 .PHONY: all vm pmstdlib docs TAGS dist check clean
 
-# TODO: Hopefully can uncomment when issue #49 is resolved
+# TODO: Hopefully can uncomment when issue #2 is resolved
 #all : vm pmstdlib
 all : vm
 
 vm :
 	$(MAKE) -C src/vm
 
-# TODO: Hopefully can uncomment when issue #49 is resolved
+# TODO: Hopefully can uncomment when issue #2 is resolved
 #pmstdlib :
 #	$(MAKE) -C src/lib
 
 html : docs/src/*.txt
+	$(MKDIR) docs/html
 	$(MAKE) -C docs/src
 
 TAGS :
@@ -63,7 +64,7 @@ dist : check docs
 ifndef PYMITE_RELEASE
 	$(error Must define PYMITE_RELEASE=RR)
 else
-	# TODO: issue #48
+	# TODO: issue #5
 	# Make a script in tools/ that will:
 	# 	- make fresh checkout,
 	#   - build docs
@@ -77,6 +78,6 @@ check : vm
 # Removes all files created during default make
 clean :
 	$(MAKE) -C src/vm clean
-# TODO: Hopefully can uncomment when issue #49 is resolved
+# TODO: Hopefully can uncomment when issue #2 is resolved
 #	$(MAKE) -C src/lib clean
 

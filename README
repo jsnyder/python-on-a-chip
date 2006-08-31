@@ -84,11 +84,11 @@ This is PyMite release 02
 
 * Release 02, 2006/08/11
 
-    - #27:  Create Release v 02 package.
+    - N/A:  Create Release v 02 package.
     - N/A:  VM funcs modified so that return objects are by
       reference and funcs return a PyReturn_t for internal
       error checking.  Library modules are broken until they
-      are modified similarly (issue #28).
+      are modified similarly.
     - N/A:  The pmImgCreator.py script was modified to work via
       the command line. pmImgCreator GUI is deprecated.
     - N/A:  Converted many files' EOLs to Unix.

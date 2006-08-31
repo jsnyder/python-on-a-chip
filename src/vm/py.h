@@ -7,8 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        py.h
  *
+ * Log
+ * ---
+ *
+ * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
  * 2002/05/04   Merged most of contents to respective files.
  *              Started doxygen comments.
  * 2002/04/15   Merging object descriptor into tops of objects.
@@ -89,6 +92,8 @@
 #define PY_RETURN_IF_ERROR(retval)  if((retval) != PY_RET_OK) \
                                         return (retval)
 
+/** If the boolean expression fails, return the ASSERT error code */
+#define PY_ASSERT(boolexpr) if (!(boolexpr)) return PY_RET_ASSERT_FAIL
 
 /***************************************************************
  * Enums
@@ -112,6 +117,7 @@ typedef enum PyReturn_e
     PY_RET_NO         = 0xFF,   /**< general "no result" */
     PY_RET_ERR        = 0xFE,   /**< general failure */
     PY_RET_STUB       = 0xFD,   /**< return val for stub fxn */
+    PY_RET_ASSERT_FAIL= 0xFC,   /**< assertion failure */
 
     /* return vals that indicate an exception occured */
     PY_RET_EX         = 0xE0,   /**< general exception */

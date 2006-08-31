@@ -12,6 +12,7 @@
  * Log
  * ---
  *
+ * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -357,6 +358,9 @@ interpret(pPyFunc_t pfunc)
                 /* get sequence */
                 pobj2 = PY_POP();
 
+                /* XXX issue #10: create seq_getSubscript(); */
+                /* XXX index out of range exception? */
+
                 /* if it's a string */
                 if (pobj2->od.od_type == OBJ_TYPE_STR)
                 {
@@ -367,8 +371,7 @@ interpret(pPyFunc_t pfunc)
                         break;
                     }
                     /* get the substring */
-                    /* XXX index out of range exception? */
-                    /* XXX DWH make: retval = sequence_getSubscript(pseq, index, &item); */
+                    /* XXX issue #9: this use of t8 is an error */
                     t8 = (U8)((pPyString_t)pobj2)->
                                  val[((pPyInt_t)pobj1)->val];
                     /* create object from substring */
@@ -1795,6 +1798,11 @@ interpret(pPyFunc_t pfunc)
 
             case PY_RET_STUB:
                 /* unimplemented fxn error */
+                PY_ERR(__LINE__);
+                break;
+
+            case PY_RET_ASSERT_FAIL:
+                /* assertion failed */
                 PY_ERR(__LINE__);
                 break;
 
