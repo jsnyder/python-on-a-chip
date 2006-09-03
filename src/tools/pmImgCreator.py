@@ -25,6 +25,8 @@ Log
 ==========      ==============================================================
 Date            Action
 ==========      ==============================================================
+2006/09/01      #11: Make src/tests/ build module images as C files, not
+                header files
 2006/08/25      #6: Have pmImgCreator append a null terminator to image list
 2006/08/15      Added option for storing image to RAM or FLASH
 2006/08/14      Smooth command line use
@@ -53,10 +55,11 @@ __copyright__ = "Copyright 2002 Dean Hall.  All rights reserved."
 __version__ = (0, 0, 7)
 __date__  = "2006/08/10"
 __usage__ = """USAGE:
-    pmImgCreator.py [-b|h] [OPTIONS] -o imgfilename infile0.py [infileN.py ...]
+    pmImgCreator.py [-b|c] [OPTIONS] -o imgfilename infile0.py [infileN.py ...]
 
     -b                      Generates a raw binary file of the image
-    -h                      Generates a C header file of the image (default)
+    -c                      Generates a C file of the image (default)
+    -h                      Deprecated.  Use -c instead.
 
     OPTIONS:
     --native-file=filename  If specified, pmImgCreator will write a C source
@@ -197,7 +200,7 @@ class PmImgCreator:
 
     def __init__(self, ui=False,):
 
-        self.formatFromExt = {".h": self.format_img_as_h,
+        self.formatFromExt = {".c": self.format_img_as_c,
                               ".bin": self.format_img_as_bin,
                               ".s19": self.format_img_as_s19,
                              }
@@ -235,7 +238,7 @@ class PmImgCreator:
         self._str_to_U8 = ord
 
 
-    def set_input(self, outfn=None, imgtype=".h", infiles=None):
+    def set_input(self, outfn=None, imgtype=".c", infiles=None):
         self.outfn = outfn
         self.imgtype = imgtype
         self.infiles = infiles
@@ -617,11 +620,11 @@ class PmImgCreator:
         return string.join(self.imgDict["imgs"], "")
 
 
-    def format_img_as_h(self,):
-        """format_img_as_h() --> string
+    def format_img_as_c(self,):
+        """format_img_as_c() --> string
 
-        Format image bytes to a C header format string.
-        The C header file defines a byte array in RAM
+        Format image bytes to a string that is a C byte array.
+        The C byte array can be located in RAM
         or program memory.  The byte array is named lib_img.
         """
 
@@ -766,14 +769,14 @@ def parse_cmdline():
     """
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "bhso:",
+                                   "bhcso:",
                                    ["memspace=", "native-file="])
     except:
         print __usage__
         sys.exit(2)
 
     # Parse opts for the image type to write
-    imgtype = ".h"
+    imgtype = ".c"
     outfn = None
     memspace = None
     nativeFilename = None
@@ -781,7 +784,9 @@ def parse_cmdline():
         if opt[0] == "-b":
             imgtype = ".bin"
         elif opt[0] == "-h":
-            imgtype = ".h"
+            imgtype = ".c"
+        elif opt[0] == "-c":
+            imgtype = ".c"
         elif opt[0] == "--memspace":
             # Error if memspace switch given without arg
             if not opt[1] or (opt[1].lower() not in ["ram", "flash"]):

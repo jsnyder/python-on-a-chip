@@ -1,7 +1,7 @@
 #
-# t009.py
+# Regression Test for Issue #9
 #
-# Tests issue #009 - Fix BINARY_SUBSCRIPT opcode for string.
+# Fix BINARY_SUBSCR for case stringobj[intobj]
 #
 
 import sys

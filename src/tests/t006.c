@@ -1,13 +1,19 @@
 /**
- * Test Issue #006
+ * Regression Test for Issue #6
  *
  * Ensure an image list is null terminated.
+ *
+ * Log
+ * ---
+ *
+ * 2006/09/01   #11: Make src/tests/ build module images as C files, 
+ *              not header files 
  */
 
 
 #include "py.h"
 
-#include "t006_img.h"
+extern unsigned char lib_img[];
 
 
 int main(void)

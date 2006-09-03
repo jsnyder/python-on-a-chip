@@ -18,8 +18,7 @@
 
 #include "py.h"
 
-/* include code img (built by pmImgCreator.py) */
-#include "sample_img.h"
+extern unsigned char lib_img[];
 
 
 int main(void)

@@ -1,5 +1,7 @@
 #
-# Tests issue #006 - Have pmImgCreator append a null terminator to image list
+# Regression Test for Issue #6
+#
+# Ensure an image list is null terminated.
 # Only need a dummy module.
 #
 

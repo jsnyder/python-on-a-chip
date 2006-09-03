@@ -20,8 +20,8 @@ on using features of `GNU make`_.  The project shall have a
 ``Makefile`` in the project root directory that, when called by
 typing ``make`` at the command prompt, will compile:
 
-    - the PyMite library to an image file, ``src/lib/pmstdlib.h``,
-      and native code file, ``src/lib/pmstdlib.c``
+    - the PyMite library to an image file, ``src/lib/pmstdlib_img.c``,
+      and native code file, ``src/lib/pmstdlib_nat.c``
     - the PyMite VM to an archive, ``libpmvm.a``.
       that must be included by PyMite end-user programs.
 
@@ -33,7 +33,7 @@ most software projects.  Most projects compile source code to create a library
 as a product and put that library in a ``lib/`` directory.  PyMite, on the
 other hand, converts Python code that is meant to run inside the PyMite VM
 to an `image`, an equivalent to a ``.pyc`` file.  The `image` is usually in the
-form of an array of bytes listed in a C-style header file, ``pmstdlib.h``.
+form of an array of bytes listed in a C file, ``pmstdlib_img.c``.
 This header file containing the image of the PyMite libraries is what is built
 in ``src/lib/``.
 

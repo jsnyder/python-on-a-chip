@@ -1,4 +1,7 @@
 #
+# System Test 003
+# Unrelated to issue #3.
+#
 # A module that has two simple functions,
 # and calls them via main().
 #

@@ -1,5 +1,13 @@
 /**
  * Regression Test for Issue #9
+ *
+ * Fix BINARY_SUBSCR for case stringobj[intobj]
+ *
+ * Log
+ * ---
+ *
+ * 2006/09/01   #11: Make src/tests/ build module images as C files, 
+ *              not header files 
  */
 
 #if defined(__AVR__)
@@ -8,7 +16,7 @@
 
 #include "py.h"
 
-#include "t009_img.h"
+extern unsigned char lib_img[];
 
 
 int main(void)

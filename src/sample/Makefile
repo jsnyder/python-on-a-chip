@@ -374,8 +374,7 @@ extcoff: $(TARGET).elf
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(ALL_CFLAGS) $(OBJ) $*_nat.o --output $@ $(LDFLAGS)
-	@echo Done linking DWH $@
+	$(CC) $(ALL_CFLAGS) $(OBJ) $*_nat.o $*_img.o --output $@ $(LDFLAGS)
 
 
 # Compile: create object files from C source files.
@@ -398,11 +397,12 @@ extcoff: $(TARGET).elf
 
 # PyMite note:  avr-ar rcsv libmmb103.a libmmb103.o
 # PyMite: The native fxn table and bytecode image are generated from python source
-$(TARGET).c: $(TARGET)_nat.c $(TARGET)_img.h
+$(TARGET).c: $(TARGET)_nat.c $(TARGET)_img.c
 
-$(TARGET)_nat.c $(TARGET)_img.h: $(TARGET).py
-	$(PMIMGCREATOR) -h -o $(TARGET)_img.h --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
-	$(CC) -I../vm -DHEAP_SIZE=$(PM_HEAP_SIZE) -c $(TARGET)_nat.c
+$(TARGET)_nat.c $(TARGET)_img.c: $(TARGET).py
+	$(PMIMGCREATOR) -c -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
+	$(CC) -I../vm -DHEAP_SIZE=$(PM_HEAP_SIZE) -c $(TARGET)_nat.c 
+	$(CC) -I../vm -DHEAP_SIZE=$(PM_HEAP_SIZE) -c $(TARGET)_img.c
 
 
 # Target: clean project.
@@ -422,8 +422,8 @@ clean_list :
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(TARGET)_img.h
-	$(REMOVE) $(TARGET)_nat.?
+	$(REMOVE) $(TARGET)_img.c
+	$(REMOVE) $(TARGET)_nat.c
 	$(REMOVE) $(OBJ)
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)

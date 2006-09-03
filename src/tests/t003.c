@@ -1,6 +1,6 @@
 /**
  * System Test 003
- *
+ * Unrelated to issue #3.
  * Load a module image from RAM
  * using the global image info list.
  *
@@ -10,6 +10,8 @@
  * Log
  * ---
  *
+ * 2006/09/01   #11: Make src/tests/ build module images as C files, 
+ *              not header files 
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2002/05/18   First.
  */
@@ -42,8 +44,7 @@
  * Globals
  **************************************************************/
 
-/* include code img */
-#include "t003_img.h"
+extern unsigned char lib_img[];
 
 /***************************************************************
  * Main
