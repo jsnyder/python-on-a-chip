@@ -49,9 +49,9 @@ sample application for the desktop:
     2. In the project root, run ``make check`` to make an executable for
        ``src/tests/t003.*``
 
-To build for the ATmega103:
+To build for AVR targets like the ATmega103 (refer to the Makefile for others):
 
-    1. In the project root, run ``make clean; make check TARGET=ATMEGA103``
+    1. In the project root, run ``make clean; make check TARGET=AVR``
        to make an executable for ``src/tests/t003.*``
 
 The development system should have installed the GNU Compiler

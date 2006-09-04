@@ -27,10 +27,10 @@
 
 #include "py.h"
 
-#ifdef TARGET_ATMEGA103
+#ifdef TARGET_AVR
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-#endif /* atmega103 */
+#endif /* AVR */
 
 
 /***************************************************************
@@ -70,21 +70,21 @@ mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
             return b;
 
         case MEMSPACE_FLASH:
-#ifdef TARGET_ATMEGA103
+#ifdef TARGET_AVR
             b = pgm_read_byte(*paddr);
 #elif defined(TARGET_DESKTOP)
             b = **paddr;
 #else
 #error Undefined TARGET
-#endif /* TARGET_ATMEGA103 */
+#endif /* TARGET_AVR */
             *paddr += 1;
             return b;
 
         case MEMSPACE_EEPROM:
-#ifdef TARGET_ATMEGA103
+#ifdef TARGET_AVR
             b = eeprom_read_byte((U16)*paddr);
             *paddr += 1;
-#endif /* TARGET_ATMEGA103 */
+#endif /* TARGET_AVR */
             return b;
 
         case MEMSPACE_SEEPROM:

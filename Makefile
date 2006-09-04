@@ -1,9 +1,11 @@
 #
 # Available arguments:
-#     TARGET = [DESKTOP, ATMEGA103]
+#     TARGET = [DESKTOP, AVR]
 #
 # Default values:
 #     TARGET = DESKTOP
+#
+# For target AVR, check options in section "Changes for an embedded target".
 #
 
 # Tools configuration
@@ -19,7 +21,7 @@ VPATH := . src/vm src/lib docs/src
 TARGET := DESKTOP
 SIZE := size
 DEFS = -DTARGET_$(TARGET) -DHEAP_SIZE=$(HEAP_SIZE)
-CFLAGS = -ansi -g -Os -Wall -gstabs -Wstrict-prototypes $(DEFS)
+CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes $(DEFS)
 HEAP_SIZE = 0x10000
 ARFLAGS := rcs
 
@@ -27,12 +29,19 @@ ARFLAGS := rcs
 PRODUCT_VM := libpmvm.a
 
 # Changes for an embedded target
-ifeq ($(TARGET), ATMEGA103)
-	AR = /usr/local/bin/avr-ar
-	CC = /usr/local/bin/avr-gcc
-	CFLAGS += -mmcu=atmega103
-	SIZE = /usr/local/bin/avr-size
+ifeq ($(TARGET), AVR)
+	# TARGET_MCU should equal avr-gcc option "-mmcu" possible values.
+	TARGET_MCU := atmega103
+	
+	CFLAGS += -mmcu=$(TARGET_MCU)
 	HEAP_SIZE = 0x0D00
+
+	AR = avr-ar
+	CC = avr-gcc
+	SIZE = avr-size
+	CFLAGS += -DTARGET_MCU=$(TARGET_MCU)
+else
+	CFLAGS += -ansi
 endif
 
 # Export config to child makefiles
