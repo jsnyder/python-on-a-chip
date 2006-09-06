@@ -11,6 +11,9 @@
 #
 """
 
+__usage__ = """Usage:
+    dismantle.py sourcefilename.py
+"""
 
 #### CONSTS ####
 STRINGTOOLONG = 32
@@ -22,12 +25,7 @@ import dis, sys, types, py_compile, time
 
 #### FXNS ####
 
-def dummy():
-    a = 6
-    b = ((4,5,6))
-
-
-def dismantle(fn):
+def dismantle_file(fn):
     """
     Dismantle the .py file, fn.
     Returns the root code object.
@@ -37,25 +35,35 @@ def dismantle(fn):
     f = open(fn)
     source = f.read()
     f.close()
+    return dismantle(source, fn)
+
+
+def dismantle(source, fn=""):
+
+    # If no filename given, just dismantle source, skip magic and ignore
+    if fn == "":
+        magic = 0
+        ignore = 0
+        fn = "fn"
+        pyc = ""
+
+    else:
+        #compile the .py file
+        py_compile.compile(fn)
+        #open the .pyc file
+        f = open(fn + 'c','rb')
+        pyc = f.read()
+        f.close()
+
+        #check for magic number
+        magic = int((ord(pyc[0])      ) | (ord(pyc[1]) <<  8) |
+                    (ord(pyc[2]) << 16) | (ord(pyc[3]) << 24))
+
+        #grab the next 4 bytes (don't know what they do)
+        ignore = int((ord(pyc[4])      ) | (ord(pyc[5]) <<  8) |
+                     (ord(pyc[6]) << 16) | (ord(pyc[7]) << 24))
+
     code = compile(source, fn, "exec")
-
-    #compile the .py file
-    py_compile.compile(fn)
-    #open the .pyc file
-    f = open(fn + 'c','rb')
-    pyc = f.read()
-    f.close()
-
-    #check for magic number
-    magic = int((ord(pyc[0])      ) | (ord(pyc[1]) <<  8) |
-                (ord(pyc[2]) << 16) | (ord(pyc[3]) << 24))
-    #different magic numbers for different versions of python
-    #if magic not in [0x0a0dc687,]:
-    #    raise IOError("Did not find .pyc magic number.")
-
-    #grab the next 4 bytes (don't know what they do)
-    ignore = int((ord(pyc[4])      ) | (ord(pyc[5]) <<  8) |
-                 (ord(pyc[6]) << 16) | (ord(pyc[7]) << 24))
 
     #print header
     print "BEGIN DISMANTLE"
@@ -145,10 +153,9 @@ def main():
     Perform a dismantling of the source file, fn.
     """
     if len(sys.argv) == 2:
-        return dismantle(sys.argv[1])
+        return dismantle_file(sys.argv[1])
     else:
-        return dismantle("c:\\dwh\\tech\\cis\\py\\dismantle.py")
-
+        print __usage__
 
 if __name__ == "__main__":
         main()
