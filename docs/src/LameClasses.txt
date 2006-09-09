@@ -1,0 +1,94 @@
+============
+Lame Classes
+============
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the implementation and use of classes
+in the PyMite virtual machine (VM).  In doing so, it serves as a design
+document for the PyMite developer and a user manual for the PyMite user.
+
+Overview
+--------
+
+PyMite shall support a special form of class-like objects called Lame Classes
+which are nothing like `Python classes`_.  Lame Classes are unique to PyMite
+and grew from PyMite's need to have class-like capability.  Lame Classes allow
+the user to create an instance of a module; where the module name becomes the
+class name and the module's functions become the class's methods.
+Lame Classes support single inheritence, but not constructors, destructors
+or anything else from traditional object oriented classes.
+
+The downside of Lame Classes is that a PyMite program would not run on
+standard desktop Python.
+
+.. _`Python classes`: http://docs.python.org/ref/class.html
+
+Background
+----------
+
+PyMite would benefit from implementing the ``assert`` statement.
+The ``assert`` statement requires the ``AssertionError`` exception to exist,
+which requires exceptions in general to exist.  Exceptions benefit from
+class-like inheritence, which, finally, brings about the need for classes in
+PyMite.
+
+Supporting real Python classes was considered and an implementation was
+attempted, but due to the tradeoffs that PyMite had already made, implementing
+real classes required several ugly hacks and special cases in the interpreter.
+Real classes were shelved in favor of something lighter and simpler.
+
+The term `Lame Classes` was created by the author who acknowledges that these
+classes are nothing like classes from Python or `OOP`_ in general, but serve
+the purpose of classes given the constraints of PyMite's embedded target
+devices.
+
+.. _`OOP`: http://en.wikipedia.org/wiki/Object-oriented_programming
+
+Implementation
+--------------
+
+Lame Classes shall use modules and functions as if they were classes and shall
+have a special builtin-in function to create an instance of the "class."
+The instance shall receive a copy of the class's attributes so that the
+instance may access the class's methods.
+
+An object that wishes to act as a Lame Class must define the specially-named
+attribute, ``__p``, to keep a reference to the  parent object, which is what
+allows inheritence in Lame Classes.  If a class does not have a specific
+parent object to inherit, the builtin class, ``object``, should be used.
+
+An instance of a class is made by using the built-in function,
+``Instantiate()`` like this::
+
+    import Shape
+
+    hexagon = Instantiate(Shape)
+
+Lame Classes do not support constructors like Python's ``__init__()`` function,
+but instead the author recommends the following convention as a work-around.
+Define your class as a function with whatever arguments you want for your
+constructor.  In the function code block, create an instance of the desired
+base class and call the function ``_ini()`` as a constructor.  Then you can
+define ``_ini()`` as a pure-Python function or a native function.  The
+following example demonstrates this workaround::
+
+    def MyClass(arg1, argN):
+        inst = Instantiate(MyClass)
+        _ini(inst, arg1, argN)
+        return inst
+
+    def _ini(inst, arg1, arg2):
+        # pure-python or native function
+        pass
+
+    mc = MyClass(42, "don't panic")
+
+In the example above it is important to notice that ``MyClass`` is created by
+the ``def`` keyword and not the unsupported ``class`` keyword.
+
+.. :mode=rest:

@@ -7,10 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        module.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/09/04   #22: Implement classes in the VM
  * 2002/05/04   First.
  */
 
@@ -47,10 +48,11 @@
  * not otherwise callable.
  *
  * @param   pco ptr to code obj
+ * @param   pname ptr to string object containing module's name
  * @param   return parameter; ptr to new module obj
  * @return  return status
  */
-PyReturn_t mod_new(pPyCo_t pco, pPyFunc_t * pmod);
+PyReturn_t mod_new(pPyCo_t pco, pPyObj_t pname, pPyFunc_t *pmod);
 
 /**
  * Import a module of the given name.

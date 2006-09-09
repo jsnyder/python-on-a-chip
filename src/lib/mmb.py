@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#:mode=c:
 #
 # MMB Access Module
 #
@@ -260,7 +261,7 @@ def init():
 
 
 def lcdClrScr():
-    """
+    """__NATIVE__
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
@@ -279,7 +280,7 @@ def lcdClrScr():
 
 
 def lcdPrintStr(ps):
-    """
+    """__NATIVE__
     pPyObj_t ps = C_NULL;
     P_U8 str = C_NULL;
 
@@ -554,3 +555,4 @@ def toc():
 
     return retval;
     """
+    pass

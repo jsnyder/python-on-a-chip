@@ -98,7 +98,6 @@ class_new(pPyObj_t pmeths,
     PyReturn_t retval = PY_RET_OK;
     pPyObj_t pkey = C_NULL;
     P_U8 btstr = (P_U8)"__bt";
-    P_U8 nmstr = (P_U8)"__nm";
 
     /* ensure types */
     if ((pmeths->od.od_type != OBJ_TYPE_DIC) ||
@@ -122,11 +121,9 @@ class_new(pPyObj_t pmeths,
                           pkey,
                           (pPyObj_t)pbases);
     PY_RETURN_IF_ERROR(retval);
-    /* store the name of the class in the __nm slot */
-    retval = string_new(&nmstr, &pkey);
-    PY_RETURN_IF_ERROR(retval);
+    /* store the name of the class in the __name__ attr */
     retval = dict_setItem((pPyObj_t)((pPyFunc_t)*r_pclass)->f_attrs,
-                          pkey,
+                          PY_NAME_,
                           (pPyObj_t)pname);
     return retval;
 }

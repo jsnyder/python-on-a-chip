@@ -9,8 +9,10 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        dict.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/09/08   #22: Implement classes
  * 2002/04/30   First.
  */
 
@@ -109,15 +111,22 @@ PyReturn_t dict_setItem(pPyObj_t pdict,
 						pPyObj_t pval);
 
 
+/**
+ * Extends the desitnation dict with all of the key,val pairs of the source dict
+ *
+ * @param   pdictDest ptr to destination dict
+ * @param   pdictSrc ptr to source dict
+ * @return  Return status
+ */
+PyReturn_t dict_extend(pPyObj_t pdictDest, pPyObj_t pdictSrc);
+
 #if 0
 /* TBD */
-pPyObj_t  dict_copy(pPyObj_t pdict);
 U8        dict_hasKey(pPyObj_t pdict, pPyObj_t pkey);
 pPyObj_t  dict_items(pPyObj_t pdict); /* list of (keys,vals) */
 pPyObj_t  dict_keys(pPyObj_t pdict);
 pPyObj_t  dict_popItem(pPyObj_t pdict);
 void      dict_setDefault(pPyObj_t pdict, /*HERE*/);
-void      dict_update(pPyObj_t pdict, pPyObj_t pdictb);
 pPyObj_t  dict_values(pPyObj_t pdict);
 #endif
 

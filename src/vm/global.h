@@ -27,6 +27,9 @@
 /** The global root PyGlobals Dict object */
 #define PY_PBUILTINS    (pPyObj_t)(gVmGlobal.builtins)
 
+/** The global string __name__ */
+#define PY_NAME_        (pPyObj_t)(gVmGlobal.pname)
+
 /** The global None object */
 #define PY_NONE         (pPyObj_t)&(gVmGlobal.none)
 
@@ -74,6 +77,9 @@ typedef struct PyVmGlobal_s
     /** Dict for builtins */
     pPyDict_t       builtins;
 
+    /** String __name__ */
+    pPyString_t     pname;
+
     /** Ptr to stack of code image info. */
     pPyImgInfo_t    pimglist;
 
@@ -85,13 +91,13 @@ typedef struct PyVmGlobal_s
 
     /** PyMite release value for when an error occurs */
     U8              errVmRelease;
-    
+
     /** PyMite source file ID number for when an error occurs */
     U8              errFileId;
-    
+
     /** Line number for when an error occurs */
     U8              errLineNum;
-    
+
     /**
      * Interpreter loop control value
      *
@@ -100,13 +106,13 @@ typedef struct PyVmGlobal_s
      * A negative value signals an error exit.
      */
     PyInterpCtrl_t  interpctrl;
-    
+
     /** the amount of heap space available */
     U16             heapavail;
 
     /* leave this at the bottom of the global struct */
     /** Global declaration of heap. */
-    S8              heapbase[HEAP_SIZE];
+    U8              heapbase[HEAP_SIZE];
     /* DO NOT PUT ANYTHING BELOW THIS */
 } PyVmGlobal_t, *pPyVmGlobal_t;
 
@@ -127,7 +133,8 @@ extern PyVmGlobal_t gVmGlobal;
  *
  * @return  nothing
  */
-void global_init(void);
+PyReturn_t global_init(void);
+
 
 /**
  * Load the builtins dict into the given module's attrs.

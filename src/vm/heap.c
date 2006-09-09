@@ -335,6 +335,9 @@ heap_init(void)
     pPyHeapDesc_t pchunk = C_NULL;
     S16 size = 0;
 
+    /* clear the heap (optional?) */
+    sli_memset(&gVmGlobal.heapbase, '\0', HEAP_SIZE * sizeof(U8));
+
     /* init global amount of heap space remaining */
     gVmGlobal.heapavail = HEAP_SIZE;
 

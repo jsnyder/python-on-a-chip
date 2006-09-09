@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# :mode=c:
 #
 # Provides PyMite's builtins module, __bi.
 #
@@ -13,6 +14,7 @@
 # LOG
 # ---
 #
+# 2006/09/08    #22: Implement classes
 # 2006/08/21    #28: Adapt native libs to use the changed func calls
 # 2002/12/20    Added globals, locals, range.
 # 2002/12/19    Created.
@@ -23,12 +25,80 @@
 #ord, chr, hex, dir, reload, str, repr, tuple
 
 
+import object
+
+
 #### CONSTS
 
 C = "Copyright 2001 Dean W. Hall.  All rights reserved."
 
 
 #### FUNCS
+
+def Instantiate(module):
+    """__NATIVE__
+    PyReturn_t retval;
+    pPyObj_t plameclass = C_NULL;
+    pPyInst_t pinst = C_NULL;
+    pPyObj_t pdict = C_NULL;
+    pPyObj_t pkey = C_NULL;
+    pPyObj_t pclassAttrs = C_NULL;
+    P_U8 classKeyCstr = (P_U8)"__c";
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        return PY_RET_EX_TYPE;
+    }
+
+    /* Get the first arg */
+    plameclass = NATIVE_GET_LOCAL(0);
+
+    /* Get the attributes dict from the class */
+    if ((plameclass->od.od_type == OBJ_TYPE_MOD)
+        || (plameclass->od.od_type == OBJ_TYPE_FXN))
+    {
+        pclassAttrs = (pPyObj_t)((pPyFunc_t)plameclass)->f_attrs;
+    }
+    else if (plameclass->od.od_type == OBJ_TYPE_CLI)
+    {
+        pclassAttrs = (pPyObj_t)((pPyInst_t)plameclass)->i_attrs;
+    }
+
+    /* If arg is wrong type, raise TypeError */
+    else
+    {
+        return PY_RET_EX_TYPE;
+    }
+
+    /* Alloc an Instance */
+    retval = heap_getChunk(sizeof(PyInst_t), (P_U8 *)&pinst);
+    PY_RETURN_IF_ERROR(retval);
+    pinst->od.od_type = OBJ_TYPE_CLI;
+
+    /* Alloc a dict for the instance's attrs */
+    retval = dict_new(&pdict);
+    PY_RETURN_IF_ERROR(retval);
+    pinst->i_attrs = (pPyDict_t)pdict;
+
+    /* Create the key string */
+    retval = string_new(&classKeyCstr, &pkey);
+    PY_RETURN_IF_ERROR(retval);
+
+    /* Set the instance's class attribute */
+    retval = dict_setItem(pdict, pkey, plameclass);
+    PY_RETURN_IF_ERROR(retval);
+
+    /* Copy the obj's attrs into the instance's attrs */
+    retval = dict_extend((pPyObj_t)pinst->i_attrs, pclassAttrs);
+    PY_RETURN_IF_ERROR(retval);
+
+    /* Put this instance on the stack */
+    NATIVE_SET_TOS((pPyObj_t)pinst);
+
+    return retval;
+    """
+
 
 def globals():
     """__NATIVE__
@@ -43,7 +113,7 @@ def globals():
     /* Return calling frame's globals dict  on stack*/
     pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_globals;
     NATIVE_SET_TOS(pr);
-    
+
     return PY_RET_OK;
     """
     pass
@@ -63,7 +133,7 @@ def id(o):
     /* Return object's address as an int on the stack */
     retval = int_new((U16)NATIVE_GET_LOCAL(0), &pr);
     NATIVE_SET_TOS(pr);
-    
+
     return retval;
     """
     pass
@@ -127,7 +197,7 @@ def locals():
     /* Return calling frame's local attrs dict on the stack */
     pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_attrs;
     NATIVE_SET_TOS(pr);
-    
+
     return PY_RET_OK;
     """
     pass

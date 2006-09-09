@@ -1,18 +1,16 @@
 /**
- * Regression Test for Issue #9
+ * Feature Test for Issue #22
  *
- * Fix BINARY_SUBSCR for case stringobj[intobj]
+ * Implement classes
+ *
+ * This test investigates how instances of objects are created
+ *
  *
  * Log
  * ---
  *
- * 2006/09/01   #11: Make src/tests/ build module images as C files, 
- *              not header files 
+ * 2006/09/03   Init
  */
-
-#if defined(__AVR__)
-#include <avr/pgmspace.h>
-#endif
 
 #include "py.h"
 
@@ -27,7 +25,7 @@ int main(void)
     /* ptr to module obj */
     pPyFunc_t pmod;
     /* name of module to run */
-    P_U8 modstr = (P_U8)"t009";
+    P_U8 modstr = (P_U8)"t022";
     PyReturn_t retval = PY_RET_OK;
 
     heap_init();

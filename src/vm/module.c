@@ -50,7 +50,7 @@
  **************************************************************/
 
 PyReturn_t
-mod_new(pPyCo_t pco, pPyFunc_t * pmod)
+mod_new(pPyCo_t pco, pPyObj_t pname, pPyFunc_t *pmod)
 {
     PyReturn_t retval = PY_RET_OK;
 
@@ -64,6 +64,10 @@ mod_new(pPyCo_t pco, pPyFunc_t * pmod)
 
     /* alloc and init attrs dict */
     retval = dict_new((pPyObj_t *)&((*pmod)->f_attrs));
+    PY_RETURN_IF_ERROR(retval);
+    
+    /* Set __name__ attribute to pname */
+    retval = dict_setItem((pPyObj_t)(*pmod)->f_attrs, PY_NAME_, pname);
     return retval;
 }
 
@@ -104,7 +108,7 @@ mod_import(pPyObj_t pstr, pPyFunc_t * pmod)
     retval = obj_loadFromImg(pii->ii_memspace, &imgaddr, (pPyObj_t *)&pco);
     PY_RETURN_IF_ERROR(retval);
 
-    return mod_new(pco, pmod);
+    return mod_new(pco, pstr, pmod);
 }
 
 
