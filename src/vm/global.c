@@ -13,7 +13,6 @@
  * Log
  * ---
  *
- * 2006/09/04   #22: Implement classes in the VM
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -55,14 +54,11 @@ PyVmGlobal_t gVmGlobal;
  * Functions
  **************************************************************/
 
-PyReturn_t
+void
 global_init(void)
 {
-    P_U8 namestr = (P_U8)"__name__";
-    PyReturn_t retval;
-
-    /* clear the global struct less the heap */
-    sli_memset(&gVmGlobal, '\0', sizeof(PyVmGlobal_t) - HEAP_SIZE * sizeof(U8));
+    /* clear the entire global struct */
+    sli_memset(&gVmGlobal, '\0', sizeof(PyVmGlobal_t));
 
     /* set the PyMite release num (for debug and post mortem) */
     gVmGlobal.errVmRelease = PY_RELEASE;
@@ -90,10 +86,6 @@ global_init(void)
     gVmGlobal.none.od.od_size = sizeof(PyObj_t);
     gVmGlobal.none.od.od_const = 1;
 
-    /* Create __name__ string */
-    retval = string_new(&namestr, (pPyObj_t *)&gVmGlobal.pname);
-    PY_RETURN_IF_ERROR(retval);
-
     /* init empty builtins */
     gVmGlobal.builtins = C_NULL;
 
@@ -106,7 +98,7 @@ global_init(void)
     /* interpreter loop return value */
     gVmGlobal.interpctrl = INTERP_CTRL_CONT;
 
-    return retval;
+    return;
 }
 
 

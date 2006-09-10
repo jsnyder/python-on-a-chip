@@ -30,8 +30,9 @@ int main(void)
     P_U8 modstr = (P_U8)"t009";
     PyReturn_t retval = PY_RET_OK;
 
-    heap_init();
+    /* heap pointers are a part of globals, so init globals first */
     global_init();
+    heap_init();
 
     /* get image info into global struct */
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);

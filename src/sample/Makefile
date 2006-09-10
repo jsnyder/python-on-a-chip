@@ -35,8 +35,7 @@
 # PyMite Configuration
 LIBNATIVE_SOURCES = ../lib/__bi.py \
                     ../lib/sys.py \
-					../lib/mmb.py \
-					../lib/object.py
+					../lib/mmb.py
 PMIMGCREATOR := ../tools/pmImgCreator.py
 PM_HEAP_SIZE = 0x0D00
 

@@ -21,8 +21,8 @@ int main(void)
     P_U8 pimg = (P_U8)&lib_img;
     PyReturn_t retval = PY_RET_OK;
 
-    heap_init();
     global_init();
+    heap_init();
 
     /* Read in the string of modules */
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);

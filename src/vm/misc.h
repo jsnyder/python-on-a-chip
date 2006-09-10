@@ -47,21 +47,6 @@ typedef enum PyErr_e
 } PyErr_t, *pPyErr_t;
 
 
-/**
- * Instance
- *
- * The structure of a class instance
- */
-typedef struct PyInst_s
-{
-    /** object descriptor */
-    PyObjDesc_t od;
-    
-    /** dict to hold attributes */
-    pPyDict_t i_attrs;
-} PyInst_t, *pPyInst_t;
-
-
 /***************************************************************
  * Globals
  **************************************************************/

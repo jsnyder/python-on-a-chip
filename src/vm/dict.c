@@ -12,7 +12,6 @@
  * Log
  * ---
  *
- * 2006/09/08   #22: Implement classes
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/30   First.
@@ -119,7 +118,7 @@ dict_setItem(pPyObj_t pdict, pPyObj_t pkey, pPyObj_t pval)
     {
         return PY_RET_EX_TYPE;
     }
-
+    
     /* XXX if key is not hashable, raise TypeError */
     /* XXX if key's hash hasn't been calculated */
 
@@ -210,52 +209,6 @@ dict_getItem(pPyObj_t pdict, pPyObj_t pkey, pPyObj_t * r_pobj)
     return retval;
 }
 
-
-PyReturn_t
-dict_extend(pPyObj_t pdictDest, pPyObj_t pdictSrc)
-{
-    PyReturn_t retval;
-    pSeglist_t psrcKeys;
-    pSeglist_t psrcVals;
-    pPyObj_t pkey;
-    pPyObj_t pval;
-    U16 i;
-
-    /* If dict is null, raise SystemError */
-    if ((pdictDest == C_NULL) || (pdictSrc == C_NULL))
-    {
-        return PY_RET_EX_SYS;
-    }
-
-    /* If either is not a dict, raise TypeError */
-    if ((pdictDest->od.od_type != OBJ_TYPE_DIC)
-        || (pdictSrc->od.od_type != OBJ_TYPE_DIC))
-    {
-        return PY_RET_EX_TYPE;
-    }
-
-    psrcKeys = ((pPyDict_t)pdictSrc)->d_keys;
-    psrcVals = ((pPyDict_t)pdictSrc)->d_vals;
-
-    /* Set all key,val pairs in dest dict */
-    for (i = 0; i < ((pPyDict_t)pdictSrc)->length; i++)
-    {
-        retval = seglist_getItem(psrcKeys,
-                                 i/SEGLIST_OBJS_PER_SEG,
-                                 i%SEGLIST_OBJS_PER_SEG,
-                                 &pkey);
-        PY_RETURN_IF_ERROR(retval);
-        retval = seglist_getItem(psrcVals,
-                                 i/SEGLIST_OBJS_PER_SEG,
-                                 i%SEGLIST_OBJS_PER_SEG,
-                                 &pval);
-        PY_RETURN_IF_ERROR(retval);
-        
-        retval = dict_setItem(pdictDest, pkey, pval);
-        PY_RETURN_IF_ERROR(retval);
-    }
-    return PY_RET_OK;
-}
 
 /***************************************************************
  * Test
