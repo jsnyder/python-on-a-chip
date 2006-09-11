@@ -88,7 +88,7 @@ EXTRAINCDIRS =
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS = -D F_CPU=7.3728E6 -D HEAP_SIZE=$(PM_HEAP_SIZE)
+CDEFS = -D F_CPU=7.3728E6 -D HEAP_SIZE=$(PM_HEAP_SIZE) -D TARGET_AVR
 
 # Place -I options here
 CINCS = -I../vm

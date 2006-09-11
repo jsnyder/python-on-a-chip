@@ -102,7 +102,7 @@ string_create(PyMemSpace_t memspace,
     pdst = (P_U8)&(pstr->val);
     mem_copy(memspace, &pdst, paddr, len);
     /* zero-pad end of string */
-    for ( ; (S16)pdst < (S16)pstr + pstr->od.od_size; pdst++)
+    for ( ; pdst < (P_U8)pstr + pstr->od.od_size; pdst++)
     {
         *pdst = 0;
     }
@@ -196,8 +196,8 @@ string_compare(pPyString_t pstr1, pPyString_t pstr2)
     }
 
     /* Compare the strings' contents */
-    return sli_strncmp((const char *)&(pstr1->val),
-                       (const char *)&(pstr2->val),
+    return sli_strncmp((const unsigned char *)&(pstr1->val),
+                       (const unsigned char *)&(pstr2->val),
                        pstr1->length
                       ) == 0 ? C_SAME : C_DIFFER;
 }
@@ -212,7 +212,7 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
     /* ensure string obj */
     if (pstr->od.od_type != OBJ_TYPE_STR)
     {
-        PY_ERR(ERR_TYPE);
+        return PY_RET_EX_TYPE;
     }
 
     /* allocate string obj */
@@ -234,7 +234,7 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
              ((pPyString_t)pstr)->length + 1
             );
     *r_pstring = (pPyObj_t)pnew;
-    return PY_RET_OK;
+    return retval;
 }
 
 

@@ -82,7 +82,7 @@ mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
 
         case MEMSPACE_EEPROM:
 #ifdef TARGET_AVR
-            b = eeprom_read_byte((U16)*paddr);
+            b = eeprom_read_byte(*paddr);
             *paddr += 1;
 #endif /* TARGET_AVR */
             return b;

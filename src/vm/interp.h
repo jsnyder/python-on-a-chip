@@ -89,8 +89,11 @@ typedef enum PyCompare_e
     COMP_NE,                /**< not equal */
     COMP_GT,                /**< greater than */
     COMP_GE,                /**< greater than or equal */
+    COMP_IN,                /**< is in */
+    COMP_NOT_IN,            /**< is not in */
     COMP_IS,                /**< is */
-    COMP_IS_NOT             /**< is not */
+    COMP_IS_NOT,            /**< is not */
+    COMP_EXN_MATCH          /**< do exceptions match */
 } PyCompare_t, *pPyCompare_t;
 
 /**

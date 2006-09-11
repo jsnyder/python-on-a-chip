@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        global.h
  *
  * Log
  * ---
  *
+ * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2002/04/22   First.
  */
@@ -45,6 +45,8 @@
 /** The global integer -1 object */
 #define PY_NEGONE       (pPyObj_t)&(gVmGlobal.negone)
 
+/** The global string "code" */
+#define PY_CODE_STR     (pPyObj_t)(gVmGlobal.pcodeStr)
 
 /***************************************************************
  * Macros
@@ -71,6 +73,9 @@ typedef struct PyVmGlobal_s
     /** Global integer -1 obj */
     PyInt_t         negone;
 
+    /** The string "code", used in interp.c RAISE_VARARGS */
+    pPyString_t     pcodeStr;
+
     /** Dict for builtins */
     pPyDict_t       builtins;
 
@@ -85,13 +90,13 @@ typedef struct PyVmGlobal_s
 
     /** PyMite release value for when an error occurs */
     U8              errVmRelease;
-    
+
     /** PyMite source file ID number for when an error occurs */
     U8              errFileId;
-    
+
     /** Line number for when an error occurs */
-    U8              errLineNum;
-    
+    U16             errLineNum;
+
     /**
      * Interpreter loop control value
      *
@@ -100,13 +105,9 @@ typedef struct PyVmGlobal_s
      * A negative value signals an error exit.
      */
     PyInterpCtrl_t  interpctrl;
-    
-    /** the amount of heap space available */
-    U16             heapavail;
 
-    /* leave this at the bottom of the global struct */
-    /** Global declaration of heap. */
-    S8              heapbase[HEAP_SIZE];
+    /** The PyMite heap */
+    PyHeap_t        heap;
     /* DO NOT PUT ANYTHING BELOW THIS */
 } PyVmGlobal_t, *pPyVmGlobal_t;
 
@@ -122,12 +123,12 @@ extern PyVmGlobal_t gVmGlobal;
  * Prototypes
  **************************************************************/
 
-/**
- * Initial the global struct.
+/** 
+ * Initialize the global struct 
  *
- * @return  nothing
+ * @return Return status
  */
-void global_init(void);
+PyReturn_t global_init(void);
 
 /**
  * Load the builtins dict into the given module's attrs.
@@ -137,7 +138,7 @@ void global_init(void);
  * Create "None" = None entry in builtins.
  *
  * @param pmod Module whose attrs recieves builtins
- * @return  nothing
+ * @return  Return status
  */
 PyReturn_t global_loadBuiltins(pPyFunc_t pmod);
 

@@ -1,0 +1,95 @@
+====================
+The Assert Statement
+====================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the implementation and use of the assert statement
+in the PyMite virtual machine (VM).  In doing so, it serves as a design
+document for the PyMite developer and a user manual for the PyMite user.
+
+Overview
+--------
+
+PyMite shall support the simple form of `assert statements`_ and may support
+the extended form.  The assert statement is useful in unit tests for the
+PyMite VM itself and is thus worth implementing.  The assert statement
+inherently depends on having exceptions available.  When an assertion fails,
+an ``AssertionError`` exception is raised.  To read about exceptions in
+PyMite, see `ErrorsAndExceptions`_.
+
+.. _`assert statements`: http://docs.python.org/ref/assert.html
+.. _`ErrorsAndExceptions`: TBD
+
+
+Background
+----------
+
+A simple example assert statement looks like this::
+
+    assert arg != None
+
+The above line of code compiles to the following bytecode::
+
+    >>> co = compile("assert arg != None","fn","single")
+    >>> dis.disco(co)
+      1           0 LOAD_NAME                0 (arg)
+                  3 LOAD_CONST               0 (None)
+                  6 COMPARE_OP               3 (!=)
+                  9 JUMP_IF_TRUE             7 (to 19)
+                 12 POP_TOP
+                 13 LOAD_GLOBAL              2 (AssertionError)
+                 16 RAISE_VARARGS            1
+            >>   19 POP_TOP
+                 20 LOAD_CONST               0 (None)
+                 23 RETURN_VALUE
+
+All of the bytecodes listed above exist in PyMite release 02 except for
+``RAISE_VARARGS``.  The ``RAISE_VARARGS`` bytecode is described `here`_
+in these words::
+
+    RAISE_VARARGS    argc
+        Raises an exception. argc indicates the number of parameters to the
+        raise statement, ranging from 0 to 3. The handler will find the
+        traceback as TOS2, the parameter as TOS1, and the exception as TOS.
+
+.. _`here`: http://www.python.org/dev/doc/maint24/lib/bytecodes.html
+
+
+Implementation
+--------------
+
+To support the ``assert`` statement a built-in named ``AssertionError`` must
+exist and the ``RAISE_VARARGS`` (1) bytecode must be implemented.  To create
+``AssertionError``, a native function, ``_exn()``, will be created in
+``__bi.py`` that allocates an exception object (OBJ_TYPE_EXN).  The
+``AssertionError`` object will also have an integer attribute, ``code``, that
+corresponds to the value of the PyReturn_t code that represents that exception.
+In this case, ``PY_RET_EX_ASSRT``.  So, the code added to ``__bi.py`` will
+look like this::
+
+    AssertionError = _exn()
+    AssertionError.code = 0xE4
+
+The first step to support ``RAISE_VARARGS`` is to make ``pmImgCreator.py``
+aware that this bytecode is supported.  Then, the bytecode implementation shall
+do the following:
+
+    - pop the top of the stack and expect an exception object (OBJ_TYPE_EXN).
+    - push the None object as the traceback
+    - push the None object as the parameter (???)
+    - push the exception object
+
+The above steps will get the stack ready for any exception handling if it is
+present.  The "try/except" structure that would setup exception handling
+is not yet supported in PyMite, but it may be in the future.
+
+Finally, tests shall be written to exercise the ``assert`` statement.
+Full testing would require "try/except" support to catch expected exceptions,
+so that shall have to wait.
+
+.. :mode=rest:

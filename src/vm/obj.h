@@ -73,7 +73,9 @@ typedef enum PyType_e
     OBJ_TYPE_NIM = 0x0B,
     /** Native function object */
     OBJ_TYPE_NOB = 0x0C,
-    OBJ_TYPE_HASHABLE_MAX = 0x0C,
+    /** Exception object */
+    OBJ_TYPE_EXN = 0x0E,
+    OBJ_TYPE_HASHABLE_MAX = 0x0E,
 
     /* All types after this are not hashable */
     /** List (mutable sequence) */

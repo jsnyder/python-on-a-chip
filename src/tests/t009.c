@@ -6,8 +6,8 @@
  * Log
  * ---
  *
- * 2006/09/01   #11: Make src/tests/ build module images as C files, 
- *              not header files 
+ * 2006/09/01   #11: Make src/tests/ build module images as C files,
+ *              not header files
  */
 
 #if defined(__AVR__)
@@ -30,9 +30,9 @@ int main(void)
     P_U8 modstr = (P_U8)"t009";
     PyReturn_t retval = PY_RET_OK;
 
-    /* heap pointers are a part of globals, so init globals first */
-    global_init();
     heap_init();
+    retval = global_init();
+    PY_RETURN_IF_ERROR(retval);
 
     /* get image info into global struct */
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);

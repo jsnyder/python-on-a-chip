@@ -51,9 +51,9 @@
  **************************************************************/
 
 void *
-sli_memcpy(void *to, const void *from, size_t n)
+sli_memcpy(unsigned char *to, const unsigned char *from, unsigned int n)
 {
-    void *tobak;
+    unsigned char *tobak;
 
     /* store init value of to */
     tobak = to;
@@ -63,20 +63,20 @@ sli_memcpy(void *to, const void *from, size_t n)
     {
         switch (n & 0x7)
                             do {
-            case 0:             *(P_U8)to++ = *(P_U8)from++;
-            case 7:             *(P_U8)to++ = *(P_U8)from++;
-            case 6:             *(P_U8)to++ = *(P_U8)from++;
-            case 5:             *(P_U8)to++ = *(P_U8)from++;
-            case 4:             *(P_U8)to++ = *(P_U8)from++;
-            case 3:             *(P_U8)to++ = *(P_U8)from++;
-            case 2:             *(P_U8)to++ = *(P_U8)from++;
-            case 1:             *(P_U8)to++ = *(P_U8)from++;
+            case 0:             *to++ = *from++;
+            case 7:             *to++ = *from++;
+            case 6:             *to++ = *from++;
+            case 5:             *to++ = *from++;
+            case 4:             *to++ = *from++;
+            case 3:             *to++ = *from++;
+            case 2:             *to++ = *from++;
+            case 1:             *to++ = *from++;
                             } while ((n -= 8) > 0);
     }
 #else
     for ( ; n > 0; n--)
     {
-        *(P_S8)to = *(P_S8)from;
+        *to = *from;
         from++;
         to++;
     }
@@ -86,23 +86,23 @@ sli_memcpy(void *to, const void *from, size_t n)
 
 
 void
-sli_memset(void *dest, const char val, size_t n)
+sli_memset(unsigned char *dest, const char val, unsigned int n)
 {
-    int i;
+    unsigned int i;
     for (i = 0; i < n; i++)
     {
-        *((char *)dest) = val;
+        *dest = (unsigned char)val;
         dest++;
     }
 }
 
 
-size_t
+int
 sli_strlen(char const *s)
 {
     char const * si = s;
     while(*s++);
-    return (size_t)((U16)s - (U16)si);
+    return (unsigned int)s - (unsigned int)si;
 }
 
 
@@ -122,11 +122,11 @@ sli_strcmp(const char *s1, const char *s2)
 
 
 int
-sli_strncmp(const char *s1, const char *s2, S16 n)
+sli_strncmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
 {
-    S16 i = 0;
+    unsigned int i = 0;
 
-    if (n <= 0)
+    if (n == 0)
     {
         return 0;
     }
@@ -139,7 +139,6 @@ sli_strncmp(const char *s1, const char *s2, S16 n)
         {
             return s1[i] - s2[i];
         }
-        /* XXX if one (or both) is null and i<n */
     }
     return 0;
 }

@@ -88,6 +88,8 @@ func_new(pPyObj_t pco, pPyObj_t * r_pfunc)
 /*
  * This function requires that all parameters have their
  * expected type.  (parm types already checked).
+ *
+ * Deprecated, there is no replacement.
  */
 PyReturn_t
 class_new(pPyObj_t pmeths,

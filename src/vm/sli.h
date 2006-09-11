@@ -46,14 +46,6 @@
  * Types
  **************************************************************/
 
-/** usually an int, but larger for 8-bit micros */
-#if 1
-#include <stddef.h>
-#else
-typedef S16 size_t;
-#endif
-
-
 /***************************************************************
  * Globals
  **************************************************************/
@@ -94,7 +86,7 @@ typedef S16 size_t;
  * @return  The initial value of "to" (XXX what else?).
  * @see     mem_copy
  */
-void   *sli_memcpy(void *, const void *, size_t);
+void *sli_memcpy(unsigned char *, const unsigned char *, unsigned int);
 
 /**
  * Copy a value repeatedly into a block of memory
@@ -105,7 +97,7 @@ void   *sli_memcpy(void *, const void *, size_t);
  * @return  Nothing
  * @see     memset
  */
-void sli_memset(void *dest, const char val, size_t n);
+void sli_memset(unsigned char *dest, const char val, unsigned int n);
 
 /**
  * Compare strings.
@@ -116,7 +108,7 @@ void sli_memset(void *dest, const char val, size_t n);
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int     sli_strcmp(const char *, const char *);
+int sli_strcmp(const char *, const char *);
 
 /**
  * Obtain string length.
@@ -124,7 +116,7 @@ int     sli_strcmp(const char *, const char *);
  * @param   s ptr to string.
  * @return  number of bytes in string.
  */
-size_t  sli_strlen(char const *s);
+int sli_strlen(char const *s);
 
 /**
  * Compare strings for a specific length.
@@ -136,10 +128,12 @@ size_t  sli_strlen(char const *s);
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int     sli_strncmp(const char *s1, const char *s2, S16 n);
+int sli_strncmp(const unsigned char *s1, 
+                const unsigned char *s2, 
+                unsigned int n);
 
 /*
-int     sli_memcmp(const void *, const void *, size_t);
+int     sli_memcmp(const void *, const void *, unsigned int);
 char    sli_strcpy(char *, const char *);
 */
 

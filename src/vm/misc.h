@@ -1,5 +1,5 @@
-#ifndef __VM_MISC_H__
-#define __VM_MISC_H__
+#ifndef __MISC_H__
+#define __MISC_H__
 /**
  * VM Misc
  *
@@ -7,10 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        misc.h
  *
- * Log:
+ * Log
+ * ---
  *
+ * 2006/09/10   #20: Implement assert statement
  * 2002/04/23   First.
  */
 
@@ -22,10 +23,6 @@
  * Constants
  **************************************************************/
 
-/* do this for now, make enum later */
-#define EXN_ILLEGAL_ARG 1
-
-
 /***************************************************************
  * Macros
  **************************************************************/
@@ -35,16 +32,19 @@
  **************************************************************/
 
 /**
- * Error types
+ * Class type
+ *
+ * This C type is used for PyMite class objects, class instances and
+ * exception objects.
  */
-typedef enum PyErr_e
+typedef struct PyClass_s
 {
-    ERR_INVALID = 1,
-    ERR_UNIMPL,
-    ERR_TYPE,
-    ERR_ARG,
-    ERR_MEM
-} PyErr_t, *pPyErr_t;
+    /** Object descriptor */
+    PyObjDesc_t od;
+
+    /** Attributes dict */
+    pPyDict_t cl_attrs;
+} PyClass_t, *pPyClass_t;
 
 
 /***************************************************************
@@ -55,9 +55,4 @@ typedef enum PyErr_e
  * Prototypes
  **************************************************************/
 
-/*
-void obj_checkType(pPyObj_t, PyType_t);
-void exn_raise(U8 exntype);
-*/
-
-#endif /* __TEMPLATE_H__ */
+#endif /* __MISC_H__ */

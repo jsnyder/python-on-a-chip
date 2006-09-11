@@ -10,8 +10,8 @@
  * Log
  * ---
  *
- * 2006/09/01   #11: Make src/tests/ build module images as C files, 
- *              not header files 
+ * 2006/09/01   #11: Make src/tests/ build module images as C files,
+ *              not header files
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2002/05/18   First.
  */
@@ -21,11 +21,7 @@
  **************************************************************/
 
 
-#if defined(__AVR__)
-#include <avr/pgmspace.h>
-#endif
-
-#include "py.h"
+ #include "py.h"
 
 
 /***************************************************************
@@ -61,9 +57,9 @@ int main(void)
     P_U8 modstr = (P_U8)"t003";
     PyReturn_t retval = PY_RET_OK;
 
-    /* heap pointers are a part of globals, so init globals first */
-    global_init();
     heap_init();
+    retval = global_init();
+    PY_RETURN_IF_ERROR(retval);
 
     /* get image info into global struct */
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);

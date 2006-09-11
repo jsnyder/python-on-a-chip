@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#:mode=c:
 #
 # Provides PyMite's builtins module, __bi.
 #
@@ -17,10 +18,6 @@
 # 2002/12/20    Added globals, locals, range.
 # 2002/12/19    Created.
 #
-
-
-#### TODO
-#ord, chr, hex, dir, reload, str, repr, tuple
 
 
 #### CONSTS
@@ -43,7 +40,7 @@ def globals():
     /* Return calling frame's globals dict  on stack*/
     pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_globals;
     NATIVE_SET_TOS(pr);
-    
+
     return PY_RET_OK;
     """
     pass
@@ -61,9 +58,9 @@ def id(o):
     }
 
     /* Return object's address as an int on the stack */
-    retval = int_new((U16)NATIVE_GET_LOCAL(0), &pr);
+    retval = int_new((S16)NATIVE_GET_LOCAL(0), &pr);
     NATIVE_SET_TOS(pr);
-    
+
     return retval;
     """
     pass
@@ -127,7 +124,7 @@ def locals():
     /* Return calling frame's local attrs dict on the stack */
     pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_attrs;
     NATIVE_SET_TOS(pr);
-    
+
     return PY_RET_OK;
     """
     pass
@@ -293,3 +290,31 @@ def type(o):
     return retval;
     """
     pass
+
+
+#
+# Allocates an exception class object
+#
+def _exn():
+    """__NATIVE__
+    PyReturn_t retval;
+    pPyClass_t pexn;
+
+    /* Alloc a class object with attributes dict */
+    retval = heap_getChunk(sizeof(PyClass_t), (P_U8 *)&pexn);
+    PY_RETURN_IF_ERROR(retval);
+    pexn->od.od_type = OBJ_TYPE_EXN;
+    retval = dict_new((pPyObj_t *)&pexn->cl_attrs);
+
+    NATIVE_SET_TOS((pPyObj_t)pexn);
+
+    return retval;
+    """
+    pass
+
+
+#
+# Exception classes
+#
+AssertionError = _exn()
+AssertionError.code = 0xE4

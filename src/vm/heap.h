@@ -7,11 +7,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        heap.h
  *
  * Log
  * ---
  *
+ * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/08/31   Implemented freelist when chunk is deleted.
@@ -66,6 +66,17 @@ typedef struct PyHeapDesc_s
     /** ptr to next chunk */
     struct PyHeapDesc_s * next;
 } PyHeapDesc_t, *pPyHeapDesc_t;
+
+
+typedef struct PyHeap_s
+{
+    /** the amount of heap space available */
+    U16 avail;
+
+    /** Global declaration of heap. */
+    U8 base[HEAP_SIZE];
+} PyHeap_t, *pPyHeap_t;
+
 
 
 /***************************************************************

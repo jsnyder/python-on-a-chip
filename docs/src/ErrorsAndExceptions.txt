@@ -16,12 +16,18 @@ developer and, to a lesser extent, a user manual for the PyMite user.
 Overview
 --------
 
-PyMite shall define the data type ``PyReturn_t`` as the general type for
+PyMite shall define the C data type ``PyReturn_t`` as the general type for
 error codes that are returned from functions within the VM.  Since some
 functions need to return an exception and do not have access to the VM's
 stack, ``PyReturn_t`` is also capable of returning codes that indicate
 when an exceptional situation has occured.  PyMite supports only a subset
 of the exception types that `Python has`_.
+
+When a function returns a code to the VM that indicates an exceptional
+situation, the VM quits the normal interpreter loop and raises an exception.
+If the application program has prepared to catch the exception, the VM will
+do so; otherwise, an unhandled exception causes the interpreter loop to quit
+and the ``PyReturn_t`` code is returned to the calling environment.
 
 .. _`Python has`: http://docs.python.org/api/standardExceptions.html
 
@@ -48,7 +54,7 @@ Exceptions
 ----------
 
 The other values of the ``PyReturn_t`` enumeration are used to indicate an
-exceptional situation that will case the VM to quit unless it is properly
+exceptional situation that will cause the VM to quit unless it is properly
 handled.  The list of exceptions implemented is determined partly by necessity
 and partly by an estimation of future necessity.  The following table lists
 the return types that will lead to exceptions:
@@ -74,5 +80,27 @@ the return types that will lead to exceptions:
     PY_RET_EX_VAL       0xEF        Value error
     PY_RET_EX_WARN      0xD0        Warning
     =================   =========   ========================================
+
+In PyMite, there is only one kind of exception object and the PyMite user
+should not try to subclass it.  Instead, the user should create an instance
+of Exception and set the ``code`` attribute to a value that is unique among
+all other exceptions.  For built-in exception types, the ``code`` field has
+a value that is identical to the ``PyReturn_t`` value with the same meaning.
+
+For example the built-in ``AssertionError`` is created like this in the
+builtins module::
+
+    AssertionError = _exn()
+    AssertionError.code = 0xE4
+
+User exceptions are usually written in Python application code, but can be
+created in a PyMite native function.  The following is an example of how to
+create a user exception::
+
+    SerialError = _exn()
+    SerialError.code = 0xC0
+
+That's all there is to it.  Just be sure that the ``code`` is completely unique
+from all other kinds of exceptions, both system and user exceptions.
 
 .. :mode=rest:

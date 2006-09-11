@@ -9,11 +9,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        heap.c
  *
  * Log
  * ---
  *
+ * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2003/02/10   Started GC marking fxns.
@@ -40,7 +40,7 @@
  * Macros
  **************************************************************/
 
-/** 
+/**
  * Mark an object if it is not already marked
  * with the curent val
  */
@@ -88,7 +88,7 @@ static U8 heap_gcval = 0;
  */
 
 /**
- * Mark the given object and the objects it reaches.
+ * Mark the given object and the objects it references.
  *
  * @param   pobj An object that is not already marked live.
  * @return  Return code
@@ -102,11 +102,12 @@ heap_markObj(pPyObj_t pobj)
 
     switch (pobj->od.od_type)
     {
-        /* simple objects (no obj refs) */
+        /* objects with no other obj refs */
         case OBJ_TYPE_NON:
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
         case OBJ_TYPE_STR:
+        case OBJ_TYPE_NOB:
             pobj->od.od_gcval = heap_gcval;
             break;
 
@@ -157,39 +158,33 @@ heap_markObj(pPyObj_t pobj)
             break;
 
         case OBJ_TYPE_MOD:
-        case OBJ_TYPE_CLO:
         case OBJ_TYPE_FXN:
-            /*
-             * Module, Class and Func objs are all implemented
-             * via the PyFunc_t
-             */
+            /* Module and Func objs are implemented via the PyFunc_t */
             /* mark the func obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the code obj */
-            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_co,
-                                  retval);
+            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_co, retval);
             PY_RETURN_IF_ERROR(retval);
             /* mark the attr dict */
-            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_attrs,
-                                  retval);
+            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_attrs, retval);
             PY_RETURN_IF_ERROR(retval);
             /* mark the default args tuple */
-            HEAP_MARK_IF_UNMARKED(
-                ((pPyFunc_t)pobj)->f_defaultargs,
-                retval);
+            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_defaultargs, retval);
             break;
 
+        case OBJ_TYPE_CLO:
         case OBJ_TYPE_CLI:
-            /* XXX Not yet implemented */
+        case OBJ_TYPE_EXN:
+            /* mark the obj head */
+            pobj->od.od_gcval = heap_gcval;
+            /* mark the attrs dict */
+            HEAP_MARK_IF_UNMARKED(((pPyClass_t)pobj)->cl_attrs, retval);
+            break;
+
+        /* An obj in ram should not be of these types */
         case OBJ_TYPE_CIM:
         case OBJ_TYPE_NIM:
-            /* an obj in ram should not be of these types */
             return PY_RET_ERR;
-
-        case OBJ_TYPE_NOB:
-            /* native code obj has no refs */
-            pobj->od.od_gcval = heap_gcval;
-            break;
 
         case OBJ_TYPE_FRM:
         {
@@ -322,6 +317,8 @@ heap_markRoots(void)
     /* mark the builtins dict */
     HEAP_MARK_IF_UNMARKED(PY_PBUILTINS, retval);
     PY_RETURN_IF_ERROR(retval);
+    /* mark the "code" string */
+    HEAP_MARK_IF_UNMARKED(PY_CODE_STR, retval);
     return retval;
 }
 
@@ -333,13 +330,16 @@ void
 heap_init(void)
 {
     pPyHeapDesc_t pchunk = C_NULL;
-    S16 size = 0;
+    U16 size = 0;
+
+    /* zero all memory in the heap (optional?) */
+    sli_memset((P_U8)&gVmGlobal.heap, '\0', sizeof(gVmGlobal.heap));
 
     /* init global amount of heap space remaining */
-    gVmGlobal.heapavail = HEAP_SIZE;
+    gVmGlobal.heap.avail = HEAP_SIZE;
 
     /* pcleanheap pts to list of large chunks */
-    pcleanheap = (pPyHeapDesc_t)&gVmGlobal.heapbase;
+    pcleanheap = (pPyHeapDesc_t)&gVmGlobal.heap.base;
     pchunk = pcleanheap;
 
     /* init list of large chunks */
@@ -414,7 +414,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* relink list and return first chunk */
             pfreelist = pfreelist->next;
             /* reduce heap available amount */
-            gVmGlobal.heapavail -= pchunk1->od.od_size;
+            gVmGlobal.heap.avail -= pchunk1->od.od_size;
             *r_pchunk = (P_U8)pchunk1;
             return PY_RET_OK;
         }
@@ -426,7 +426,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
              pchunk1 = pchunk1->next;
         }
 
-        /* 
+        /*
          * if this is not the last chunk,
          * and it's a best fit, unlink and use it.
          * if not, we might use pchunk1->next later (first fit).
@@ -439,7 +439,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             pchunk2 = pchunk1->next;
             pchunk1->next = pchunk1->next->next;
             /* reduce heap available amount */
-            gVmGlobal.heapavail -= pchunk2->od.od_size;
+            gVmGlobal.heap.avail -= pchunk2->od.od_size;
             *r_pchunk = (P_U8)pchunk2;
             return PY_RET_OK;
         }
@@ -448,7 +448,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
     /* if nothing from free list, check the clean heap */
     if (pcleanheap != C_NULL)
     {
-        /* 
+        /*
          * if the clean heap is not large enough
          * put the fragment in the free list
          */
@@ -461,7 +461,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             heap_freeChunk((pPyObj_t)pchunk2);
         }
 
-        /* 
+        /*
          * carve chunk out of back of clean heap
          * if there is one and it is large enough
          */
@@ -489,7 +489,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             }
 
             /* reduce heap available amount */
-            gVmGlobal.heapavail -= size;
+            gVmGlobal.heap.avail -= size;
             *r_pchunk = (P_U8)pchunk2;
             return PY_RET_OK;
         }
@@ -506,7 +506,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
         pchunk2 = pchunk1->next;
         pchunk1->next = pchunk1->next->next;
         /* reduce heap available amount */
-        gVmGlobal.heapavail -= pchunk2->od.od_size;
+        gVmGlobal.heap.avail -= pchunk2->od.od_size;
         *r_pchunk = (P_U8)pchunk2;
         return PY_RET_OK;
     }
@@ -576,7 +576,7 @@ heap_freeChunk(pPyObj_t ptr)
     pPyHeapDesc_t pchunk2;
 
     /* increase heap available amount */
-    gVmGlobal.heapavail += ptr->od.od_size;
+    gVmGlobal.heap.avail += ptr->od.od_size;
 
     /* if freelist is empty or oldchunk is smallest */
     if ((pfreelist == C_NULL) ||

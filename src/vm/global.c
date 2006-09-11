@@ -8,11 +8,11 @@
  *
  * @author      Dean Hall
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
- * @file        global.c
  *
  * Log
  * ---
  *
+ * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -42,11 +42,7 @@
  * Globals
  **************************************************************/
 
-/**
- * Py VM configuration.
- * Static declarations declared here.
- * Dynamic changes to this struct are set in HERE.
- */
+/** Most PyMite globals all in one convenient place */
 PyVmGlobal_t gVmGlobal;
 
 
@@ -54,11 +50,14 @@ PyVmGlobal_t gVmGlobal;
  * Functions
  **************************************************************/
 
-void
+PyReturn_t
 global_init(void)
 {
-    /* clear the entire global struct */
-    sli_memset(&gVmGlobal, '\0', sizeof(PyVmGlobal_t));
+    PyReturn_t retval;
+    P_U8 codestr = (P_U8)"code";
+
+    /* clear the global struct less the heap */
+    sli_memset((P_U8)&gVmGlobal, '\0', sizeof(PyVmGlobal_t) - sizeof(PyHeap_t));
 
     /* set the PyMite release num (for debug and post mortem) */
     gVmGlobal.errVmRelease = PY_RELEASE;
@@ -86,6 +85,9 @@ global_init(void)
     gVmGlobal.none.od.od_size = sizeof(PyObj_t);
     gVmGlobal.none.od.od_const = 1;
 
+    /* Init "code" string obj */
+    retval = string_new((P_U8 *)&codestr, (pPyObj_t *)&gVmGlobal.pcodeStr);
+
     /* init empty builtins */
     gVmGlobal.builtins = C_NULL;
 
@@ -98,7 +100,7 @@ global_init(void)
     /* interpreter loop return value */
     gVmGlobal.interpctrl = INTERP_CTRL_CONT;
 
-    return;
+    return retval;
 }
 
 

@@ -118,7 +118,7 @@ dict_setItem(pPyObj_t pdict, pPyObj_t pkey, pPyObj_t pval)
     {
         return PY_RET_EX_TYPE;
     }
-    
+
     /* XXX if key is not hashable, raise TypeError */
     /* XXX if key's hash hasn't been calculated */
 

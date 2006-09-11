@@ -81,13 +81,13 @@
 #if __DEBUG__
 #define PY_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (U8)(line);  \
+        gVmGlobal.errLineNum = (U16)(line); \
         retval = PY_RET_ERR;                \
         for(;;)
 #else
 #define PY_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (U8)(line);  \
+        gVmGlobal.errLineNum = (U16)(line); \
         retval = PY_RET_ERR;                \
         return PY_RET_ERR
 #endif
@@ -138,12 +138,11 @@ typedef enum PyReturn_e
     PY_RET_EX_KEY     = 0xE8,   /**< key error */
     PY_RET_EX_MEM     = 0xE9,   /**< memory error */
     PY_RET_EX_NAME    = 0xEA,   /**< name error */
-    PY_RET_EX_RUNTIME = 0xEB,   /**< runtime error */
-    PY_RET_EX_SYNTAX  = 0xEC,   /**< syntax error */
-    PY_RET_EX_SYS     = 0xED,   /**< system error */
-    PY_RET_EX_TYPE    = 0xEE,   /**< type error */
-    PY_RET_EX_VAL     = 0xEF,   /**< value error */
-    PY_RET_EX_WARN    = 0xD0,   /**< warning */
+    PY_RET_EX_SYNTAX  = 0xEB,   /**< syntax error */
+    PY_RET_EX_SYS     = 0xEC,   /**< system error */
+    PY_RET_EX_TYPE    = 0xED,   /**< type error */
+    PY_RET_EX_VAL     = 0xEE,   /**< value error */
+    PY_RET_EX_WARN    = 0xEF,   /**< warning */
 } PyReturn_t;
 
 
