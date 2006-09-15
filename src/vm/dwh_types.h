@@ -7,11 +7,22 @@
  * @copyright   Copyright 2002 Dean Hall.  All rights reserved.
  * @file        dwh_types.h
  *
+ * 2006/09/14   #27: Fix S16/U16 are 32-bits on DESKTOP
  * 2001/11/19   Added pointer to void.
  * 2001/10/21   First lick.
  */
 
-/* PORT: basic types */
+#ifdef TARGET_DESKTOP
+typedef unsigned char   U8;
+typedef signed char     S8;
+typedef unsigned short  U16;
+typedef signed short    S16;
+typedef unsigned long   U32;
+typedef signed long     S32;
+typedef float           F32;
+typedef double          F64;
+
+#elif defined(TARGET_AVR)
 typedef unsigned char   U8;
 typedef signed char     S8;
 typedef unsigned int    U16;
@@ -20,7 +31,7 @@ typedef unsigned long   U32;
 typedef signed long     S32;
 typedef float           F32;
 typedef double          F64;
-
+#endif
 
 /* pointers to basic types */
 typedef void*           P_VOID;

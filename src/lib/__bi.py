@@ -58,7 +58,7 @@ def id(o):
     }
 
     /* Return object's address as an int on the stack */
-    retval = int_new((S16)NATIVE_GET_LOCAL(0), &pr);
+    retval = int_new((S32)NATIVE_GET_LOCAL(0), &pr);
     NATIVE_SET_TOS(pr);
 
     return retval;

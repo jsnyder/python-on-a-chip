@@ -13,6 +13,7 @@
  * Log
  * ---
  *
+ * 2006/09/14   #27: Fix S16/U16 are 32-bits on DESKTOP
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -214,7 +215,7 @@ heap_markObj(pPyObj_t pobj)
                 retval);
             PY_RETURN_IF_ERROR(retval);
             /* mark each obj in the locals list and the stack */
-            while ((U16)pobj2 < (U16)((pPyFrame_t)pobj)->fo_sp)
+            while (pobj2 < (pPyObj_t)((pPyFrame_t)pobj)->fo_sp)
             {
                 HEAP_MARK_IF_UNMARKED(pobj2, retval);
                 PY_RETURN_IF_ERROR(retval);
@@ -347,8 +348,7 @@ heap_init(void)
     while (size > HEAP_MAX_CHUNK_SIZE)
     {
         pchunk->od.od_size = HEAP_MAX_CHUNK_SIZE;
-        pchunk->next = (pPyHeapDesc_t)((S16)pchunk +
-                                       HEAP_MAX_CHUNK_SIZE);
+        pchunk->next = (pPyHeapDesc_t)((P_U8)pchunk + HEAP_MAX_CHUNK_SIZE);
         size -= HEAP_MAX_CHUNK_SIZE;
         pchunk = pchunk->next;
     }
@@ -483,8 +483,8 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             else
             {
                 pcleanheap->od.od_size -= size;
-                pchunk2 = (pPyHeapDesc_t)((S16)pcleanheap +
-                                          pcleanheap->od.od_size);
+                pchunk2 = (pPyHeapDesc_t)((P_U8)pcleanheap 
+                                          + pcleanheap->od.od_size);
                 pchunk2->od.od_size = size;
             }
 
