@@ -11,6 +11,7 @@
  * Log
  * ---
  *
+ * 2006/09/16   #16: Create pm_init() that does the initial housekeeping
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
  * 2002/05/04   Merged most of contents to respective files.
@@ -151,10 +152,6 @@ typedef enum PyReturn_e
  **************************************************************/
 
 /***************************************************************
- * Function Protos
- **************************************************************/
-
-/***************************************************************
  * Includes (order is critical)
  **************************************************************/
 
@@ -176,5 +173,29 @@ typedef enum PyReturn_e
 #include "img.h"
 #include "global.h"
 #include "misc.h"
+
+/***************************************************************
+ * Function Protos
+ **************************************************************/
+
+/**
+ * Initializes the PyMite virtual machine and  indexes the user's application 
+ * image.  The VM heap and globals are reset.  The argument, pusrimg, may be
+ * null for interactive sessions.
+ *
+ * @param memspace      Memory space in which the user image is located
+ * @param pusrimg       Address of the user image in the memory space
+ * @return Return status
+ */
+PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg);
+
+/**
+ * Executes the named module
+ *
+ * @param modstr        Name of module to run
+ * @return Return status
+ */
+PyReturn_t pm_run(P_U8 modstr);
+
 
 #endif /* __PY_H__ */

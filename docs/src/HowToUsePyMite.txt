@@ -1,0 +1,91 @@
+=================
+How to Use PyMite
+=================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes how to use the high-level PyMite API
+to run a user module.  In doing so, it helps the developer
+write system tests and the user write a PyMite application.
+
+Overview
+--------
+
+PyMite shall provide a high-level API that makes it easy to use the
+virtual machine (VM).  In most cases, one must write the application
+in Python and a small ``main()`` in C that uses the high-level API.
+After the sources are written, the Python application is converted
+to an image using ``pmImgCreator`` and the image is compiled with the
+user's C code and linked to the PyMite VM library, ``libpmvm.a``.
+The build process is explained in greater detail in `BuildSystem`_.
+
+.. _`BuildSystem`: BuildSystem.html
+
+PyMite Example
+--------------
+
+This section demonstrates how a trivial program is written to run
+in the PyMite VM.  A more detailed example can be found in the PyMite
+source tree in ``src/sample``.
+
+First write the Python application, ``trivial.py`` that will run in the VM::
+
+    def funcname(n):
+        return n-42
+
+    funcname(6*7)
+
+Notice that an application in PyMite does not use the
+``if __name__ == "__main__":`` convention that Python does;
+also note that the program written above will run on a desktop Python VM.
+
+The next step is to create a C file that will run this program in the PyMite VM.
+The following C program will do exactly that::
+
+    #include "py.h"
+
+    extern unsigned char usrlib_img[];
+
+    int main(void)
+    {
+        PyReturn_t retval;
+
+        retval = pm_init(MEMSPACE_FLASH, usrlib_img);
+        PY_RETURN_IF_ERROR(retval);
+
+        retval = pm_run((P_U8)"trivial");
+        return (int)retval;
+    }
+
+Since not all Python programmers are familiar with C, I will explain the program
+above line by line.  The ``include`` statement brings many PyMite definitions
+such as ``pm_init()``, ``pm_run()``, and ``MEMSPACE_FLASH`` into the namespace
+of this file.  The ``extern`` line tells the compiler that the variable
+``usrlib_img[]`` is defined in another file.  Next the ``main()`` function
+means this program will run as the primary executable on the target.
+
+Inside ``main()`` the ``retval`` variable is declared.  It is used to catch
+any error codes that might come from the PyMite API functions.
+Next, the call to ``pm_init()`` initializes the VM and tells it where to find
+the images of the user application.  In our case, the ``trivial.py`` Python 
+program was turned into ``trivial_img.c`` and ``trivial_nat.c``
+by the tool ``pmImgCreator``.
+Inside ``trivial_img.c`` is where one finds the variable ``usrlib_img[]``
+which contains the `image` of our application (the equivalent of a ``.pyc``
+file).  Our application does not have any native code, but ``trivial_nat.c``
+is still needed because it defines an empty function table that needs to be
+linked to the VM.  The macro ``PY_RETURN_IF_ERROR()`` does what its name
+suggests.
+
+The next PyMite API, ``pm_run()`` tries to execute the module with the same
+name as the string you give to the function.  Here we tell the VM to find
+the module ``trivial`` in the global list of modules and run it.
+Behind the scenes, the module is loaded from its image into a structure in RAM
+and bytecodes are executed until program completion or an unhandled exception
+occurs.
+
+.. :mode=rest:
