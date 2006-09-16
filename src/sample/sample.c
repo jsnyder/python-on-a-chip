@@ -12,19 +12,16 @@
  */
 
 
-#if defined(__AVR__)
-#include <avr/pgmspace.h>
-#endif
-
 #include "py.h"
 
-extern unsigned char lib_img[];
+extern unsigned char stdlib_img[];
+extern unsigned char usrlib_img[];
 
 
 int main(void)
 {
     /* ptr to code imgs */
-    P_U8 pimg = (P_U8)lib_img;
+    P_U8 pimg;
     pPyObj_t pstring = C_NULL;
     /* ptr to module obj */
     pPyFunc_t pmod;
@@ -36,8 +33,14 @@ int main(void)
     global_init();
     heap_init();
 
-    /* get image info into global struct */
-    retval = img_findInMem(MEMSPACE_FLASH, &pimg);
+    /* load std image info */
+    pimg = (P_U8)&stdlib_img;
+    retval = img_findInMem(MEMSPACE_RAM, &pimg);
+    PY_RETURN_IF_ERROR(retval);
+
+    /* load usr image info */
+    pimg = (P_U8)&usrlib_img;
+    retval = img_findInMem(MEMSPACE_RAM, &pimg);
     PY_RETURN_IF_ERROR(retval);
 
     /* import module from global struct */

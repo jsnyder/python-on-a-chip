@@ -1,13 +1,8 @@
 /**
- * Regression Test for Issue #9
+ * Feature Test for Issue #2
  *
- * Fix BINARY_SUBSCR for case stringobj[intobj]
+ * Separate stdlib from user app
  *
- * Log
- * ---
- *
- * 2006/09/01   #11: Make src/tests/ build module images as C files,
- *              not header files
  */
 
 #include "py.h"
@@ -24,7 +19,7 @@ int main(void)
     /* ptr to module obj */
     pPyFunc_t pmod;
     /* name of module to run */
-    P_U8 modstr = (P_U8)"t009";
+    P_U8 modstr = (P_U8)"t002";
     PyReturn_t retval = PY_RET_OK;
 
     heap_init();

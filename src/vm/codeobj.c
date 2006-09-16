@@ -113,7 +113,7 @@ no_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pno)
     pno->od.od_type = OBJ_TYPE_NOB;
     pno->no_argcount = mem_getByte(memspace, paddr);
     /* get index into native fxn table */
-    pno->no_funcindx = mem_getWord(memspace, paddr);
+    pno->no_funcindx = (S16)mem_getWord(memspace, paddr);
 
     *r_pno = (pPyObj_t)pno;
     return PY_RET_OK;

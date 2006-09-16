@@ -5,19 +5,21 @@ PyMite Image Creator
 
 Converts Python source files to a PyMite code image library.
 Performs code filtering to ensure it will run in PyMite.
-Formats the image as a C header file containing a byte array
-or a raw binary file.
+Formats the image as a raw binary file or a C file
+containing a byte array.
 
 16- and 32-bit values are in LITTLE ENDIAN order.
 This matches both Python and the AVR compiler's access to EEPROM.
 
-The order of the images in the file is undetermined.
-PyMite scans the images and makes a dict of available code objects.
+The order of the images in the output is undetermined.
 
 If the Python source contains a native code declaration
 and '--native-file=filename" is specified, the native code
 is formatted as C functions and an array of functions and output
-to the given filename.
+to the given filename.  When native functions are present, the user
+should specify where the native functions should be placed-- in the
+standard library or the user library--using the argument -s or -u,
+respectively.
 
 Log
 ---
@@ -25,6 +27,8 @@ Log
 ==========      ==============================================================
 Date            Action
 ==========      ==============================================================
+2006/09/15      #28: Module with __NATIVE__ at root doesn't load
+2006/09/12      #2: Separate stdlib from user app
 2006/09/06      #24: Remove consts[0] == docstring assumption
 2006/09/01      #11: Make src/tests/ build module images as C files, not
                 header files
@@ -56,11 +60,13 @@ __copyright__ = "Copyright 2002 Dean Hall.  All rights reserved."
 __version__ = (0, 0, 7)
 __date__  = "2006/08/10"
 __usage__ = """USAGE:
-    pmImgCreator.py [-b|c] [OPTIONS] -o imgfilename infile0.py [infileN.py ...]
+    pmImgCreator.py [-b|c] [-s|u] [OPTIONS] -o imgfilename file0.py [files...]
 
-    -b                      Generates a raw binary file of the image
-    -c                      Generates a C file of the image (default)
-    -h                      Deprecated.  Use -c instead.
+    -b      Generates a raw binary file of the image
+    -c      Generates a C file of the image (default)
+
+    -s      Place native functions in the PyMite standard library (default)
+    -u      Place native functions in the user library
 
     OPTIONS:
     --native-file=filename  If specified, pmImgCreator will write a C source
@@ -76,6 +82,9 @@ import exceptions, string, sys, types, dis, os, time, getopt, struct
 ################################################################
 # CONSTANTS
 ################################################################
+
+# Exit error codes (from /usr/include/sysexits.h)
+EX_USAGE = 64
 
 # remove documentation string from const pool
 REMOVE_DOC_STR = 0
@@ -120,7 +129,9 @@ NATIVE_INDICATOR = "__NATIVE__"
 NATIVE_INDICATOR_LENGTH = len(NATIVE_INDICATOR)
 
 # String name of function table variable
-NATIVE_TABLE_NAME = "nat_fxn_table"
+NATIVE_TABLE_NAME = {"std": "std_nat_fxn_table",
+                     "usr": "usr_nat_fxn_table"
+                    }
 
 # String name to prefix all native functions
 NATIVE_FUNC_PREFIX = "nat_"
@@ -172,15 +183,17 @@ UNIMPLEMENTED_BCODES = (
     "IMPORT_FROM",
 #    "JUMP_FORWARD", "JUMP_IF_FALSE", "JUMP_IF_TRUE",
 #    "JUMP_ABSOLUTE", "FOR_LOOP", "LOAD_GLOBAL",
-    "CONTINUE_LOOP",
+## The following bytecode is not present in Python 2.0
+##    "CONTINUE_LOOP",
 #    "SETUP_LOOP",
     "SETUP_EXCEPT",
     "SETUP_FINALLY",
 #    "LOAD_FAST", "STORE_FAST",
     "DELETE_FAST",
 #    "SET_LINENO", "RAISE_VARARGS", "CALL_FUNCTION", "MAKE_FUNCTION",
-    "BUILD_SLICE", "MAKE_CLOSURE", "LOAD_CLOSURE",
-    "LOAD_DEREF", "STORE_DEREF",
+    "BUILD_SLICE",
+## The following bytecodes are not present in Python 2.0
+##    "MAKE_CLOSURE", "LOAD_CLOSURE", "LOAD_DEREF", "STORE_DEREF",
     "CALL_FUNCTION_VAR", "CALL_FUNCTION_KW",
     "CALL_FUNCTION_VAR_KW", "EXTENDED_ARG"
     )
@@ -197,11 +210,10 @@ UNIMPLEMENTED_BCODES = (
 
 class PmImgCreator:
 
-    def __init__(self, ui=False,):
+    def __init__(self,):
 
         self.formatFromExt = {".c": self.format_img_as_c,
                               ".bin": self.format_img_as_bin,
-                              ".s19": self.format_img_as_s19,
                              }
 
         # bcode to mnemonic conversion (sparse list of strings)
@@ -237,16 +249,20 @@ class PmImgCreator:
         self._str_to_U8 = ord
 
 
-    def set_input(self, outfn=None, imgtype=".c", infiles=None):
+    def set_options(self,
+                    outfn,
+                    imgtype,
+                    imgtarget,
+                    memspace,
+                    nativeFilename,
+                    infiles,
+                   ):
         self.outfn = outfn
         self.imgtype = imgtype
-        self.infiles = infiles
-
-    def set_options(self, memspace=None, nativeFilename=None):
-        if not memspace:
-            memspace = "ram"
+        self.imgtarget = imgtarget
         self.memspace = memspace
         self.nativeFilename = nativeFilename
+        self.infiles = infiles
 
 ################################################################
 # CONVERSION FUNCTIONS
@@ -260,8 +276,20 @@ class PmImgCreator:
         # init image dict
         imgs = {"imgs": [], "fns": []}
 
-        # init native table
+        # init module table and native table
+        self.nativemods = []
         self.nativetable = []
+
+        # if creating usr lib, create placeholder in 0th index
+        if self.imgtarget == "usr":
+            self.nativetable.append((NATIVE_FUNC_PREFIX + "placeholder_func",
+                                    "\n/*\n"
+                                    " * Use placeholder because an index \n"
+                                    " * value of zero denotes the stdlib.\n"
+                                    " * This function should not be called.\n"
+                                    " */\n"
+                                    "return PY_RET_EX_SYS;\n"
+                                   ))
 
         # for each src file, convert and format
         for fn in self.infiles:
@@ -388,8 +416,6 @@ class PmImgCreator:
 
         # set image type byte
         objtype = OBJ_TYPE_CIM
-        if nativecode:
-            objtype = OBJ_TYPE_NIM
 
         # skip co_type and size
         # co_argcount
@@ -552,15 +578,27 @@ class PmImgCreator:
                 nativecode = consts[0][NATIVE_INDICATOR_LENGTH:]
                 consts[0] = None
 
-                # replace code with native table index
-                code = self._U16_to_str(len(self.nativetable))
+                # If this co is a module
+                # Issue #28: Module root, "?", must keep its bytecode
+                if co.co_name == "?":
+                    self.nativemods.append((co.co_filename, nativecode))
 
-                # native function name is
-                # "nat_<modname>_<pyfuncname>".
-                # append (nat func name, nat code) to table
-                self.nativetable.append((NATIVE_FUNC_PREFIX +
-                                         mn + "_" + co.co_name,
-                                        nativecode))
+                # Else this co is a function;
+                # replace code with native table index
+                else:
+                    # stdlib code gets a positive index
+                    if self.imgtarget == "std":
+                        code = self._U16_to_str(len(self.nativetable))
+                    # usr code gets a negative index
+                    else:
+                        code = self._U16_to_str(-len(self.nativetable))
+
+                    # native function name is
+                    # "nat_<modname>_<pyfuncname>".
+                    # append (nat func name, nat code) to table
+                    self.nativetable.append((NATIVE_FUNC_PREFIX +
+                                             mn + "_" + co.co_name,
+                                            nativecode))
 
             ## Consts filter
             # if want to remove __doc__ string
@@ -660,12 +698,14 @@ class PmImgCreator:
                            )
             fileBuff.append("/* Place the image into FLASH */\n"
                             "unsigned char __attribute__((progmem))\n"
-                            "lib_img[] =\n"
+                            "%slib_img[] =\n"
+                            % (self.imgtarget)
                            )
         else:
             fileBuff.append("/* Place the image into RAM */\n"
                             "unsigned char\n"
-                            "lib_img[] =\n"
+                            "%slib_img[] =\n"
+                            % (self.imgtarget)
                            )
 
         fileBuff.append("{\n");
@@ -693,15 +733,6 @@ class PmImgCreator:
         return string.join(fileBuff, "")
 
 
-    def format_img_as_s19(self, img):
-        """format_img_as_s19(img) --> string
-
-        Format image bytes to Motorola S-Record format string.
-        The resulting string is suitable to write to a file.
-        """
-        pass
-
-
     def format_native_table(self,):
         """format_native_table() --> string
 
@@ -713,7 +744,7 @@ class PmImgCreator:
         fileBuff.append("#undef __FILE_ID__\n"
                         "#define __FILE_ID__ 0x0A\n"
                         "/**\n"
-                        " * PyMite native function file\n"
+                        " * PyMite %s native function file\n"
                         " *\n"
                         " * automatically created by pmImgCreator.py\n"
                         " * on %s\n"
@@ -725,33 +756,32 @@ class PmImgCreator:
                         " */\n\n"
                         "#define __IN_LIBNATIVE_C__\n"
                         "#include \"py.h\"\n\n"
-                        % (time.ctime(time.time()), self.nativeFilename)
+                        % (self.imgtarget,
+                           time.ctime(time.time()),
+                           self.nativeFilename
+                          )
                        )
 
         # module-level native sections (for #include headers)
-        for (funcname, funcstr) in self.nativetable:
-            if funcname[-1:] == "?":
-                fileBuff.append("/* From: %s */%s\n"
-                                % (funcname[len(NATIVE_FUNC_PREFIX):-2],
-                                   funcstr)
-                               )
+        for (modname, modstr) in self.nativemods:
+            fileBuff.append("/* From: %s */%s\n" % (modname, modstr))
 
         # for each entry create fxn
         for (funcname, funcstr) in self.nativetable:
-            if funcname[-1:] != "?":
-                fileBuff.append("static PyReturn_t\n"
-                                "%s(pPyFrame_t pframe, signed char numargs)\n"
-                                "{\n"
-                                "%s\n"
-                                "}\n\n" % (funcname, funcstr))
+            fileBuff.append("static PyReturn_t\n"
+                            "%s(pPyFrame_t pframe, signed char numargs)\n"
+                            "{\n"
+                            "%s\n"
+                            "}\n\n" % (funcname, funcstr))
 
         # create fxn table
         fileBuff.append("/* native function lookup table */\n"
                         "PyReturn_t (* %s[])(pPyFrame_t, signed char) =\n"
-                        "{\n" % (NATIVE_TABLE_NAME))
+                        "{\n" % (NATIVE_TABLE_NAME[self.imgtarget]))
+
+        # put all native funcs in the table
         for (funcname, funcstr) in self.nativetable:
-            if funcname[-1:] != "?":
-                fileBuff.append("    %s,\n" % funcname)
+            fileBuff.append("    %s,\n" % funcname)
         fileBuff.append("};\n")
 
         return string.join(fileBuff, "")
@@ -766,68 +796,65 @@ def parse_cmdline():
     """
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "bhcso:",
+                                   "bcsuo:",
                                    ["memspace=", "native-file="])
     except:
         print __usage__
-        sys.exit(2)
+        sys.exit(EX_USAGE)
 
     # Parse opts for the image type to write
     imgtype = ".c"
+    imgtarget = "std"
+    memspace = "ram"
     outfn = None
-    memspace = None
     nativeFilename = None
     for opt in opts:
         if opt[0] == "-b":
             imgtype = ".bin"
-        elif opt[0] == "-h":
-            imgtype = ".c"
         elif opt[0] == "-c":
             imgtype = ".c"
+        elif opt[0] == "-s":
+            imgtarget = "std"
+        elif opt[0] == "-u":
+            imgtarget = "usr"
         elif opt[0] == "--memspace":
             # Error if memspace switch given without arg
             if not opt[1] or (opt[1].lower() not in ["ram", "flash"]):
                 print "Only one of these memspace types allowed: ram, flash"
                 print __usage__
-                sys.exit(2)
+                sys.exit(EX_USAGE)
             memspace = opt[1]
         elif opt[0] == "--native-file":
             # Error if switch given without arg
             if not opt[1]:
                 print "Specify a filename like this: --native-file=libnative.c"
                 print __usage__
-                sys.exit(2)
+                sys.exit(EX_USAGE)
             nativeFilename = opt[1]
         elif opt[0] == "-o":
             # Error if out filename switch given without arg
             if not opt[1]:
                 print __usage__
-                sys.exit(2)
+                sys.exit(EX_USAGE)
             outfn = opt[1]
 
     # Error if no image type was given
     if not imgtype:
         print __usage__
-        sys.exit(2)
+        sys.exit(EX_USAGE)
 
     # Error if no input filenames are given
     if len(args) == 0:
         print __usage__
-        sys.exit(2)
+        sys.exit(EX_USAGE)
 
-    return outfn, imgtype, args, memspace, nativeFilename
+    return outfn, imgtype, imgtarget, memspace, nativeFilename, args
 
 
 def main():
-    fn, imgtype, infiles, memspace, nativeFilename = parse_cmdline()
     pic = PmImgCreator()
-    pic.set_input(outfn=fn,
-                  imgtype=imgtype,
-                  infiles=infiles
-                 )
-    pic.set_options(memspace=memspace,
-                    nativeFilename=nativeFilename
-                   )
+    outfn, imgtyp, imgtarget, memspace, natfn, fns = parse_cmdline()
+    pic.set_options(outfn, imgtyp, imgtarget, memspace, natfn, fns)
     pic.convert_files()
     pic.write_image_file()
     pic.write_native_file()

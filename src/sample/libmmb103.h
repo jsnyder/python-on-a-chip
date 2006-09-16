@@ -24,7 +24,6 @@
 /* avr system headers */
 #ifdef __AVR__
 #include <avr/io.h>
-#include <avr/signal.h>
 #include <avr/interrupt.h>
 #endif
 

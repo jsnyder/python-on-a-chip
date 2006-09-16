@@ -15,15 +15,15 @@ developer and a user manual for the PyMite user.
 Overview
 --------
 
-PyMite shall use a makefile based build system with an emphasis
-on using features of `GNU make`_.  The project shall have a
+PyMite shall use a makefile based build system with an allowance for
+using features of `GNU make`_.  The project shall have a
 ``Makefile`` in the project root directory that, when called by
 typing ``make`` at the command prompt, will compile:
 
-    - the PyMite library to an image file, ``src/lib/pmstdlib_img.c``,
-      and native code file, ``src/lib/pmstdlib_nat.c``
-    - the PyMite VM to an archive, ``libpmvm.a``.
-      that must be included by PyMite end-user programs.
+    - the PyMite standard library ``src/lib/`` to an image file,
+      ``src/vm/pmstdlib_img.c``, and native code file, ``src/vm/pmstdlib_nat.c``
+    - the PyMite VM to an archive, ``libpmvm.a``
+      that shall be linked with PyMite end-user programs.
 
 More options for building the project are available by using the available
 ``make`` targets as explained in the next section.
@@ -32,10 +32,10 @@ The PyMite project has a ``src/lib/`` directory that differs in meaning from
 most software projects.  Most projects compile source code to create a library
 as a product and put that library in a ``lib/`` directory.  PyMite, on the
 other hand, converts Python code that is meant to run inside the PyMite VM
-to an `image`, an equivalent to a ``.pyc`` file.  The `image` is usually in the
-form of an array of bytes listed in a C file, ``pmstdlib_img.c``.
-This header file containing the image of the PyMite libraries is what is built
-in ``src/lib/``.
+to an `image` file, an equivalent to a ``.pyc`` file.  The `image` file is
+a C file, ``pmstdlib_img.c``, containing an array of bytes.
+The file containing the image of the PyMite libraries is what is built when
+``make`` is run in ``src/lib/``.
 
 .. _`GNU make`: http://www.gnu.org/software/make/
 
@@ -43,12 +43,12 @@ in ``src/lib/``.
 Available Targets
 -----------------
 
-GNU ``make`` has a set of standard targets for users.
-One builds a target by typing ``make`` `<target>` at the command prompt.
-The PyMite build system shall support the following set of targets:
+GNU project have, by convention, a set of typical targets that can be built.
+The PyMite build system shall support the following set of targets
+by typing ``make`` `<target>` at the command prompt:
 
 ``all``:
-    Compiles the entire program.  This should be the default target.
+    Compiles the entire program.  This shall be the default target.
 
 ``clean``:
     Deletes all files in the current directory that are normally created by
@@ -65,7 +65,7 @@ The PyMite build system shall support the following set of targets:
 
 ``dist``:
     Create a distribution tar file for this program.
-    *This target should only be used by the PyMite developer.*
+    *This target should only be used by the PyMite release manager.*
 
 ``check``:
     Compiles and executes PyMite self-tests found in ``src/tests/``.
@@ -75,7 +75,7 @@ Testing
 -------
 
 While it is possible to write unit tests for PyMite's VM.  It is often more
-effective to write small Python programs to run on the PyMite VM to test the
+effective to write small Python programs to run in the PyMite VM to test the
 VM and libraries.  The tests in ``src/tests/`` do exactly this.  By running
 ``make check``, the VM, pmstdlib, and all programs in ``src/tests/`` are built.
 
@@ -91,11 +91,10 @@ is a better option.
 Distribution
 ------------
 
-The PyMite developer should be the only one who needs to use the distribution
-target.  The makefiles shall be set up in such a way that all the developer
-must do is update the PyMite revision number in the root makefile and type
-``make dist`` to create a file fit for release, ``pymite-RR.tar.gz``
-where `RR` is the release number.
+The PyMite release manager should be the only one who uses the
+distribution target.  The makefiles shall be configured so that
+all the release manager must do is run ``make dist PYMITE_RELEASE=RR``
+(where `RR` is the release number, in hexadecimal) to create the
+release file, ``pymite-RR.tar.gz``.
 
-The project documentation is pre-built for a release and included in the
-distributiion file.
+The html documentation shall be pre-built and included in the release file.

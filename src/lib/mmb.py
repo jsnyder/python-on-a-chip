@@ -281,7 +281,7 @@ def lcdClrScr():
 def lcdPrintStr(ps):
     """__NATIVE__
     pPyObj_t ps = C_NULL;
-    P_U8 str = C_NULL;
+    P_U8 s = C_NULL;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
@@ -297,7 +297,7 @@ def lcdPrintStr(ps):
     }
 
     /* Get a pointer to the string */
-    P_U8 s = (P_U8)((pPyString_t)ps)->val;
+    s = (P_U8)((pPyString_t)ps)->val;
 
     /* Print the string on the mmb's lcd */
     /* WARNING: PyMite's strings aren't null term 100% of the time */

@@ -1,26 +1,39 @@
 SHELL = /bin/sh
+
+TARGET ?= DESKTOP
+HEAP_SIZE ?= 0x1000
+TARGET_MCU ?= atmega103
+
 PMIMGCREATOR := ../tools/pmImgCreator.py
+DEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET)
+CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes $(DEFS)
 CFLAGS += -I../vm
-LDFLAGS = -L../vm -lpmvm
 SOURCES = $(wildcard t???.c)
 PY_SOURCES = $(SOURCES:.c=.py)
 EXECS = $(SOURCES:.c=.out)
 IMG_SOURCES = $(subst .py,_img.c, $(PY_SOURCES))
 NAT_SOURCES = $(subst .py,_nat.c, $(PY_SOURCES))
-PMSTDLIB_SOURCES = ../lib/__bi.py \
-                   ../lib/sys.py
 
+ifeq ($(TARGET), DESKTOP)
+	CFLAGS += -ansi
+endif
+ifeq ($(TARGET), AVR)
+	AR = avr-ar
+	CC = avr-gcc
+	SIZE = avr-size
+	CFLAGS += -mmcu=$(TARGET_MCU) -DTARGET_MCU=$(TARGET_MCU)
+endif
 
 # Build an executable from the C sources
 %.out : %*_nat.c %*_img.c %.c
-	$(CC) $(CFLAGS) -g -o $@ $*_nat.c $*_img.c $*.c ../vm/libpmvm.a
+	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../vm/libpmvm.a
 ifeq ($(TARGET), DESKTOP)
 	$(addprefix ./,$@)
 endif
 
 # The module images and native code are generated from python source
 %*_nat.c %*_img.c : %.py
-	$(PMIMGCREATOR) -c -o $*_img.c --native-file=$*_nat.c $*.py $(PMSTDLIB_SOURCES)
+	$(PMIMGCREATOR) -c -u -o $*_img.c --native-file=$*_nat.c $*.py $(PMSTDLIB_SOURCES)
 
 
 .PHONY: all check clean
@@ -28,7 +41,10 @@ endif
 # Default action is to build tests; run tests if target is desktop
 all : check
 
-check : $(EXECS)
+check : vm $(EXECS)
+
+vm :
+	make -C ../vm
 
 # Removes files made by default make
 clean :

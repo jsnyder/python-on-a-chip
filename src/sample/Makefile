@@ -33,9 +33,7 @@
 
 
 # PyMite Configuration
-LIBNATIVE_SOURCES = ../lib/__bi.py \
-                    ../lib/sys.py \
-					../lib/mmb.py
+LIBNATIVE_SOURCES = ../lib/mmb.py
 PMIMGCREATOR := ../tools/pmImgCreator.py
 PM_HEAP_SIZE = 0x0D00
 
@@ -251,7 +249,7 @@ MSG_CLEANING = Cleaning project:
 
 
 # Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
+OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) $(TARGET)_img.o $(TARGET)_nat.o
 
 # Define all listing files.
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
@@ -263,7 +261,8 @@ GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS)
+# Removed from below until cygwin's make (3.81) is corrected: $(GENDEPFLAGS)
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) 
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
@@ -374,7 +373,7 @@ extcoff: $(TARGET).elf
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(ALL_CFLAGS) $(OBJ) $*_nat.o $*_img.o --output $@ $(LDFLAGS)
+	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
 
 
 # Compile: create object files from C source files.
@@ -395,14 +394,9 @@ extcoff: $(TARGET).elf
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
-# PyMite note:  avr-ar rcsv libmmb103.a libmmb103.o
 # PyMite: The native fxn table and bytecode image are generated from python source
-$(TARGET).c: $(TARGET)_nat.c $(TARGET)_img.c
-
 $(TARGET)_nat.c $(TARGET)_img.c: $(TARGET).py
-	$(PMIMGCREATOR) -c -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
-	$(CC) -I../vm -DHEAP_SIZE=$(PM_HEAP_SIZE) -c $(TARGET)_nat.c 
-	$(CC) -I../vm -DHEAP_SIZE=$(PM_HEAP_SIZE) -c $(TARGET)_img.c
+	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
 
 
 # Target: clean project.
@@ -422,8 +416,8 @@ clean_list :
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(TARGET)_img.c
-	$(REMOVE) $(TARGET)_nat.c
+	$(REMOVE) $(TARGET)_img.*
+	$(REMOVE) $(TARGET)_nat.*
 	$(REMOVE) $(OBJ)
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)
