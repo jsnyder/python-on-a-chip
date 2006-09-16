@@ -533,7 +533,7 @@ def sleepms(ms):
     /* Get the line number and call mmb lib fxn*/
     ms = (U16)((pPyInt_t)pms)->val;
 
-    mmb_lcdSetLine(ms);
+    mmb_sleepms(ms);
 
     /* Return none obj on stack */
     NATIVE_SET_TOS(PY_NONE);
