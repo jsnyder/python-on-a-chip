@@ -1,3 +1,10 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
 =================
 How to Use PyMite
 =================
@@ -71,7 +78,7 @@ means this program will run as the primary executable on the target.
 Inside ``main()`` the ``retval`` variable is declared.  It is used to catch
 any error codes that might come from the PyMite API functions.
 Next, the call to ``pm_init()`` initializes the VM and tells it where to find
-the images of the user application.  In our case, the ``trivial.py`` Python 
+the images of the user application.  In our case, the ``trivial.py`` Python
 program was turned into ``trivial_img.c`` and ``trivial_nat.c``
 by the tool ``pmImgCreator``.
 Inside ``trivial_img.c`` is where one finds the variable ``usrlib_img[]``

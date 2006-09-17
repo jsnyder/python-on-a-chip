@@ -1,3 +1,10 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
 =======================
 The PyMite Build System
 =======================
@@ -98,3 +105,5 @@ all the release manager must do is run ``make dist PYMITE_RELEASE=RR``
 release file, ``pymite-RR.tar.gz``.
 
 The html documentation shall be pre-built and included in the release file.
+
+.. :mode=rest:
