@@ -65,7 +65,7 @@
  * @param   return parameter; ptr to new module obj
  * @return  return status
  */
-PyReturn_t mod_new(pPyCo_t pco, pPyFunc_t * pmod);
+PyReturn_t mod_new(pPyObj_t pco, pPyObj_t * pmod);
 
 /**
  * Import a module of the given name.
@@ -77,6 +77,6 @@ PyReturn_t mod_new(pPyCo_t pco, pPyFunc_t * pmod);
  * @param   return parameter; ptr to imported module
  * @return  return status
  */
-PyReturn_t mod_import(pPyObj_t pstr, pPyFunc_t * pmod);
+PyReturn_t mod_import(pPyObj_t pstr, pPyObj_t * pmod);
 
 #endif /* __MODULE_H__ */

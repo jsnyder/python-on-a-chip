@@ -40,7 +40,7 @@ int main(void)
     P_U8 pimg;
     pPyObj_t pstring = C_NULL;
     /* ptr to module obj */
-    pPyFunc_t pmod;
+    pPyObj_t pmod;
     /* name of module to run */
     P_U8 modstr = (P_U8)"sample";
     PyReturn_t retval = PY_RET_OK;
@@ -65,13 +65,13 @@ int main(void)
     retval = mod_import(pstring, &pmod);
     PY_RETURN_IF_ERROR(retval);
     /* load builtins into root module */
-    retval = global_loadBuiltins(pmod);
+    retval = global_loadBuiltins((pPyFunc_t)pmod);
     PY_RETURN_IF_ERROR(retval);
 
     /* XXX set "__name__" == "__main__" in mod's attrs here? */
 
     /* interpret the module's bcode */
-    retval = interpret(pmod);
+    retval = interpret((pPyFunc_t)pmod);
 
     return retval;
 }

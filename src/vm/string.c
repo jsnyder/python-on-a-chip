@@ -90,6 +90,7 @@ string_create(PyMemSpace_t memspace,
 #if USE_STRING_CACHE
     pPyString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
+    P_U8 pchunk;
 
     /* if not loading from image */
     if (isimg == 0)
@@ -108,8 +109,9 @@ string_create(PyMemSpace_t memspace,
     }
 
     /* get space for String obj */
-    retval = heap_getChunk(sizeof(PyString_t) + len, (P_U8 *)&pstr);
+    retval = heap_getChunk(sizeof(PyString_t) + len, &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pstr = (pPyString_t)pchunk;
 
     /* fill the string obj */
     pstr->od.od_type = OBJ_TYPE_STR;
@@ -161,10 +163,12 @@ string_newFromChar(U8 c, pPyObj_t *r_pstring)
 #if USE_STRING_CACHE
     pPyString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
+    P_U8 pchunk;
 
     /* Get space for String obj */
-    retval = heap_getChunk(sizeof(PyString_t) + 1, (P_U8 *)&pstr);
+    retval = heap_getChunk(sizeof(PyString_t) + 1, &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pstr = (pPyString_t)pchunk;
 
     /* Fill the string obj */
     pstr->od.od_type = OBJ_TYPE_STR;
@@ -224,6 +228,7 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
 {
     PyReturn_t retval = PY_RET_OK;
     pPyString_t pnew = C_NULL;
+    P_U8 pchunk;
 
     /* ensure string obj */
     if (pstr->od.od_type != OBJ_TYPE_STR)
@@ -233,9 +238,10 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
 
     /* allocate string obj */
     retval = heap_getChunk(sizeof(PyString_t) + ((pPyString_t)pstr)->length,
-                           (P_U8 *)&pnew
+                           &pchunk
                           );
-    /* XXX handle retval */
+    PY_RETURN_IF_ERROR(retval);
+    pnew = (pPyString_t)pchunk;
     pnew->od.od_const = 0;
     pnew->od.od_type = OBJ_TYPE_STR;
 #if USE_STRING_CACHE

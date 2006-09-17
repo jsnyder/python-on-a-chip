@@ -102,8 +102,9 @@ interpret(pPyFunc_t pfunc)
     pPyFrame_t pframe = C_NULL; /* tmp: until thread contains fp */
 
     /* create a frame for the func */
-    retval = frame_new((pPyObj_t)pfunc, (pPyObj_t *)&FP);
+    retval = frame_new((pPyObj_t)pfunc, &pobj1);
     PY_RETURN_IF_ERROR(retval);
+    FP = (pPyFrame_t)pobj1;
 
     /*
      * set globals dict to same as root frame's attrs.
@@ -1372,7 +1373,7 @@ interpret(pPyFunc_t pfunc)
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
                 /* XXX check if module is already loaded */
                 /* load module from image */
-                retval = mod_import(pobj1, (pPyFunc_t *)&pobj2);
+                retval = mod_import(pobj1, &pobj2);
                 PY_BREAK_IF_ERROR(retval);
                 /* module overwrites None on stack */
                 TOS = pobj2;
@@ -1530,11 +1531,15 @@ interpret(pPyFunc_t pfunc)
                 break;
 
             case SETUP_LOOP:
+            {
+                P_U8 pchunk;
+
                 /* get block span (bytes) */
                 t16 = GET_ARG();
                 /* create block */
-                retval = heap_getChunk(sizeof(PyBlock_t), (P_U8 *)&pobj1);
+                retval = heap_getChunk(sizeof(PyBlock_t), &pchunk);
                 PY_BREAK_IF_ERROR(retval);
+                pobj1 = (pPyObj_t)pchunk;
                 ((pPyBlock_t)pobj1)->od.od_type = OBJ_TYPE_BLK;
                 /* store current stack pointer */
                 ((pPyBlock_t)pobj1)->b_sp = SP;
@@ -1545,6 +1550,7 @@ interpret(pPyFunc_t pfunc)
                 ((pPyBlock_t)pobj1)->next = FP->fo_blockstack;
                 FP->fo_blockstack = (pPyBlock_t)pobj1;
                 continue;
+            }
 
             case SETUP_EXCEPT:
             case SETUP_FINALLY:

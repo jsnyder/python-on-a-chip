@@ -15,12 +15,6 @@
  * Includes
  **************************************************************/
 
-/*
- * The MMB103 uses an Atmel atMega103
- * (this must be before system includes)
- */
-#define  __AVR_ATmega103__
-
 /* avr system headers */
 #ifdef __AVR__
 #include <avr/io.h>

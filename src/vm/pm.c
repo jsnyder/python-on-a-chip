@@ -63,7 +63,7 @@ PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg)
 PyReturn_t pm_run(P_U8 modstr)
 {
     PyReturn_t retval;
-    pPyFunc_t pmod;
+    pPyObj_t pmod;
     pPyObj_t pstring;
     P_U8 pmodstr = modstr;
 
@@ -74,11 +74,11 @@ PyReturn_t pm_run(P_U8 modstr)
     PY_RETURN_IF_ERROR(retval);
 
     /* Load builtins into root module */
-    retval = global_loadBuiltins(pmod);
+    retval = global_loadBuiltins((pPyFunc_t)pmod);
     PY_RETURN_IF_ERROR(retval);
 
     /* Interpret the module's bcode */
-    retval = interpret(pmod);
+    retval = interpret((pPyFunc_t)pmod);
 
     return retval;
 }

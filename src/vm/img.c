@@ -98,6 +98,7 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
     S8 n = 0;
     pPyImgInfo_t pii = C_NULL;
     pPyObj_t pnamestr = C_NULL;
+    P_U8 pchunk;
 
     /* addr is top of img */
     imgtop = *paddr;
@@ -109,7 +110,7 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
     {
         /* use size field to calc addr of next potential img */
         size = mem_getWord(memspace, paddr);
-        
+
         /* get name of img */
         /* point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
@@ -128,8 +129,9 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
         PY_RETURN_IF_ERROR(retval);
 
         /* alloc and fill imginfo struct */
-        retval = heap_getChunk(sizeof(PyImgInfo_t), (P_U8 *)&pii);
+        retval = heap_getChunk(sizeof(PyImgInfo_t), &pchunk);
         PY_RETURN_IF_ERROR(retval);
+        pii = (pPyImgInfo_t)pchunk;
         pii->ii_name = (pPyString_t)pnamestr;
         pii->ii_memspace = memspace;
         pii->ii_addr = imgtop;
@@ -154,7 +156,7 @@ img_getName(PyMemSpace_t memspace, P_U8 *paddr, U8 n, pPyObj_t * r_pname)
 {
     PyType_t type;
     U8 b;
-    
+
     /* XXX ensure it's a tuple */
     /* skip past type and size bytes */
     *paddr += 2;
@@ -175,7 +177,7 @@ img_getName(PyMemSpace_t memspace, P_U8 *paddr, U8 n, pPyObj_t * r_pname)
     {
         return PY_RET_EX_TYPE;
     }
-    
+
     /* backtrack paddr to point to top of string img */
     (*paddr)--;
     /* return name string obj */

@@ -12,7 +12,7 @@ TARGET_MCU ?= atmega103
 
 PMIMGCREATOR := ../tools/pmImgCreator.py
 DEFS = -DTARGET_$(TARGET) -DHEAP_SIZE=$(HEAP_SIZE)
-CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes $(DEFS)
+CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(DEFS)
 ARFLAGS := rcs
 SOURCE_IMG := pmstdlib_img.c
 SOURCE_NAT := pmstdlib_nat.c

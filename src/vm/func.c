@@ -68,6 +68,7 @@ func_new(pPyObj_t pco, pPyObj_t * r_pfunc)
 {
     PyReturn_t retval = PY_RET_OK;
     pPyFunc_t pfunc = C_NULL;
+    P_U8 pchunk;
 
     /* ensure pco pts to code obj or native obj */
     if ((pco->od.od_type != OBJ_TYPE_COB) &&
@@ -77,8 +78,9 @@ func_new(pPyObj_t pco, pPyObj_t * r_pfunc)
     }
 
     /* allocate a func obj */
-    retval = heap_getChunk(sizeof(PyFunc_t), (P_U8 *)&pfunc);
+    retval = heap_getChunk(sizeof(PyFunc_t), &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pfunc = (pPyFunc_t)pchunk;
 
     /* init func */
     pfunc->od.od_type = OBJ_TYPE_FXN;

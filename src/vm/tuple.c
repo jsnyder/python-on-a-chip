@@ -125,6 +125,9 @@ tuple_copy(pPyObj_t ptup, pPyObj_t * r_ptuple)
 {
     PyReturn_t retval = PY_RET_OK;
     pPyTuple_t pnew = C_NULL;
+    P_U8 pchunk;
+    P_U8 pdest;
+    P_U8 psrc;
 
     /* ensure type */
     if (ptup->od.od_type != OBJ_TYPE_TUP)
@@ -133,10 +136,13 @@ tuple_copy(pPyObj_t ptup, pPyObj_t * r_ptuple)
     }
 
     /* duplicate src tuple */
-    retval = heap_getChunk(ptup->od.od_size, (P_U8 *)&pnew);
+    retval = heap_getChunk(ptup->od.od_size, &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pnew = (pPyTuple_t)pchunk;
 
-    mem_copy(MEMSPACE_RAM, (P_U8 *)&pnew, (P_U8 *)&ptup, ptup->od.od_size);
+    pdest = (P_U8)pnew;
+    psrc = (P_U8)ptup;
+    mem_copy(MEMSPACE_RAM, &pdest, &psrc, ptup->od.od_size);
     *r_ptuple = (pPyObj_t)pnew;
     return PY_RET_OK;
 }

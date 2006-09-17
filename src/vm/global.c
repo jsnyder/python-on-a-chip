@@ -128,7 +128,7 @@ global_loadBuiltins(pPyFunc_t pmod)
     P_U8 bistr = (P_U8)"__bi";
     P_U8 nonestr = (P_U8)"None";
     pPyObj_t pstr = C_NULL;
-    pPyFunc_t pbimod = C_NULL;
+    pPyObj_t pbimod;
 
     /* import the builtins */
     retval = string_new(&bistr, &pstr);
@@ -137,14 +137,14 @@ global_loadBuiltins(pPyFunc_t pmod)
     PY_RETURN_IF_ERROR(retval);
 
     /* must interpret builtins' root code to set the attrs */
-    retval = interpret(pbimod);
+    retval = interpret((pPyFunc_t)pbimod);
     PY_RETURN_IF_ERROR(retval);
 
     /* reset interpreter to run */
     gVmGlobal.interpctrl = INTERP_CTRL_CONT;
 
     /* builtins points to the builtins module's attrs dict */
-    gVmGlobal.builtins = pbimod->f_attrs;
+    gVmGlobal.builtins = ((pPyFunc_t)pbimod)->f_attrs;
 
     /* set None manually */
     retval = string_new(&nonestr, &pkey);

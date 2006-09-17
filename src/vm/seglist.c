@@ -32,7 +32,7 @@
  * to the last segment in the list.
  * The function seglist_appendItem() should be used to append
  * items to the List.
- * Inserting and deleting List items is a more complicated 
+ * Inserting and deleting List items is a more complicated
  * matter.
  *
  * Dict implementation:
@@ -68,10 +68,10 @@
  * Macros
  **************************************************************/
 
-/** 
+/**
  * Set this to 1 if seglist_clear() should manually free its segments.
  * Set this to 0 if seglist_clear() should do nothing
- * and let the GC reclaim objects. 
+ * and let the GC reclaim objects.
  */
 #define SEGLIST_CLEAR_SEGMENTS 1
 
@@ -98,13 +98,15 @@ seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj)
     PyReturn_t retval = PY_RET_OK;
     pSegment_t pseg = C_NULL;
     U8 i = 0;
+    P_U8 pchunk;
 
     /* if this is first item in seg, alloc and link seg */
     if (pseglist->sl_lastindx == 0)
     {
         /* alloc and init new segment */
-        retval = heap_getChunk(sizeof(Segment_t), (P_U8 *)&pseg);
+        retval = heap_getChunk(sizeof(Segment_t), &pchunk);
         PY_RETURN_IF_ERROR(retval);
+        pseg = (pSegment_t)pchunk;
         pseg->od.od_type = OBJ_TYPE_SEG;
         for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
         {
@@ -136,7 +138,7 @@ seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj)
 
     /* put object into segment */
     pseg->s_val[pseglist->sl_lastindx] = pobj;
-    
+
     /* increment last index and reset if necessary */
     if (++(pseglist->sl_lastindx) >= SEGLIST_OBJS_PER_SEG)
     {
@@ -290,7 +292,7 @@ seglist_insertItem(pSeglist_t pseglist,
         /* seglist refers to the new segment */
         pseglist->sl_lastseg = pseglist->sl_rootseg;
         pseglist->sl_lastindx = 0;
-        
+
         /* if past end of list */
         if ((segnum != 0) || (segindx != 0))
         {
@@ -302,14 +304,14 @@ seglist_insertItem(pSeglist_t pseglist,
         pseglist->sl_lastindx++;
         return PY_RET_OK;
     }
-        
+
     /* else, iterate until pseg pts to segnum'th segment */
     for (pseg = pseglist->sl_rootseg; segnum > 0; segnum--)
     {
         pseg = pseg->next;
 
         /* if ran past end of list */
-        /* XXX what about inserting several indices past end? 
+        /* XXX what about inserting several indices past end?
          * Not knowing the numSegs in the seglist is a reason to dislike seglists.
          */
         if (pseg == C_NULL)
@@ -344,7 +346,7 @@ seglist_insertItem(pSeglist_t pseglist,
             {
                 retval = heap_getChunk(sizeof(Segment_t),
                                        (P_U8 *)&pseg->next);
-                /* 
+                /*
                  * XXX exception with hosed list,
                  * need to roll-back!
                  */

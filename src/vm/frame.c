@@ -73,6 +73,7 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     pPyCo_t pco = C_NULL;
     pPyFrame_t pframe = C_NULL;
     P_U8 paddr = C_NULL;
+    P_U8 pchunk;
 
     /* get fxn's code obj */
     pco = ((pPyFunc_t)pfunc)->f_co;
@@ -90,8 +91,9 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     fsize = sizeof(PyFrame_t) + (stacksz + nlocals) *
             sizeof(pPyObj_t);
     /* allocate a frame */
-    retval = heap_getChunk(fsize, (P_U8 *)&pframe);
+    retval = heap_getChunk(fsize, &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pframe = (pPyFrame_t)pchunk;
 
     /* set frame fields */
     pframe->od.od_type = OBJ_TYPE_FRM;
@@ -108,7 +110,7 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     pframe->fo_attrs = ((pPyFunc_t)pfunc)->f_attrs;
     /* empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
-    
+
     /* return ptr to frame */
     * r_pobj = (pPyObj_t)pframe;
     return retval;

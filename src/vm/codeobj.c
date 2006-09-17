@@ -72,6 +72,7 @@ co_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pco)
     S8 i;
     pPyObj_t pobj;
     pPyCo_t pco = C_NULL;
+    P_U8 pchunk;
 
     /* store ptr to top of code img (less type byte) */
     P_U8 pci = *paddr - 1;
@@ -79,8 +80,9 @@ co_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pco)
     U16 size = mem_getWord(memspace, paddr);
 
     /* allocate a code obj */
-    retval = heap_getChunk(sizeof(PyCo_t), (P_U8 *)&pco);
+    retval = heap_getChunk(sizeof(PyCo_t), &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pco = (pPyCo_t)pchunk;
 
     /* fill in the CO struct */
     pco->od.od_type = OBJ_TYPE_COB;
@@ -119,10 +121,12 @@ no_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pno)
 {
     PyReturn_t retval = PY_RET_OK;
     pPyNo_t pno = C_NULL;
+    P_U8 pchunk;
 
     /* allocate a code obj */
-    retval = heap_getChunk(sizeof(PyNo_t), (P_U8 *)&pno);
+    retval = heap_getChunk(sizeof(PyNo_t), &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pno = (pPyNo_t)pchunk;
 
     /* fill in the NO struct */
     pno->od.od_type = OBJ_TYPE_NOB;

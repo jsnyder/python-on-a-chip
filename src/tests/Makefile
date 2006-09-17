@@ -6,7 +6,7 @@ TARGET_MCU ?= atmega103
 
 PMIMGCREATOR := ../tools/pmImgCreator.py
 DEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET)
-CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes $(DEFS)
+CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(DEFS)
 CFLAGS += -I../vm
 SOURCES = $(wildcard t???.c)
 PY_SOURCES = $(SOURCES:.c=.py)

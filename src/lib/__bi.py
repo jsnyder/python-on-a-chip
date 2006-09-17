@@ -72,7 +72,13 @@ def id(o):
     }
 
     /* Return object's address as an int on the stack */
+#ifdef TARGET_AVR
+    retval = int_new((S32)(S16)NATIVE_GET_LOCAL(0), &pr);
+#elif defined(TARGET_DESKTOP)
     retval = int_new((S32)NATIVE_GET_LOCAL(0), &pr);
+#else
+#error Code is not implemented for the desired target
+#endif
     NATIVE_SET_TOS(pr);
 
     return retval;
@@ -313,10 +319,12 @@ def _exn():
     """__NATIVE__
     PyReturn_t retval;
     pPyClass_t pexn;
+    P_U8 pchunk;
 
     /* Alloc a class object with attributes dict */
-    retval = heap_getChunk(sizeof(PyClass_t), (P_U8 *)&pexn);
+    retval = heap_getChunk(sizeof(PyClass_t), &pchunk);
     PY_RETURN_IF_ERROR(retval);
+    pexn = (pPyClass_t)pchunk;
     pexn->od.od_type = OBJ_TYPE_EXN;
     retval = dict_new((pPyObj_t *)&pexn->cl_attrs);
 
