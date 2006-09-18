@@ -40,7 +40,7 @@ $(PRODUCT_VM) : $(PRODUCT_VM)($(OBJECTS))
 
 # Build the standard library into an image file and native function file
 $(SOURCE_IMG) $(SOURCE_NAT) : $(PMSTDLIB_SOURCES)
-	$(PMIMGCREATOR) -c -o $(SOURCE_IMG) --native-file=$(SOURCE_NAT) $(PMSTDLIB_SOURCES)
+	$(PMIMGCREATOR) -c --memspace=flash -o $(SOURCE_IMG) --native-file=$(SOURCE_NAT) $(PMSTDLIB_SOURCES)
 
 # Lists the size of the obejcts in the archive
 size : $(PRODUCT_VM)

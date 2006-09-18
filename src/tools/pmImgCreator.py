@@ -706,7 +706,7 @@ class PmImgCreator:
                           )
                        )
         if self.memspace.lower() == "flash":
-            fileBuff.append("#if not defined(__AVR__)\n"
+            fileBuff.append("#if !defined(__AVR__)\n"
                             "#error Defining image memspace for "
                             "non-AVR-devices is not supported!\n"
                             "#endif\n"

@@ -50,15 +50,10 @@
  * Value indicating the release of PyMite
  *
  * This value should be incremented for every public release.
- * It helps locate a bug when used in conjunction with a fileID
+ * It helps locate a defect when used in conjunction with a fileID
  * and line number.
- *
- * Release  Description
- * -------  -----------
- * 1        First release of zip on SourceForge
- * 2        Second release on SourceForge
  */
-#define PY_RELEASE  2
+#define PY_RELEASE  3
 
 
 /***************************************************************

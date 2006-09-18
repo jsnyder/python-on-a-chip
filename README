@@ -5,7 +5,7 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   02
+:Release:   03
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
@@ -82,20 +82,58 @@ PyMite builds as an archive.  The user should then build his
 own main() function following given examples and link in
 ``libpymvm.a`` and the appropriate PyMite native libraries.
 
-Contact
--------
+Discussion
+----------
 
-Please use the `PyMite Trac`_ issue tracking system
-space for all communications concerning PyMite.
-This will ensure that all issues are captured and
-available for public inspection.
+Please review the `PyMite Trac`_ project management space
+space for up-to-date information about PyMite.
+Please join the `PyMite maillist`_ for all communications concerning PyMite.
+This will ensure that FAQs can be found in the list archives and
+all issues are captured and available for public inspection.
 
 .. _`PyMite Trac`: http://pymite.python-hosting.com/
+.. _`PyMite maillist`: http://groups.google.com/group/pymite
+
+Thanks
+------
+
+My personal thanks go out to these people for their contribution to PyMite:
+
+    - Philipp Adelt: Enhancements to pmImgCreator.py, issues and fixes.
+    - www.webfaction.com: for providing quality, free project hosting on
+      www.python-hosting.com
 
 Release Notes
 -------------
 
-This is PyMite release 02
+This is PyMite release 03
+
+* Release 03, 2006/09/17
+
+    - #30:  Created Release 03 package
+    - #4:   Enabled compiler warnings as errors
+    - #7:   Unified licensing and copyright info in all files
+    - #16:  Created pm_init() that does the initial housekeeping
+    - #29:  Corrected function call in mmb.py's sleepms()
+    - #28:  Fixed loader to modules with root-level __NATIVE__ docstring load
+    - #2:   Separated stdlib from user app
+    - #27:  Made S16/U16 really be 16-bits on DESKTOP
+    - #20:  Added support for the assert statement
+    - #25:  Created slide-compatible illustration for build process
+    - #24:  Removed consts[0] == docstring assumption from pmImgCreator
+    - #3:   Made src/tests/Makefile clean better
+    - #23:  Removed absolute paths to allow building with WinAVR
+    - #18:  Removed "-ansi" compiler option from AVR builds
+    - #19:  Broadened target from ATMEGA103 to AVR
+    - #11:  Made src/tests/ build module images as C files, not header files
+    - #9:   Fixed BINARY_SUBSCR for case stringobj[intobj]
+    - #14:  Documented the development process
+    - #6:   Made pmImgCreator append a null terminator to image list
+    - #8:   Removed leftover uses of ``HOST_``
+    - #12:  Made mem_* funcs always use RAM memspace when target is DESKTOP
+    - #15:  All mem_*() funcs and pointers in the vm should use unsigned not
+      signed or void
+    - #1:   Transfered PyMite repository to http://pymite.python-hosting.com
 
 * Release 02, 2006/08/11
 
@@ -112,12 +150,5 @@ This is PyMite release 02
 
     - N/A:  Initial release made for PyCon 2003.
     - N/A:  Compiles for desktop and Atmel ATmega103.
-
-Thanks
-------
-
-My personal thanks go out to these people for their contribution to PyMite:
-
-    - Philipp Adelt: Enhancements to pmImgCreator.py, issues and fixes.
 
 .. :mode=rest:

@@ -1,0 +1,77 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+=====================
+How to Release PyMite
+=====================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes how to make a package release of the PyMite project.
+In doing so, it is intended strictly for the PyMite release manager.
+
+Overview
+--------
+
+Creating a release of PyMite involves updating information in a number of places
+and performing some housekeeping actions, but it is a fairly straightforward
+process that can be accomplished by performing the following list of actions
+in the prescribed order:
+
+    - Create a ticket in the issue tracking system
+
+        - Give the ticket a title like "Create release 03"
+        - Assign the ticket to the proper milestone
+        - Accept the ticket
+
+    - Create a branch for the issue (there will be changes to files)
+    - Edit the ``README`` file:
+
+        - Update the ":Release:" number near the top of the file
+        - Add thanks to anyone who gave helpful feedback
+        - In the "Release Notes" section, create a new entry for the release
+        - Add a line item into the entry for each ticket that went into this
+          release.
+
+    - Edit ``src/vm/py.h``, update the value for the definition, ``PY_RELEASE``
+    - Perform all the standard builds to see that they complete without error
+
+        - ``make html``
+        - ``make TAGS``
+        - ``make check``
+        - ``make clean; make TARGET=AVR; cd src/sample; make``
+        - Record the size of the sample app in the ticket
+
+    - Verify that a sample app runs on an AVR device; this can be done in
+      one of the following ways:
+
+        - Download and run a known good app on an actual AVR device
+        - Build and run a known good app in Atmel's AvrStudio simulator.
+        - Run a known good app on an AVR simulator
+
+    - Check-in the branch
+    - Mainline the branch
+    - Tag the mainline: ``svn cp https://svn.pymite.python-hosting.com/trunk
+      https://svn.pymite.python-hosting.com/tags/pymite-RR``
+    - Make the distribution file:
+
+        - Get a fresh `export` of the tag so no ``.svn`` artifacts are present;
+          the directory should be named ``pymite-RR``
+        - Run ``make dist PYMITE_RELEASE=RR`` where `RR` is the release number
+        - Tar and gzip the directory so it is named ``pymite-RR.tgz``
+
+    - Attach the distribution file to the wiki front page
+    - Announce the release on the `wiki`_ front page and the `PyMite maillist`_.
+
+.. _`wiki`: http://pymite.python-hosting.com/
+.. _`PyMite maillist`: pymite@googlegroups.com
+
+.. :mode=rest:
