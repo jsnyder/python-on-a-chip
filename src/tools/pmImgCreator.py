@@ -705,25 +705,21 @@ class PmImgCreator:
                            self.memspace.upper()
                           )
                        )
+        fileBuff.append("/* Place the image into %s */\n"
+                        "unsigned char\n"
+                        % self.memspace.upper()
+                       )
+
         if self.memspace.lower() == "flash":
-            fileBuff.append("#if !defined(__AVR__)\n"
-                            "#error Defining image memspace for "
-                            "non-AVR-devices is not supported!\n"
+            fileBuff.append("#if defined(__AVR__)\n"
+                            "__attribute__((progmem))\n"
                             "#endif\n"
                            )
-            fileBuff.append("/* Place the image into FLASH */\n"
-                            "unsigned char __attribute__((progmem))\n"
-                            "%slib_img[] =\n"
-                            % (self.imgtarget)
-                           )
-        else:
-            fileBuff.append("/* Place the image into RAM */\n"
-                            "unsigned char\n"
-                            "%slib_img[] =\n"
-                            % (self.imgtarget)
-                           )
 
-        fileBuff.append("{\n");
+        fileBuff.append("%slib_img[] =\n"
+                        "{\n"
+                        % (self.imgtarget)
+                       )
 
         # for each src file, convert and format
         i = 0
