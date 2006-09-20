@@ -53,16 +53,16 @@ also note that the program written above will run on a desktop Python VM.
 The next step is to create a C file that will run this program in the PyMite VM.
 The following C program will do exactly that::
 
-    #include "py.h"
+    #include "pm.h"
 
     extern unsigned char usrlib_img[];
 
     int main(void)
     {
-        PyReturn_t retval;
+        PmReturn_t retval;
 
         retval = pm_init(MEMSPACE_FLASH, usrlib_img);
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
 
         retval = pm_run((P_U8)"trivial");
         return (int)retval;
@@ -85,7 +85,7 @@ Inside ``trivial_img.c`` is where one finds the variable ``usrlib_img[]``
 which contains the `image` of our application (the equivalent of a ``.pyc``
 file).  Our application does not have any native code, but ``trivial_nat.c``
 is still needed because it defines an empty function table that needs to be
-linked to the VM.  The macro ``PY_RETURN_IF_ERROR()`` does what its name
+linked to the VM.  The macro ``PM_RETURN_IF_ERROR()`` does what its name
 suggests.
 
 The next PyMite API, ``pm_run()`` tries to execute the module with the same

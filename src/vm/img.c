@@ -37,7 +37,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -88,22 +88,22 @@
  * into list.  Need to support calling import twice on an obj
  * without filling memory.
  */
-PyReturn_t
-img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
+PmReturn_t
+img_findInMem(PmMemSpace_t memspace, P_U8 *paddr)
 {
-    PyReturn_t retval = PY_RET_ERR;
+    PmReturn_t retval = PM_RET_ERR;
     P_U8 imgtop = 0;
-    PyType_t type = 0;
+    PmType_t type = 0;
     S16 size = 0;
     S8 n = 0;
-    pPyImgInfo_t pii = C_NULL;
-    pPyObj_t pnamestr = C_NULL;
+    pPmImgInfo_t pii = C_NULL;
+    pPmObj_t pnamestr = C_NULL;
     P_U8 pchunk;
 
     /* addr is top of img */
     imgtop = *paddr;
     /* get img's type byte */
-    type = (PyType_t)mem_getByte(memspace, paddr);
+    type = (PmType_t)mem_getByte(memspace, paddr);
 
     /* get all sequential images */
     while (type == OBJ_TYPE_CIM)
@@ -118,7 +118,7 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
         type = mem_getByte(memspace, paddr);
         if (type != OBJ_TYPE_TUP)
         {
-            return PY_RET_EX_TYPE;
+            return PM_RET_EX_TYPE;
         }
         /* get index of last obj in tuple */
         n = mem_getByte(memspace, paddr) - 1;
@@ -126,13 +126,13 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
         *paddr = imgtop + CI_NAMES_FIELD;
         /* load name at index */
         retval = img_getName(memspace, paddr, n, &pnamestr);
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
 
         /* alloc and fill imginfo struct */
-        retval = heap_getChunk(sizeof(PyImgInfo_t), &pchunk);
-        PY_RETURN_IF_ERROR(retval);
-        pii = (pPyImgInfo_t)pchunk;
-        pii->ii_name = (pPyString_t)pnamestr;
+        retval = heap_getChunk(sizeof(PmImgInfo_t), &pchunk);
+        PM_RETURN_IF_ERROR(retval);
+        pii = (pPmImgInfo_t)pchunk;
+        pii->ii_name = (pPmString_t)pnamestr;
         pii->ii_memspace = memspace;
         pii->ii_addr = imgtop;
         /* push struct into img stack */
@@ -151,10 +151,10 @@ img_findInMem(PyMemSpace_t memspace, P_U8 *paddr)
 }
 
 
-PyReturn_t
-img_getName(PyMemSpace_t memspace, P_U8 *paddr, U8 n, pPyObj_t * r_pname)
+PmReturn_t
+img_getName(PmMemSpace_t memspace, P_U8 *paddr, U8 n, pPmObj_t * r_pname)
 {
-    PyType_t type;
+    PmType_t type;
     U8 b;
 
     /* XXX ensure it's a tuple */
@@ -175,7 +175,7 @@ img_getName(PyMemSpace_t memspace, P_U8 *paddr, U8 n, pPyObj_t * r_pname)
     type = mem_getByte(memspace, paddr);
     if (type != OBJ_TYPE_STR)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* backtrack paddr to point to top of string img */

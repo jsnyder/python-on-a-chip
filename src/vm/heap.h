@@ -64,7 +64,7 @@
 #define HEAP_MAX_CHUNK_SIZE 255
 
 /** The minimum size a chunk can be */
-#define HEAP_MIN_CHUNK_SIZE sizeof(PyHeapDesc_t)
+#define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
 
 
 /***************************************************************
@@ -75,23 +75,23 @@
  * Types
  **************************************************************/
 
-typedef struct PyHeapDesc_s
+typedef struct PmHeapDesc_s
 {
     /** object descriptor (only the size field is relevant */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** ptr to next chunk */
-    struct PyHeapDesc_s * next;
-} PyHeapDesc_t, *pPyHeapDesc_t;
+    struct PmHeapDesc_s * next;
+} PmHeapDesc_t, *pPmHeapDesc_t;
 
 
-typedef struct PyHeap_s
+typedef struct PmHeap_s
 {
     /** the amount of heap space available */
     U16 avail;
 
     /** Global declaration of heap. */
     U8 base[HEAP_SIZE];
-} PyHeap_t, *pPyHeap_t;
+} PmHeap_t, *pPmHeap_t;
 
 
 
@@ -124,13 +124,13 @@ void heap_init(void);
  * @param   r_pchunk Addr of ptr to chunk (return).
  * @return  Return code
  */
-PyReturn_t heap_getChunk(U8 size, P_U8 *r_pchunk);
+PmReturn_t heap_getChunk(U8 size, P_U8 *r_pchunk);
 
 /**
  * Place the chunk back in the heap.
  *
  * @param   ptr Pointer to object to free.
  */
-void heap_freeChunk(pPyObj_t);
+void heap_freeChunk(pPmObj_t);
 
 #endif /* __HEAP_H__ */

@@ -60,7 +60,7 @@
  *
  * WARNING: od_type must be at least 5 bits!
  */
-typedef enum PyType_e
+typedef enum PmType_e
 {
     OBJ_TYPE_HASHABLE_MIN = 0x00,
     /** None */
@@ -108,13 +108,13 @@ typedef enum PyType_e
     OBJ_TYPE_SEG = 0x14,
     /** Seglist */
     OBJ_TYPE_SGL = 0x15
-} PyType_t, *pPyType_t;
+} PmType_t, *pPmType_t;
 
 
 /**
  * Object Descriptor
  *
- * All Py "objects" must have this at the top of their struct.
+ * All PyMite "objects" must have this at the top of their struct.
  * (CodeObj, Frame, Dict, List, Tuple, etc.).
  *
  * ALERT: Order of fields is important to maintain bit-order.
@@ -123,7 +123,7 @@ typedef enum PyType_e
  * Although, not critical to operation, it makes reading the
  * raw values easier.
  */
-typedef struct PyObjDesc_s
+typedef struct PmObjDesc_s
 {
     /**
      * object size in bytes
@@ -134,7 +134,7 @@ typedef struct PyObjDesc_s
     U8          od_size;
 
     /** object type */
-    PyType_t    od_type:5;
+    PmType_t    od_type:5;
 
     /** garbage collection mark value */
     U8          od_gcval:2;
@@ -142,20 +142,20 @@ typedef struct PyObjDesc_s
     /** constant pool object flag */
     U8          od_const:1;
 
-} PyObjDesc_t, *pPyObjDesc_t;
+} PmObjDesc_t, *pPmObjDesc_t;
 
 
 /**
  * Object
  *
- * The abstract empty object type for Py.
+ * The abstract empty object type for PyMite.
  */
-typedef struct PyObj_s
+typedef struct PmObj_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** obj value ;get rid (None doesn't need it) */
-} PyObj_t, *pPyObj_t;
+} PmObj_t, *pPmObj_t;
 
 
 /***************************************************************
@@ -196,9 +196,9 @@ typedef struct PyObj_s
  * @param   r_pobj Return arg, the loaded object.
  * @return  Return status
  */
-PyReturn_t obj_loadFromImg(PyMemSpace_t memspace,
+PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
                            P_U8 *paddr,
-                           pPyObj_t * r_pobj);
+                           pPmObj_t * r_pobj);
 
 /**
  * Check the object's type.  If object is null ptr
@@ -209,7 +209,7 @@ PyReturn_t obj_loadFromImg(PyMemSpace_t memspace,
  * @param   type expected type of obj
  * @return  boolean if types match
  */
-S8 obj_isType(pPyObj_t pobj, PyType_t type);
+S8 obj_isType(pPmObj_t pobj, PmType_t type);
 
 /**
  * Find the boolean value of the given object.
@@ -217,7 +217,7 @@ S8 obj_isType(pPyObj_t pobj, PyType_t type);
  * @param   pobj Ptr to object to test.
  * @return  Nonzero value if object is False.
  */
-S8 obj_isFalse(pPyObj_t pobj);
+S8 obj_isFalse(pPmObj_t pobj);
 
 /**
  * Compare two objects for equality.
@@ -226,6 +226,6 @@ S8 obj_isFalse(pPyObj_t pobj);
  * @param   pobj2 Ptr to second object.
  * @return  C_SAME if the items are equivalent, C_DIFFER otherwise.
  */
-S8 obj_compare(pPyObj_t pobj1, pPyObj_t pobj2);
+S8 obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
 
 #endif /* __OBJ_H__ */

@@ -48,12 +48,12 @@ maxint = 0x7FFFFFFF     # 2147483647
 
 def exit(val):
     """__NATIVE__
-    pPyObj_t pval = C_NULL;
+    pPmObj_t pval = C_NULL;
 
     /* If no arg given, assume return 0 */
     if (NATIVE_GET_NUM_ARGS() == 0)
     {
-        NATIVE_SET_TOS(PY_ZERO);
+        NATIVE_SET_TOS(PM_ZERO);
     }
     
     /* If 1 arg given, put it on stack */
@@ -66,11 +66,11 @@ def exit(val):
     /* If wrong number of args, raise TypeError */
     else
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Raise the SystemExit exception */
-    return PY_RET_EX_EXIT;
+    return PM_RET_EX_EXIT;
     """
     pass
 

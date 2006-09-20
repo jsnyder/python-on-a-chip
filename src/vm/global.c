@@ -23,7 +23,7 @@
  * VM Globals
  *
  * VM globals operations.
- * Py's global struct def and initial values.
+ * PyMite's global struct def and initial values.
  *
  * Log
  * ---
@@ -39,7 +39,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -59,50 +59,50 @@
  **************************************************************/
 
 /** Most PyMite globals all in one convenient place */
-PyVmGlobal_t gVmGlobal;
+PmVmGlobal_t gVmGlobal;
 
 
 /***************************************************************
  * Functions
  **************************************************************/
 
-PyReturn_t
+PmReturn_t
 global_init(void)
 {
-    PyReturn_t retval;
+    PmReturn_t retval;
     P_U8 codestr = (P_U8)"code";
 
     /* clear the global struct less the heap */
-    sli_memset((P_U8)&gVmGlobal, '\0', sizeof(PyVmGlobal_t) - sizeof(PyHeap_t));
+    sli_memset((P_U8)&gVmGlobal, '\0', sizeof(PmVmGlobal_t) - sizeof(PmHeap_t));
 
     /* set the PyMite release num (for debug and post mortem) */
-    gVmGlobal.errVmRelease = PY_RELEASE;
+    gVmGlobal.errVmRelease = PM_RELEASE;
 
     /* init zero */
     gVmGlobal.zero.od.od_type = OBJ_TYPE_INT;
-    gVmGlobal.zero.od.od_size = sizeof(PyInt_t);
+    gVmGlobal.zero.od.od_size = sizeof(PmInt_t);
     gVmGlobal.zero.od.od_const = 1;
     gVmGlobal.zero.val = 0;
 
     /* init one */
     gVmGlobal.one.od.od_type = OBJ_TYPE_INT;
-    gVmGlobal.one.od.od_size = sizeof(PyInt_t);
+    gVmGlobal.one.od.od_size = sizeof(PmInt_t);
     gVmGlobal.one.od.od_const = 1;
     gVmGlobal.one.val = 1;
 
     /* init negone */
     gVmGlobal.negone.od.od_type = OBJ_TYPE_INT;
-    gVmGlobal.negone.od.od_size = sizeof(PyInt_t);
+    gVmGlobal.negone.od.od_size = sizeof(PmInt_t);
     gVmGlobal.negone.od.od_const = 1;
     gVmGlobal.negone.val = (S32)-1;
 
     /* init None */
     gVmGlobal.none.od.od_type = OBJ_TYPE_NON;
-    gVmGlobal.none.od.od_size = sizeof(PyObj_t);
+    gVmGlobal.none.od.od_size = sizeof(PmObj_t);
     gVmGlobal.none.od.od_const = 1;
 
     /* Init "code" string obj */
-    retval = string_new((P_U8 *)&codestr, (pPyObj_t *)&gVmGlobal.pcodeStr);
+    retval = string_new((P_U8 *)&codestr, (pPmObj_t *)&gVmGlobal.pcodeStr);
 
     /* init empty builtins */
     gVmGlobal.builtins = C_NULL;
@@ -120,48 +120,48 @@ global_init(void)
 }
 
 
-PyReturn_t
-global_loadBuiltins(pPyFunc_t pmod)
+PmReturn_t
+global_loadBuiltins(pPmFunc_t pmod)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pkey = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pkey = C_NULL;
     P_U8 bistr = (P_U8)"__bi";
     P_U8 nonestr = (P_U8)"None";
-    pPyObj_t pstr = C_NULL;
-    pPyObj_t pbimod;
+    pPmObj_t pstr = C_NULL;
+    pPmObj_t pbimod;
 
     /* import the builtins */
     retval = string_new(&bistr, &pstr);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
     retval = mod_import(pstr, &pbimod);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* must interpret builtins' root code to set the attrs */
-    retval = interpret((pPyFunc_t)pbimod);
-    PY_RETURN_IF_ERROR(retval);
+    retval = interpret((pPmFunc_t)pbimod);
+    PM_RETURN_IF_ERROR(retval);
 
     /* reset interpreter to run */
     gVmGlobal.interpctrl = INTERP_CTRL_CONT;
 
     /* builtins points to the builtins module's attrs dict */
-    gVmGlobal.builtins = ((pPyFunc_t)pbimod)->f_attrs;
+    gVmGlobal.builtins = ((pPmFunc_t)pbimod)->f_attrs;
 
     /* set None manually */
     retval = string_new(&nonestr, &pkey);
-    PY_RETURN_IF_ERROR(retval);
-    retval = dict_setItem(PY_PBUILTINS, pkey, PY_NONE);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
+    retval = dict_setItem(PM_PBUILTINS, pkey, PM_NONE);
+    PM_RETURN_IF_ERROR(retval);
 
     /* put builtins module in the module's attrs dict */
     retval = string_new(&bistr, &pkey);
-    PY_RETURN_IF_ERROR(retval);
-    retval = dict_setItem((pPyObj_t)pmod->f_attrs, pkey, PY_PBUILTINS);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
+    retval = dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
+    PM_RETURN_IF_ERROR(retval);
 
     /* deallocate builtins module */
-    heap_freeChunk((pPyObj_t)pbimod);
+    heap_freeChunk((pPmObj_t)pbimod);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
 }
 
 /***************************************************************

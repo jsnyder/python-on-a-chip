@@ -17,10 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef __PY_H__
-#define __PY_H__
+#ifndef __PM_H__
+#define __PM_H__
 /**
- * Py Header
+ * PyMite Header
  *
  * Include things that are needed by nearly everything.
  *
@@ -53,7 +53,7 @@
  * It helps locate a defect when used in conjunction with a fileID
  * and line number.
  */
-#define PY_RELEASE  3
+#define PM_RELEASE  3
 
 
 /***************************************************************
@@ -91,28 +91,28 @@
 
 /** puts debug info in registers, halts interpreter */
 #if __DEBUG__
-#define PY_ERR(line)                        \
+#define PM_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
         gVmGlobal.errLineNum = (U16)(line); \
-        retval = PY_RET_ERR;                \
+        retval = PM_RET_ERR;                \
         for(;;)
 #else
-#define PY_ERR(line)                        \
+#define PM_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
         gVmGlobal.errLineNum = (U16)(line); \
-        retval = PY_RET_ERR;                \
-        return PY_RET_ERR
+        retval = PM_RET_ERR;                \
+        return PM_RET_ERR
 #endif
 
 /** error macro for unit tests */
 #define TEST_ERR(arg)   for(;;)
 
-/** return an error code if it is not PY_RET_OK */
-#define PY_RETURN_IF_ERROR(retval)  if((retval) != PY_RET_OK) \
+/** return an error code if it is not PM_RET_OK */
+#define PM_RETURN_IF_ERROR(retval)  if((retval) != PM_RET_OK) \
                                         return (retval)
 
 /** If the boolean expression fails, return the ASSERT error code */
-#define PY_ASSERT(boolexpr) if (!(boolexpr)) return PY_RET_ASSERT_FAIL
+#define PM_ASSERT(boolexpr) if (!(boolexpr)) return PM_RET_ASSERT_FAIL
 
 /***************************************************************
  * Enums
@@ -129,33 +129,33 @@
  * should propagate the same return value
  * up the call tree to the interpreter.
  */
-typedef enum PyReturn_e
+typedef enum PmReturn_e
 {
     /* general status return values */
-    PY_RET_OK         = 0,      /**< everything is ok */
-    PY_RET_NO         = 0xFF,   /**< general "no result" */
-    PY_RET_ERR        = 0xFE,   /**< general failure */
-    PY_RET_STUB       = 0xFD,   /**< return val for stub fxn */
-    PY_RET_ASSERT_FAIL= 0xFC,   /**< assertion failure */
+    PM_RET_OK         = 0,      /**< everything is ok */
+    PM_RET_NO         = 0xFF,   /**< general "no result" */
+    PM_RET_ERR        = 0xFE,   /**< general failure */
+    PM_RET_STUB       = 0xFD,   /**< return val for stub fxn */
+    PM_RET_ASSERT_FAIL= 0xFC,   /**< assertion failure */
 
     /* return vals that indicate an exception occured */
-    PY_RET_EX         = 0xE0,   /**< general exception */
-    PY_RET_EX_EXIT    = 0xE1,   /**< system exit */
-    PY_RET_EX_FLOAT   = 0xE2,   /**< floating point error */
-    PY_RET_EX_ZDIV    = 0xE3,   /**< zero division error */
-    PY_RET_EX_ASSRT   = 0xE4,   /**< assertion error */
-    PY_RET_EX_ATTR    = 0xE5,   /**< attribute error */
-    PY_RET_EX_IMPRT   = 0xE6,   /**< import error */
-    PY_RET_EX_INDX    = 0xE7,   /**< index error */
-    PY_RET_EX_KEY     = 0xE8,   /**< key error */
-    PY_RET_EX_MEM     = 0xE9,   /**< memory error */
-    PY_RET_EX_NAME    = 0xEA,   /**< name error */
-    PY_RET_EX_SYNTAX  = 0xEB,   /**< syntax error */
-    PY_RET_EX_SYS     = 0xEC,   /**< system error */
-    PY_RET_EX_TYPE    = 0xED,   /**< type error */
-    PY_RET_EX_VAL     = 0xEE,   /**< value error */
-    PY_RET_EX_WARN    = 0xEF,   /**< warning */
-} PyReturn_t;
+    PM_RET_EX         = 0xE0,   /**< general exception */
+    PM_RET_EX_EXIT    = 0xE1,   /**< system exit */
+    PM_RET_EX_FLOAT   = 0xE2,   /**< floating point error */
+    PM_RET_EX_ZDIV    = 0xE3,   /**< zero division error */
+    PM_RET_EX_ASSRT   = 0xE4,   /**< assertion error */
+    PM_RET_EX_ATTR    = 0xE5,   /**< attribute error */
+    PM_RET_EX_IMPRT   = 0xE6,   /**< import error */
+    PM_RET_EX_INDX    = 0xE7,   /**< index error */
+    PM_RET_EX_KEY     = 0xE8,   /**< key error */
+    PM_RET_EX_MEM     = 0xE9,   /**< memory error */
+    PM_RET_EX_NAME    = 0xEA,   /**< name error */
+    PM_RET_EX_SYNTAX  = 0xEB,   /**< syntax error */
+    PM_RET_EX_SYS     = 0xEC,   /**< system error */
+    PM_RET_EX_TYPE    = 0xED,   /**< type error */
+    PM_RET_EX_VAL     = 0xEE,   /**< value error */
+    PM_RET_EX_WARN    = 0xEF,   /**< warning */
+} PmReturn_t;
 
 
 /***************************************************************
@@ -198,7 +198,7 @@ typedef enum PyReturn_e
  * @param pusrimg       Address of the user image in the memory space
  * @return Return status
  */
-PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg);
+PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg);
 
 /**
  * Executes the named module
@@ -206,7 +206,7 @@ PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg);
  * @param modstr        Name of module to run
  * @return Return status
  */
-PyReturn_t pm_run(P_U8 modstr);
+PmReturn_t pm_run(P_U8 modstr);
 
 
-#endif /* __PY_H__ */
+#endif /* __PM_H__ */

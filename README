@@ -80,7 +80,7 @@ When compiling for the AVR, it will need avr-libc.
 
 PyMite builds as an archive.  The user should then build his
 own main() function following given examples and link in
-``libpymvm.a`` and the appropriate PyMite native libraries.
+``libpmvm.a`` and the appropriate PyMite native libraries.
 
 Discussion
 ----------

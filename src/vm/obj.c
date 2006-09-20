@@ -37,7 +37,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -64,35 +64,35 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
+PmReturn_t
+obj_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pobj)
 {
-    PyReturn_t retval = PY_RET_OK;
-    PyObjDesc_t od;
+    PmReturn_t retval = PM_RET_OK;
+    PmObjDesc_t od;
 
     /* get the object descriptor */
-    od.od_type = (PyType_t)mem_getByte(memspace, paddr);
+    od.od_type = (PmType_t)mem_getByte(memspace, paddr);
 
     switch (od.od_type)
     {
         /* if it's the None object, return global None */
         case OBJ_TYPE_NON:
             /* make sure *paddr gets incremented */
-            *r_pobj = PY_NONE;
+            *r_pobj = PM_NONE;
             break;
 
         /* if it's a simple type */
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
             /* allocate simple obj */
-            retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pobj);
-            PY_RETURN_IF_ERROR(retval);
+            retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pobj);
+            PM_RETURN_IF_ERROR(retval);
 
             /* Set the object's type */
             (*r_pobj)->od.od_type = od.od_type;
 
             /* Read in the object's value (little endian) */
-            ((pPyInt_t)*r_pobj)->val = mem_getInt(memspace, paddr);
+            ((pPmInt_t)*r_pobj)->val = mem_getInt(memspace, paddr);
             break;
 
         case OBJ_TYPE_STR:
@@ -111,7 +111,7 @@ obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
         case OBJ_TYPE_FXN:
         case OBJ_TYPE_CLI:
             /* these types should not be in an img obj */
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
 
         /* if it's a native code img, load into a code obj */
         case OBJ_TYPE_NIM:
@@ -125,14 +125,14 @@ obj_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t * r_pobj)
 
         default:
             /* XXX invalid type for image obj */
-            PY_ERR(__LINE__);
+            PM_ERR(__LINE__);
     }
     return retval;
 }
 
 
 S8
-obj_isType(pPyObj_t pobj, PyType_t type)
+obj_isType(pPmObj_t pobj, PmType_t type)
 {
     /* if null pointer or wrong type... */
     if ((pobj == C_NULL) || (pobj->od.od_type != type))
@@ -144,7 +144,7 @@ obj_isType(pPyObj_t pobj, PyType_t type)
 
 /* return true if the obj is false */
 S8
-obj_isFalse(pPyObj_t pobj)
+obj_isFalse(pPmObj_t pobj)
 {
     /* return true if it's NULL or None */
     if ((pobj == C_NULL) ||
@@ -155,7 +155,7 @@ obj_isFalse(pPyObj_t pobj)
 
     /* the integer zero is false */
     if ((pobj->od.od_type == OBJ_TYPE_INT) &&
-        (((pPyInt_t)pobj)->val == 0))
+        (((pPmInt_t)pobj)->val == 0))
     {
         return C_TRUE;
     }
@@ -163,7 +163,7 @@ obj_isFalse(pPyObj_t pobj)
     /* the floating point value of 0.0 is false */
     /*
     if ((pobj->od.od_type == OBJ_TYPE_FLT) &&
-        (((pPyFloat)pobj)->val == 0.0))
+        (((pPmFloat)pobj)->val == 0.0))
     {
         retrun C_TRUE;
     }
@@ -173,7 +173,7 @@ obj_isFalse(pPyObj_t pobj)
     if (pobj->od.od_type == OBJ_TYPE_STR)
     {
         /* XXX this is for null-term string */
-        return ((pPyString_t)pobj)->val[0] == C_NULL;
+        return ((pPmString_t)pobj)->val[0] == C_NULL;
     }
 
     /* XXX the following are waiting on length fields */
@@ -191,7 +191,7 @@ obj_isFalse(pPyObj_t pobj)
 
 
 S8
-obj_compare(pPyObj_t pobj1, pPyObj_t pobj2)
+obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 {
     /* null pointers are invalid */
     if ((pobj1 == C_NULL) || (pobj2 == C_NULL))
@@ -219,11 +219,11 @@ obj_compare(pPyObj_t pobj1, pPyObj_t pobj2)
 
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
-            return ((pPyInt_t)pobj1)->val ==
-                   ((pPyInt_t)pobj2)->val ? C_SAME : C_DIFFER;
+            return ((pPmInt_t)pobj1)->val ==
+                   ((pPmInt_t)pobj2)->val ? C_SAME : C_DIFFER;
 
         case OBJ_TYPE_STR:
-            return string_compare((pPyString_t)pobj1, (pPyString_t)pobj2);
+            return string_compare((pPmString_t)pobj1, (pPmString_t)pobj2);
 
         case OBJ_TYPE_TUP:
         case OBJ_TYPE_LST:

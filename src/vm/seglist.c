@@ -57,7 +57,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -92,10 +92,10 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj)
+PmReturn_t
+seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     pSegment_t pseg = C_NULL;
     U8 i = 0;
     P_U8 pchunk;
@@ -105,7 +105,7 @@ seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj)
     {
         /* alloc and init new segment */
         retval = heap_getChunk(sizeof(Segment_t), &pchunk);
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
         pseg = (pSegment_t)pchunk;
         pseg->od.od_type = OBJ_TYPE_SEG;
         for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
@@ -161,7 +161,7 @@ seglist_clear(pSeglist_t pseglist)
     while (pseg1 != C_NULL)
     {
         pseg2 = pseg1->next;
-        heap_freeChunk((pPyObj_t)pseg1);
+        heap_freeChunk((pPmObj_t)pseg1);
         pseg1 = pseg2;
     }
 #endif
@@ -173,9 +173,9 @@ seglist_clear(pSeglist_t pseglist)
 }
 
 
-PyReturn_t
+PmReturn_t
 seglist_findEqual(pSeglist_t pseglist,
-                  pPyObj_t pobj,
+                  pPmObj_t pobj,
                   S8 * r_segnum,
                   S8 * r_indx)
 {
@@ -185,7 +185,7 @@ seglist_findEqual(pSeglist_t pseglist,
     /* if index is out of bounds, raise SystemError */
     if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))
     {
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* set pseg to the segnum'th segment in the list */
@@ -198,7 +198,7 @@ seglist_findEqual(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
         }
         pseg = pseg->next;
     }
@@ -211,7 +211,7 @@ seglist_findEqual(pSeglist_t pseglist,
             /* if seglist entry is null, we're past the end */
             if (pseg->s_val[*r_indx] == C_NULL)
             {
-                return PY_RET_NO;
+                return PM_RET_NO;
             }
 
             /*
@@ -220,7 +220,7 @@ seglist_findEqual(pSeglist_t pseglist,
              */
             if (obj_compare(pobj, pseg->s_val[*r_indx]) == C_SAME)
             {
-                return PY_RET_OK;
+                return PM_RET_OK;
             }
             (*r_indx)++;
         }
@@ -230,15 +230,15 @@ seglist_findEqual(pSeglist_t pseglist,
         pseg = pseg->next;
         (*r_segnum)++;
     }
-    return PY_RET_NO;
+    return PM_RET_NO;
 }
 
 
-PyReturn_t
+PmReturn_t
 seglist_getItem(pSeglist_t pseglist,
                 S8 segnum,
                 S8 segindx,
-                pPyObj_t * r_pobj)
+                pPmObj_t * r_pobj)
 {
     pSegment_t pseg = pseglist->sl_rootseg;
 
@@ -248,7 +248,7 @@ seglist_getItem(pSeglist_t pseglist,
         /* if went past last segment, return nothing */
         if (pseg == C_NULL)
         {
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
         }
         pseg = pseg->next;
     }
@@ -257,25 +257,25 @@ seglist_getItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg)
         && (segindx >= pseglist->sl_lastindx))
     {
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* return ptr to obj in this seg at the index */
     *r_pobj = pseg->s_val[segindx];
-    return PY_RET_OK;
+    return PM_RET_OK;
 }
 
 
-PyReturn_t
+PmReturn_t
 seglist_insertItem(pSeglist_t pseglist,
-                   pPyObj_t pobj,
+                   pPmObj_t pobj,
                    S8 segnum,
                    S8 segindx)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     pSegment_t pseg = C_NULL;
-    pPyObj_t pobj1 = C_NULL;
-    pPyObj_t pobj2 = C_NULL;
+    pPmObj_t pobj1 = C_NULL;
+    pPmObj_t pobj2 = C_NULL;
     S8 indx = 0;
     S8 i = 0;
 
@@ -286,7 +286,7 @@ seglist_insertItem(pSeglist_t pseglist,
         retval = heap_getChunk(sizeof(Segment_t),
                                (P_U8 *)&pseglist->sl_rootseg
                               );
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
         pseglist->sl_rootseg->od.od_type = OBJ_TYPE_SEG;
 
         /* seglist refers to the new segment */
@@ -296,13 +296,13 @@ seglist_insertItem(pSeglist_t pseglist,
         /* if past end of list */
         if ((segnum != 0) || (segindx != 0))
         {
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
         }
 
         /* insert obj in seglist */
         pseglist->sl_rootseg->s_val[0] = pobj;
         pseglist->sl_lastindx++;
-        return PY_RET_OK;
+        return PM_RET_OK;
     }
 
     /* else, iterate until pseg pts to segnum'th segment */
@@ -316,7 +316,7 @@ seglist_insertItem(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
         }
     }
 
@@ -325,7 +325,7 @@ seglist_insertItem(pSeglist_t pseglist,
         && (segindx >= pseglist->sl_lastindx))
     {
         /* caller must convert this err to exception */
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* insert obj and ripple copy all those afterward */
@@ -350,7 +350,7 @@ seglist_insertItem(pSeglist_t pseglist,
                  * XXX exception with hosed list,
                  * need to roll-back!
                  */
-                PY_RETURN_IF_ERROR(retval);
+                PM_RETURN_IF_ERROR(retval);
 
                 /* init segment */
                 pseg = pseg->next;
@@ -380,13 +380,13 @@ seglist_insertItem(pSeglist_t pseglist,
 }
 
 
-PyReturn_t
+PmReturn_t
 seglist_new(pSeglist_t * r_pseglist)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
 
     retval = heap_getChunk(sizeof(Seglist_t), (P_U8 *)r_pseglist);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     (*r_pseglist)->od.od_type = OBJ_TYPE_SGL;
     (*r_pseglist)->sl_rootseg = C_NULL;
@@ -396,9 +396,9 @@ seglist_new(pSeglist_t * r_pseglist)
 }
 
 
-PyReturn_t
+PmReturn_t
 seglist_setItem(pSeglist_t pseglist,
-                pPyObj_t pobj,
+                pPmObj_t pobj,
                 S8 segnum,
                 S8 segindx)
 {
@@ -412,7 +412,7 @@ seglist_setItem(pSeglist_t pseglist,
         /* if ran past end of list, raise SystemError */
         if (pseg == C_NULL)
         {
-            return PY_RET_EX_SYS;
+            return PM_RET_EX_SYS;
         }
     }
 
@@ -420,12 +420,12 @@ seglist_setItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg) &&
         (segindx >= pseglist->sl_lastindx))
     {
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* set ptr to obj in this seg at the index */
     pseg->s_val[segindx] = pobj;
-    return PY_RET_OK;
+    return PM_RET_OK;
 }
 
 

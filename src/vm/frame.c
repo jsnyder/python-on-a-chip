@@ -36,7 +36,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -63,42 +63,42 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
+PmReturn_t
+frame_new(pPmObj_t pfunc, pPmObj_t * r_pobj)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     S16 fsize = 0;
     S8 stacksz = 0;
     S8 nlocals = 0;
-    pPyCo_t pco = C_NULL;
-    pPyFrame_t pframe = C_NULL;
+    pPmCo_t pco = C_NULL;
+    pPmFrame_t pframe = C_NULL;
     P_U8 paddr = C_NULL;
     P_U8 pchunk;
 
     /* get fxn's code obj */
-    pco = ((pPyFunc_t)pfunc)->f_co;
+    pco = ((pPmFunc_t)pfunc)->f_co;
 
     /* TypeError if passed func's CO is not a true COB */
     if (pco->od.od_type != OBJ_TYPE_COB)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* get sizes needed to calc frame size */
     paddr = pco->co_codeimgaddr + CI_STACKSIZE_FIELD;
     stacksz = mem_getByte(pco->co_memspace, &paddr);
     nlocals = mem_getByte(pco->co_memspace, &paddr);
-    fsize = sizeof(PyFrame_t) + (stacksz + nlocals) *
-            sizeof(pPyObj_t);
+    fsize = sizeof(PmFrame_t) + (stacksz + nlocals) *
+            sizeof(pPmObj_t);
     /* allocate a frame */
     retval = heap_getChunk(fsize, &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    pframe = (pPyFrame_t)pchunk;
+    PM_RETURN_IF_ERROR(retval);
+    pframe = (pPmFrame_t)pchunk;
 
     /* set frame fields */
     pframe->od.od_type = OBJ_TYPE_FRM;
     pframe->fo_back = C_NULL;
-    pframe->fo_func = (pPyFunc_t)pfunc;
+    pframe->fo_func = (pPmFunc_t)pfunc;
     pframe->fo_memspace = pco->co_memspace;
     /* init instruction pointer, line number and block stack */
     pframe->fo_ip = pco->co_codeaddr;
@@ -107,12 +107,12 @@ frame_new(pPyObj_t pfunc, pPyObj_t * r_pobj)
     /* init globals dict to NULL, interpreter will set it */
     pframe->fo_globals = C_NULL;
     /* frame's attrs points to func/mod/class's attrs dict */
-    pframe->fo_attrs = ((pPyFunc_t)pfunc)->f_attrs;
+    pframe->fo_attrs = ((pPmFunc_t)pfunc)->f_attrs;
     /* empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
 
     /* return ptr to frame */
-    * r_pobj = (pPyObj_t)pframe;
+    * r_pobj = (pPmObj_t)pframe;
     return retval;
 }
 

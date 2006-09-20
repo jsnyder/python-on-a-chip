@@ -38,8 +38,8 @@
 #
 def push42():
     """__NATIVE__
-    pPyObj_t pint = C_NULL;
-    PyReturn_t retval;
+    pPmObj_t pint = C_NULL;
+    PmReturn_t retval;
 
     retval = int_new((S32)42, &pint);
     NATIVE_SET_TOS(pint);

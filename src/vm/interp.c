@@ -43,7 +43,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -55,7 +55,7 @@
  **************************************************************/
 
 /** if retval is not OK, break from the interpreter */
-#define PY_BREAK_IF_ERROR(retval) if((retval) != PY_RET_OK)break
+#define PM_BREAK_IF_ERROR(retval) if((retval) != PM_RET_OK)break
 
 
 /***************************************************************
@@ -70,8 +70,8 @@
  * Prototypes
  **************************************************************/
 
-extern PyReturn_t (* std_nat_fxn_table[])(pPyFrame_t, signed char);
-extern PyReturn_t (* usr_nat_fxn_table[])(pPyFrame_t, signed char);
+extern PmReturn_t (* std_nat_fxn_table[])(pPmFrame_t, signed char);
+extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t, signed char);
 
 /***************************************************************
  * Functions
@@ -90,21 +90,21 @@ py_err(S16 release, S16 file, S16 line)
 }
 
 
-PyReturn_t
-interpret(pPyFunc_t pfunc)
+PmReturn_t
+interpret(pPmFunc_t pfunc)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj1 = C_NULL;
-    pPyObj_t pobj2 = C_NULL;
-    pPyObj_t pobj3 = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj1 = C_NULL;
+    pPmObj_t pobj2 = C_NULL;
+    pPmObj_t pobj3 = C_NULL;
     S16 t16 = 0;
     S8 t8 = 0;
-    pPyFrame_t pframe = C_NULL; /* tmp: until thread contains fp */
+    pPmFrame_t pframe = C_NULL; /* tmp: until thread contains fp */
 
     /* create a frame for the func */
-    retval = frame_new((pPyObj_t)pfunc, &pobj1);
-    PY_RETURN_IF_ERROR(retval);
-    FP = (pPyFrame_t)pobj1;
+    retval = frame_new((pPmObj_t)pfunc, &pobj1);
+    PM_RETURN_IF_ERROR(retval);
+    FP = (pPmFrame_t)pobj1;
 
     /*
      * set globals dict to same as root frame's attrs.
@@ -121,11 +121,11 @@ interpret(pPyFunc_t pfunc)
         {
             case STOP_CODE:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case POP_TOP:
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 continue;
 
             case ROT_TWO:
@@ -143,7 +143,7 @@ interpret(pPyFunc_t pfunc)
 
             case DUP_TOP:
                 pobj1 = TOS;
-                PY_PUSH(pobj1);
+                PM_PUSH(pobj1);
                 continue;
 
             case ROT_FOUR:
@@ -158,63 +158,63 @@ interpret(pPyFunc_t pfunc)
                 /* TypeError if TOS is not an int */
                 if (TOS->od.od_type != OBJ_TYPE_INT)
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
                 /* when TOS is an int, this is a no-op */
                 continue;
 
             case UNARY_NEGATIVE:
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 retval = int_negative(pobj1, &pobj2);
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
                 if (pobj2 == C_NULL)
                 {
                     /* memory error? */
-                    PY_ERR(__LINE__);
+                    PM_ERR(__LINE__);
                 }
                 continue;
 
             case UNARY_NOT:
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 if (obj_isFalse(pobj1))
                 {
-                    PY_PUSH(PY_TRUE);
+                    PM_PUSH(PM_TRUE);
                 }
                 else
                 {
-                    PY_PUSH(PY_FALSE);
+                    PM_PUSH(PM_FALSE);
                 }
                 continue;
 
             case UNARY_CONVERT:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case UNARY_INVERT:
                 /* TypeError if it's not an int */
                 if (TOS->od.od_type != OBJ_TYPE_INT)
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
                 /* else perform bit-wise complement */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 retval = int_bitInvert(pobj1, &pobj2);
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
                 if (pobj2 == C_NULL)
                 {
                     /* memory error? */
-                    PY_ERR(__LINE__);
+                    PM_ERR(__LINE__);
                 }
                 continue;
 
             case BINARY_POWER:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case BINARY_MULTIPLY:
@@ -222,13 +222,13 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val *
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val *
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
@@ -237,21 +237,21 @@ interpret(pPyFunc_t pfunc)
                          && (TOS1->od.od_type == OBJ_TYPE_LST))
                 {
                     /* int number of times to duplicate */
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     /* list that is copied */
-                    pobj2 = PY_POP();
+                    pobj2 = PM_POP();
                     retval = list_replicate(pobj2,
                                             pobj1,
                                             &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
                     continue;
                 }
 
                 /* else it's a TypeError */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -260,28 +260,28 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
 
                     /* ZeroDivisionError */
-                    if (((pPyInt_t)pobj1)->val == 0)
+                    if (((pPmInt_t)pobj1)->val == 0)
                     {
-                        retval = PY_RET_EX_ZDIV;
+                        retval = PM_RET_EX_ZDIV;
                         break;
                     }
                     /* perform division */
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val /
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val /
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -290,26 +290,26 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     /* ZeroDivisionError */
-                    if (((pPyInt_t)pobj1)->val == 0)
+                    if (((pPmInt_t)pobj1)->val == 0)
                     {
-                        retval = PY_RET_EX_ZDIV;
+                        retval = PM_RET_EX_ZDIV;
                         break;
                     }
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val %
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val %
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -318,20 +318,20 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val +
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val +
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -340,29 +340,29 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val -
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val -
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
             case BINARY_SUBSCR:
                 /* Implements TOS = TOS1[TOS]. */
                 /* get subscr */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get sequence */
-                pobj2 = PY_POP();
+                pobj2 = PM_POP();
 
                 /* XXX issue #10: create seq_getSubscript(); */
                 /* XXX index out of range exception? */
@@ -373,17 +373,17 @@ interpret(pPyFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (pobj1->od.od_type != OBJ_TYPE_INT)
                     {
-                        retval = PY_RET_EX_TYPE;
+                        retval = PM_RET_EX_TYPE;
                         break;
                     }
 
                     /* Get the character from the string */
-                    t8 = (U8)((pPyString_t)pobj2)->
-                                 val[((pPyInt_t)pobj1)->val];
+                    t8 = (U8)((pPmString_t)pobj2)->
+                                 val[((pPmInt_t)pobj1)->val];
 
                     /* Create a new string from the character */
                     retval = string_newFromChar(t8, &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a tuple */
@@ -392,13 +392,13 @@ interpret(pPyFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (pobj1->od.od_type != OBJ_TYPE_INT)
                     {
-                        retval = PY_RET_EX_TYPE;
+                        retval = PM_RET_EX_TYPE;
                         break;
                     }
                     /* get the tuple item */
                     /* XXX index out of range exception? */
-                    pobj3 = ((pPyTuple_t)pobj2)->val[
-                                ((pPyInt_t)pobj1)->val];
+                    pobj3 = ((pPmTuple_t)pobj2)->val[
+                                ((pPmInt_t)pobj1)->val];
                 }
 
                 /* if it's a list */
@@ -407,15 +407,15 @@ interpret(pPyFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (pobj1->od.od_type != OBJ_TYPE_INT)
                     {
-                        retval = PY_RET_EX_TYPE;
+                        retval = PM_RET_EX_TYPE;
                         break;
                     }
                     /* get the list item */
                     retval = list_getItem(pobj2,
-                                          (S16)(((pPyInt_t)
+                                          (S16)(((pPmInt_t)
                                                 pobj1)->val),
                                           &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a dict */
@@ -423,17 +423,17 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* get the dict item */
                     retval = dict_getItem(pobj2, pobj1, &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* TypeError; unsubscriptable object */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                 }
 
                 /* push item and continue */
-                PY_PUSH(pobj3);
+                PM_PUSH(pobj3);
                 continue;
 
             case SLICE_0:
@@ -443,7 +443,7 @@ interpret(pPyFunc_t pfunc)
                  */
 
                 /* get sequence */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
 
                 /* XXX if there's an obj_copy(), use here */
                 /* if it's a string */
@@ -456,24 +456,24 @@ interpret(pPyFunc_t pfunc)
                 else if (pobj1->od.od_type == OBJ_TYPE_TUP)
                 {
                     retval = tuple_copy(pobj1, &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a list */
                 else if (pobj1->od.od_type == OBJ_TYPE_LST)
                 {
                     retval = list_copy(pobj1, &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* TypeError; unhashable type */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
-                PY_PUSH(pobj2);
+                PM_PUSH(pobj2);
                 continue;
 
             case SLICE_1:
@@ -488,7 +488,7 @@ interpret(pPyFunc_t pfunc)
             case DELETE_SLICE_2:
             case DELETE_SLICE_3:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case INPLACE_ADD:
@@ -497,20 +497,20 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if int is constant, make new result */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val +
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val +
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                     }
 
                     /* else result stores in-place */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val +=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val +=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                     }
                     continue;
@@ -519,7 +519,7 @@ interpret(pPyFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -529,20 +529,20 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val -
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val -
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val -=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val -=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                     }
                     continue;
@@ -551,7 +551,7 @@ interpret(pPyFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -561,20 +561,20 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val *
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val *
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val *=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val *=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                     }
                     continue;
@@ -583,7 +583,7 @@ interpret(pPyFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
@@ -592,33 +592,33 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  != OBJ_TYPE_INT)
                     || (TOS1->od.od_type != OBJ_TYPE_INT))
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
                 /* ZeroDivisionError */
-                if (((pPyInt_t)TOS)->val == 0)
+                if (((pPmInt_t)TOS)->val == 0)
                 {
-                    retval = PY_RET_EX_ZDIV;
+                    retval = PM_RET_EX_ZDIV;
                     break;
                 }
 
                 /* if target obj is a constant obj */
                 if (TOS1->od.od_const) {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val /
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val /
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                 }
 
                 /* otherwise do true in-place operation */
                 else
                 {
-                    ((pPyInt_t)TOS1)->val /=
-                            ((pPyInt_t)TOS)->val;
+                    ((pPmInt_t)TOS1)->val /=
+                            ((pPmInt_t)TOS)->val;
                     SP--;
                 }
                 continue;
@@ -628,42 +628,42 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  != OBJ_TYPE_INT)
                     || (TOS1->od.od_type != OBJ_TYPE_INT))
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
                 /* ZeroDivisionError */
-                if (((pPyInt_t)TOS)->val == 0)
+                if (((pPmInt_t)TOS)->val == 0)
                 {
-                    retval = PY_RET_EX_ZDIV;
+                    retval = PM_RET_EX_ZDIV;
                     break;
                 }
 
                 /* if target obj is a constant obj */
                 if (TOS1->od.od_const) {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val %
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val %
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                 }
 
                 /* otherwise do true in-place operation */
                 else
                 {
-                    ((pPyInt_t)TOS1)->val %=
-                            ((pPyInt_t)TOS)->val;
+                    ((pPmInt_t)TOS1)->val %=
+                            ((pPmInt_t)TOS)->val;
                     SP--;
                 }
                 continue;
 
             case STORE_SUBSCR:
                 /* implements TOS1[TOS] = TOS2 */
-                pobj1 = PY_POP();
-                pobj2 = PY_POP();
-                pobj3 = PY_POP();
+                pobj1 = PM_POP();
+                pobj2 = PM_POP();
+                pobj3 = PM_POP();
 
                 /* if it's a list */
                 if (pobj2->od.od_type == OBJ_TYPE_LST)
@@ -671,13 +671,13 @@ interpret(pPyFunc_t pfunc)
                     /* ensure subscr is an int */
                     if (pobj1->od.od_type != OBJ_TYPE_INT)
                     {
-                        PY_ERR(__LINE__);
+                        PM_ERR(__LINE__);
                     }
                     /* set the list item */
                     retval = list_setItem(pobj2,
-                                 (S16)(((pPyInt_t)pobj1)->val),
+                                 (S16)(((pPmInt_t)pobj1)->val),
                                  pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                     continue;
                 }
 
@@ -686,17 +686,17 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* set the dict item */
                     retval = dict_setItem(pobj2, pobj1, pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                     continue;
                 }
 
                 /* TypeError for all else */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case DELETE_SUBSCR:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case BINARY_LSHIFT:
@@ -704,18 +704,18 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val <<
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val <<
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case BINARY_RSHIFT:
@@ -723,18 +723,18 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val >>
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val >>
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case BINARY_AND:
@@ -742,18 +742,18 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val &
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val &
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case BINARY_XOR:
@@ -761,18 +761,18 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val ^
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val ^
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case BINARY_OR:
@@ -780,18 +780,18 @@ interpret(pPyFunc_t pfunc)
                 if ((TOS->od.od_type  == OBJ_TYPE_INT)
                     && (TOS1->od.od_type == OBJ_TYPE_INT))
                 {
-                    pobj1 = PY_POP();
+                    pobj1 = PM_POP();
                     retval = int_new(
-                                ((pPyInt_t)PY_POP())->val |
-                                ((pPyInt_t)pobj1)->val,
+                                ((pPmInt_t)PM_POP())->val |
+                                ((pPmInt_t)pobj1)->val,
                                 &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
-                    PY_PUSH(pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
                     continue;
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case INPLACE_POWER:
@@ -801,7 +801,7 @@ interpret(pPyFunc_t pfunc)
             case PRINT_ITEM_TO:
             case PRINT_NEWLINE_TO:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case INPLACE_LSHIFT:
@@ -811,28 +811,28 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val <<
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val <<
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                         continue;
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val <<=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val <<=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                         continue;
                     }
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case INPLACE_RSHIFT:
@@ -842,28 +842,28 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val >>
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val >>
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                         continue;
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val >>=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val >>=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                         continue;
                     }
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case INPLACE_AND:
@@ -873,28 +873,28 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val &
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val &
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                         continue;
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val &=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val &=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                         continue;
                     }
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case INPLACE_XOR:
@@ -904,28 +904,28 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val ^
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val ^
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                         continue;
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val ^=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val ^=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                         continue;
                     }
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case INPLACE_OR:
@@ -935,45 +935,45 @@ interpret(pPyFunc_t pfunc)
                 {
                     /* if target obj is a constant obj */
                     if (TOS1->od.od_const) {
-                        pobj1 = PY_POP();
+                        pobj1 = PM_POP();
                         retval = int_new(
-                                    ((pPyInt_t)PY_POP())->val |
-                                    ((pPyInt_t)pobj1)->val,
+                                    ((pPmInt_t)PM_POP())->val |
+                                    ((pPmInt_t)pobj1)->val,
                                     &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                         continue;
                     }
 
                     /* otherwise do true in-place operation */
                     else
                     {
-                        ((pPyInt_t)TOS1)->val |=
-                                ((pPyInt_t)TOS)->val;
+                        ((pPmInt_t)TOS1)->val |=
+                                ((pPmInt_t)TOS)->val;
                         SP--;
                         continue;
                     }
                 }
 
                 /* else it's a TypeError */
-                retval = PY_RET_EX_TYPE;
+                retval = PM_RET_EX_TYPE;
                 break;
 
             case BREAK_LOOP:
                 {
-                    pPyBlock_t pb1 = FP->fo_blockstack;
+                    pPmBlock_t pb1 = FP->fo_blockstack;
 
                     /* ensure there's a block */
                     if (pb1 == C_NULL)
                     {
-                        PY_ERR(__LINE__);
+                        PM_ERR(__LINE__);
                     }
 
                     /* delete blocks until first loop block */
                     while ((pb1->b_type != B_LOOP)
                            && (pb1->next != C_NULL))
                     {
-                        pobj2 = (pPyObj_t)pb1;
+                        pobj2 = (pPmObj_t)pb1;
                         pb1 = pb1->next;
                         heap_freeChunk(pobj2);
                     }
@@ -983,33 +983,33 @@ interpret(pPyFunc_t pfunc)
                     IP = pb1->b_handler;
                     /* pop and delete this block */
                     FP->fo_blockstack = pb1->next;
-                    heap_freeChunk((pPyObj_t)pb1);
+                    heap_freeChunk((pPmObj_t)pb1);
                 }
                 continue;
 
             case LOAD_LOCALS:
                 /* pushes local attrs dict of current frame */
                 /* XXX does not copy fo_locals to attrs */
-                PY_PUSH((pPyObj_t)FP->fo_attrs);
+                PM_PUSH((pPmObj_t)FP->fo_attrs);
                 continue;
 
             case RETURN_VALUE:
                 /* XXX error check: stack should be empty */
                 /* get expiring frame's TOS */
-                pobj2 = PY_POP();
+                pobj2 = PM_POP();
                 /* keep ref of expiring frame */
-                pobj1 = (pPyObj_t)FP;
+                pobj1 = (pPmObj_t)FP;
                 /* if no previous frame, quit interpreter */
                 if (FP->fo_back == C_NULL)
                 {
                     gVmGlobal.interpctrl = INTERP_CTRL_EXIT;
-                    retval = PY_RET_OK;
+                    retval = PM_RET_OK;
                     break;
                 }
                 /* else return to previous frame */
                 FP = FP->fo_back;
                 /* push frame's return val */
-                PY_PUSH(pobj2);
+                PM_PUSH(pobj2);
                 /* deallocate expired frame */
                 heap_freeChunk(pobj1);
                 continue;
@@ -1017,13 +1017,13 @@ interpret(pPyFunc_t pfunc)
             case IMPORT_STAR:
             case EXEC_STMT:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case POP_BLOCK:
                 {
                     /* get ptr to top block */
-                    pPyBlock_t pb = FP->fo_blockstack;
+                    pPmBlock_t pb = FP->fo_blockstack;
                     /* if there's a block */
                     if (pb != C_NULL)
                     {
@@ -1032,19 +1032,19 @@ interpret(pPyFunc_t pfunc)
                         /* set stack to previous level */
                         SP = pb->b_sp;
                         /* delete block */
-                        heap_freeChunk((pPyObj_t)pb);
+                        heap_freeChunk((pPmObj_t)pb);
                         continue;
                     }
 
                     /* SystemError, nonexistent block */
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
 
             case END_FINALLY:
             case BUILD_CLASS:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
 
@@ -1057,33 +1057,33 @@ interpret(pPyFunc_t pfunc)
                 /* get name index */
                 t16 = GET_ARG();
                 /* get value */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in current frame's attrs dict */
-                retval = dict_setItem((pPyObj_t)FP->fo_attrs,
+                retval = dict_setItem((pPmObj_t)FP->fo_attrs,
                                       pobj2,
                                       pobj1);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
                 continue;
 
             case DELETE_NAME:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case UNPACK_SEQUENCE:
                 /* get expected size of the sequence */
                 t16 = GET_ARG();
                 /* get ptr to sequence */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* push objs onto stack based on type */
                 if (pobj1->od.od_type == OBJ_TYPE_TUP)
                 {
                     for (; --t16 >= 0; )
                     {
                         /* XXX should copy simple objs ? */
-                        PY_PUSH(((pPyTuple_t)pobj1)->val[t16]);
+                        PM_PUSH(((pPmTuple_t)pobj1)->val[t16]);
                     }
                 }
                 else if (pobj1->od.od_type == OBJ_TYPE_LST)
@@ -1094,8 +1094,8 @@ interpret(pPyFunc_t pfunc)
                         retval = list_getItem(pobj1,
                                               t16,
                                               &pobj2);
-                        PY_BREAK_IF_ERROR(retval);
-                        PY_PUSH(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
+                        PM_PUSH(pobj2);
                     }
                 }
                 continue;
@@ -1105,61 +1105,61 @@ interpret(pPyFunc_t pfunc)
                 /* get names index */
                 t16 = GET_ARG();
                 /* get obj */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get attrs dict from obj */
                 if ((pobj1->od.od_type == OBJ_TYPE_FXN)
                     || (pobj1->od.od_type == OBJ_TYPE_MOD))
                 {
-                    pobj1 = (pPyObj_t)((pPyFunc_t)pobj1)->
+                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
                                     f_attrs;
                 }
                 else if ((pobj1->od.od_type == OBJ_TYPE_CLO)
                          || (pobj1->od.od_type == OBJ_TYPE_CLI)
                          || (pobj1->od.od_type == OBJ_TYPE_EXN))
                 {
-                    pobj1 = (pPyObj_t)((pPyClass_t)pobj1)->cl_attrs;
+                    pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
                 /* Other types result in an AttributeError */
                 else
                 {
-                    retval = PY_RET_EX_ATTR;
+                    retval = PM_RET_EX_ATTR;
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
                 if (pobj1->od.od_type != OBJ_TYPE_DIC)
                 {
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
                 /* get name/key obj */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in obj's dict */
-                retval = dict_setItem(pobj1, pobj2, PY_POP());
-                PY_BREAK_IF_ERROR(retval);
+                retval = dict_setItem(pobj1, pobj2, PM_POP());
+                PM_BREAK_IF_ERROR(retval);
                 continue;
 
             case DELETE_ATTR:
                 /* SystemError, unimplemented opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case STORE_GLOBAL:
                 /* get name index */
                 t16 = GET_ARG();
                 /* get value */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in global dict */
-                retval = dict_setItem((pPyObj_t)FP->fo_globals,
+                retval = dict_setItem((pPmObj_t)FP->fo_globals,
                                       pobj2,
                                       pobj1);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
                 continue;
 
             case DELETE_GLOBAL:
                 /* SystemError, unimplemented opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case DUP_TOPX:
@@ -1167,28 +1167,28 @@ interpret(pPyFunc_t pfunc)
                 if (t16 == 1)
                 {
                     pobj1 = TOS;
-                    PY_PUSH(pobj1);
+                    PM_PUSH(pobj1);
                 }
                 else if (t16 == 2)
                 {
                     pobj1 = TOS;
                     pobj2 = TOS1;
-                    PY_PUSH(pobj1);
-                    PY_PUSH(pobj2);
+                    PM_PUSH(pobj1);
+                    PM_PUSH(pobj2);
                 }
                 else if (t16 == 3)
                 {
                     pobj1 = TOS;
                     pobj2 = TOS1;
                     pobj3 = TOS2;
-                    PY_PUSH(pobj1);
-                    PY_PUSH(pobj2);
-                    PY_PUSH(pobj3);
+                    PM_PUSH(pobj1);
+                    PM_PUSH(pobj2);
+                    PM_PUSH(pobj3);
                 }
                 else
                 {
                     /* Python compiler is responsible for keeping arg <= 3 */
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
                 continue;
@@ -1197,7 +1197,7 @@ interpret(pPyFunc_t pfunc)
                 /* get const's index in CO */
                 t16 = GET_ARG();
                 /* push const on stack */
-                PY_PUSH(FP->fo_func->f_co->co_consts->val[t16]);
+                PM_PUSH(FP->fo_func->f_co->co_consts->val[t16]);
                 continue;
 
             case LOAD_NAME:
@@ -1206,115 +1206,115 @@ interpret(pPyFunc_t pfunc)
                 /* get name from names tuple */
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
                 /* get value from frame's attrs dict */
-                retval = dict_getItem((pPyObj_t)FP->fo_attrs,
+                retval = dict_getItem((pPmObj_t)FP->fo_attrs,
                                      pobj1,
                                      &pobj2);
-                if (retval == PY_RET_EX_KEY)
+                if (retval == PM_RET_EX_KEY)
                 {
                     /* get val from globals */
                     retval = dict_getItem(
-                                (pPyObj_t)FP->fo_globals,
+                                (pPmObj_t)FP->fo_globals,
                                 pobj1,
                                 &pobj2);
-                    if (retval == PY_RET_EX_KEY)
+                    if (retval == PM_RET_EX_KEY)
                     {
                         /* get val from builtins */
-                        retval = dict_getItem(PY_PBUILTINS, pobj1, &pobj2);
-                        if (retval == PY_RET_EX_KEY)
+                        retval = dict_getItem(PM_PBUILTINS, pobj1, &pobj2);
+                        if (retval == PM_RET_EX_KEY)
                         {
                             /* name not defined, raise NameError */
-                            retval = PY_RET_EX_NAME;
+                            retval = PM_RET_EX_NAME;
                             break;
                         }
                     }
                 }
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
                 continue;
 
             case BUILD_TUPLE:
                 /* get num items */
                 t16 = GET_ARG();
                 retval = tuple_new(t16, &pobj1);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
 
                 /* fill tuple with ptrs to objs */
                 for (; --t16 >= 0;)
                 {
-                    ((pPyTuple_t)pobj1)->val[t16] = PY_POP();
+                    ((pPmTuple_t)pobj1)->val[t16] = PM_POP();
                 }
-                PY_PUSH(pobj1);
+                PM_PUSH(pobj1);
                 continue;
 
             case BUILD_LIST:
                 t16 = GET_ARG();
                 retval = list_new(&pobj1);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
                 for (; --t16 >= 0;)
                 {
                     /* get obj */
-                    pobj2 = PY_POP();
+                    pobj2 = PM_POP();
                     /* insert obj into list */
                     retval = list_insert(pobj1, pobj2, 0);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
                 /* push list onto stack */
-                PY_PUSH(pobj1);
+                PM_PUSH(pobj1);
                 continue;
 
             case BUILD_MAP:
                 retval = dict_new(&pobj1);
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj1);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj1);
                 continue;
 
             case LOAD_ATTR:
                 t16 = GET_ARG();
                 /* get obj that has the attrs */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get attrs dict from obj */
                 if ((pobj1->od.od_type == OBJ_TYPE_FXN) ||
                     (pobj1->od.od_type == OBJ_TYPE_MOD))
                 {
-                    pobj1 = (pPyObj_t)((pPyFunc_t)pobj1)->
+                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
                                     f_attrs;
                 }
                 else if ((pobj1->od.od_type == OBJ_TYPE_CLO)
                          || (pobj1->od.od_type == OBJ_TYPE_CLI)
                          || (pobj1->od.od_type == OBJ_TYPE_EXN))
                 {
-                    pobj1 = (pPyObj_t)((pPyClass_t)pobj1)->cl_attrs;
+                    pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
                 /* Other types result in an AttributeError */
                 else
                 {
-                    retval = PY_RET_EX_ATTR;
+                    retval = PM_RET_EX_ATTR;
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
                 if (pobj1->od.od_type != OBJ_TYPE_DIC)
                 {
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
                 /* get name */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* push attr with given name onto stack */
                 retval = dict_getItem(pobj1, pobj2, &pobj3);
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj3);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj3);
                 continue;
 
             case COMPARE_OP:
-                retval = PY_RET_OK;
-                pobj1 = PY_POP();
-                pobj2 = PY_POP();
+                retval = PM_RET_OK;
+                pobj1 = PM_POP();
+                pobj2 = PM_POP();
                 t16 = GET_ARG();
                 if ((pobj1->od.od_type == OBJ_TYPE_INT) &&
                     (pobj2->od.od_type == OBJ_TYPE_INT))
                 {
-                    S32 a = ((pPyInt_t)pobj2)->val;
-                    S32 b = ((pPyInt_t)pobj1)->val;
+                    S32 a = ((pPmInt_t)pobj2)->val;
+                    S32 b = ((pPmInt_t)pobj1)->val;
 
                     switch (t16)
                     {
@@ -1325,45 +1325,45 @@ interpret(pPyFunc_t pfunc)
                         case COMP_GT: t8 = (a >  b); break;
                         case COMP_GE: t8 = (a >= b); break;
                         case COMP_IN: /* fallthrough */
-                        case COMP_NOT_IN: retval = PY_RET_EX_TYPE; break;
+                        case COMP_NOT_IN: retval = PM_RET_EX_TYPE; break;
                         case COMP_IS: t8 = (pobj1 == pobj2); break;
                         case COMP_IS_NOT: t8 = (pobj1 != pobj2); break;
                         /* Other compares are not yet supported */
-                        default: retval = PY_RET_EX_SYS; break;
+                        default: retval = PM_RET_EX_SYS; break;
                     }
-                    PY_BREAK_IF_ERROR(retval);
-                    pobj3 = (t8) ? PY_TRUE : PY_FALSE;
+                    PM_BREAK_IF_ERROR(retval);
+                    pobj3 = (t8) ? PM_TRUE : PM_FALSE;
                 }
                 else if (t16 == COMP_EQ)
                 {
                     if (obj_compare(pobj1, pobj2) == C_SAME)
                     {
-                        pobj3 = PY_TRUE;
+                        pobj3 = PM_TRUE;
                     }
                     else
                     {
-                        pobj3 = PY_FALSE;
+                        pobj3 = PM_FALSE;
                     }
                 }
                 else if (t16 == COMP_NE)
                 {
                     if (obj_compare(pobj1, pobj2) == C_DIFFER)
                     {
-                        pobj3 = PY_TRUE;
+                        pobj3 = PM_TRUE;
                     }
                     else
                     {
-                        pobj3 = PY_FALSE;
+                        pobj3 = PM_FALSE;
                     }
                 }
 
                 /* Other compare not implemented yet */
                 else
                 {
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
-                PY_PUSH(pobj3);
+                PM_PUSH(pobj3);
                 continue;
 
             case IMPORT_NAME:
@@ -1374,7 +1374,7 @@ interpret(pPyFunc_t pfunc)
                 /* XXX check if module is already loaded */
                 /* load module from image */
                 retval = mod_import(pobj1, &pobj2);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
                 /* module overwrites None on stack */
                 TOS = pobj2;
 
@@ -1392,14 +1392,14 @@ interpret(pPyFunc_t pfunc)
                  * bytecode with new RETURN_EMPTY bcode.
                  * or C. recurse into interp...
                  */
-                retval = interpret((pPyFunc_t)pobj2);
-                PY_BREAK_IF_ERROR(retval);
+                retval = interpret((pPmFunc_t)pobj2);
+                PM_BREAK_IF_ERROR(retval);
                 gVmGlobal.interpctrl = INTERP_CTRL_CONT;
                 continue;
 
             case IMPORT_FROM:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case JUMP_FORWARD:
@@ -1433,45 +1433,45 @@ interpret(pPyFunc_t pfunc)
                 /* get skip bytes */
                 t16 = GET_ARG();
                 /* get current index */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 /* get the sequence */
-                pobj2 = PY_POP();
+                pobj2 = PM_POP();
 
                 /* ensure index is an int */
                 if (pobj1->od.od_type != OBJ_TYPE_INT)
                 {
-                    retval = PY_RET_EX_INDX;
+                    retval = PM_RET_EX_INDX;
                     break;
                 }
                 /* dup a const int to allow it to incr (TRASH)*/
                 if (pobj1->od.od_const != 0)
                 {
                     retval = int_dup(pobj1, &pobj1);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a tuple */
                 if (pobj2->od.od_type == OBJ_TYPE_TUP)
                 {
                     /* if tup is exhausted, incr IP by delta */
-                    if (((pPyInt_t)pobj1)->val >=
-                        ((pPyTuple_t)pobj2)->length)
+                    if (((pPmInt_t)pobj1)->val >=
+                        ((pPmTuple_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
                     }
 
                     /* get item, incr counter */
-                    pobj3 = ((pPyTuple_t)pobj2)->val[
-                                ((pPyInt_t)pobj1)->val++];
+                    pobj3 = ((pPmTuple_t)pobj2)->val[
+                                ((pPmInt_t)pobj1)->val++];
                 }
 
                 /* if it's a list */
                 else if (pobj2->od.od_type == OBJ_TYPE_LST)
                 {
                     /* if list is exhausted, incr IP by delta */
-                    if (((pPyInt_t)pobj1)->val >=
-                        ((pPyList_t)pobj2)->length)
+                    if (((pPmInt_t)pobj1)->val >=
+                        ((pPmList_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
@@ -1479,12 +1479,12 @@ interpret(pPyFunc_t pfunc)
 
                     /* get item */
                     retval = list_getItem(pobj2,
-                                          (S16)(((pPyInt_t)
+                                          (S16)(((pPmInt_t)
                                                 pobj1)->val),
                                           &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                     /* incr counter */
-                    ((pPyInt_t)pobj1)->val++;
+                    ((pPmInt_t)pobj1)->val++;
                 }
 
                 /* XXX if it's a string */
@@ -1492,14 +1492,14 @@ interpret(pPyFunc_t pfunc)
                 /* TypeError: loop over non-sequence */
                 else
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
                 /* push tup, counter and item */
-                PY_PUSH(pobj2);
-                PY_PUSH(pobj1);
-                PY_PUSH(pobj3);
+                PM_PUSH(pobj2);
+                PM_PUSH(pobj1);
+                PM_PUSH(pobj3);
                 continue;
 
             case LOAD_GLOBAL:
@@ -1507,27 +1507,27 @@ interpret(pPyFunc_t pfunc)
                 t16 = GET_ARG();
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
                 /* try globals first */
-                retval = dict_getItem((pPyObj_t)FP->fo_globals,
+                retval = dict_getItem((pPmObj_t)FP->fo_globals,
                                       pobj1,
                                       &pobj2);
                 /* if that didn't work, try builtins */
-                if (retval == PY_RET_EX_KEY)
+                if (retval == PM_RET_EX_KEY)
                 {
-                    retval = dict_getItem(PY_PBUILTINS, pobj1, &pobj2);
+                    retval = dict_getItem(PM_PBUILTINS, pobj1, &pobj2);
                     /* no such global, raise NameError */
-                    if (retval == PY_RET_EX_KEY)
+                    if (retval == PM_RET_EX_KEY)
                     {
-                        retval = PY_RET_EX_NAME;
+                        retval = PM_RET_EX_NAME;
                         break;
                     }
                 }
-                PY_BREAK_IF_ERROR(retval);
-                PY_PUSH(pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
                 continue;
 
             case CONTINUE_LOOP:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case SETUP_LOOP:
@@ -1537,40 +1537,40 @@ interpret(pPyFunc_t pfunc)
                 /* get block span (bytes) */
                 t16 = GET_ARG();
                 /* create block */
-                retval = heap_getChunk(sizeof(PyBlock_t), &pchunk);
-                PY_BREAK_IF_ERROR(retval);
-                pobj1 = (pPyObj_t)pchunk;
-                ((pPyBlock_t)pobj1)->od.od_type = OBJ_TYPE_BLK;
+                retval = heap_getChunk(sizeof(PmBlock_t), &pchunk);
+                PM_BREAK_IF_ERROR(retval);
+                pobj1 = (pPmObj_t)pchunk;
+                ((pPmBlock_t)pobj1)->od.od_type = OBJ_TYPE_BLK;
                 /* store current stack pointer */
-                ((pPyBlock_t)pobj1)->b_sp = SP;
+                ((pPmBlock_t)pobj1)->b_sp = SP;
                 /* default handler is to exit block/loop */
-                ((pPyBlock_t)pobj1)->b_handler = IP + t16;
-                ((pPyBlock_t)pobj1)->b_type = B_LOOP;
+                ((pPmBlock_t)pobj1)->b_handler = IP + t16;
+                ((pPmBlock_t)pobj1)->b_type = B_LOOP;
                 /* insert block into blockstack */
-                ((pPyBlock_t)pobj1)->next = FP->fo_blockstack;
-                FP->fo_blockstack = (pPyBlock_t)pobj1;
+                ((pPmBlock_t)pobj1)->next = FP->fo_blockstack;
+                FP->fo_blockstack = (pPmBlock_t)pobj1;
                 continue;
             }
 
             case SETUP_EXCEPT:
             case SETUP_FINALLY:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case LOAD_FAST:
                 t16 = GET_ARG();
-                PY_PUSH(FP->fo_locals[t16]);
+                PM_PUSH(FP->fo_locals[t16]);
                 continue;
 
             case STORE_FAST:
                 t16 = GET_ARG();
-                FP->fo_locals[t16] = PY_POP();
+                FP->fo_locals[t16] = PM_POP();
                 continue;
 
             case DELETE_FAST:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
             case SET_LINENO:
@@ -1583,31 +1583,31 @@ interpret(pPyFunc_t pfunc)
                 /* Only supports taking 1 arg for now */
                 if (t16 != 1)
                 {
-                    retval = PY_RET_EX_SYS;
+                    retval = PM_RET_EX_SYS;
                     break;
                 }
 
                 /* Raise type error if TOS is not an exception object */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 if (pobj1->od.od_type != OBJ_TYPE_EXN)
                 {
-                    retval = PY_RET_EX_TYPE;
+                    retval = PM_RET_EX_TYPE;
                     break;
                 }
 
                 /* Push the traceback, parameter and exception object */
-                PY_PUSH(PY_NONE);
-                PY_PUSH(PY_NONE);
-                PY_PUSH(pobj1);
+                PM_PUSH(PM_NONE);
+                PM_PUSH(PM_NONE);
+                PM_PUSH(pobj1);
 
                 /* Get the exception's code attr */
-                retval = dict_getItem((pPyObj_t)((pPyClass_t)pobj1)->cl_attrs,
-                                      PY_CODE_STR,
+                retval = dict_getItem((pPmObj_t)((pPmClass_t)pobj1)->cl_attrs,
+                                      PM_CODE_STR,
                                       &pobj2);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
 
                 /* Get the value from the code int */
-                retval = (U8)(((pPyInt_t)pobj2)->val & 0xFF);
+                retval = (U8)(((pPmInt_t)pobj2)->val & 0xFF);
 
                 /* Raise exception by breaking with retval set to code */
                 break;
@@ -1618,20 +1618,20 @@ interpret(pPyFunc_t pfunc)
                 /* ensure no keyword args */
                 if ((t16 > 255) || (t16 < 0))
                 {
-                    PY_ERR(__LINE__);
+                    PM_ERR(__LINE__);
                 }
                 /* get the func */
                 pobj1 = STACK(t16);
 
                 /* if it's regular func (not native) */
-                if (((pPyFunc_t)pobj1)->f_co->od.od_type ==
+                if (((pPmFunc_t)pobj1)->f_co->od.od_type ==
                     OBJ_TYPE_COB)
                 {
                     /* make frameObj from pCO */
                     retval = frame_new(pobj1, &pobj2);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                     /* frame's globals is same as parent's */
-                    ((pPyFrame_t)pobj2)->fo_globals =
+                    ((pPmFrame_t)pobj2)->fo_globals =
                             FP->fo_globals;
                     /* pass args to new frame */
                     while (--t16 >= 0)
@@ -1641,25 +1641,25 @@ interpret(pPyFunc_t pfunc)
                          * args are pushed left to right,
                          * so pop right to left.
                          */
-                        ((pPyFrame_t)pobj2)->fo_locals[t16] =
-                                PY_POP();
+                        ((pPmFrame_t)pobj2)->fo_locals[t16] =
+                                PM_POP();
                     }
                     /* pop func obj */
-                    pobj3 = PY_POP();
+                    pobj3 = PM_POP();
                     /* keep ref to current frame */
-                    ((pPyFrame_t)pobj2)->fo_back = FP;
+                    ((pPmFrame_t)pobj2)->fo_back = FP;
                     /* set new frame */
-                    FP = (pPyFrame_t)pobj2;
+                    FP = (pPmFrame_t)pobj2;
                 }
 
                 /* if it's native func */
-                else if (((pPyFunc_t)pobj1)->f_co->od.od_type ==
+                else if (((pPmFunc_t)pobj1)->f_co->od.od_type ==
                          OBJ_TYPE_NOB)
                 {
                     /* ensure num args fits in native frame */
                     if (t16 > NATIVE_NUM_LOCALS)
                     {
-                        PY_ERR(__LINE__);
+                        PM_ERR(__LINE__);
                     }
 
                     /* keep numargs */
@@ -1669,11 +1669,11 @@ interpret(pPyFunc_t pfunc)
                     while (--t16 >= 0)
                     {
                         gVmGlobal.nativeframe.nf_locals[t16] =
-                                PY_POP();
+                                PM_POP();
                     }
                     /* get native function index */
-                    pobj2 = (pPyObj_t)((pPyFunc_t)pobj1)->f_co;
-                    t16 = ((pPyNo_t)pobj2)->no_funcindx;
+                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
+                    t16 = ((pPmNo_t)pobj2)->no_funcindx;
 
                     /*
                      * CALL NATIVE FXN
@@ -1695,7 +1695,7 @@ interpret(pPyFunc_t pfunc)
 
                     /* pop func, push result */
                     TOS = gVmGlobal.nativeframe.nf_stack;
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                 }
                 continue;
 
@@ -1703,25 +1703,25 @@ interpret(pPyFunc_t pfunc)
                 /* get num default args to fxn */
                 t16 = GET_ARG();
                 /* load func from CO */
-                pobj1 = PY_POP();
+                pobj1 = PM_POP();
                 retval = func_new(pobj1, &pobj2);
-                PY_BREAK_IF_ERROR(retval);
+                PM_BREAK_IF_ERROR(retval);
                 /* put any default args in a tuple */
                 if (t16 > 0)
                 {
                     retval = tuple_new(t16, &pobj3);
-                    PY_BREAK_IF_ERROR(retval);
+                    PM_BREAK_IF_ERROR(retval);
                     while (--t16 >= 0)
                     {
-                        ((pPyTuple_t)pobj3)->val[t16] =
-                                PY_POP();
+                        ((pPmTuple_t)pobj3)->val[t16] =
+                                PM_POP();
                     }
                     /* set func's default args */
-                    ((pPyFunc_t)pobj2)->f_defaultargs =
-                                ((pPyTuple_t)pobj3);
+                    ((pPmFunc_t)pobj2)->f_defaultargs =
+                                ((pPmTuple_t)pobj3);
                 }
                 /* push func obj */
-                PY_PUSH(pobj2);
+                PM_PUSH(pobj2);
                 continue;
 
             case BUILD_SLICE:
@@ -1735,7 +1735,7 @@ interpret(pPyFunc_t pfunc)
             case EXTENDED_ARG:
             default:
                 /* SystemError, unknown opcode */
-                retval = PY_RET_EX_SYS;
+                retval = PM_RET_EX_SYS;
                 break;
 
         } /* switch (interpret) */

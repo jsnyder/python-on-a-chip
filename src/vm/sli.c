@@ -22,7 +22,7 @@
 /**
  * Standard Library Interface
  *
- * Py requires a few functions from a few different
+ * PyMite requires a few functions from a few different
  * standard C libraries (memory, string, etc).
  *
  * Log:
@@ -34,7 +34,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************

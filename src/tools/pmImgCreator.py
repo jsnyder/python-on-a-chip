@@ -107,8 +107,8 @@ REMOVE_DOC_STR = 0
 # XXX remap bcode values to make parsing easier
 REMAP_BCODE_VALS = 0
 
-# Py obj descriptor type constants
-# Must match PyType_e in py.h
+# Pm obj descriptor type constants
+# Must match PmType_e in pm.h
 OBJ_TYPE_NON = 0x00     # None
 OBJ_TYPE_INT = 0x01     # Signed integer
 OBJ_TYPE_FLT = 0x02     # Floating point 32b
@@ -303,7 +303,7 @@ class PmImgCreator:
                                     " * value of zero denotes the stdlib.\n"
                                     " * This function should not be called.\n"
                                     " */\n"
-                                    "return PY_RET_EX_SYS;\n"
+                                    "return PM_RET_EX_SYS;\n"
                                    ))
 
         # for each src file, convert and format
@@ -766,7 +766,7 @@ class PmImgCreator:
                         " * @file    %s\n"
                         " */\n\n"
                         "#define __IN_LIBNATIVE_C__\n"
-                        "#include \"py.h\"\n\n"
+                        "#include \"pm.h\"\n\n"
                         % (self.imgtarget,
                            time.ctime(time.time()),
                            self.nativeFilename
@@ -779,15 +779,15 @@ class PmImgCreator:
 
         # for each entry create fxn
         for (funcname, funcstr) in self.nativetable:
-            fileBuff.append("static PyReturn_t\n"
-                            "%s(pPyFrame_t pframe, signed char numargs)\n"
+            fileBuff.append("static PmReturn_t\n"
+                            "%s(pPmFrame_t pframe, signed char numargs)\n"
                             "{\n"
                             "%s\n"
                             "}\n\n" % (funcname, funcstr))
 
         # create fxn table
         fileBuff.append("/* native function lookup table */\n"
-                        "PyReturn_t (* %s[])(pPyFrame_t, signed char) =\n"
+                        "PmReturn_t (* %s[])(pPmFrame_t, signed char) =\n"
                         "{\n" % (NATIVE_TABLE_NAME[self.imgtarget]))
 
         # put all native funcs in the table

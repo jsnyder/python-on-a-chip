@@ -36,7 +36,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -63,94 +63,94 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-int_dup(pPyObj_t pint, pPyObj_t * r_pint)
+PmReturn_t
+int_dup(pPmObj_t pint, pPmObj_t * r_pint)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
 
     /* allocate new int */
-    retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pint);
-    PY_RETURN_IF_ERROR(retval);
+    retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pint);
+    PM_RETURN_IF_ERROR(retval);
 
     /* copy value */
     (*r_pint)->od.od_type = OBJ_TYPE_INT;
-    ((pPyInt_t)*r_pint)->val = ((pPyInt_t)pint)->val;
+    ((pPmInt_t)*r_pint)->val = ((pPmInt_t)pint)->val;
     return retval;
 }
 
 
-PyReturn_t
-int_new(S32 n, pPyObj_t * r_pint)
+PmReturn_t
+int_new(S32 n, pPmObj_t * r_pint)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
 
     /* if n is 0,1,-1, return global int */
     if (n == 0) 
     {
-        *r_pint = PY_ZERO;
-        return PY_RET_OK;
+        *r_pint = PM_ZERO;
+        return PM_RET_OK;
     }
     if (n == 1) 
     {
-        *r_pint = PY_ONE;
-        return PY_RET_OK;
+        *r_pint = PM_ONE;
+        return PM_RET_OK;
     }
     if (n == -1) 
     {
-        *r_pint = PY_NEGONE;
-        return PY_RET_OK;
+        *r_pint = PM_NEGONE;
+        return PM_RET_OK;
     }
 
     /* XXX search for int in pool? */
 
     /* else create and return new int obj */
-    retval = heap_getChunk(sizeof(PyInt_t), (P_U8 *)r_pint);
-    PY_RETURN_IF_ERROR(retval);
+    retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pint);
+    PM_RETURN_IF_ERROR(retval);
     (*r_pint)->od.od_type = OBJ_TYPE_INT;
-    ((pPyInt_t)*r_pint)->val = n;
+    ((pPmInt_t)*r_pint)->val = n;
     return retval;
 }
 
 
-PyReturn_t
-int_positive(pPyObj_t pobj, pPyObj_t * r_pint)
+PmReturn_t
+int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
 {    
     /* ensure it's an int */
     if (pobj->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
     
     /* create new int obj */
-    return int_new(((pPyInt_t)pobj)->val, r_pint);
+    return int_new(((pPmInt_t)pobj)->val, r_pint);
 }
 
 
-PyReturn_t
-int_negative(pPyObj_t pobj, pPyObj_t * r_pint)
+PmReturn_t
+int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
 {
     /* ensure it's an int */
     if (pobj->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* create new int obj */
-    return int_new(-((pPyInt_t)pobj)->val, r_pint);
+    return int_new(-((pPmInt_t)pobj)->val, r_pint);
 }
 
 
-PyReturn_t
-int_bitInvert(pPyObj_t pobj, pPyObj_t * r_pint)
+PmReturn_t
+int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
 {
     /* ensure it's an int */
     if (pobj->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* create new int obj */
-    return int_new(~((pPyInt_t)pobj)->val, r_pint);
+    return int_new(~((pPmInt_t)pobj)->val, r_pint);
 }
 
 

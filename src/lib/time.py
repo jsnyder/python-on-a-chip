@@ -46,8 +46,8 @@
 #
 def clock():
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t ptime;
+    PmReturn_t retval;
+    pPmObj_t ptime;
 
     /* Create int obj with current time */
 #ifdef TARGET_DESKTOP

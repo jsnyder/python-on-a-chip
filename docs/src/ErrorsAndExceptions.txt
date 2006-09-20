@@ -23,10 +23,10 @@ developer and, to a lesser extent, a user manual for the PyMite user.
 Overview
 --------
 
-PyMite shall define the C data type ``PyReturn_t`` as the general type for
+PyMite shall define the C data type ``PmReturn_t`` as the general type for
 error codes that are returned from functions within the VM.  Since some
 functions need to return an exception and do not have access to the VM's
-stack, ``PyReturn_t`` is also capable of returning codes that indicate
+stack, ``PmReturn_t`` is also capable of returning codes that indicate
 when an exceptional situation has occured.  PyMite supports only a subset
 of the exception types that `Python has`_.
 
@@ -34,14 +34,14 @@ When a function returns a code to the VM that indicates an exceptional
 situation, the VM quits the normal interpreter loop and raises an exception.
 If the application program has prepared to catch the exception, the VM will
 do so; otherwise, an unhandled exception causes the interpreter loop to quit
-and the ``PyReturn_t`` code is returned to the calling environment.
+and the ``PmReturn_t`` code is returned to the calling environment.
 
 .. _`Python has`: http://docs.python.org/api/standardExceptions.html
 
 Errors
 ------
 
-The ``PyReturn_t`` data type is defined in ``src/vm/py.h``.
+The ``PmReturn_t`` data type is defined in ``src/vm/pm.h``.
 It is an enumeration that needs to fit within eight bits,
 which means there are only 256 values available for use.
 
@@ -51,16 +51,16 @@ status values.  The following table lists these values and their meanings:
     =================   =========   ========================================
     Name                Value       Meaning
     =================   =========   ========================================
-    PY_RET_OK           0x00        Everything is okay
-    PY_RET_NO           0xFF        General "no result"
-    PY_RET_ERR          0xFE        General failure
-    PY_RET_STUB         0xFD        Return value for stub function
+    PM_RET_OK           0x00        Everything is okay
+    PM_RET_NO           0xFF        General "no result"
+    PM_RET_ERR          0xFE        General failure
+    PM_RET_STUB         0xFD        Return value for stub function
     =================   =========   ========================================
 
 Exceptions
 ----------
 
-The other values of the ``PyReturn_t`` enumeration are used to indicate an
+The other values of the ``PmReturn_t`` enumeration are used to indicate an
 exceptional situation that will cause the VM to quit unless it is properly
 handled.  The list of exceptions implemented is determined partly by necessity
 and partly by an estimation of future necessity.  The following table lists
@@ -69,30 +69,30 @@ the return types that will lead to exceptions:
     =================   =========   ========================================
     Name                Value       Meaning
     =================   =========   ========================================
-    PY_RET_EX           0xE0        General exception
-    PY_RET_EX_EXIT      0xE1        System exit
-    PY_RET_EX_FLOAT     0xE2        Floating point error
-    PY_RET_EX_ZDIV      0xE3        Zero division error
-    PY_RET_EX_ASSRT     0xE4        Assertion error
-    PY_RET_EX_ATTR      0xE5        Attribute error
-    PY_RET_EX_IMPRT     0xE6        Import error
-    PY_RET_EX_INDX      0xE7        Index error
-    PY_RET_EX_KEY       0xE8        Key error
-    PY_RET_EX_MEM       0xE9        Memory error
-    PY_RET_EX_NAME      0xEA        Name error
-    PY_RET_EX_RUNTIME   0xEB        Runtime error
-    PY_RET_EX_SYNTAX    0xEC        Syntax error
-    PY_RET_EX_SYS       0xED        System error
-    PY_RET_EX_TYPE      0xEE        Type error
-    PY_RET_EX_VAL       0xEF        Value error
-    PY_RET_EX_WARN      0xD0        Warning
+    PM_RET_EX           0xE0        General exception
+    PM_RET_EX_EXIT      0xE1        System exit
+    PM_RET_EX_FLOAT     0xE2        Floating point error
+    PM_RET_EX_ZDIV      0xE3        Zero division error
+    PM_RET_EX_ASSRT     0xE4        Assertion error
+    PM_RET_EX_ATTR      0xE5        Attribute error
+    PM_RET_EX_IMPRT     0xE6        Import error
+    PM_RET_EX_INDX      0xE7        Index error
+    PM_RET_EX_KEY       0xE8        Key error
+    PM_RET_EX_MEM       0xE9        Memory error
+    PM_RET_EX_NAME      0xEA        Name error
+    PM_RET_EX_RUNTIME   0xEB        Runtime error
+    PM_RET_EX_SYNTAX    0xEC        Syntax error
+    PM_RET_EX_SYS       0xED        System error
+    PM_RET_EX_TYPE      0xEE        Type error
+    PM_RET_EX_VAL       0xEF        Value error
+    PM_RET_EX_WARN      0xD0        Warning
     =================   =========   ========================================
 
 In PyMite, there is only one kind of exception object and the PyMite user
 should not try to subclass it.  Instead, the user should create an instance
 of Exception and set the ``code`` attribute to a value that is unique among
 all other exceptions.  For built-in exception types, the ``code`` field has
-a value that is identical to the ``PyReturn_t`` value with the same meaning.
+a value that is identical to the ``PmReturn_t`` value with the same meaning.
 
 For example the built-in ``AssertionError`` is created like this in the
 builtins module::

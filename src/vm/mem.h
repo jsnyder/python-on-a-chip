@@ -56,7 +56,7 @@
  * If the number of memspaces changes,
  * you must modify NUM_MEMSPACES to match.
  */
-typedef enum PyMemSpace_e
+typedef enum PmMemSpace_e
 {
     MEMSPACE_RAM = 0,
     MEMSPACE_FLASH,
@@ -66,7 +66,7 @@ typedef enum PyMemSpace_e
     MEMSPACE_OTHER1,
     MEMSPACE_OTHER2,
     MEMSPACE_OTHER3
-} PyMemSpace_t, *pPyMemSpace_t;
+} PmMemSpace_t, *pPmMemSpace_t;
 
 
 /***************************************************************
@@ -91,7 +91,7 @@ typedef enum PyMemSpace_e
  * @return  byte from memory.
  *          paddr - points to the next byte
  */
-U8 mem_getByte(PyMemSpace_t memspace, P_U8 *paddr);
+U8 mem_getByte(PmMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Return the 2-byte word at the given address in memspace.
@@ -104,7 +104,7 @@ U8 mem_getByte(PyMemSpace_t memspace, P_U8 *paddr);
  * @return  word from memory.
  *          addr - points one byte past the word
  */
-INLINE U16 mem_getWord(PyMemSpace_t memspace, P_U8 *paddr);
+INLINE U16 mem_getWord(PmMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Return the 4-byte int at the given address in memspace.
@@ -117,7 +117,7 @@ INLINE U16 mem_getWord(PyMemSpace_t memspace, P_U8 *paddr);
  * @return  int from memory.
  *          addr - points one byte past the word
  */
-INLINE U32 mem_getInt(PyMemSpace_t memspace, P_U8 *paddr);
+INLINE U32 mem_getInt(PmMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Copy count number of bytes
@@ -132,7 +132,7 @@ INLINE U32 mem_getInt(PyMemSpace_t memspace, P_U8 *paddr);
  *          src, dest - point 1 past end of data
  * @see     sli_memcpy
  */
-void mem_copy(PyMemSpace_t memspace,
+void mem_copy(PmMemSpace_t memspace,
               P_U8 *pdest,
               P_U8 *psrc,
               U16 count);
@@ -147,6 +147,6 @@ void mem_copy(PyMemSpace_t memspace,
  * @param   psrc  ptr to source address
  * @return  Number of bytes in UTF-8 string.
  */
-U16 mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc);
+U16 mem_getNumUtf8Bytes(PmMemSpace_t memspace, P_U8 *psrc);
 
 #endif /* __MEM_H__ */

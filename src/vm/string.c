@@ -39,7 +39,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -60,7 +60,7 @@
 
 #if USE_STRING_CACHE
 /** String obj cachche: a list of all string objects. */
-static pPyString_t pstrcache = C_NULL;
+static pPmString_t pstrcache = C_NULL;
 #endif /* USE_STRING_CACHE */
 
 /***************************************************************
@@ -77,18 +77,18 @@ static pPyString_t pstrcache = C_NULL;
  * If not found, a new object is created and inserted
  * into the cache.
  */
-PyReturn_t
-string_create(PyMemSpace_t memspace,
+PmReturn_t
+string_create(PmMemSpace_t memspace,
               P_U8 * paddr,
               U8 isimg,
-              pPyObj_t * r_pstring)
+              pPmObj_t * r_pstring)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     U8 len = 0;
-    pPyString_t pstr = C_NULL;
+    pPmString_t pstr = C_NULL;
     P_U8 pdst = C_NULL;
 #if USE_STRING_CACHE
-    pPyString_t pcacheentry = C_NULL;
+    pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
     P_U8 pchunk;
 
@@ -109,9 +109,9 @@ string_create(PyMemSpace_t memspace,
     }
 
     /* get space for String obj */
-    retval = heap_getChunk(sizeof(PyString_t) + len, &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    pstr = (pPyString_t)pchunk;
+    retval = heap_getChunk(sizeof(PmString_t) + len, &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pstr = (pPmString_t)pchunk;
 
     /* fill the string obj */
     pstr->od.od_type = OBJ_TYPE_STR;
@@ -137,10 +137,10 @@ string_create(PyMemSpace_t memspace,
         if (string_compare(pcacheentry, pstr) == C_SAME)
         {
             /* free the string */
-            heap_freeChunk((pPyObj_t)pstr);
+            heap_freeChunk((pPmObj_t)pstr);
             /* return ptr to old */
-            *r_pstring = (pPyObj_t)pcacheentry;
-            return PY_RET_OK;
+            *r_pstring = (pPmObj_t)pcacheentry;
+            return PM_RET_OK;
         }
     }
 
@@ -150,25 +150,25 @@ string_create(PyMemSpace_t memspace,
 
 #endif /* USE_STRING_CACHE */
 
-    *r_pstring = (pPyObj_t)pstr;
-    return PY_RET_OK;
+    *r_pstring = (pPmObj_t)pstr;
+    return PM_RET_OK;
 }
 
 
-PyReturn_t
-string_newFromChar(U8 c, pPyObj_t *r_pstring)
+PmReturn_t
+string_newFromChar(U8 c, pPmObj_t *r_pstring)
 {
-    PyReturn_t retval;
-    pPyString_t pstr;
+    PmReturn_t retval;
+    pPmString_t pstr;
 #if USE_STRING_CACHE
-    pPyString_t pcacheentry = C_NULL;
+    pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
     P_U8 pchunk;
 
     /* Get space for String obj */
-    retval = heap_getChunk(sizeof(PyString_t) + 1, &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    pstr = (pPyString_t)pchunk;
+    retval = heap_getChunk(sizeof(PmString_t) + 1, &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pstr = (pPmString_t)pchunk;
 
     /* Fill the string obj */
     pstr->od.od_type = OBJ_TYPE_STR;
@@ -188,10 +188,10 @@ string_newFromChar(U8 c, pPyObj_t *r_pstring)
         if (string_compare(pcacheentry, pstr) == C_SAME)
         {
             /* free the string */
-            heap_freeChunk((pPyObj_t)pstr);
+            heap_freeChunk((pPmObj_t)pstr);
             /* return ptr to old */
-            *r_pstring = (pPyObj_t)pcacheentry;
-            return PY_RET_OK;
+            *r_pstring = (pPmObj_t)pcacheentry;
+            return PM_RET_OK;
         }
     }
 
@@ -201,13 +201,13 @@ string_newFromChar(U8 c, pPyObj_t *r_pstring)
 
 #endif /* USE_STRING_CACHE */
 
-    *r_pstring = (pPyObj_t)pstr;
+    *r_pstring = (pPmObj_t)pstr;
     return retval;
 }
 
 
 S8
-string_compare(pPyString_t pstr1, pPyString_t pstr2)
+string_compare(pPmString_t pstr1, pPmString_t pstr2)
 {
     /* Return false if lengths are not equal */
     if (pstr1->length != pstr2->length)
@@ -223,25 +223,25 @@ string_compare(pPyString_t pstr1, pPyString_t pstr2)
 }
 
 
-PyReturn_t
-string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
+PmReturn_t
+string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyString_t pnew = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmString_t pnew = C_NULL;
     P_U8 pchunk;
 
     /* ensure string obj */
     if (pstr->od.od_type != OBJ_TYPE_STR)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* allocate string obj */
-    retval = heap_getChunk(sizeof(PyString_t) + ((pPyString_t)pstr)->length,
+    retval = heap_getChunk(sizeof(PmString_t) + ((pPmString_t)pstr)->length,
                            &pchunk
                           );
-    PY_RETURN_IF_ERROR(retval);
-    pnew = (pPyString_t)pchunk;
+    PM_RETURN_IF_ERROR(retval);
+    pnew = (pPmString_t)pchunk;
     pnew->od.od_const = 0;
     pnew->od.od_type = OBJ_TYPE_STR;
 #if USE_STRING_CACHE
@@ -252,10 +252,10 @@ string_copy(pPyObj_t pstr, pPyObj_t * r_pstring)
     /* copy string contents (and null term) */
     mem_copy(MEMSPACE_RAM,
              (P_U8 *)&(pnew->val),
-             (P_U8 *)&(((pPyString_t)pstr)->val),
-             ((pPyString_t)pstr)->length + 1
+             (P_U8 *)&(((pPmString_t)pstr)->val),
+             ((pPmString_t)pstr)->length + 1
             );
-    *r_pstring = (pPyObj_t)pnew;
+    *r_pstring = (pPmObj_t)pnew;
     return retval;
 }
 

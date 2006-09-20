@@ -69,9 +69,9 @@
 /** index into stack; 0 is top, 1 is next */
 #define STACK(n)        (*(SP - ((n) + 1)))
 /** pops an obj from the stack */
-#define PY_POP()        (*(--SP))
+#define PM_POP()        (*(--SP))
 /** pushes an obj on the stack */
-#define PY_PUSH(pobj)   (*(SP++) = (pobj))
+#define PM_PUSH(pobj)   (*(SP++) = (pobj))
 /** gets the argument (S16) from the instruction stream */
 #define GET_ARG()       mem_getWord(MS, &IP)
 
@@ -96,7 +96,7 @@
  * which type of compare to perform.
  * Must match those defined in Python.
  */
-typedef enum PyCompare_e
+typedef enum PmCompare_e
 {
     COMP_LT = 0,            /**< less than */
     COMP_LE,                /**< less than or equal */
@@ -109,7 +109,7 @@ typedef enum PyCompare_e
     COMP_IS,                /**< is */
     COMP_IS_NOT,            /**< is not */
     COMP_EXN_MATCH          /**< do exceptions match */
-} PyCompare_t, *pPyCompare_t;
+} PmCompare_t, *pPmCompare_t;
 
 /**
  * Interpreter return values
@@ -121,7 +121,7 @@ typedef enum PyCompare_e
  * but first do something special like reschedule threads
  * or (TBD) sweep the heap.
  */
-typedef enum PyInterpCtrl_e
+typedef enum PmInterpCtrl_e
 {
     /* other erroneous exits go here with negative values */
     INTERP_CTRL_ERR = -1,   /**< Generic error causes exit */
@@ -129,12 +129,12 @@ typedef enum PyInterpCtrl_e
     INTERP_CTRL_CONT = 1,   /**< Continue interpreting */
     INTERP_CTRL_RESCHED = 2, /**< Reschedule threads */
     /* all positive values indicate "continue interpreting" */
-} PyInterpCtrl_t, *pPyInterpCtrl_t;
+} PmInterpCtrl_t, *pPmInterpCtrl_t;
 
 /**
  * Byte code enumeration
  */
-typedef enum PyBcode_e
+typedef enum PmBcode_e
 {
     /*
      * Python source to create this list:
@@ -318,7 +318,7 @@ typedef enum PyBcode_e
     UNUSED_F4, UNUSED_F5, UNUSED_F6, UNUSED_F7,
     UNUSED_F8, UNUSED_F9, UNUSED_FA, UNUSED_FB,
     UNUSED_FC, UNUSED_FD, UNUSED_FE, UNUSED_FF
-} PyBcode_t, *pPyBcode_t;
+} PmBcode_t, *pPmBcode_t;
 
 
 /***************************************************************
@@ -350,6 +350,6 @@ void py_err(S16 release, S16 file, S16 line);
  * @param   pfunc Ptr to function object to interpret.
  * @return  nothing.
  */
-PyReturn_t interpret(pPyFunc_t pfunc);
+PmReturn_t interpret(pPmFunc_t pfunc);
 
 #endif /* __INTERP_H__ */

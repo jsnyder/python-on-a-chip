@@ -41,7 +41,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 #ifdef TARGET_AVR
 #include <avr/pgmspace.h>
@@ -74,7 +74,7 @@
  **************************************************************/
 
 U8
-mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
+mem_getByte(PmMemSpace_t memspace, P_U8 *paddr)
 {
     U8 b = 0;
 
@@ -116,7 +116,7 @@ mem_getByte(PyMemSpace_t memspace, P_U8 *paddr)
 
 INLINE
 U16
-mem_getWord(PyMemSpace_t memspace, P_U8 *paddr)
+mem_getWord(PmMemSpace_t memspace, P_U8 *paddr)
 {
     /* PyMite is little endien; get lo byte first */
     U8 blo = mem_getByte(memspace, paddr);
@@ -127,7 +127,7 @@ mem_getWord(PyMemSpace_t memspace, P_U8 *paddr)
 
 INLINE
 U32
-mem_getInt(PyMemSpace_t memspace, P_U8 *paddr)
+mem_getInt(PmMemSpace_t memspace, P_U8 *paddr)
 {
     /* PyMite is little endien; get low word first */
     U16 wlo = mem_getWord(memspace, paddr);
@@ -137,7 +137,7 @@ mem_getInt(PyMemSpace_t memspace, P_U8 *paddr)
 
 
 void
-mem_copy(PyMemSpace_t memspace,
+mem_copy(PmMemSpace_t memspace,
          P_U8 *pdest,
          P_U8 *psrc,
          U16 count)
@@ -169,7 +169,7 @@ mem_copy(PyMemSpace_t memspace,
 
 
 U16
-mem_getNumUtf8Bytes(PyMemSpace_t memspace, P_U8 *psrc)
+mem_getNumUtf8Bytes(PmMemSpace_t memspace, P_U8 *psrc)
 {
     P_U8 pbase = *psrc;
     while(mem_getByte(memspace, psrc) != 0);

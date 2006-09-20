@@ -50,13 +50,13 @@
  *
  * 32b signed integer
  */
-typedef struct PyInt_s
+typedef struct PmInt_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** integer value */
     S32         val;
-} PyInt_t, *pPyInt_t;
+} PmInt_t, *pPmInt_t;
 
 
 /***************************************************************
@@ -77,7 +77,7 @@ typedef struct PyInt_s
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
-PyReturn_t int_dup(pPyObj_t pint, pPyObj_t * r_pint);
+PmReturn_t int_dup(pPmObj_t pint, pPmObj_t * r_pint);
 
 /**
  * Create a new Integer object
@@ -86,7 +86,7 @@ PyReturn_t int_dup(pPyObj_t pint, pPyObj_t * r_pint);
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
-PyReturn_t int_new(S32 val, pPyObj_t * r_pint);
+PmReturn_t int_new(S32 val, pPmObj_t * r_pint);
 
 /**
  * Implement the UNARY_POSITIVE bcode.
@@ -96,7 +96,7 @@ PyReturn_t int_new(S32 val, pPyObj_t * r_pint);
  * @param   pobj Pointer to target object
  * @param   r_pint Return by ref, ptr to int
  */
-PyReturn_t int_positive(pPyObj_t, pPyObj_t * r_pint);
+PmReturn_t int_positive(pPmObj_t, pPmObj_t * r_pint);
 
 /**
  * Implement the UNARY_NEGATIVE bcode.
@@ -108,7 +108,7 @@ PyReturn_t int_positive(pPyObj_t, pPyObj_t * r_pint);
  * @param   r_pint Return by ref, ptr to int
  * @return  Return status
  */
-PyReturn_t int_negative(pPyObj_t pobj, pPyObj_t * r_pint);
+PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t * r_pint);
 
 /**
  * Implement the UNARY_INVERT bcode.
@@ -118,6 +118,6 @@ PyReturn_t int_negative(pPyObj_t pobj, pPyObj_t * r_pint);
  *
  * @param   pobj Pointer to target object
  */
-PyReturn_t int_bitInvert(pPyObj_t pobj, pPyObj_t * r_pint);
+PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint);
 
 #endif /* __INT_H__ */

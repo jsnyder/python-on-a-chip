@@ -78,7 +78,7 @@
  */
 
 
-#include "py.h"
+#include "pm.h"
 
 
 /**************************************************************/
@@ -87,11 +87,11 @@
 void
 ut_list_new_000(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj = C_NULL;
 
     retval = list_new(&pobj);
-    if (retval != PY_RET_OK)
+    if (retval != PM_RET_OK)
     {
         TEST_ERR(__LINE__);
     }
@@ -105,8 +105,8 @@ ut_list_new_000(void)
 void
 ut_list_new_001(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj = C_NULL;
 
     retval = list_new(&pobj);
     if (pobj->od.od_type != OBJ_TYPE_LST)
@@ -119,8 +119,8 @@ ut_list_new_001(void)
 void
 ut_list_new_002(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj = C_NULL;
 
     retval = list_new(&pobj);
     if (pobj->od.od_const != 0)
@@ -133,11 +133,11 @@ ut_list_new_002(void)
 void
 ut_list_new_003(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj = C_NULL;
 
     retval = list_new(&pobj);
-    if (((pPyList_t)pobj)->length != 0)
+    if (((pPmList_t)pobj)->length != 0)
     {
         TEST_ERR(__LINE__);
     }
@@ -147,11 +147,11 @@ ut_list_new_003(void)
 void
 ut_list_new_004(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t plist = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t plist = C_NULL;
 
     retval = list_new(&plist);
-    if (((pPyList_t)plist)->val == C_NULL)
+    if (((pPmList_t)plist)->val == C_NULL)
     {
         TEST_ERR(__LINE__);
     }
@@ -164,10 +164,10 @@ ut_list_new_004(void)
 void
 ut_list_append_000(void)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
 
-    retval = list_append((pPyObj_t)C_NULL, (pPyObj_t)C_NULL);
-    if (retval != PY_RET_EX_VAL)
+    retval = list_append((pPmObj_t)C_NULL, (pPmObj_t)C_NULL);
+    if (retval != PM_RET_EX_VAL)
     {
         TEST_ERR(__LINE__);
     }
@@ -177,12 +177,12 @@ ut_list_append_000(void)
 void
 ut_list_append_001(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t plist = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t plist = C_NULL;
 
     retval = list_new(&plist);
-    retval = list_append(plist, (pPyObj_t)C_NULL);
-    if (retval != PY_RET_EX_VAL)
+    retval = list_append(plist, (pPmObj_t)C_NULL);
+    if (retval != PM_RET_EX_VAL)
     {
         TEST_ERR(__LINE__);
     }
@@ -192,10 +192,10 @@ ut_list_append_001(void)
 void
 ut_list_append_002(void)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
 
-    retval = list_append(PY_ZERO, PY_ONE);
-    if (retval != PY_RET_EX_VAL)
+    retval = list_append(PM_ZERO, PM_ONE);
+    if (retval != PM_RET_EX_VAL)
     {
         TEST_ERR(__LINE__);
     }
@@ -205,12 +205,12 @@ ut_list_append_002(void)
 void
 ut_list_append_003(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t plist = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t plist = C_NULL;
 
     retval = list_new(&plist);
-    retval = list_append(plist, PY_ZERO);
-    if (((pPyList_t)plist)->length != 1)
+    retval = list_append(plist, PM_ZERO);
+    if (((pPmList_t)plist)->length != 1)
     {
         TEST_ERR(__LINE__);
     }

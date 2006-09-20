@@ -22,13 +22,13 @@
 /**
  * Standard Library Interface
  *
- * Py requires a few functions from a few different
+ * PyMite requires a few functions from a few different
  * standard C libraries (memory, string, etc).
  * If your microcontroller has these libraries,
  * set the constant to 1 for each library available.
  * This will cause a macro to be defined which wraps
- * the function for use by Py.
- * Otherwise, leave the constant as 0, and Py will
+ * the function for use by PyMite.
+ * Otherwise, leave the constant as 0, and PyMite will
  * use the function defined in sli.c
  * Some of the functions in sli.c will need to be ported
  * to the target system.

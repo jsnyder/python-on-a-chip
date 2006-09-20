@@ -41,7 +41,7 @@ in the prescribed order:
         - Add a line item into the entry for each ticket that went into this
           release.
 
-    - Edit ``src/vm/py.h``, update the value for the definition, ``PY_RELEASE``
+    - Edit ``src/vm/pm.h``, update the value for the definition, ``PM_RELEASE``
     - Perform all the standard builds to see that they complete without error
 
         - ``make html``

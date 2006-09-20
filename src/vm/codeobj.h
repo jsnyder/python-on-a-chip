@@ -71,21 +71,21 @@
  * Other parts can be obtained by
  * inspecting the code image itself.
  */
-typedef struct PyCo_s
+typedef struct PmCo_s
 {
     /** object descriptor */
-    PyObjDesc_t     od;
+    PmObjDesc_t     od;
     /** memory space selector */
-    PyMemSpace_t    co_memspace:8;
+    PmMemSpace_t    co_memspace:8;
     /** address in memspace of code image */
     P_U8            co_codeimgaddr;
     /** address in RAM of names tuple */
-    pPyTuple_t      co_names;
+    pPmTuple_t      co_names;
     /** address in RAM of constants tuple */
-    pPyTuple_t      co_consts;
+    pPmTuple_t      co_consts;
     /** address in memspace of bytecode (or native function) */
     P_U8            co_codeaddr;
-} PyCo_t, *pPyCo_t;
+} PmCo_t, *pPmCo_t;
 
 /**
  * Native Code Object
@@ -96,15 +96,15 @@ typedef struct PyCo_s
  * Other parts can be obtained by
  * inspecting the native image itself.
  */
-typedef struct PyNo_s
+typedef struct PmNo_s
 {
     /** object descriptor */
-    PyObjDesc_t     od;
+    PmObjDesc_t     od;
     /** expected num args to the func */
     S8              no_argcount;
     /** index into native function table */
     S16             no_funcindx;
-} PyNo_t, *pPyNo_t;
+} PmNo_t, *pPmNo_t;
 
 
 /***************************************************************
@@ -155,10 +155,10 @@ typedef struct PyNo_s
  *          filled in.
  * @return  Return status
  */
-PyReturn_t
-co_loadFromImg(PyMemSpace_t memspace,
+PmReturn_t
+co_loadFromImg(PmMemSpace_t memspace,
                P_U8 *paddr,
-               pPyObj_t * r_pco);
+               pPmObj_t * r_pco);
 
 /**
  * Create a Native code object by loading a native image.
@@ -188,9 +188,9 @@ co_loadFromImg(PyMemSpace_t memspace,
  *          return by reference: paddr points one byte
  *          past end of code img
  */
-PyReturn_t no_loadFromImg(PyMemSpace_t memspace,
+PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
                           P_U8 * paddr,
-                          pPyObj_t * r_pno);
+                          pPmObj_t * r_pno);
 
 
 #endif /* __CODEOBJ_H__ */

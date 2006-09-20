@@ -52,15 +52,15 @@
  * Mutable ordered sequence of objects.
  * Contains ptr to linked list of nodes.
  */
-typedef struct PyList_s
+typedef struct PmList_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** list length; number of objs linked */
     S16 length;
     /** ptr to linked list of nodes */
     pSeglist_t val;
-} PyList_t, *pPyList_t;
+} PmList_t, *pPmList_t;
 
 
 /***************************************************************
@@ -83,7 +83,7 @@ typedef struct PyList_s
  * @param   r_pobj Return; addr of ptr to obj
  * @return  Return status
  */
-PyReturn_t list_new(pPyObj_t *r_pobj);
+PmReturn_t list_new(pPmObj_t *r_pobj);
 
 /**
  * Get the object in the list at the index.
@@ -93,9 +93,9 @@ PyReturn_t list_new(pPyObj_t *r_pobj);
  * @param   r_pobj Return; ptr to return obj
  * @return  Return status
  */
-PyReturn_t list_getItem(pPyObj_t plist,
+PmReturn_t list_getItem(pPmObj_t plist,
                         S16 index,
-                        pPyObj_t *r_pobj);
+                        pPmObj_t *r_pobj);
 
 /**
  * Set the item in the list at the index.
@@ -105,9 +105,9 @@ PyReturn_t list_getItem(pPyObj_t plist,
  * @param   pobj2 Ptr to obj
  * @return  Return status
  */
-PyReturn_t list_setItem(pPyObj_t pobj1,
+PmReturn_t list_setItem(pPmObj_t pobj1,
                         S16 index,
-                        pPyObj_t pobj2);
+                        pPmObj_t pobj2);
 
 /**
  * Make a copy of the given list.
@@ -119,7 +119,7 @@ PyReturn_t list_setItem(pPyObj_t pobj1,
  * @param   r_pobj Return; Addr of ptr to return obj
  * @return  Return status
  */
-PyReturn_t list_copy(pPyObj_t pobj, pPyObj_t * r_pobj);
+PmReturn_t list_copy(pPmObj_t pobj, pPmObj_t * r_pobj);
 
 /**
  * Append the given obj to the end of the given list.
@@ -131,7 +131,7 @@ PyReturn_t list_copy(pPyObj_t pobj, pPyObj_t * r_pobj);
  * @param   pobj Ptr to item to append
  * @return  Return status
  */
-PyReturn_t list_append(pPyObj_t plist, pPyObj_t pobj);
+PmReturn_t list_append(pPmObj_t plist, pPmObj_t pobj);
 
 /**
  * Create a new list with the contents of psrclist
@@ -144,9 +144,9 @@ PyReturn_t list_append(pPyObj_t plist, pPyObj_t pobj);
  * @param   r_pobj Return; new list with its contents set.
  * @return  Return status
  */
-PyReturn_t list_replicate(pPyObj_t psrclist,
-                          pPyObj_t pint,
-                          pPyObj_t * r_pnewlist);
+PmReturn_t list_replicate(pPmObj_t psrclist,
+                          pPmObj_t pint,
+                          pPmObj_t * r_pnewlist);
 
 /**
  * Insert the object into the list at the desired index.
@@ -156,19 +156,19 @@ PyReturn_t list_replicate(pPyObj_t psrclist,
  * @param   index Index of where to insert obj
  * @return  Return status
  */
-PyReturn_t list_insert(pPyObj_t plist,
-                       pPyObj_t pobj,
+PmReturn_t list_insert(pPmObj_t plist,
+                       pPmObj_t pobj,
                        S8 index);
 
 /* XXX TODO - redo these using pobj / return status */
 #if 0
-S8              list_count(pPyObj_t plist);
-void            list_extend(pPyObj_t plista, PyObj_t plistb);
-void            list_index(pPyObj_t plist, PyObj_t pitem);
-pPyObj_t        list_pop(pPyObj_t plist);
-void            list_remove(pPyObj_t plist, PyObj_t item);
-void            list_reverse(pPyObj_t plist)
-void            list_sort(pPyObj_t plist)
+S8              list_count(pPmObj_t plist);
+void            list_extend(pPmObj_t plista, PmObj_t plistb);
+void            list_index(pPmObj_t plist, PmObj_t pitem);
+pPmObj_t        list_pop(pPmObj_t plist);
+void            list_remove(pPmObj_t plist, PmObj_t item);
+void            list_reverse(pPmObj_t plist)
+void            list_sort(pPmObj_t plist)
 #endif
 
 #endif /* __LIST_H__ */

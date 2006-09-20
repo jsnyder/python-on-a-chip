@@ -53,14 +53,14 @@
  * This C type is used for PyMite class objects, class instances and
  * exception objects.
  */
-typedef struct PyClass_s
+typedef struct PmClass_s
 {
     /** Object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
 
     /** Attributes dict */
-    pPyDict_t cl_attrs;
-} PyClass_t, *pPyClass_t;
+    pPmDict_t cl_attrs;
+} PmClass_t, *pPmClass_t;
 
 
 /***************************************************************

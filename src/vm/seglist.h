@@ -65,9 +65,9 @@
 typedef struct Segment_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** array of ptrs to objs */
-    pPyObj_t s_val[SEGLIST_OBJS_PER_SEG];
+    pPmObj_t s_val[SEGLIST_OBJS_PER_SEG];
     /** ptr to next segment */
     struct Segment_s *next;
 } Segment_t, *pSegment_t;
@@ -77,7 +77,7 @@ typedef struct Segment_s
 typedef struct Seglist_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** ptr to first segment in list */
     pSegment_t sl_rootseg;
     /** ptr to last segment */
@@ -105,8 +105,8 @@ typedef struct Seglist_s
  * @param indx Index of object to obtain
  * @return Return status
  */
-PyReturn_t
-seglist_appendItem(pSeglist_t pseglist, pPyObj_t pobj);
+PmReturn_t
+seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);
 
 
 /**
@@ -138,11 +138,11 @@ void seglist_clear(pSeglist_t pseglist);
  *              If a match is found, return the index
  *              by reference.  If no match is found,
  *              this value is undefined.
- * @return  Return status; PY_RET_OK means a matching object
- *          was found.  PY_RET_ERR otherwise.
+ * @return  Return status; PM_RET_OK means a matching object
+ *          was found.  PM_RET_ERR otherwise.
  */
-PyReturn_t seglist_findEqual(pSeglist_t pseglist,
-                             pPyObj_t pobj,
+PmReturn_t seglist_findEqual(pSeglist_t pseglist,
+                             pPmObj_t pobj,
                              S8 * r_segnum,
                              S8 * r_indx);
 
@@ -156,13 +156,13 @@ PyReturn_t seglist_findEqual(pSeglist_t pseglist,
  * @param   pobj Ptr to object found at the coordinates (return)
  * @param   segnum Segment number coordinate
  * @param   indx Index coordinate within segment
- * @return  Return status; PY_RET_OK if object found.
- *          PY_RET_ERR otherwise.
+ * @return  Return status; PM_RET_OK if object found.
+ *          PM_RET_ERR otherwise.
  */
-PyReturn_t seglist_getItem(pSeglist_t pseglist,
+PmReturn_t seglist_getItem(pSeglist_t pseglist,
                            S8 segnum,
                            S8 segindx,
-                           pPyObj_t * r_pobj);
+                           pPmObj_t * r_pobj);
 
 
 /**
@@ -171,7 +171,7 @@ PyReturn_t seglist_getItem(pSeglist_t pseglist,
  * @param   r_pseglist return; Address of ptr to new seglist
  * @return  Return status
  */
-PyReturn_t seglist_new(pSeglist_t * r_pseglist);
+PmReturn_t seglist_new(pSeglist_t * r_pseglist);
 
 
 /**
@@ -186,12 +186,12 @@ PyReturn_t seglist_new(pSeglist_t * r_pseglist);
  * @param   pobj Ptr to object which is inserted.
  * @param   segnum Segment number
  * @param   segindx Index within segment
- * @return  Return status; PY_RET_OK if the item was inserted.
+ * @return  Return status; PM_RET_OK if the item was inserted.
  *              Any error condition comes from heap_getChunk.
  */
-PyReturn_t
+PmReturn_t
 seglist_insertItem(pSeglist_t pseglist,
-                   pPyObj_t pobj,
+                   pPmObj_t pobj,
                    S8 segnum,
                    S8 segindx);
 
@@ -204,11 +204,11 @@ seglist_insertItem(pSeglist_t pseglist,
  * @param   pobj Ptr to object which is set.
  * @param   segnum Segment number
  * @param   segindx Index within segment
- * @return  Return status; PY_RET_OK if object is set.
- *              PY_RET_ERR otherwise.
+ * @return  Return status; PM_RET_OK if object is set.
+ *              PM_RET_ERR otherwise.
  */
-PyReturn_t seglist_setItem(pSeglist_t pseglist,
-                           pPyObj_t pobj,
+PmReturn_t seglist_setItem(pSeglist_t pseglist,
+                           pPmObj_t pobj,
                            S8 segnum,
                            S8 segindx);
 

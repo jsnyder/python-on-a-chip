@@ -75,8 +75,8 @@ exist and the ``RAISE_VARARGS`` (1) bytecode must be implemented.  To create
 ``AssertionError``, a native function, ``_exn()``, will be created in
 ``__bi.py`` that allocates an exception object (OBJ_TYPE_EXN).  The
 ``AssertionError`` object will also have an integer attribute, ``code``, that
-corresponds to the value of the PyReturn_t code that represents that exception.
-In this case, ``PY_RET_EX_ASSRT``.  So, the code added to ``__bi.py`` will
+corresponds to the value of the PmReturn_t code that represents that exception.
+In this case, ``PM_RET_EX_ASSRT``.  So, the code added to ``__bi.py`` will
 look like this::
 
     AssertionError = _exn()

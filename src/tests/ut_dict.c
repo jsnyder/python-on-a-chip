@@ -69,7 +69,7 @@
  */
 
 
-#include "py.h"
+#include "pm.h"
 
 
 /**************************************************************/
@@ -77,7 +77,7 @@
 void
 ut_dict_new_000(void)
 {
-    pPyObj_t pobj = C_NULL;
+    pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
     if (pobj == C_NULL)
@@ -90,7 +90,7 @@ ut_dict_new_000(void)
 void
 ut_dict_new_001(void)
 {
-    pPyObj_t pobj = C_NULL;
+    pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
     if (pobj->od.od_type != OBJ_TYPE_DIC)
@@ -103,7 +103,7 @@ ut_dict_new_001(void)
 void
 ut_dict_new_002(void)
 {
-    pPyObj_t pobj = C_NULL;
+    pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
     if (pobj->od.od_const != 0)
@@ -116,10 +116,10 @@ ut_dict_new_002(void)
 void
 ut_dict_new_003(void)
 {
-    pPyObj_t pobj = C_NULL;
+    pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
-    if (((pPyDict_t)pobj)->length != 0)
+    if (((pPmDict_t)pobj)->length != 0)
     {
         TEST_ERR(__LINE__);
     }
@@ -130,11 +130,11 @@ ut_dict_new_003(void)
 void
 ut_dict_setItem_000(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    retval = dict_setItem((pPyObj_t)C_NULL,
-                          (pPyObj_t)C_NULL,
-                          (pPyObj_t)C_NULL);
-    if (retval != PY_RET_EX_SYS)
+    PmReturn_t retval = PM_RET_OK;
+    retval = dict_setItem((pPmObj_t)C_NULL,
+                          (pPmObj_t)C_NULL,
+                          (pPmObj_t)C_NULL);
+    if (retval != PM_RET_EX_SYS)
     {
         TEST_ERR(__LINE__);
     }
@@ -144,14 +144,14 @@ ut_dict_setItem_000(void)
 void
 ut_dict_setItem_001(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pdict = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
     retval = dict_setItem(pdict, 
-                          (pPyObj_t)C_NULL, 
-                          (pPyObj_t)C_NULL);
-    if (retval != PY_RET_EX_SYS)
+                          (pPmObj_t)C_NULL, 
+                          (pPmObj_t)C_NULL);
+    if (retval != PM_RET_EX_SYS)
     {
         TEST_ERR(__LINE__);
     }
@@ -161,14 +161,14 @@ ut_dict_setItem_001(void)
 void
 ut_dict_setItem_002(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pdict = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
     retval = dict_setItem(pdict,
-                          PY_ZERO,
-                          (pPyObj_t)C_NULL);
-    if (retval != PY_RET_EX_SYS)
+                          PM_ZERO,
+                          (pPmObj_t)C_NULL);
+    if (retval != PM_RET_EX_SYS)
     {
         TEST_ERR(__LINE__);
     }
@@ -178,10 +178,10 @@ ut_dict_setItem_002(void)
 void
 ut_dict_setItem_003(void)
 {
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
-    dict_setItem(pdict, PY_ZERO, PY_ONE);
+    dict_setItem(pdict, PM_ZERO, PM_ONE);
     if (pdict == C_NULL)
     {
         TEST_ERR(__LINE__);
@@ -192,12 +192,12 @@ ut_dict_setItem_003(void)
 void
 ut_dict_setItem_004(void)
 {
-    pPyObj_t pdict = C_NULL;
-    pPyObj_t pdictbefore = C_NULL;
+    pPmObj_t pdict = C_NULL;
+    pPmObj_t pdictbefore = C_NULL;
 
     dict_new(&pdict);
     pdictbefore = pdict;
-    dict_setItem(pdict, PY_ZERO, PY_ONE);
+    dict_setItem(pdict, PM_ZERO, PM_ONE);
     if (pdict != pdictbefore)
     {
         TEST_ERR(__LINE__);
@@ -208,11 +208,11 @@ ut_dict_setItem_004(void)
 void
 ut_dict_setItem_005(void)
 {
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
-    dict_setItem(pdict, PY_ZERO, PY_ONE);
-    if (((pPyDict_t)pdict)->length != 1)
+    dict_setItem(pdict, PM_ZERO, PM_ONE);
+    if (((pPmDict_t)pdict)->length != 1)
     {
         TEST_ERR(__LINE__);
     }
@@ -222,13 +222,13 @@ ut_dict_setItem_005(void)
 void
 ut_dict_setItem_006(void)
 {
-    pPyObj_t pval = C_NULL;
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pval = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
-    dict_setItem(pdict, PY_ZERO, PY_ONE);
-    dict_getItem(pdict, PY_ZERO, &pval);
-    if (pval != PY_ONE)
+    dict_setItem(pdict, PM_ZERO, PM_ONE);
+    dict_getItem(pdict, PM_ZERO, &pval);
+    if (pval != PM_ONE)
     {
         TEST_ERR(__LINE__);
     }
@@ -238,14 +238,14 @@ ut_dict_setItem_006(void)
 void
 ut_dict_setItem_007(void)
 {
-    pPyObj_t pval = C_NULL;
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pval = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
-    dict_setItem(pdict, PY_ZERO, PY_ZERO);
-    dict_setItem(pdict, PY_ZERO, PY_ONE);
-    dict_getItem(pdict, PY_ZERO, &pval);
-    if (pval != PY_ONE)
+    dict_setItem(pdict, PM_ZERO, PM_ZERO);
+    dict_setItem(pdict, PM_ZERO, PM_ONE);
+    dict_getItem(pdict, PM_ZERO, &pval);
+    if (pval != PM_ONE)
     {
         TEST_ERR(__LINE__);
     }
@@ -255,14 +255,14 @@ ut_dict_setItem_007(void)
 void
 ut_dict_setItem_008(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pdict = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
     retval = dict_setItem(pdict,
-                          PY_ZERO,
-                          PY_ZERO);
-    if (retval != PY_RET_OK)
+                          PM_ZERO,
+                          PM_ZERO);
+    if (retval != PM_RET_OK)
     {
         TEST_ERR(__LINE__);
     }
@@ -273,15 +273,15 @@ ut_dict_setItem_008(void)
 void
 ut_dict_clear_000(void)
 {
-    dict_clear((pPyObj_t)C_NULL);
+    dict_clear((pPmObj_t)C_NULL);
 }
 
 /** Test dict_clear() passing non-dict, return is void, must inspect */
 void
 ut_dict_clear_001(void)
 {
-    pPyObj_t pint;
-    PyReturn_t retval = PY_RET_OK;
+    pPmObj_t pint;
+    PmReturn_t retval = PM_RET_OK;
     
      retval = int_new(256, &pint);
     dict_clear(pint);
@@ -291,7 +291,7 @@ ut_dict_clear_001(void)
 void
 ut_dict_clear_002(void)
 {
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
     dict_clear(pdict);
@@ -305,11 +305,11 @@ ut_dict_clear_002(void)
 void
 ut_dict_clear_003(void)
 {
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
     dict_clear(pdict);
-    if (((pPyDict_t)pdict)->length != 0)
+    if (((pPmDict_t)pdict)->length != 0)
     {
         TEST_ERR(__LINE__);
     }
@@ -319,12 +319,12 @@ ut_dict_clear_003(void)
 void
 ut_dict_clear_004(void)
 {
-    pPyObj_t pdict = C_NULL;
+    pPmObj_t pdict = C_NULL;
 
     dict_new(&pdict);
-    dict_setItem(pdict, PY_ZERO, PY_ZERO);
+    dict_setItem(pdict, PM_ZERO, PM_ZERO);
     dict_clear(pdict);
-    if (((pPyDict_t)pdict)->length != 0)
+    if (((pPmDict_t)pdict)->length != 0)
     {
         TEST_ERR(__LINE__);
     }

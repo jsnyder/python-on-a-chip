@@ -56,17 +56,17 @@
  * has a function obj created for it to execute
  * the bytecode which builds the module.
  */
-typedef struct PyFunc_s
+typedef struct PmFunc_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /** ptr to code obj */
-    pPyCo_t     f_co;
+    pPmCo_t     f_co;
     /** ptr to attribute dict */
-    pPyDict_t   f_attrs;
+    pPmDict_t   f_attrs;
     /** ptr to tuple holding default args */
-    pPyTuple_t  f_defaultargs;
-} PyFunc_t, *pPyFunc_t;
+    pPmTuple_t  f_defaultargs;
+} PmFunc_t, *pPmFunc_t;
 
 
 /***************************************************************
@@ -84,7 +84,7 @@ typedef struct PyFunc_s
  * @param   pco ptr to code obj
  * @return  ptr to new func obj
  */
-PyReturn_t func_new(pPyObj_t pco, pPyObj_t * r_pframe);
+PmReturn_t func_new(pPmObj_t pco, pPmObj_t * r_pframe);
 
 /**
  * Create a new Class object from the methods dict, bases tuple,
@@ -96,10 +96,10 @@ PyReturn_t func_new(pPyObj_t pco, pPyObj_t * r_pframe);
  * @param   r_pclass Return by ref, ptr to new class
  * @return  ptr to new class obj.
  */
-PyReturn_t class_new(pPyObj_t pmeths,
-                     pPyObj_t pbases,
-                     pPyObj_t pname,
-                     pPyObj_t * r_pclass);
+PmReturn_t class_new(pPmObj_t pmeths,
+                     pPmObj_t pbases,
+                     pPmObj_t pname,
+                     pPmObj_t * r_pclass);
 
 
 #endif /* __TEMPLATE_H__ */

@@ -40,29 +40,29 @@
  * Constants
  **************************************************************/
 
-/** The global root PyGlobals Dict object */
-#define PY_PBUILTINS    (pPyObj_t)(gVmGlobal.builtins)
+/** The global root PmGlobals Dict object */
+#define PM_PBUILTINS    (pPmObj_t)(gVmGlobal.builtins)
 
 /** The global None object */
-#define PY_NONE         (pPyObj_t)&(gVmGlobal.none)
+#define PM_NONE         (pPmObj_t)&(gVmGlobal.none)
 
 /** The global False object */
-#define PY_FALSE        (pPyObj_t)&(gVmGlobal.zero)
+#define PM_FALSE        (pPmObj_t)&(gVmGlobal.zero)
 
 /** The global True object */
-#define PY_TRUE         (pPyObj_t)&(gVmGlobal.one)
+#define PM_TRUE         (pPmObj_t)&(gVmGlobal.one)
 
 /** The global integer 0 object */
-#define PY_ZERO         (pPyObj_t)&(gVmGlobal.zero)
+#define PM_ZERO         (pPmObj_t)&(gVmGlobal.zero)
 
 /** The global integer 1 object */
-#define PY_ONE          (pPyObj_t)&(gVmGlobal.one)
+#define PM_ONE          (pPmObj_t)&(gVmGlobal.one)
 
 /** The global integer -1 object */
-#define PY_NEGONE       (pPyObj_t)&(gVmGlobal.negone)
+#define PM_NEGONE       (pPmObj_t)&(gVmGlobal.negone)
 
 /** The global string "code" */
-#define PY_CODE_STR     (pPyObj_t)(gVmGlobal.pcodeStr)
+#define PM_CODE_STR     (pPmObj_t)(gVmGlobal.pcodeStr)
 
 /***************************************************************
  * Macros
@@ -73,36 +73,36 @@
  **************************************************************/
 
 /**
- * This struct contains ALL of Py's globals
+ * This struct contains ALL of PyMite's globals
  */
-typedef struct PyVmGlobal_s
+typedef struct PmVmGlobal_s
 {
     /** Global none obj (none) */
-    PyObj_t         none;
+    PmObj_t         none;
 
     /** Global integer 0 obj */
-    PyInt_t         zero;
+    PmInt_t         zero;
 
     /** Global integer 1 obj */
-    PyInt_t         one;
+    PmInt_t         one;
 
     /** Global integer -1 obj */
-    PyInt_t         negone;
+    PmInt_t         negone;
 
     /** The string "code", used in interp.c RAISE_VARARGS */
-    pPyString_t     pcodeStr;
+    pPmString_t     pcodeStr;
 
     /** Dict for builtins */
-    pPyDict_t       builtins;
+    pPmDict_t       builtins;
 
     /** Ptr to stack of code image info. */
-    pPyImgInfo_t    pimglist;
+    pPmImgInfo_t    pimglist;
 
     /** Ptr to current python frame */
-    pPyFrame_t      pframe;
+    pPmFrame_t      pframe;
 
     /** The single native frame */
-    PyNativeFrame_t nativeframe;
+    PmNativeFrame_t nativeframe;
 
     /** PyMite release value for when an error occurs */
     U8              errVmRelease;
@@ -120,19 +120,19 @@ typedef struct PyVmGlobal_s
      * A zero value means normal interpreter exit.
      * A negative value signals an error exit.
      */
-    PyInterpCtrl_t  interpctrl;
+    PmInterpCtrl_t  interpctrl;
 
     /** The PyMite heap */
-    PyHeap_t        heap;
+    PmHeap_t        heap;
     /* DO NOT PUT ANYTHING BELOW THIS */
-} PyVmGlobal_t, *pPyVmGlobal_t;
+} PmVmGlobal_t, *pPmVmGlobal_t;
 
 
 /***************************************************************
  * Globals
  **************************************************************/
 
-extern PyVmGlobal_t gVmGlobal;
+extern PmVmGlobal_t gVmGlobal;
 
 
 /***************************************************************
@@ -144,7 +144,7 @@ extern PyVmGlobal_t gVmGlobal;
  *
  * @return Return status
  */
-PyReturn_t global_init(void);
+PmReturn_t global_init(void);
 
 /**
  * Load the builtins dict into the given module's attrs.
@@ -156,6 +156,6 @@ PyReturn_t global_init(void);
  * @param pmod Module whose attrs recieves builtins
  * @return  Return status
  */
-PyReturn_t global_loadBuiltins(pPyFunc_t pmod);
+PmReturn_t global_loadBuiltins(pPmFunc_t pmod);
 
 #endif /* __GLOBAL_H__ */

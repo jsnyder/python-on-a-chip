@@ -51,17 +51,17 @@
  * Contains ptr to two seglists; 
  * one for keys, the other for values
  */
-typedef struct PyDict_s
+typedef struct PmDict_s
 {
     /** object descriptor */
-    PyObjDesc_t     od;
+    PmObjDesc_t     od;
     /** number of key,value pairs in the dict */
     S16             length;
     /** ptr to seglist containing keys */
     pSeglist_t      d_keys;
     /** ptr to seglist containing values */
     pSeglist_t      d_vals;
-} PyDict_t, *pPyDict_t;
+} PmDict_t, *pPmDict_t;
 
 
 /***************************************************************
@@ -80,7 +80,7 @@ typedef struct PyDict_s
  * @param   pdict ptr to dict to clear.
  * @return  nothing
  */
-PyReturn_t dict_clear(pPyObj_t pdict);
+PmReturn_t dict_clear(pPmObj_t pdict);
 
 
 /**
@@ -91,9 +91,9 @@ PyReturn_t dict_clear(pPyObj_t pdict);
  * @param   r_pobj Return; addr of ptr to obj
  * @return  Return status
  */
-PyReturn_t dict_getItem(pPyObj_t pdict,
-                        pPyObj_t pkey,
-						pPyObj_t * r_pobj);
+PmReturn_t dict_getItem(pPmObj_t pdict,
+                        pPmObj_t pkey,
+						pPmObj_t * r_pobj);
 
 
 /**
@@ -103,7 +103,7 @@ PyReturn_t dict_getItem(pPyObj_t pdict,
  * @param   r_pdict Return; Addr of ptr to dict
  * @return  Return status
  */
-PyReturn_t dict_new(pPyObj_t * r_pdict);
+PmReturn_t dict_new(pPmObj_t * r_pdict);
 
 
 /**
@@ -119,21 +119,21 @@ PyReturn_t dict_new(pPyObj_t * r_pdict);
  * @param   pval ptr to val obj
  * @return  Return status
  */
-PyReturn_t dict_setItem(pPyObj_t pdict,
-                        pPyObj_t pkey,
-						pPyObj_t pval);
+PmReturn_t dict_setItem(pPmObj_t pdict,
+                        pPmObj_t pkey,
+						pPmObj_t pval);
 
 
 #if 0
 /* TBD */
-pPyObj_t  dict_copy(pPyObj_t pdict);
-U8        dict_hasKey(pPyObj_t pdict, pPyObj_t pkey);
-pPyObj_t  dict_items(pPyObj_t pdict); /* list of (keys,vals) */
-pPyObj_t  dict_keys(pPyObj_t pdict);
-pPyObj_t  dict_popItem(pPyObj_t pdict);
-void      dict_setDefault(pPyObj_t pdict, /*HERE*/);
-void      dict_update(pPyObj_t pdict, pPyObj_t pdictb);
-pPyObj_t  dict_values(pPyObj_t pdict);
+pPmObj_t  dict_copy(pPmObj_t pdict);
+U8        dict_hasKey(pPmObj_t pdict, pPmObj_t pkey);
+pPmObj_t  dict_items(pPmObj_t pdict); /* list of (keys,vals) */
+pPmObj_t  dict_keys(pPmObj_t pdict);
+pPmObj_t  dict_popItem(pPmObj_t pdict);
+void      dict_setDefault(pPmObj_t pdict, /*HERE*/);
+void      dict_update(pPmObj_t pdict, pPmObj_t pdictb);
+pPmObj_t  dict_values(pPmObj_t pdict);
 #endif
 
 #endif /* __DICT_H__ */

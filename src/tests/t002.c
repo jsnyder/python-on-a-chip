@@ -24,7 +24,7 @@
  *
  */
 
-#include "py.h"
+#include "pm.h"
 
 
 extern unsigned char usrlib_img[];
@@ -32,10 +32,10 @@ extern unsigned char usrlib_img[];
 
 int main(void)
 {
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     retval = pm_init(MEMSPACE_FLASH, usrlib_img);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((P_U8)"t002");
     return (int)retval;

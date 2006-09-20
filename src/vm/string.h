@@ -76,27 +76,27 @@
  *
  * Null terminated array of chars.
  */
-typedef struct PyString_s
+typedef struct PmString_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
 
     /** length of string */
     U8 length;
 
 #if USE_STRING_CACHE
     /** ptr to next string in cache */
-    struct PyString_s * next;
+    struct PmString_s * next;
 #endif /* USE_STRING_CACHE */
 
     /** 
      * Null-term char array
      *
      * Use length 1 here so that string-alloc function can use
-     * "sizeof(PyString_t) + len" and there will be room for the null-term
+     * "sizeof(PmString_t) + len" and there will be room for the null-term
      */
     U8          val[1];
-} PyString_t, *pPyString_t;
+} PmString_t, *pPmString_t;
 
 
 /***************************************************************
@@ -133,10 +133,10 @@ typedef struct PyString_s
  * @param   Return arg; ptr to String obj
  * @return  Return status
  */
-PyReturn_t string_create(PyMemSpace_t memspace,
+PmReturn_t string_create(PmMemSpace_t memspace,
                           P_U8 *paddr,
                           U8 isimg,
-                          pPyObj_t *r_pstring);
+                          pPmObj_t *r_pstring);
 
 /**
  * Create a new String object from a single character.
@@ -145,7 +145,7 @@ PyReturn_t string_create(PyMemSpace_t memspace,
  * @param   r_psting Return arg; ptr to String obj
  * @return  Return status
  */
-PyReturn_t string_newFromChar(U8 c, pPyObj_t *r_pstring);
+PmReturn_t string_newFromChar(U8 c, pPmObj_t *r_pstring);
 
 /**
  * Compare two String objects for equality.
@@ -154,7 +154,7 @@ PyReturn_t string_newFromChar(U8 c, pPyObj_t *r_pstring);
  * @param   pstr2 Ptr to second string
  * @return  C_SAME if the strings are equivalent, C_DIFFER otherwise
  */
-S8 string_compare(pPyString_t, pPyString_t);
+S8 string_compare(pPmString_t, pPmString_t);
 
 /**
  * Create a copy of the given string obj.
@@ -163,7 +163,7 @@ S8 string_compare(pPyString_t, pPyString_t);
  * @param   Return arg; Ptr to the new string obj.
  * @return  Return status
  */
-PyReturn_t string_copy(pPyObj_t pstr, pPyObj_t *r_pstring);
+PmReturn_t string_copy(pPmObj_t pstr, pPmObj_t *r_pstring);
 
 
 #endif /* __STRING_H__ */

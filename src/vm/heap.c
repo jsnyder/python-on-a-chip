@@ -23,7 +23,7 @@
  * VM Heap
  *
  * VM heap operations.
- * All of Py's dynamic memory is obtained from this heap.
+ * All of PyMite's dynamic memory is obtained from this heap.
  * The heap provides dynamic memory on demand.
  *
  * Log
@@ -42,7 +42,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -63,8 +63,8 @@
  */
 #define HEAP_MARK_IF_UNMARKED(pobj, rval)   \
             if (((pobj) != C_NULL) && \
-                (((pPyObj_t)pobj)->od.od_gcval != heap_gcval)) \
-                    rval = heap_markObj((pPyObj_t)pobj)
+                (((pPmObj_t)pobj)->od.od_gcval != heap_gcval)) \
+                    rval = heap_markObj((pPmObj_t)pobj)
 
 
 /***************************************************************
@@ -76,10 +76,10 @@
  **************************************************************/
 
 /** ptr to list of free chunks */
-static pPyHeapDesc_t pfreelist;
+static pPmHeapDesc_t pfreelist;
 
 /** ptr to clean heap (the big chunk) */
-static pPyHeapDesc_t pcleanheap;
+static pPmHeapDesc_t pcleanheap;
 
 #if HEAP_MEASURE
 /** Size of heap histogram table */
@@ -111,10 +111,10 @@ static U8 heap_gcval = 0;
  * @return  Return code
  */
 static
-PyReturn_t
-heap_markObj(pPyObj_t pobj)
+PmReturn_t
+heap_markObj(pPmObj_t pobj)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     S8 i = 0;
 
     switch (pobj->od.od_type)
@@ -129,16 +129,16 @@ heap_markObj(pPyObj_t pobj)
             break;
 
         case OBJ_TYPE_TUP:
-            i = ((pPyTuple_t)pobj)->length;
+            i = ((pPmTuple_t)pobj)->length;
             /* mark tuple head */
             pobj->od.od_gcval = heap_gcval;
             /* mark each obj in tuple */
             while (--i >= 0)
             {
                 HEAP_MARK_IF_UNMARKED(
-                    ((pPyTuple_t)pobj)->val[i],
+                    ((pPmTuple_t)pobj)->val[i],
                     retval);
-                PY_RETURN_IF_ERROR(retval);
+                PM_RETURN_IF_ERROR(retval);
             }
             break;
 
@@ -146,7 +146,7 @@ heap_markObj(pPyObj_t pobj)
             /* mark the list */
             pobj->od.od_gcval = heap_gcval;
             /* mark the keys seglist */
-            HEAP_MARK_IF_UNMARKED(((pPyList_t)pobj)->val,
+            HEAP_MARK_IF_UNMARKED(((pPmList_t)pobj)->val,
                                   retval);
             break;
 
@@ -154,11 +154,11 @@ heap_markObj(pPyObj_t pobj)
             /* mark the dict head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the keys seglist */
-            HEAP_MARK_IF_UNMARKED(((pPyDict_t)pobj)->d_keys,
+            HEAP_MARK_IF_UNMARKED(((pPmDict_t)pobj)->d_keys,
                                   retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the vals seglist */
-            HEAP_MARK_IF_UNMARKED(((pPyDict_t)pobj)->d_vals,
+            HEAP_MARK_IF_UNMARKED(((pPmDict_t)pobj)->d_vals,
                                   retval);
             break;
 
@@ -166,27 +166,27 @@ heap_markObj(pPyObj_t pobj)
             /* mark the code obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the names tuple */
-            HEAP_MARK_IF_UNMARKED(((pPyCo_t)pobj)->co_names,
+            HEAP_MARK_IF_UNMARKED(((pPmCo_t)pobj)->co_names,
                                   retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the consts tuple */
-            HEAP_MARK_IF_UNMARKED(((pPyCo_t)pobj)->co_consts,
+            HEAP_MARK_IF_UNMARKED(((pPmCo_t)pobj)->co_consts,
                                   retval);
             break;
 
         case OBJ_TYPE_MOD:
         case OBJ_TYPE_FXN:
-            /* Module and Func objs are implemented via the PyFunc_t */
+            /* Module and Func objs are implemented via the PmFunc_t */
             /* mark the func obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the code obj */
-            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_co, retval);
-            PY_RETURN_IF_ERROR(retval);
+            HEAP_MARK_IF_UNMARKED(((pPmFunc_t)pobj)->f_co, retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the attr dict */
-            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_attrs, retval);
-            PY_RETURN_IF_ERROR(retval);
+            HEAP_MARK_IF_UNMARKED(((pPmFunc_t)pobj)->f_attrs, retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the default args tuple */
-            HEAP_MARK_IF_UNMARKED(((pPyFunc_t)pobj)->f_defaultargs, retval);
+            HEAP_MARK_IF_UNMARKED(((pPmFunc_t)pobj)->f_defaultargs, retval);
             break;
 
         case OBJ_TYPE_CLO:
@@ -195,46 +195,46 @@ heap_markObj(pPyObj_t pobj)
             /* mark the obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the attrs dict */
-            HEAP_MARK_IF_UNMARKED(((pPyClass_t)pobj)->cl_attrs, retval);
+            HEAP_MARK_IF_UNMARKED(((pPmClass_t)pobj)->cl_attrs, retval);
             break;
 
         /* An obj in ram should not be of these types */
         case OBJ_TYPE_CIM:
         case OBJ_TYPE_NIM:
-            return PY_RET_ERR;
+            return PM_RET_ERR;
 
         case OBJ_TYPE_FRM:
         {
-            pPyObj_t pobj2 = C_NULL;
+            pPmObj_t pobj2 = C_NULL;
             /* mark the frame obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the previous frame */
-            HEAP_MARK_IF_UNMARKED(((pPyFrame_t)pobj)->fo_back,
+            HEAP_MARK_IF_UNMARKED(((pPmFrame_t)pobj)->fo_back,
                                   retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the fxn obj */
-            HEAP_MARK_IF_UNMARKED(((pPyFrame_t)pobj)->fo_func,
+            HEAP_MARK_IF_UNMARKED(((pPmFrame_t)pobj)->fo_func,
                                   retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the blockstack */
             HEAP_MARK_IF_UNMARKED(
-                ((pPyFrame_t)pobj)->fo_blockstack,
+                ((pPmFrame_t)pobj)->fo_blockstack,
                 retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the attrs dict */
-            HEAP_MARK_IF_UNMARKED(((pPyFrame_t)pobj)->fo_attrs,
+            HEAP_MARK_IF_UNMARKED(((pPmFrame_t)pobj)->fo_attrs,
                                   retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark the globals dict */
             HEAP_MARK_IF_UNMARKED(
-                ((pPyFrame_t)pobj)->fo_globals,
+                ((pPmFrame_t)pobj)->fo_globals,
                 retval);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
             /* mark each obj in the locals list and the stack */
-            while (pobj2 < (pPyObj_t)((pPyFrame_t)pobj)->fo_sp)
+            while (pobj2 < (pPmObj_t)((pPmFrame_t)pobj)->fo_sp)
             {
                 HEAP_MARK_IF_UNMARKED(pobj2, retval);
-                PY_RETURN_IF_ERROR(retval);
+                PM_RETURN_IF_ERROR(retval);
                 pobj2++;
             }
             break;
@@ -244,7 +244,7 @@ heap_markObj(pPyObj_t pobj)
             /* mark the block obj head */
             pobj->od.od_gcval = heap_gcval;
             /* mark the previous block */
-            HEAP_MARK_IF_UNMARKED(((pPyBlock_t)pobj)->next,
+            HEAP_MARK_IF_UNMARKED(((pPmBlock_t)pobj)->next,
                                   retval);
             break;
 
@@ -257,7 +257,7 @@ heap_markObj(pPyObj_t pobj)
                 HEAP_MARK_IF_UNMARKED(
                     ((pSegment_t)pobj)->s_val[i],
                     retval);
-                PY_RETURN_IF_ERROR(retval);
+                PM_RETURN_IF_ERROR(retval);
             }
             /* mark the next segment */
             HEAP_MARK_IF_UNMARKED(((pSegment_t)pobj)->next,
@@ -278,11 +278,11 @@ heap_markObj(pPyObj_t pobj)
 
 
 static
-PyReturn_t
+PmReturn_t
 heap_markImgInfoStruct(void)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyImgInfo_t pii = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmImgInfo_t pii = C_NULL;
 
     pii = gVmGlobal.pimglist;
 
@@ -293,7 +293,7 @@ heap_markImgInfoStruct(void)
         HEAP_MARK_IF_UNMARKED(pii->ii_name, retval);
 
         /* exit on any error */
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
         pii = pii->next;
     }
     return retval;
@@ -314,10 +314,10 @@ heap_markImgInfoStruct(void)
  * @return  Return code
  */
 static
-PyReturn_t
+PmReturn_t
 heap_markRoots(void)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     /* increment the GC marking value; modulo 2-bits */
     heap_gcval++;
     heap_gcval &= 0x03;
@@ -330,12 +330,12 @@ heap_markRoots(void)
      */
     /* the image info struct is special; it has no obj header */
     retval = heap_markImgInfoStruct();
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
     /* mark the builtins dict */
-    HEAP_MARK_IF_UNMARKED(PY_PBUILTINS, retval);
-    PY_RETURN_IF_ERROR(retval);
+    HEAP_MARK_IF_UNMARKED(PM_PBUILTINS, retval);
+    PM_RETURN_IF_ERROR(retval);
     /* mark the "code" string */
-    HEAP_MARK_IF_UNMARKED(PY_CODE_STR, retval);
+    HEAP_MARK_IF_UNMARKED(PM_CODE_STR, retval);
     return retval;
 }
 
@@ -346,7 +346,7 @@ heap_markRoots(void)
 void
 heap_init(void)
 {
-    pPyHeapDesc_t pchunk = C_NULL;
+    pPmHeapDesc_t pchunk = C_NULL;
     U16 size = 0;
 
     /* zero all memory in the heap (optional?) */
@@ -356,7 +356,7 @@ heap_init(void)
     gVmGlobal.heap.avail = HEAP_SIZE;
 
     /* pcleanheap pts to list of large chunks */
-    pcleanheap = (pPyHeapDesc_t)&gVmGlobal.heap.base;
+    pcleanheap = (pPmHeapDesc_t)&gVmGlobal.heap.base;
     pchunk = pcleanheap;
 
     /* init list of large chunks */
@@ -364,7 +364,7 @@ heap_init(void)
     while (size > HEAP_MAX_CHUNK_SIZE)
     {
         pchunk->od.od_size = HEAP_MAX_CHUNK_SIZE;
-        pchunk->next = (pPyHeapDesc_t)((P_U8)pchunk + HEAP_MAX_CHUNK_SIZE);
+        pchunk->next = (pPmHeapDesc_t)((P_U8)pchunk + HEAP_MAX_CHUNK_SIZE);
         size -= HEAP_MAX_CHUNK_SIZE;
         pchunk = pchunk->next;
     }
@@ -397,11 +397,11 @@ heap_init(void)
  * @return Return status
  */
 static
-PyReturn_t
+PmReturn_t
 heap_getChunk0(U8 size, P_U8 * r_pchunk)
 {
-    pPyHeapDesc_t pchunk1 = C_NULL;
-    pPyHeapDesc_t pchunk2 = C_NULL;
+    pPmHeapDesc_t pchunk1 = C_NULL;
+    pPmHeapDesc_t pchunk2 = C_NULL;
 
 #if HEAP_MEASURE
     /* if larger than hist table, store in 0th element */
@@ -432,7 +432,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= pchunk1->od.od_size;
             *r_pchunk = (P_U8)pchunk1;
-            return PY_RET_OK;
+            return PM_RET_OK;
         }
 
         /* else search list for proper sized chunk */
@@ -457,7 +457,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= pchunk2->od.od_size;
             *r_pchunk = (P_U8)pchunk2;
-            return PY_RET_OK;
+            return PM_RET_OK;
         }
     }
 
@@ -474,7 +474,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* try the next clean heap */
             pcleanheap = pcleanheap->next;
             /* XXX be sure this doesn't count toward freemem */
-            heap_freeChunk((pPyObj_t)pchunk2);
+            heap_freeChunk((pPmObj_t)pchunk2);
         }
 
         /*
@@ -499,7 +499,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             else
             {
                 pcleanheap->od.od_size -= size;
-                pchunk2 = (pPyHeapDesc_t)((P_U8)pcleanheap 
+                pchunk2 = (pPmHeapDesc_t)((P_U8)pcleanheap 
                                           + pcleanheap->od.od_size);
                 pchunk2->od.od_size = size;
             }
@@ -507,7 +507,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= size;
             *r_pchunk = (P_U8)pchunk2;
-            return PY_RET_OK;
+            return PM_RET_OK;
         }
     }
 
@@ -524,12 +524,12 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
         /* reduce heap available amount */
         gVmGlobal.heap.avail -= pchunk2->od.od_size;
         *r_pchunk = (P_U8)pchunk2;
-        return PY_RET_OK;
+        return PM_RET_OK;
     }
 
     /* no chunk of that size available */
     *r_pchunk = C_NULL;
-    return PY_RET_ERR;
+    return PM_RET_ERR;
 }
 
 
@@ -538,10 +538,10 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
  * Obtain a chunk of at least the desired size
  * from the heap.  Perform GC if necessary.
  */
-PyReturn_t
+PmReturn_t
 heap_getChunk(U8 size, P_U8 *r_pchunk)
 {
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     /* halt if size request is invalid */
     if ((size < HEAP_MIN_CHUNK_SIZE)
@@ -550,18 +550,18 @@ heap_getChunk(U8 size, P_U8 *r_pchunk)
 #endif
         )
     {
-        PY_ERR(__LINE__);
+        PM_ERR(__LINE__);
     }
 
     /* if a chunk is available, return with it */
     retval = heap_getChunk0(size, r_pchunk);
-    if (retval == PY_RET_OK)
+    if (retval == PM_RET_OK)
     {
         return retval;
     }
 
     /* XXX GC isn't tested yet, halt here */
-    /* PY_ERR(__LINE__); */
+    /* PM_ERR(__LINE__); */
 
     /* else collect garbage */
     heap_markRoots();
@@ -569,13 +569,13 @@ heap_getChunk(U8 size, P_U8 *r_pchunk)
 
     /* now, if a chunk is available, return with it */
     retval = heap_getChunk0(size, r_pchunk);
-    if (retval == PY_RET_OK)
+    if (retval == PM_RET_OK)
     {
-        return PY_RET_OK;
+        return PM_RET_OK;
     }
 
     /* else return out-of-memory exception */
-    return PY_RET_EX_MEM;
+    return PM_RET_EX_MEM;
 }
 
 
@@ -584,12 +584,12 @@ heap_getChunk(U8 size, P_U8 *r_pchunk)
  * Free list is sorted smallest to largest.
  */
 void
-heap_freeChunk(pPyObj_t ptr)
+heap_freeChunk(pPmObj_t ptr)
 {
-    pPyHeapDesc_t oldchunk = (pPyHeapDesc_t)ptr;
+    pPmHeapDesc_t oldchunk = (pPmHeapDesc_t)ptr;
     U8 size = ptr->od.od_size;
-    pPyHeapDesc_t pchunk1;
-    pPyHeapDesc_t pchunk2;
+    pPmHeapDesc_t pchunk1;
+    pPmHeapDesc_t pchunk2;
 
     /* increase heap available amount */
     gVmGlobal.heap.avail += ptr->od.od_size;

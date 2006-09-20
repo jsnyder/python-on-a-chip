@@ -37,7 +37,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -64,51 +64,51 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-mod_new(pPyObj_t pco, pPyObj_t * pmod)
+PmReturn_t
+mod_new(pPmObj_t pco, pPmObj_t * pmod)
 {
-    PyReturn_t retval;
+    PmReturn_t retval;
     P_U8 pchunk;
 
     /* if it's not a code obj, raise TypeError */
     if (pco->od.od_type != OBJ_TYPE_COB)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* alloc and init func obj */
-    retval = heap_getChunk(sizeof(PyFunc_t), &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    *pmod = (pPyObj_t)pchunk;
+    retval = heap_getChunk(sizeof(PmFunc_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    *pmod = (pPmObj_t)pchunk;
     (*pmod)->od.od_type = OBJ_TYPE_MOD;
-    ((pPyFunc_t)*pmod)->f_co = (pPyCo_t)pco;
+    ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
     /* alloc and init attrs dict */
-    retval = dict_new((pPyObj_t *)&((pPyFunc_t)*pmod)->f_attrs);
+    retval = dict_new((pPmObj_t *)&((pPmFunc_t)*pmod)->f_attrs);
     return retval;
 }
 
 
-PyReturn_t
-mod_import(pPyObj_t pstr, pPyObj_t * pmod)
+PmReturn_t
+mod_import(pPmObj_t pstr, pPmObj_t * pmod)
 {
-    pPyImgInfo_t pii = C_NULL;
+    pPmImgInfo_t pii = C_NULL;
     P_U8 imgaddr = C_NULL;
-    pPyCo_t pco = C_NULL;
-    PyReturn_t retval = PY_RET_OK;
-    pPyObj_t pobj;
+    pPmCo_t pco = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pobj;
 
     /* if it's not a string obj, raise SyntaxError */
     if (pstr->od.od_type != OBJ_TYPE_STR)
     {
-        return PY_RET_EX_SYNTAX;
+        return PM_RET_EX_SYNTAX;
     }
 
     /* iterate through the global img list */
     pii = gVmGlobal.pimglist;
     /* while not at end of list and string doesn't match */
     while ((pii != C_NULL)
-           && (string_compare((pPyString_t)pstr, pii->ii_name) == C_DIFFER))
+           && (string_compare((pPmString_t)pstr, pii->ii_name) == C_DIFFER))
     {
         pii = pii->next;
     }
@@ -116,7 +116,7 @@ mod_import(pPyObj_t pstr, pPyObj_t * pmod)
     /* if img was not found, raise ImportError */
     if (pii == C_NULL)
     {
-        return PY_RET_EX_IMPRT;
+        return PM_RET_EX_IMPRT;
     }
 
     /* make copy of addr */
@@ -124,10 +124,10 @@ mod_import(pPyObj_t pstr, pPyObj_t * pmod)
 
     /* load img into code obj */
     retval = obj_loadFromImg(pii->ii_memspace, &imgaddr, &pobj);
-    PY_RETURN_IF_ERROR(retval);
-    pco = (pPyCo_t)pobj;
+    PM_RETURN_IF_ERROR(retval);
+    pco = (pPmCo_t)pobj;
 
-    return mod_new((pPyObj_t)pco, pmod);
+    return mod_new((pPmObj_t)pco, pmod);
 }
 
 

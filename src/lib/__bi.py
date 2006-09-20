@@ -36,39 +36,39 @@
 
 #### CONSTS
 
-C = "Copyright 2001 Dean W. Hall.  All rights reserved."
+C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
 
 
 #### FUNCS
 
 def globals():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pr = C_NULL;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return calling frame's globals dict  on stack*/
-    pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_globals;
+    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_globals;
     NATIVE_SET_TOS(pr);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def id(o):
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t pr = C_NULL;
+    PmReturn_t retval;
+    pPmObj_t pr = C_NULL;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return object's address as an int on the stack */
@@ -88,14 +88,14 @@ def id(o):
 
 def len(s):
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t ps = C_NULL;
-    pPyObj_t pr = C_NULL;
+    PmReturn_t retval;
+    pPmObj_t ps = C_NULL;
+    pPmObj_t pr = C_NULL;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get first arg */
@@ -105,24 +105,24 @@ def len(s):
     switch (ps->od.od_type)
     {
         case OBJ_TYPE_STR:
-            retval = int_new(((pPyString_t)ps)->length, &pr);
+            retval = int_new(((pPmString_t)ps)->length, &pr);
             break;
 
         case OBJ_TYPE_TUP:
-            retval = int_new(((pPyTuple_t)ps)->length, &pr);
+            retval = int_new(((pPmTuple_t)ps)->length, &pr);
             break;
 
         case OBJ_TYPE_LST:
-            retval = int_new(((pPyList_t)ps)->length, &pr);
+            retval = int_new(((pPmList_t)ps)->length, &pr);
             break;
 
         case OBJ_TYPE_DIC:
-            retval = int_new(((pPyDict_t)ps)->length, &pr);
+            retval = int_new(((pPmDict_t)ps)->length, &pr);
             break;
 
         default:
             /* If not a string or sequence type, raise TypeError */
-            retval = PY_RET_EX_TYPE;
+            retval = PM_RET_EX_TYPE;
     }
 
     NATIVE_SET_TOS(pr);
@@ -133,36 +133,36 @@ def len(s):
 
 def locals():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pr = C_NULL;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return calling frame's local attrs dict on the stack */
-    pr = (pPyObj_t)NATIVE_GET_PFRAME()->fo_attrs;
+    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_attrs;
     NATIVE_SET_TOS(pr);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def map(f, s):
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t pf = C_NULL;
-    pPyObj_t ps = C_NULL;
-    pPyObj_t pr = C_NULL;
+    PmReturn_t retval;
+    pPmObj_t pf = C_NULL;
+    pPmObj_t ps = C_NULL;
+    pPmObj_t pr = C_NULL;
     S8 length = 0;
     S8 i = 0;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get args */
@@ -172,36 +172,36 @@ def map(f, s):
     /* If args are wrong type, raise TypeError */
     if (pf->od.od_type != OBJ_TYPE_FXN)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the sequence length based on type */
     switch (ps->od.od_type)
     {
         case OBJ_TYPE_TUP:
-            length = ((pPyTuple_t)ps)->length;
+            length = ((pPmTuple_t)ps)->length;
             break;
 
         case OBJ_TYPE_LST:
-            length = ((pPyList_t)ps)->length;
+            length = ((pPmList_t)ps)->length;
             break;
 
         case OBJ_TYPE_STR:
-            length = ((pPyString_t)ps)->length;
+            length = ((pPmString_t)ps)->length;
             break;
 
         default:
-            return PY_RET_EX_TYPE;
+            return PM_RET_EX_TYPE;
     }
 
     /* XXX: Do a dummy map, fill func with Nones */
     retval = list_new(&pr);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     for (i = 0; i < length; i++)
     {
-        retval = list_append(pr, PY_NONE);
-        PY_RETURN_IF_ERROR(retval);
+        retval = list_append(pr, PM_NONE);
+        PM_RETURN_IF_ERROR(retval);
     }
 
     return retval;
@@ -211,26 +211,26 @@ def map(f, s):
 
 def range(a, b, c):
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t pa = C_NULL;
-    pPyObj_t pb = C_NULL;
-    pPyObj_t pc = C_NULL;
-    pPyObj_t pi = C_NULL;
-    pPyObj_t pr = C_NULL;
+    PmReturn_t retval;
+    pPmObj_t pa = C_NULL;
+    pPmObj_t pb = C_NULL;
+    pPmObj_t pc = C_NULL;
+    pPmObj_t pi = C_NULL;
+    pPmObj_t pr = C_NULL;
     U16 i = 0;
 
     switch (NATIVE_GET_NUM_ARGS())
     {
         case 1:
-            pa = PY_ZERO;
+            pa = PM_ZERO;
             pb = NATIVE_GET_LOCAL(0);
-            pc = PY_ONE;
+            pc = PM_ONE;
             break;
 
         case 2:
             pa = NATIVE_GET_LOCAL(0);
             pb = NATIVE_GET_LOCAL(1);
-            pc = PY_ONE;
+            pc = PM_ONE;
             break;
 
         case 3:
@@ -239,46 +239,46 @@ def range(a, b, c):
             pc = NATIVE_GET_LOCAL(2);
 
             /* If 3rd arg is 0, ValueError */
-            if (((pPyInt_t)pc)->val == 0)
+            if (((pPmInt_t)pc)->val == 0)
             {
-                return PY_RET_EX_VAL;
+                return PM_RET_EX_VAL;
             }
             break;
 
         default:
             /* If wrong number of args, raise TypeError */
-            return PY_RET_EX_TYPE;
+            return PM_RET_EX_TYPE;
     }
 
     /* Allocate list */
     retval = list_new(&pr);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Iterate depending on counting direction */
-    if (((pPyInt_t)pc)->val > 0)
+    if (((pPmInt_t)pc)->val > 0)
     {
-        for (i = ((pPyInt_t)pa)->val;
-             i < ((pPyInt_t)pb)->val;
-             i += ((pPyInt_t)pc)->val)
+        for (i = ((pPmInt_t)pa)->val;
+             i < ((pPmInt_t)pb)->val;
+             i += ((pPmInt_t)pc)->val)
         {
             retval = int_new(i, &pi);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
 
             retval = list_append(pr, pi);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
         }
     }
     else
     {
-        for (i = ((pPyInt_t)pa)->val;
-             i > ((pPyInt_t)pb)->val;
-             i += ((pPyInt_t)pc)->val)
+        for (i = ((pPmInt_t)pa)->val;
+             i > ((pPmInt_t)pb)->val;
+             i += ((pPmInt_t)pc)->val)
         {
             retval = int_new(i, &pi);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
 
             list_append(pr, pi);
-            PY_RETURN_IF_ERROR(retval);
+            PM_RETURN_IF_ERROR(retval);
         }
     }
 
@@ -291,14 +291,14 @@ def range(a, b, c):
 
 def type(o):
     """__NATIVE__
-    PyReturn_t retval;
-    pPyObj_t po = C_NULL;
-    pPyObj_t pr = C_NULL;
+    PmReturn_t retval;
+    pPmObj_t po = C_NULL;
+    pPmObj_t pr = C_NULL;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get arg */
@@ -317,18 +317,18 @@ def type(o):
 #
 def _exn():
     """__NATIVE__
-    PyReturn_t retval;
-    pPyClass_t pexn;
+    PmReturn_t retval;
+    pPmClass_t pexn;
     P_U8 pchunk;
 
     /* Alloc a class object with attributes dict */
-    retval = heap_getChunk(sizeof(PyClass_t), &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    pexn = (pPyClass_t)pchunk;
+    retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pexn = (pPmClass_t)pchunk;
     pexn->od.od_type = OBJ_TYPE_EXN;
-    retval = dict_new((pPyObj_t *)&pexn->cl_attrs);
+    retval = dict_new((pPmObj_t *)&pexn->cl_attrs);
 
-    NATIVE_SET_TOS((pPyObj_t)pexn);
+    NATIVE_SET_TOS((pPmObj_t)pexn);
 
     return retval;
     """

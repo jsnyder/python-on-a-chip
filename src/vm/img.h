@@ -57,17 +57,17 @@
  * as the sole list to search when a named code object
  * is to be loaded.
  */
- typedef struct PyImgInfo_s
+ typedef struct PmImgInfo_s
  {
     /** the image's name as a String obj */
-    pPyString_t         ii_name;
+    pPmString_t         ii_name;
     /** the memory space in which the image is located */
-    PyMemSpace_t        ii_memspace:8;
+    PmMemSpace_t        ii_memspace:8;
     /** the starting address of the image */
     P_U8                ii_addr;
     /** ptr to next image ID struct */
-    struct PyImgInfo_s  *next;
- } PyImgInfo_t, *pPyImgInfo_t;
+    struct PmImgInfo_s  *next;
+ } PmImgInfo_t, *pPmImgInfo_t;
 
 
 /***************************************************************
@@ -89,7 +89,7 @@
  * @param   paddr ptr to address value to start search.
  * @return  Return status
  */
-PyReturn_t img_findInMem(PyMemSpace_t memspace, P_U8 *paddr);
+PmReturn_t img_findInMem(PmMemSpace_t memspace, P_U8 *paddr);
 
 /**
  * Load a string obj from the names tuple at the given index.
@@ -100,10 +100,10 @@ PyReturn_t img_findInMem(PyMemSpace_t memspace, P_U8 *paddr);
  * @param   r_pname Return parm, name string
  * @return  Return status
  */
-PyReturn_t img_getName(PyMemSpace_t memspace,
+PmReturn_t img_getName(PmMemSpace_t memspace,
                        P_U8 *paddr,
                        U8 n,
-                       pPyObj_t * r_pname);
+                       pPmObj_t * r_pname);
 
 
 #endif /* __TEMPLATE_H__ */

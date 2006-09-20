@@ -36,7 +36,7 @@
  * Includes
  **************************************************************/
 
-#include "py.h"
+#include "pm.h"
 
 
 /***************************************************************
@@ -63,10 +63,10 @@
  * Functions
  **************************************************************/
 
-PyReturn_t
-tuple_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t *r_ptuple)
+PmReturn_t
+tuple_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t *r_ptuple)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     U8 i = 0;
     U8 n = 0;
 
@@ -75,43 +75,43 @@ tuple_loadFromImg(PyMemSpace_t memspace, P_U8 *paddr, pPyObj_t *r_ptuple)
 
     /* create empty tuple */
     retval = tuple_new(n, r_ptuple);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* load the next n objs into tuple */
     for (i = 0; i < n; i++)
     {
         retval = obj_loadFromImg(memspace,
                                  paddr,
-                                 (pPyObj_t *)&(((pPyTuple_t)*r_ptuple)->val[i])
+                                 (pPmObj_t *)&(((pPmTuple_t)*r_ptuple)->val[i])
                                 );
-        PY_RETURN_IF_ERROR(retval);
+        PM_RETURN_IF_ERROR(retval);
     }
-    return PY_RET_OK;
+    return PM_RET_OK;
 }
 
 
-PyReturn_t
-tuple_new(U16 n, pPyObj_t * r_ptuple)
+PmReturn_t
+tuple_new(U16 n, pPmObj_t * r_ptuple)
 {
-    PyReturn_t retval = PY_RET_OK;
+    PmReturn_t retval = PM_RET_OK;
     U16 size = 0;
 
     /* this size tuple not yet supported */
     /* XXX for larger tuple, break into segments */
     if (n > 100)
     {
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* calc size of struct to hold tuple */
-    size = sizeof(PyTuple_t) + (n * sizeof(pPyObj_t));
+    size = sizeof(PmTuple_t) + (n * sizeof(pPmObj_t));
 
     /* allocate a tuple */
     retval = heap_getChunk(size, (P_U8 *)r_ptuple);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
     (*r_ptuple)->od.od_type = OBJ_TYPE_TUP;
     /* set the number of objs in the tuple */
-    ((pPyTuple_t)*r_ptuple)->length = n;
+    ((pPmTuple_t)*r_ptuple)->length = n;
     /*
      * no need to null the ptrs
      * because tuple is filled this
@@ -120,11 +120,11 @@ tuple_new(U16 n, pPyObj_t * r_ptuple)
 }
 
 
-PyReturn_t
-tuple_copy(pPyObj_t ptup, pPyObj_t * r_ptuple)
+PmReturn_t
+tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
 {
-    PyReturn_t retval = PY_RET_OK;
-    pPyTuple_t pnew = C_NULL;
+    PmReturn_t retval = PM_RET_OK;
+    pPmTuple_t pnew = C_NULL;
     P_U8 pchunk;
     P_U8 pdest;
     P_U8 psrc;
@@ -132,19 +132,19 @@ tuple_copy(pPyObj_t ptup, pPyObj_t * r_ptuple)
     /* ensure type */
     if (ptup->od.od_type != OBJ_TYPE_TUP)
     {
-        return PY_RET_EX_SYS;
+        return PM_RET_EX_SYS;
     }
 
     /* duplicate src tuple */
     retval = heap_getChunk(ptup->od.od_size, &pchunk);
-    PY_RETURN_IF_ERROR(retval);
-    pnew = (pPyTuple_t)pchunk;
+    PM_RETURN_IF_ERROR(retval);
+    pnew = (pPmTuple_t)pchunk;
 
     pdest = (P_U8)pnew;
     psrc = (P_U8)ptup;
     mem_copy(MEMSPACE_RAM, &pdest, &psrc, ptup->od.od_size);
-    *r_ptuple = (pPyObj_t)pnew;
-    return PY_RET_OK;
+    *r_ptuple = (pPmObj_t)pnew;
+    return PM_RET_OK;
 }
 
 

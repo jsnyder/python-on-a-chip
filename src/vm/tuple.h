@@ -54,10 +54,10 @@
  * Immutable ordered sequence.
  * Contains array of ptrs to objs.
  */
-typedef struct PyTuple_s
+typedef struct PmTuple_s
 {
     /** object descriptor */
-    PyObjDesc_t od;
+    PmObjDesc_t od;
     /**
 	 * length of tuple
      * I don't expect a tuple to ever exceed 255 elements,
@@ -66,8 +66,8 @@ typedef struct PyTuple_s
 	 */
     S16         length;
     /** array of ptrs to objs */
-    pPyObj_t    val[0];
-} PyTuple_t, *pPyTuple_t;
+    pPmObj_t    val[0];
+} PmTuple_t, *pPmTuple_t;
 
 
 /***************************************************************
@@ -97,9 +97,9 @@ typedef struct PyTuple_s
  *          return by reference: paddr points one byte
  *          past end of last obj in tuple.
  */
-PyReturn_t tuple_loadFromImg(PyMemSpace_t memspace,
+PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
                              P_U8 *paddr,
-                             pPyObj_t *r_ptuple);
+                             pPmObj_t *r_ptuple);
 
 /**
  * Allocate space for a new Tuple.
@@ -109,7 +109,7 @@ PyReturn_t tuple_loadFromImg(PyMemSpace_t memspace,
  * @param   r_ptuple Return by ref, ptr to new tuple
  * @return  Return status
  */
-PyReturn_t tuple_new(U16 n, pPyObj_t *r_ptuple);
+PmReturn_t tuple_new(U16 n, pPmObj_t *r_ptuple);
 
 /**
  * Create a copy of the tuple.
@@ -121,6 +121,6 @@ PyReturn_t tuple_new(U16 n, pPyObj_t *r_ptuple);
  * @param   r_ptuple Return arg; Ptr to new tuple.
  * @return  Return status
  */
-PyReturn_t tuple_copy(pPyObj_t ptup, pPyObj_t *r_ptuple);
+PmReturn_t tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple);
 
 #endif /* __TUPLE_H__ */

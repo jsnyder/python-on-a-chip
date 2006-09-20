@@ -48,26 +48,26 @@
 def adcGet(c):
     """__NATIVE__
     /* The arg is the ADC channel to read */
-    pPyObj_t pc = C_NULL;
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pc = C_NULL;
+    pPmObj_t pr = C_NULL;
     S8 chan;
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get arg, throw type exception if it's not an int */
     pc = NATIVE_GET_LOCAL(0);
     if (pc->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the channel number */
-    chan = (S8)(((pPyInt_t)pc)->val & 0x03);
+    chan = (S8)(((pPmInt_t)pc)->val & 0x03);
 
     /* Return new int from the conversion result on the stack */
     retval = int_new(mmb_adcGet(chan), &pr);
@@ -80,26 +80,26 @@ def adcGet(c):
 
 def adcGetBMA(c):
     """__NATIVE__
-    pPyObj_t pc = C_NULL;
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pc = C_NULL;
+    pPmObj_t pr = C_NULL;
     S8 chan;
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get arg, throw type exception if it's not an int */
     pc = NATIVE_GET_LOCAL(0);
     if (pc->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the channel number */
-    chan = (S8)(((pPyInt_t)pc)->val & 0x03);
+    chan = (S8)(((pPmInt_t)pc)->val & 0x03);
 
     /* Return new int from the conversion result on the stack */
     retval = int_new(mmb_adcGetBMA(chan), &pr);
@@ -112,15 +112,15 @@ def adcGetBMA(c):
 
 def beep(f, ms):
     """__NATIVE__
-    pPyObj_t pf = C_NULL;
-    pPyObj_t pms = C_NULL;
+    pPmObj_t pf = C_NULL;
+    pPmObj_t pms = C_NULL;
     U16 f;
     U16 ms;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the args, throw exception if needed */
@@ -129,46 +129,46 @@ def beep(f, ms):
     if ((pf->od.od_type != OBJ_TYPE_INT) ||
         (pms->od.od_type != OBJ_TYPE_INT))
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get frequency and duration values */
-    f = (U16)((pPyInt_t)pf)->val;
-    ms = (U16)((pPyInt_t)pms)->val;
+    f = (U16)((pPmInt_t)pf)->val;
+    ms = (U16)((pPmInt_t)pms)->val;
 
     /* Call mmb's beep fxn */
     mmb_beep(f, ms);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def digGet(c):
     """__NATIVE__
-    pPyObj_t pc = C_NULL;
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pc = C_NULL;
+    pPmObj_t pr = C_NULL;
     S8 chan;
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw exception if needed */
     pc = NATIVE_GET_LOCAL(0);
     if (pc->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the channel value */
-    chan = (S8)(((pPyInt_t)pc)->val & 0x03);
+    chan = (S8)(((pPmInt_t)pc)->val & 0x03);
 
     /* Return new int with digital value on stack */
     retval = int_new(mmb_digGet(chan), &pr);
@@ -181,13 +181,13 @@ def digGet(c):
 
 def digGetByte():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
-    PyReturn_t retval;
+    pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return new int from DIG port value on stack */
@@ -201,26 +201,26 @@ def digGetByte():
 
 def dipGet(c):
     """__NATIVE__
-    pPyObj_t pc = C_NULL;
-    pPyObj_t pr = C_NULL;
+    pPmObj_t pc = C_NULL;
+    pPmObj_t pr = C_NULL;
     S8 chan;
-    PyReturn_t retval;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     pc = NATIVE_GET_LOCAL(0);
     if (pc->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the chan value */
-    chan = (S8)(((pPyInt_t)pc)->val & 0x03);
+    chan = (S8)(((pPmInt_t)pc)->val & 0x03);
 
     /* Return dip value on the stack */
     retval = int_new(mmb_dipGet(chan), &pr);
@@ -233,13 +233,13 @@ def dipGet(c):
 
 def dipGetByte():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
-    PyReturn_t retval;
+    pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return new int from DIG port value on stack */
@@ -256,7 +256,7 @@ def init():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Init board */
@@ -267,9 +267,9 @@ def init():
              );
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
@@ -279,79 +279,79 @@ def lcdClrScr():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Clear the LCD screen */
     mmb_lcdClrScr();
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def lcdPrintStr(ps):
     """__NATIVE__
-    pPyObj_t ps = C_NULL;
+    pPmObj_t ps = C_NULL;
     P_U8 s = C_NULL;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
     if (ps->od.od_type != OBJ_TYPE_STR)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get a pointer to the string */
-    s = (P_U8)((pPyString_t)ps)->val;
+    s = (P_U8)((pPmString_t)ps)->val;
 
     /* Print the string on the mmb's lcd */
     /* WARNING: PyMite's strings aren't null term 100% of the time */
     mmb_lcdPrintStr(s);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def lcdSetLine(n):
     """__NATIVE__
-    pPyObj_t pn = C_NULL;
+    pPmObj_t pn = C_NULL;
     U8 n;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     pn = NATIVE_GET_LOCAL(0);
     if (pn->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the line number and call mmb lib fxn*/
-    n = (U8)((pPyInt_t)pn)->val;
+    n = (U8)((pPmInt_t)pn)->val;
     mmb_lcdSetLine(n);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
@@ -362,90 +362,90 @@ def lcdTitleScreen():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     mmb_lcdTitleScreen();
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def pwmA(s):
     """__NATIVE__
-    pPyObj_t ps = C_NULL;
+    pPmObj_t ps = C_NULL;
     S8 duty;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw exception if needed */
     ps = NATIVE_GET_LOCAL(0);
     if (ps->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the duty cycle value */
-    duty = (S16)((pPyInt_t)ps)->val;
+    duty = (S16)((pPmInt_t)ps)->val;
 
     mmb_pwmA(duty);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def pwmB(s):
     """__NATIVE__
-    pPyObj_t ps = C_NULL;
+    pPmObj_t ps = C_NULL;
     S8 duty;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
     if (ps->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the duty cycle value */
-    duty = (S16)((pPyInt_t)ps)->val;
+    duty = (S16)((pPmInt_t)ps)->val;
 
     mmb_pwmB(duty);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def sciGetByte():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
-    PyReturn_t retval;
+    pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return new int from SCI value on stack */
@@ -459,13 +459,13 @@ def sciGetByte():
 
 def sciPutByte(c):
     """__NATIVE__
-    pPyObj_t pc = C_NULL;
+    pPmObj_t pc = C_NULL;
     U8 c;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg */
@@ -474,94 +474,94 @@ def sciPutByte(c):
     /* if arg is a string, write 0th char */
     if (pc->od.od_type == OBJ_TYPE_STR)
     {
-        c = (U8)(((pPyString_t)pc)->val[0]);
+        c = (U8)(((pPmString_t)pc)->val[0]);
         mmb_sciPutByte(c);
     }
     /* if arg is an int, write LSB */
     else if (pc->od.od_type == OBJ_TYPE_INT)
     {
-        c = (U8)(((pPyInt_t)pc)->val & 0xFF);
+        c = (U8)(((pPmInt_t)pc)->val & 0xFF);
         mmb_sciPutByte(c);
     }
 
     /* Otherwise, throw type exception */
     else
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def sciPutStr(s):
     """__NATIVE__
-    pPyObj_t ps = C_NULL;
+    pPmObj_t ps = C_NULL;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
     if (ps->od.od_type != OBJ_TYPE_STR)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Blocking write of s out SCI port */
     /* WARNING: PyMite strings aren't always null-terminated! */
-    mmb_sciPutStr(((pPyString_t)ps)->val);
+    mmb_sciPutStr(((pPmString_t)ps)->val);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def sleepms(ms):
     """__NATIVE__
-    pPyObj_t pms = C_NULL;
+    pPmObj_t pms = C_NULL;
     U16 ms;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the arg, throw type exception if needed */
     pms = NATIVE_GET_LOCAL(0);
     if (pms->od.od_type != OBJ_TYPE_INT)
     {
-        return PY_RET_EX_TYPE;
+        return PM_RET_EX_TYPE;
     }
 
     /* Get the line number and call mmb lib fxn*/
-    ms = (U16)((pPyInt_t)pms)->val;
+    ms = (U16)((pPmInt_t)pms)->val;
 
     mmb_sleepms(ms);
 
     /* Return none obj on stack */
-    NATIVE_SET_TOS(PY_NONE);
+    NATIVE_SET_TOS(PM_NONE);
 
-    return PY_RET_OK;
+    return PM_RET_OK;
     """
     pass
 
 
 def toc():
     """__NATIVE__
-    pPyObj_t pr = C_NULL;
-    PyReturn_t retval;
+    pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* Return new int from toc value on stack */
     retval = int_new((S32)mmb_toc(), &pr);

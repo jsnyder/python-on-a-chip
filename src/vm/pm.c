@@ -28,26 +28,26 @@
  * 2006/09/16   #16: Create pm_init() that does the initial housekeeping
  */
 
-#include "py.h"
+#include "pm.h"
 
 
 extern unsigned char stdlib_img[];
 
 
-PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg)
+PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg)
 {
-    PyReturn_t retval;
+    PmReturn_t retval;
     P_U8 pimg;
 
     /* Initialize the heap and the globals */
     heap_init();
     retval = global_init();
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Load std image info */
     pimg = (P_U8)&stdlib_img;
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Load usr image info if given */
     if (pusrimg != C_NULL)
@@ -60,25 +60,25 @@ PyReturn_t pm_init(PyMemSpace_t memspace, P_U8 pusrimg)
 }
 
 
-PyReturn_t pm_run(P_U8 modstr)
+PmReturn_t pm_run(P_U8 modstr)
 {
-    PyReturn_t retval;
-    pPyObj_t pmod;
-    pPyObj_t pstring;
+    PmReturn_t retval;
+    pPmObj_t pmod;
+    pPmObj_t pstring;
     P_U8 pmodstr = modstr;
 
     /* Import module from global struct */
     retval = string_new(&pmodstr, &pstring);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
     retval = mod_import(pstring, &pmod);
-    PY_RETURN_IF_ERROR(retval);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Load builtins into root module */
-    retval = global_loadBuiltins((pPyFunc_t)pmod);
-    PY_RETURN_IF_ERROR(retval);
+    retval = global_loadBuiltins((pPmFunc_t)pmod);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Interpret the module's bcode */
-    retval = interpret((pPyFunc_t)pmod);
+    retval = interpret((pPmFunc_t)pmod);
 
     return retval;
 }
