@@ -107,7 +107,7 @@ seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj)
         retval = heap_getChunk(sizeof(Segment_t), &pchunk);
         PM_RETURN_IF_ERROR(retval);
         pseg = (pSegment_t)pchunk;
-        pseg->od.od_type = OBJ_TYPE_SEG;
+        OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
         for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
         {
             pseg->s_val[i] = C_NULL;
@@ -287,7 +287,7 @@ seglist_insertItem(pSeglist_t pseglist,
                                (P_U8 *)&pseglist->sl_rootseg
                               );
         PM_RETURN_IF_ERROR(retval);
-        pseglist->sl_rootseg->od.od_type = OBJ_TYPE_SEG;
+        OBJ_SET_TYPE(*pseglist->sl_rootseg, OBJ_TYPE_SEG);
 
         /* seglist refers to the new segment */
         pseglist->sl_lastseg = pseglist->sl_rootseg;
@@ -354,7 +354,7 @@ seglist_insertItem(pSeglist_t pseglist,
 
                 /* init segment */
                 pseg = pseg->next;
-                pseg->od.od_type = OBJ_TYPE_SEG;
+                OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
                 for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
                 {
                     pseg->s_val[i] = C_NULL;
@@ -388,7 +388,7 @@ seglist_new(pSeglist_t * r_pseglist)
     retval = heap_getChunk(sizeof(Seglist_t), (P_U8 *)r_pseglist);
     PM_RETURN_IF_ERROR(retval);
 
-    (*r_pseglist)->od.od_type = OBJ_TYPE_SGL;
+    OBJ_SET_TYPE(**r_pseglist, OBJ_TYPE_SGL);
     (*r_pseglist)->sl_rootseg = C_NULL;
     (*r_pseglist)->sl_lastseg = C_NULL;
     (*r_pseglist)->sl_lastindx = 0;

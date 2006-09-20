@@ -93,7 +93,7 @@ ut_dict_new_001(void)
     pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
-    if (pobj->od.od_type != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_DIC)
     {
         TEST_ERR(__LINE__);
     }
@@ -106,7 +106,7 @@ ut_dict_new_002(void)
     pPmObj_t pobj = C_NULL;
 
     dict_new(&pobj);
-    if (pobj->od.od_const != 0)
+    if (OBJ_IS_CONST(*pobj))
     {
         TEST_ERR(__LINE__);
     }

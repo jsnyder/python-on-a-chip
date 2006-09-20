@@ -156,7 +156,7 @@ interpret(pPmFunc_t pfunc)
 
             case UNARY_POSITIVE:
                 /* TypeError if TOS is not an int */
-                if (TOS->od.od_type != OBJ_TYPE_INT)
+                if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
                     retval = PM_RET_EX_TYPE;
                     break;
@@ -195,7 +195,7 @@ interpret(pPmFunc_t pfunc)
 
             case UNARY_INVERT:
                 /* TypeError if it's not an int */
-                if (TOS->od.od_type != OBJ_TYPE_INT)
+                if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
                     retval = PM_RET_EX_TYPE;
                     break;
@@ -219,8 +219,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_MULTIPLY:
                 /* if both objs are ints, simple multiply */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -233,8 +233,8 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a list replication operation */
-                else if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                         && (TOS1->od.od_type == OBJ_TYPE_LST))
+                else if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                         && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_LST))
                 {
                     /* int number of times to duplicate */
                     pobj1 = PM_POP();
@@ -257,8 +257,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_DIVIDE:
                 /* if both objs are ints, simple divide */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
 
@@ -287,8 +287,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_MODULO:
                 /* if both objs are ints, perform modulo */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     /* ZeroDivisionError */
@@ -315,8 +315,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_ADD:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -337,8 +337,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_SUBTRACT:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -368,10 +368,10 @@ interpret(pPmFunc_t pfunc)
                 /* XXX index out of range exception? */
 
                 /* if it's a string */
-                if (pobj2->od.od_type == OBJ_TYPE_STR)
+                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_STR)
                 {
                     /* TypeError; sequence index must be int */
-                    if (pobj1->od.od_type != OBJ_TYPE_INT)
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
                         retval = PM_RET_EX_TYPE;
                         break;
@@ -387,10 +387,10 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a tuple */
-                else if (pobj2->od.od_type == OBJ_TYPE_TUP)
+                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
                 {
                     /* TypeError; sequence index must be int */
-                    if (pobj1->od.od_type != OBJ_TYPE_INT)
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
                         retval = PM_RET_EX_TYPE;
                         break;
@@ -402,10 +402,10 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a list */
-                else if (pobj2->od.od_type == OBJ_TYPE_LST)
+                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
                     /* TypeError; sequence index must be int */
-                    if (pobj1->od.od_type != OBJ_TYPE_INT)
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
                         retval = PM_RET_EX_TYPE;
                         break;
@@ -419,7 +419,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a dict */
-                else if (pobj2->od.od_type == OBJ_TYPE_DIC)
+                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
                 {
                     /* get the dict item */
                     retval = dict_getItem(pobj2, pobj1, &pobj3);
@@ -445,22 +445,23 @@ interpret(pPmFunc_t pfunc)
                 /* get sequence */
                 pobj1 = PM_POP();
 
-                /* XXX if there's an obj_copy(), use here */
+                /* XXX if there's an seq_copy(), use here */
                 /* if it's a string */
-                if (pobj1->od.od_type == OBJ_TYPE_STR)
+                if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_STR)
                 {
                     retval = string_copy(pobj1, &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a tuple */
-                else if (pobj1->od.od_type == OBJ_TYPE_TUP)
+                else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
                 {
                     retval = tuple_copy(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a list */
-                else if (pobj1->od.od_type == OBJ_TYPE_LST)
+                else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
                 {
                     retval = list_copy(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
@@ -492,11 +493,11 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case INPLACE_ADD:
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if int is constant, make new result */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val +
@@ -524,11 +525,11 @@ interpret(pPmFunc_t pfunc)
                 }
 
             case INPLACE_SUBTRACT:
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val -
@@ -556,11 +557,11 @@ interpret(pPmFunc_t pfunc)
                 }
 
             case INPLACE_MULTIPLY:
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val *
@@ -589,8 +590,8 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_DIVIDE:
                 /* TypeError; unsupported type */
-                if ((TOS->od.od_type  != OBJ_TYPE_INT)
-                    || (TOS1->od.od_type != OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
                     retval = PM_RET_EX_TYPE;
                     break;
@@ -604,7 +605,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if target obj is a constant obj */
-                if (TOS1->od.od_const) {
+                if (OBJ_IS_CONST(*TOS1)) {
                     pobj1 = PM_POP();
                     retval = int_new(
                                 ((pPmInt_t)PM_POP())->val /
@@ -625,8 +626,8 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_MODULO:
                 /* TypeError; unsupported type */
-                if ((TOS->od.od_type  != OBJ_TYPE_INT)
-                    || (TOS1->od.od_type != OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
                     retval = PM_RET_EX_TYPE;
                     break;
@@ -640,7 +641,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if target obj is a constant obj */
-                if (TOS1->od.od_const) {
+                if (OBJ_IS_CONST(*TOS1)) {
                     pobj1 = PM_POP();
                     retval = int_new(
                                 ((pPmInt_t)PM_POP())->val %
@@ -666,10 +667,10 @@ interpret(pPmFunc_t pfunc)
                 pobj3 = PM_POP();
 
                 /* if it's a list */
-                if (pobj2->od.od_type == OBJ_TYPE_LST)
+                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
                     /* ensure subscr is an int */
-                    if (pobj1->od.od_type != OBJ_TYPE_INT)
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
                         PM_ERR(__LINE__);
                     }
@@ -682,7 +683,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a dict */
-                if (pobj2->od.od_type == OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
                 {
                     /* set the dict item */
                     retval = dict_setItem(pobj2, pobj1, pobj3);
@@ -701,8 +702,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_LSHIFT:
                 /* if neither args are ints, TypeError */
-                if ((TOS->od.od_type == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -720,8 +721,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_RSHIFT:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -739,8 +740,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_AND:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -758,8 +759,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_XOR:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -777,8 +778,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_OR:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
                     retval = int_new(
@@ -806,11 +807,11 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_LSHIFT:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val <<
@@ -837,11 +838,11 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_RSHIFT:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val >>
@@ -868,11 +869,11 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_AND:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val &
@@ -899,11 +900,11 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_XOR:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val ^
@@ -930,11 +931,11 @@ interpret(pPmFunc_t pfunc)
 
             case INPLACE_OR:
                 /* if both objs are ints, perform the op */
-                if ((TOS->od.od_type  == OBJ_TYPE_INT)
-                    && (TOS1->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     /* if target obj is a constant obj */
-                    if (TOS1->od.od_const) {
+                    if (OBJ_IS_CONST(*TOS1)) {
                         pobj1 = PM_POP();
                         retval = int_new(
                                     ((pPmInt_t)PM_POP())->val |
@@ -1078,7 +1079,7 @@ interpret(pPmFunc_t pfunc)
                 /* get ptr to sequence */
                 pobj1 = PM_POP();
                 /* push objs onto stack based on type */
-                if (pobj1->od.od_type == OBJ_TYPE_TUP)
+                if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
                 {
                     for (; --t16 >= 0; )
                     {
@@ -1086,7 +1087,7 @@ interpret(pPmFunc_t pfunc)
                         PM_PUSH(((pPmTuple_t)pobj1)->val[t16]);
                     }
                 }
-                else if (pobj1->od.od_type == OBJ_TYPE_LST)
+                else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
                 {
                     for (; --t16 >= 0; )
                     {
@@ -1107,15 +1108,15 @@ interpret(pPmFunc_t pfunc)
                 /* get obj */
                 pobj1 = PM_POP();
                 /* get attrs dict from obj */
-                if ((pobj1->od.od_type == OBJ_TYPE_FXN)
-                    || (pobj1->od.od_type == OBJ_TYPE_MOD))
+                if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN)
+                    || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
                     pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
                                     f_attrs;
                 }
-                else if ((pobj1->od.od_type == OBJ_TYPE_CLO)
-                         || (pobj1->od.od_type == OBJ_TYPE_CLI)
-                         || (pobj1->od.od_type == OBJ_TYPE_EXN))
+                else if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_EXN))
                 {
                     pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
@@ -1126,7 +1127,7 @@ interpret(pPmFunc_t pfunc)
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
-                if (pobj1->od.od_type != OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_DIC)
                 {
                     retval = PM_RET_EX_SYS;
                     break;
@@ -1273,15 +1274,15 @@ interpret(pPmFunc_t pfunc)
                 /* get obj that has the attrs */
                 pobj1 = PM_POP();
                 /* get attrs dict from obj */
-                if ((pobj1->od.od_type == OBJ_TYPE_FXN) ||
-                    (pobj1->od.od_type == OBJ_TYPE_MOD))
+                if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN) ||
+                    (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
                     pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
                                     f_attrs;
                 }
-                else if ((pobj1->od.od_type == OBJ_TYPE_CLO)
-                         || (pobj1->od.od_type == OBJ_TYPE_CLI)
-                         || (pobj1->od.od_type == OBJ_TYPE_EXN))
+                else if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_EXN))
                 {
                     pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
@@ -1292,7 +1293,7 @@ interpret(pPmFunc_t pfunc)
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
-                if (pobj1->od.od_type != OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_DIC)
                 {
                     retval = PM_RET_EX_SYS;
                     break;
@@ -1310,8 +1311,8 @@ interpret(pPmFunc_t pfunc)
                 pobj1 = PM_POP();
                 pobj2 = PM_POP();
                 t16 = GET_ARG();
-                if ((pobj1->od.od_type == OBJ_TYPE_INT) &&
-                    (pobj2->od.od_type == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_INT) &&
+                    (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_INT))
                 {
                     S32 a = ((pPmInt_t)pobj2)->val;
                     S32 b = ((pPmInt_t)pobj1)->val;
@@ -1438,20 +1439,20 @@ interpret(pPmFunc_t pfunc)
                 pobj2 = PM_POP();
 
                 /* ensure index is an int */
-                if (pobj1->od.od_type != OBJ_TYPE_INT)
+                if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                 {
                     retval = PM_RET_EX_INDX;
                     break;
                 }
                 /* dup a const int to allow it to incr (TRASH)*/
-                if (pobj1->od.od_const != 0)
+                if (OBJ_GET_TYPE(*pobj1) != 0)
                 {
                     retval = int_dup(pobj1, &pobj1);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a tuple */
-                if (pobj2->od.od_type == OBJ_TYPE_TUP)
+                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
                 {
                     /* if tup is exhausted, incr IP by delta */
                     if (((pPmInt_t)pobj1)->val >=
@@ -1467,7 +1468,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's a list */
-                else if (pobj2->od.od_type == OBJ_TYPE_LST)
+                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
                     /* if list is exhausted, incr IP by delta */
                     if (((pPmInt_t)pobj1)->val >=
@@ -1540,7 +1541,7 @@ interpret(pPmFunc_t pfunc)
                 retval = heap_getChunk(sizeof(PmBlock_t), &pchunk);
                 PM_BREAK_IF_ERROR(retval);
                 pobj1 = (pPmObj_t)pchunk;
-                ((pPmBlock_t)pobj1)->od.od_type = OBJ_TYPE_BLK;
+                OBJ_SET_TYPE(*pobj1, OBJ_TYPE_BLK);
                 /* store current stack pointer */
                 ((pPmBlock_t)pobj1)->b_sp = SP;
                 /* default handler is to exit block/loop */
@@ -1589,7 +1590,7 @@ interpret(pPmFunc_t pfunc)
 
                 /* Raise type error if TOS is not an exception object */
                 pobj1 = PM_POP();
-                if (pobj1->od.od_type != OBJ_TYPE_EXN)
+                if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_EXN)
                 {
                     retval = PM_RET_EX_TYPE;
                     break;
@@ -1624,7 +1625,7 @@ interpret(pPmFunc_t pfunc)
                 pobj1 = STACK(t16);
 
                 /* if it's regular func (not native) */
-                if (((pPmFunc_t)pobj1)->f_co->od.od_type ==
+                if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
                     OBJ_TYPE_COB)
                 {
                     /* make frameObj from pCO */
@@ -1653,7 +1654,7 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* if it's native func */
-                else if (((pPmFunc_t)pobj1)->f_co->od.od_type ==
+                else if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
                          OBJ_TYPE_NOB)
                 {
                     /* ensure num args fits in native frame */

@@ -102,7 +102,7 @@ def len(s):
     ps = NATIVE_GET_LOCAL(0);
 
     /* Get the length of the arg based on its type */
-    switch (ps->od.od_type)
+    switch (OBJ_GET_TYPE(*ps))
     {
         case OBJ_TYPE_STR:
             retval = int_new(((pPmString_t)ps)->length, &pr);
@@ -170,13 +170,13 @@ def map(f, s):
     ps = NATIVE_GET_LOCAL(1);
 
     /* If args are wrong type, raise TypeError */
-    if (pf->od.od_type != OBJ_TYPE_FXN)
+    if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
     {
         return PM_RET_EX_TYPE;
     }
 
     /* Get the sequence length based on type */
-    switch (ps->od.od_type)
+    switch (OBJ_GET_TYPE(*ps))
     {
         case OBJ_TYPE_TUP:
             length = ((pPmTuple_t)ps)->length;
@@ -305,7 +305,7 @@ def type(o):
     po = NATIVE_GET_LOCAL(0);
 
     /* Create int from type enum */
-    retval = int_new(po->od.od_type, &pr);
+    retval = int_new(OBJ_GET_TYPE(*po), &pr);
     NATIVE_SET_TOS(pr);
     return retval;
     """
@@ -325,7 +325,7 @@ def _exn():
     retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pexn = (pPmClass_t)pchunk;
-    pexn->od.od_type = OBJ_TYPE_EXN;
+    OBJ_SET_TYPE(*pexn, OBJ_TYPE_EXN);
     retval = dict_new((pPmObj_t *)&pexn->cl_attrs);
 
     NATIVE_SET_TOS((pPmObj_t)pexn);

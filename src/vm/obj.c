@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2006/09/20   #35: Macroize all operations on object descriptors
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -89,7 +90,7 @@ obj_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pobj)
             PM_RETURN_IF_ERROR(retval);
 
             /* Set the object's type */
-            (*r_pobj)->od.od_type = od.od_type;
+            OBJ_SET_TYPE(**r_pobj, od.od_type);
 
             /* Read in the object's value (little endian) */
             ((pPmInt_t)*r_pobj)->val = mem_getInt(memspace, paddr);
@@ -135,7 +136,7 @@ S8
 obj_isType(pPmObj_t pobj, PmType_t type)
 {
     /* if null pointer or wrong type... */
-    if ((pobj == C_NULL) || (pobj->od.od_type != type))
+    if ((pobj == C_NULL) || (OBJ_GET_TYPE(*pobj) != type))
     {
         return C_FALSE;
     }
@@ -148,13 +149,13 @@ obj_isFalse(pPmObj_t pobj)
 {
     /* return true if it's NULL or None */
     if ((pobj == C_NULL) ||
-        (pobj->od.od_type == OBJ_TYPE_NON))
+        (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_NON))
     {
         return C_TRUE;
     }
 
     /* the integer zero is false */
-    if ((pobj->od.od_type == OBJ_TYPE_INT) &&
+    if ((OBJ_GET_TYPE(*pobj) == OBJ_TYPE_INT) &&
         (((pPmInt_t)pobj)->val == 0))
     {
         return C_TRUE;
@@ -162,7 +163,7 @@ obj_isFalse(pPmObj_t pobj)
 
     /* the floating point value of 0.0 is false */
     /*
-    if ((pobj->od.od_type == OBJ_TYPE_FLT) &&
+    if ((OBJ_GET_TYPE(*pobj) == OBJ_TYPE_FLT) &&
         (((pPmFloat)pobj)->val == 0.0))
     {
         retrun C_TRUE;
@@ -170,7 +171,7 @@ obj_isFalse(pPmObj_t pobj)
     */
 
     /* an empty string is false */
-    if (pobj->od.od_type == OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_STR)
     {
         /* XXX this is for null-term string */
         return ((pPmString_t)pobj)->val[0] == C_NULL;
@@ -206,13 +207,13 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     }
 
     /* if types are different, return false */
-    if (pobj1->od.od_type != pobj2->od.od_type)
+    if (OBJ_GET_TYPE(*pobj1) != OBJ_GET_TYPE(*pobj2))
     {
         return C_DIFFER;
     }
 
     /* else handle types individually */
-    switch (pobj1->od.od_type)
+    switch (OBJ_GET_TYPE(*pobj1))
     {
         case OBJ_TYPE_NON:
             return C_SAME;

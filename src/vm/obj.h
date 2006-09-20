@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2006/09/20   #35: Macroize all operations on object descriptors
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -45,6 +46,15 @@
 /***************************************************************
  * Macros
  **************************************************************/
+
+#define OBJ_IS_CONST(obj) ((obj).od.od_const != (U8)0)
+#define OBJ_SET_CONST(obj, const) (obj).od.od_const = (const)
+#define OBJ_GET_GCVAL(obj) ((obj).od.od_gcval)
+#define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
+#define OBJ_GET_SIZE(obj) ((obj).od.od_size)
+#define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (size)
+#define OBJ_GET_TYPE(obj) ((obj).od.od_type)
+#define OBJ_SET_TYPE(obj, type) (obj).od.od_type = (type)
 
 /***************************************************************
  * Types

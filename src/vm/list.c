@@ -75,7 +75,7 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
     }
 
     /* if pobj1 is not a list, raise a ValueError exception */
-    if (plist->od.od_type != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
         return PM_RET_EX_VAL;
     }
@@ -114,7 +114,7 @@ list_getItem(pPmObj_t plist, S16 index, pPmObj_t * r_pobj)
      * if someone else calls, we'll need to check.
      */
     /*
-    if (plist->od.od_type != OBJ_TYPE_LIST)
+    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LIST)
     {
         return PM_RET_EX_TYPE;
     }
@@ -153,7 +153,7 @@ list_new(pPmObj_t *r_pobj)
 
     /* set list type, empty the contents */
     plist = (pPmList_t)*r_pobj;
-    plist->od.od_type = OBJ_TYPE_LST;
+    OBJ_SET_TYPE(*plist, OBJ_TYPE_LST);
     plist->length = 0;
     /* create empty seglist */
     retval = seglist_new(&plist->val);
@@ -181,14 +181,14 @@ list_replicate(pPmObj_t psrclist,
     }
 
     /* exception if first arg is not a list */
-    if (psrclist->od.od_type != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)
     {
         return PM_RET_EX_VAL;
     }
     length = ((pPmList_t)psrclist)->length;
 
     /* exception if second arg is not an int */
-    if (pint->od.od_type != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
     {
         return PM_RET_EX_VAL;
     }

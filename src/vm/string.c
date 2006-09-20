@@ -114,13 +114,13 @@ string_create(PmMemSpace_t memspace,
     pstr = (pPmString_t)pchunk;
 
     /* fill the string obj */
-    pstr->od.od_type = OBJ_TYPE_STR;
+    OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
     pstr->length = len;
     /* copy C-string into String obj */
     pdst = (P_U8)&(pstr->val);
     mem_copy(memspace, &pdst, paddr, len);
     /* zero-pad end of string */
-    for ( ; pdst < (P_U8)pstr + pstr->od.od_size; pdst++)
+    for ( ; pdst < (P_U8)pstr + OBJ_GET_SIZE(*pstr); pdst++)
     {
         *pdst = 0;
     }
@@ -171,7 +171,7 @@ string_newFromChar(U8 c, pPmObj_t *r_pstring)
     pstr = (pPmString_t)pchunk;
 
     /* Fill the string obj */
-    pstr->od.od_type = OBJ_TYPE_STR;
+    OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
     pstr->length = 1;
     pstr->val[0] = c;
     pstr->val[1] = '\0';
@@ -231,7 +231,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
     P_U8 pchunk;
 
     /* ensure string obj */
-    if (pstr->od.od_type != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
         return PM_RET_EX_TYPE;
     }
@@ -242,8 +242,8 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
                           );
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmString_t)pchunk;
-    pnew->od.od_const = 0;
-    pnew->od.od_type = OBJ_TYPE_STR;
+    OBJ_SET_CONST(*pnew, 0);
+    OBJ_SET_TYPE(*pnew, OBJ_TYPE_STR);
 #if USE_STRING_CACHE
     /* insert new string obj into cache */
     pnew->next = pstrcache;

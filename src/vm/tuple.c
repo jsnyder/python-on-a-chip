@@ -109,7 +109,7 @@ tuple_new(U16 n, pPmObj_t * r_ptuple)
     /* allocate a tuple */
     retval = heap_getChunk(size, (P_U8 *)r_ptuple);
     PM_RETURN_IF_ERROR(retval);
-    (*r_ptuple)->od.od_type = OBJ_TYPE_TUP;
+    OBJ_SET_TYPE(**r_ptuple, OBJ_TYPE_TUP);
     /* set the number of objs in the tuple */
     ((pPmTuple_t)*r_ptuple)->length = n;
     /*
@@ -130,19 +130,19 @@ tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
     P_U8 psrc;
 
     /* ensure type */
-    if (ptup->od.od_type != OBJ_TYPE_TUP)
+    if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
     {
         return PM_RET_EX_SYS;
     }
 
     /* duplicate src tuple */
-    retval = heap_getChunk(ptup->od.od_size, &pchunk);
+    retval = heap_getChunk(OBJ_GET_SIZE(*ptup), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmTuple_t)pchunk;
 
     pdest = (P_U8)pnew;
     psrc = (P_U8)ptup;
-    mem_copy(MEMSPACE_RAM, &pdest, &psrc, ptup->od.od_size);
+    mem_copy(MEMSPACE_RAM, &pdest, &psrc, OBJ_GET_SIZE(*ptup));
     *r_ptuple = (pPmObj_t)pnew;
     return PM_RET_OK;
 }

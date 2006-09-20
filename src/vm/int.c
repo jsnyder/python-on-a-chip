@@ -73,7 +73,7 @@ int_dup(pPmObj_t pint, pPmObj_t * r_pint)
     PM_RETURN_IF_ERROR(retval);
 
     /* copy value */
-    (*r_pint)->od.od_type = OBJ_TYPE_INT;
+    OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = ((pPmInt_t)pint)->val;
     return retval;
 }
@@ -106,7 +106,7 @@ int_new(S32 n, pPmObj_t * r_pint)
     /* else create and return new int obj */
     retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pint);
     PM_RETURN_IF_ERROR(retval);
-    (*r_pint)->od.od_type = OBJ_TYPE_INT;
+    OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = n;
     return retval;
 }
@@ -116,7 +116,7 @@ PmReturn_t
 int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
 {    
     /* ensure it's an int */
-    if (pobj->od.od_type != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         return PM_RET_EX_TYPE;
     }
@@ -130,7 +130,7 @@ PmReturn_t
 int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
 {
     /* ensure it's an int */
-    if (pobj->od.od_type != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         return PM_RET_EX_TYPE;
     }
@@ -144,7 +144,7 @@ PmReturn_t
 int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
 {
     /* ensure it's an int */
-    if (pobj->od.od_type != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         return PM_RET_EX_TYPE;
     }

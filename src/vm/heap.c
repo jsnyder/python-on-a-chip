@@ -63,7 +63,7 @@
  */
 #define HEAP_MARK_IF_UNMARKED(pobj, rval)   \
             if (((pobj) != C_NULL) && \
-                (((pPmObj_t)pobj)->od.od_gcval != heap_gcval)) \
+                (OBJ_GET_GCVAL(*pobj) != heap_gcval)) \
                     rval = heap_markObj((pPmObj_t)pobj)
 
 
@@ -117,7 +117,7 @@ heap_markObj(pPmObj_t pobj)
     PmReturn_t retval = PM_RET_OK;
     S8 i = 0;
 
-    switch (pobj->od.od_type)
+    switch (OBJ_GET_TYPE(*pobj))
     {
         /* objects with no other obj refs */
         case OBJ_TYPE_NON:
@@ -125,13 +125,13 @@ heap_markObj(pPmObj_t pobj)
         case OBJ_TYPE_FLT:
         case OBJ_TYPE_STR:
         case OBJ_TYPE_NOB:
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             break;
 
         case OBJ_TYPE_TUP:
             i = ((pPmTuple_t)pobj)->length;
             /* mark tuple head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark each obj in tuple */
             while (--i >= 0)
             {
@@ -144,7 +144,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_LST:
             /* mark the list */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the keys seglist */
             HEAP_MARK_IF_UNMARKED(((pPmList_t)pobj)->val,
                                   retval);
@@ -152,7 +152,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_DIC:
             /* mark the dict head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the keys seglist */
             HEAP_MARK_IF_UNMARKED(((pPmDict_t)pobj)->d_keys,
                                   retval);
@@ -164,7 +164,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_COB:
             /* mark the code obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the names tuple */
             HEAP_MARK_IF_UNMARKED(((pPmCo_t)pobj)->co_names,
                                   retval);
@@ -178,7 +178,7 @@ heap_markObj(pPmObj_t pobj)
         case OBJ_TYPE_FXN:
             /* Module and Func objs are implemented via the PmFunc_t */
             /* mark the func obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the code obj */
             HEAP_MARK_IF_UNMARKED(((pPmFunc_t)pobj)->f_co, retval);
             PM_RETURN_IF_ERROR(retval);
@@ -193,7 +193,7 @@ heap_markObj(pPmObj_t pobj)
         case OBJ_TYPE_CLI:
         case OBJ_TYPE_EXN:
             /* mark the obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the attrs dict */
             HEAP_MARK_IF_UNMARKED(((pPmClass_t)pobj)->cl_attrs, retval);
             break;
@@ -207,7 +207,7 @@ heap_markObj(pPmObj_t pobj)
         {
             pPmObj_t pobj2 = C_NULL;
             /* mark the frame obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the previous frame */
             HEAP_MARK_IF_UNMARKED(((pPmFrame_t)pobj)->fo_back,
                                   retval);
@@ -242,7 +242,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_BLK:
             /* mark the block obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the previous block */
             HEAP_MARK_IF_UNMARKED(((pPmBlock_t)pobj)->next,
                                   retval);
@@ -250,7 +250,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_SEG:
             /* mark the segment obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark each obj in the segment */
             for (i = 0; i < SEGLIST_OBJS_PER_SEG; i++)
             {
@@ -266,7 +266,7 @@ heap_markObj(pPmObj_t pobj)
 
         case OBJ_TYPE_SGL:
             /* mark the seglist obj head */
-            pobj->od.od_gcval = heap_gcval;
+            OBJ_SET_GCVAL(*pobj, heap_gcval);
             /* mark the root segment */
             HEAP_MARK_IF_UNMARKED(
                 ((pSeglist_t)pobj)->sl_rootseg,
@@ -363,14 +363,14 @@ heap_init(void)
     size = HEAP_SIZE;
     while (size > HEAP_MAX_CHUNK_SIZE)
     {
-        pchunk->od.od_size = HEAP_MAX_CHUNK_SIZE;
+        OBJ_SET_SIZE(*pchunk, HEAP_MAX_CHUNK_SIZE);
         pchunk->next = (pPmHeapDesc_t)((P_U8)pchunk + HEAP_MAX_CHUNK_SIZE);
         size -= HEAP_MAX_CHUNK_SIZE;
         pchunk = pchunk->next;
     }
 
     /* set fields of last fragment */
-    pchunk->od.od_size = size;
+    OBJ_SET_SIZE(*pchunk, size);
     pchunk->next = C_NULL;
 
 #if HEAP_MEASURE
@@ -424,20 +424,20 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
         pchunk1 = pfreelist;
 
         /* if first chunk is best fit */
-        if ((pchunk1->od.od_size >= size) &&
-            (pchunk1->od.od_size <= (size + HEAP_MAX_FRAG_SIZE)))
+        if ((OBJ_GET_SIZE(*pchunk1) >= size) &&
+            (OBJ_GET_SIZE(*pchunk1) <= (size + HEAP_MAX_FRAG_SIZE)))
         {
             /* relink list and return first chunk */
             pfreelist = pfreelist->next;
             /* reduce heap available amount */
-            gVmGlobal.heap.avail -= pchunk1->od.od_size;
+            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk1);
             *r_pchunk = (P_U8)pchunk1;
             return PM_RET_OK;
         }
 
         /* else search list for proper sized chunk */
         while ((pchunk1->next != C_NULL) &&
-               (pchunk1->next->od.od_size < size))
+               (OBJ_GET_SIZE(*pchunk1->next) < size))
         {
              pchunk1 = pchunk1->next;
         }
@@ -448,14 +448,14 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
          * if not, we might use pchunk1->next later (first fit).
          */
         if ((pchunk1->next != C_NULL) &&
-            (pchunk1->next->od.od_size <=
+            (OBJ_GET_SIZE(*pchunk1->next) <=
              (size + HEAP_MAX_FRAG_SIZE)))
         {
             /* unlink chunk */
             pchunk2 = pchunk1->next;
             pchunk1->next = pchunk1->next->next;
             /* reduce heap available amount */
-            gVmGlobal.heap.avail -= pchunk2->od.od_size;
+            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
             *r_pchunk = (P_U8)pchunk2;
             return PM_RET_OK;
         }
@@ -468,7 +468,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
          * if the clean heap is not large enough
          * put the fragment in the free list
          */
-        if (pcleanheap->od.od_size < size)
+        if (OBJ_GET_SIZE(*pcleanheap) < size)
         {
             pchunk2 = pcleanheap;
             /* try the next clean heap */
@@ -482,14 +482,14 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
          * if there is one and it is large enough
          */
         if ((pcleanheap != C_NULL) &&
-            ((pcleanheap->od.od_size - size) >= 0))
+            ((OBJ_GET_SIZE(*pcleanheap) - size) >= 0))
         {
 
             /*
              * if potential clean heap remnant is too small,
              * use the entire chunk and setup next clean heap
              */
-            if ((pcleanheap->od.od_size - size) < HEAP_MIN_CHUNK_SIZE)
+            if ((OBJ_GET_SIZE(*pcleanheap) - size) < HEAP_MIN_CHUNK_SIZE)
             {
                 pchunk2 = pcleanheap;
                 pcleanheap = pcleanheap->next;
@@ -498,10 +498,10 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             /* else carve chunk out of clean heap */
             else
             {
-                pcleanheap->od.od_size -= size;
+                OBJ_SET_SIZE(*pcleanheap, OBJ_GET_SIZE(*pcleanheap) - size);
                 pchunk2 = (pPmHeapDesc_t)((P_U8)pcleanheap 
-                                          + pcleanheap->od.od_size);
-                pchunk2->od.od_size = size;
+                                          + OBJ_GET_SIZE(*pcleanheap));
+                OBJ_SET_SIZE(*pchunk2, size);
             }
 
             /* reduce heap available amount */
@@ -517,12 +517,12 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
      */
     if ((pchunk1 != C_NULL)
         && (pchunk1->next != C_NULL)
-        && (pchunk1->next->od.od_size >= size))
+        && (OBJ_GET_SIZE(*pchunk1->next) >= size))
     {
         pchunk2 = pchunk1->next;
         pchunk1->next = pchunk1->next->next;
         /* reduce heap available amount */
-        gVmGlobal.heap.avail -= pchunk2->od.od_size;
+        gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
         *r_pchunk = (P_U8)pchunk2;
         return PM_RET_OK;
     }
@@ -587,16 +587,16 @@ void
 heap_freeChunk(pPmObj_t ptr)
 {
     pPmHeapDesc_t oldchunk = (pPmHeapDesc_t)ptr;
-    U8 size = ptr->od.od_size;
+    U8 size = OBJ_GET_SIZE(*ptr);
     pPmHeapDesc_t pchunk1;
     pPmHeapDesc_t pchunk2;
 
     /* increase heap available amount */
-    gVmGlobal.heap.avail += ptr->od.od_size;
+    gVmGlobal.heap.avail += OBJ_GET_SIZE(*ptr);
 
     /* if freelist is empty or oldchunk is smallest */
     if ((pfreelist == C_NULL) ||
-        (pfreelist->od.od_size >= size))
+        (OBJ_GET_SIZE(*pfreelist) >= size))
     {
         oldchunk->next = pfreelist;
         pfreelist = oldchunk;
@@ -610,7 +610,7 @@ heap_freeChunk(pPmObj_t ptr)
 
     /* scan freelist for insertion point */
     while ((pchunk2 != C_NULL) &&
-           (pchunk2->od.od_size < size))
+           (OBJ_GET_SIZE(*pchunk2) < size))
     {
         pchunk1 = pchunk2;
         pchunk2 = pchunk2->next;
