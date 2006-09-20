@@ -78,40 +78,40 @@
 typedef struct PmVmGlobal_s
 {
     /** Global none obj (none) */
-    PmObj_t         none;
+    PmObj_t none;
 
     /** Global integer 0 obj */
-    PmInt_t         zero;
+    PmInt_t zero;
 
     /** Global integer 1 obj */
-    PmInt_t         one;
+    PmInt_t one;
 
     /** Global integer -1 obj */
-    PmInt_t         negone;
+    PmInt_t negone;
 
     /** The string "code", used in interp.c RAISE_VARARGS */
-    pPmString_t     pcodeStr;
+    pPmString_t pcodeStr;
 
     /** Dict for builtins */
-    pPmDict_t       builtins;
+    pPmDict_t builtins;
 
     /** Ptr to stack of code image info. */
-    pPmImgInfo_t    pimglist;
+    pPmImgInfo_t pimglist;
 
     /** Ptr to current python frame */
-    pPmFrame_t      pframe;
+    pPmFrame_t pframe;
 
     /** The single native frame */
     PmNativeFrame_t nativeframe;
 
     /** PyMite release value for when an error occurs */
-    U8              errVmRelease;
+    uint8_t errVmRelease;
 
     /** PyMite source file ID number for when an error occurs */
-    U8              errFileId;
+    uint8_t errFileId;
 
     /** Line number for when an error occurs */
-    U16             errLineNum;
+    uint16_t errLineNum;
 
     /**
      * Interpreter loop control value
@@ -120,10 +120,10 @@ typedef struct PmVmGlobal_s
      * A zero value means normal interpreter exit.
      * A negative value signals an error exit.
      */
-    PmInterpCtrl_t  interpctrl;
+    PmInterpCtrl_t interpctrl;
 
     /** The PyMite heap */
-    PmHeap_t        heap;
+    PmHeap_t heap;
     /* DO NOT PUT ANYTHING BELOW THIS */
 } PmVmGlobal_t, *pPmVmGlobal_t;
 

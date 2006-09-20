@@ -34,10 +34,10 @@
 extern unsigned char stdlib_img[];
 
 
-PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg)
+PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
     PmReturn_t retval;
-    P_U8 pimg;
+    uint8_t *pimg;
 
     /* Initialize the heap and the globals */
     heap_init();
@@ -45,7 +45,7 @@ PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg)
     PM_RETURN_IF_ERROR(retval);
 
     /* Load std image info */
-    pimg = (P_U8)&stdlib_img;
+    pimg = (uint8_t *)&stdlib_img;
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);
     PM_RETURN_IF_ERROR(retval);
 
@@ -60,12 +60,12 @@ PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg)
 }
 
 
-PmReturn_t pm_run(P_U8 modstr)
+PmReturn_t pm_run(uint8_t *modstr)
 {
     PmReturn_t retval;
     pPmObj_t pmod;
     pPmObj_t pstring;
-    P_U8 pmodstr = modstr;
+    uint8_t *pmodstr = modstr;
 
     /* Import module from global struct */
     retval = string_new(&pmodstr, &pstring);

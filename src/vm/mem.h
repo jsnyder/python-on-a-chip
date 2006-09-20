@@ -91,7 +91,7 @@ typedef enum PmMemSpace_e
  * @return  byte from memory.
  *          paddr - points to the next byte
  */
-U8 mem_getByte(PmMemSpace_t memspace, P_U8 *paddr);
+uint8_t mem_getByte(PmMemSpace_t memspace, uint8_t **paddr);
 
 /**
  * Return the 2-byte word at the given address in memspace.
@@ -104,7 +104,7 @@ U8 mem_getByte(PmMemSpace_t memspace, P_U8 *paddr);
  * @return  word from memory.
  *          addr - points one byte past the word
  */
-INLINE U16 mem_getWord(PmMemSpace_t memspace, P_U8 *paddr);
+INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t **paddr);
 
 /**
  * Return the 4-byte int at the given address in memspace.
@@ -117,7 +117,7 @@ INLINE U16 mem_getWord(PmMemSpace_t memspace, P_U8 *paddr);
  * @return  int from memory.
  *          addr - points one byte past the word
  */
-INLINE U32 mem_getInt(PmMemSpace_t memspace, P_U8 *paddr);
+INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t **paddr);
 
 /**
  * Copy count number of bytes
@@ -133,9 +133,9 @@ INLINE U32 mem_getInt(PmMemSpace_t memspace, P_U8 *paddr);
  * @see     sli_memcpy
  */
 void mem_copy(PmMemSpace_t memspace,
-              P_U8 *pdest,
-              P_U8 *psrc,
-              U16 count);
+              uint8_t **pdest,
+              uint8_t **psrc,
+              uint16_t count);
 
 /**
  * Return the number of bytes in the UTF-8 string
@@ -147,6 +147,6 @@ void mem_copy(PmMemSpace_t memspace,
  * @param   psrc  ptr to source address
  * @return  Number of bytes in UTF-8 string.
  */
-U16 mem_getNumUtf8Bytes(PmMemSpace_t memspace, P_U8 *psrc);
+uint16_t mem_getNumUtf8Bytes(PmMemSpace_t memspace, uint8_t **psrc);
 
 #endif /* __MEM_H__ */

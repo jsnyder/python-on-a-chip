@@ -85,11 +85,11 @@ static pPmHeapDesc_t pcleanheap;
 /** Size of heap histogram table */
 #define HIST_TABLE_SIZE 20
 /** An array to hold the heap size histogram. */
-static S8 heaphist[HIST_TABLE_SIZE];
+static int8_t * heaphist[HIST_TABLE_SIZE];
 #endif /* HEAP_MEASURE */
 
 /** garbage collector marking value */
-static U8 heap_gcval = 0;
+static uint8_t heap_gcval = 0;
 
 
 /***************************************************************
@@ -115,7 +115,7 @@ PmReturn_t
 heap_markObj(pPmObj_t pobj)
 {
     PmReturn_t retval = PM_RET_OK;
-    S8 i = 0;
+    int8_t i = 0;
 
     switch (OBJ_GET_TYPE(*pobj))
     {
@@ -347,10 +347,10 @@ void
 heap_init(void)
 {
     pPmHeapDesc_t pchunk = C_NULL;
-    U16 size = 0;
+    uint16_t size = 0;
 
     /* zero all memory in the heap (optional?) */
-    sli_memset((P_U8)&gVmGlobal.heap, '\0', sizeof(gVmGlobal.heap));
+    sli_memset((uint8_t *)&gVmGlobal.heap, '\0', sizeof(gVmGlobal.heap));
 
     /* init global amount of heap space remaining */
     gVmGlobal.heap.avail = HEAP_SIZE;
@@ -364,7 +364,7 @@ heap_init(void)
     while (size > HEAP_MAX_CHUNK_SIZE)
     {
         OBJ_SET_SIZE(*pchunk, HEAP_MAX_CHUNK_SIZE);
-        pchunk->next = (pPmHeapDesc_t)((P_U8)pchunk + HEAP_MAX_CHUNK_SIZE);
+        pchunk->next = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_CHUNK_SIZE);
         size -= HEAP_MAX_CHUNK_SIZE;
         pchunk = pchunk->next;
     }
@@ -398,7 +398,7 @@ heap_init(void)
  */
 static
 PmReturn_t
-heap_getChunk0(U8 size, P_U8 * r_pchunk)
+heap_getChunk0(uint8_t size, uint8_t **r_pchunk)
 {
     pPmHeapDesc_t pchunk1 = C_NULL;
     pPmHeapDesc_t pchunk2 = C_NULL;
@@ -431,7 +431,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             pfreelist = pfreelist->next;
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk1);
-            *r_pchunk = (P_U8)pchunk1;
+            *r_pchunk = (uint8_t *)pchunk1;
             return PM_RET_OK;
         }
 
@@ -456,7 +456,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             pchunk1->next = pchunk1->next->next;
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
-            *r_pchunk = (P_U8)pchunk2;
+            *r_pchunk = (uint8_t *)pchunk2;
             return PM_RET_OK;
         }
     }
@@ -499,14 +499,14 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
             else
             {
                 OBJ_SET_SIZE(*pcleanheap, OBJ_GET_SIZE(*pcleanheap) - size);
-                pchunk2 = (pPmHeapDesc_t)((P_U8)pcleanheap 
+                pchunk2 = (pPmHeapDesc_t)((uint8_t *)pcleanheap 
                                           + OBJ_GET_SIZE(*pcleanheap));
                 OBJ_SET_SIZE(*pchunk2, size);
             }
 
             /* reduce heap available amount */
             gVmGlobal.heap.avail -= size;
-            *r_pchunk = (P_U8)pchunk2;
+            *r_pchunk = (uint8_t *)pchunk2;
             return PM_RET_OK;
         }
     }
@@ -523,7 +523,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
         pchunk1->next = pchunk1->next->next;
         /* reduce heap available amount */
         gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
-        *r_pchunk = (P_U8)pchunk2;
+        *r_pchunk = (uint8_t *)pchunk2;
         return PM_RET_OK;
     }
 
@@ -539,7 +539,7 @@ heap_getChunk0(U8 size, P_U8 * r_pchunk)
  * from the heap.  Perform GC if necessary.
  */
 PmReturn_t
-heap_getChunk(U8 size, P_U8 *r_pchunk)
+heap_getChunk(uint8_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
 
@@ -548,7 +548,7 @@ heap_getChunk(U8 size, P_U8 *r_pchunk)
 #if HEAP_MAX_CHUNK_SIZE != 255
         || (size > HEAP_MAX_CHUNK_SIZE)
 #endif
-        )
+       )
     {
         PM_ERR(__LINE__);
     }
@@ -587,7 +587,7 @@ void
 heap_freeChunk(pPmObj_t ptr)
 {
     pPmHeapDesc_t oldchunk = (pPmHeapDesc_t)ptr;
-    U8 size = OBJ_GET_SIZE(*ptr);
+    uint8_t size = OBJ_GET_SIZE(*ptr);
     pPmHeapDesc_t pchunk1;
     pPmHeapDesc_t pchunk2;
 

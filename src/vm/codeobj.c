@@ -66,18 +66,18 @@
  **************************************************************/
 
 PmReturn_t
-co_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pco)
+co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
 {
     PmReturn_t retval = PM_RET_OK;
-    S8 i;
+    int8_t i;
     pPmObj_t pobj;
     pPmCo_t pco = C_NULL;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* store ptr to top of code img (less type byte) */
-    P_U8 pci = *paddr - 1;
+    uint8_t *pci = *paddr - 1;
     /* get size of code img */
-    U16 size = mem_getWord(memspace, paddr);
+    uint16_t size = mem_getWord(memspace, paddr);
 
     /* allocate a code obj */
     retval = heap_getChunk(sizeof(PmCo_t), &pchunk);
@@ -117,11 +117,11 @@ co_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pco)
 
 
 PmReturn_t
-no_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pno)
+no_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pno)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmNo_t pno = C_NULL;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* allocate a code obj */
     retval = heap_getChunk(sizeof(PmNo_t), &pchunk);
@@ -132,7 +132,7 @@ no_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pno)
     pno->od.od_type = OBJ_TYPE_NOB;
     pno->no_argcount = mem_getByte(memspace, paddr);
     /* get index into native fxn table */
-    pno->no_funcindx = (S16)mem_getWord(memspace, paddr);
+    pno->no_funcindx = (int16_t)mem_getWord(memspace, paddr);
 
     *r_pno = (pPmObj_t)pno;
     return PM_RET_OK;

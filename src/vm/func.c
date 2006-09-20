@@ -64,11 +64,11 @@
  **************************************************************/
 
 PmReturn_t
-func_new(pPmObj_t pco, pPmObj_t * r_pfunc)
+func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmFunc_t pfunc = C_NULL;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* ensure pco pts to code obj or native obj */
     if ((pco->od.od_type != OBJ_TYPE_COB) &&
@@ -116,8 +116,8 @@ class_new(pPmObj_t pmeths,
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    P_U8 btstr = (P_U8)"__bt";
-    P_U8 nmstr = (P_U8)"__nm";
+    uint8_t *btstr = (uint8_t *)"__bt";
+    uint8_t *nmstr = (uint8_t *)"__nm";
 
     /* ensure types */
     if ((pmeths->od.od_type != OBJ_TYPE_DIC) ||
@@ -128,7 +128,7 @@ class_new(pPmObj_t pmeths,
     }
 
     /* allocate a class obj */
-    retval = heap_getChunk(sizeof(PmFunc_t), (P_U8 *)r_pclass);
+    retval = heap_getChunk(sizeof(PmFunc_t), (uint8_t **)r_pclass);
     PM_RETURN_IF_ERROR(retval);
     (*r_pclass)->od.od_type = OBJ_TYPE_CLO;
     /* class has no access to its CO */

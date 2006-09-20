@@ -64,7 +64,7 @@ The following C program will do exactly that::
         retval = pm_init(MEMSPACE_FLASH, usrlib_img);
         PM_RETURN_IF_ERROR(retval);
 
-        retval = pm_run((P_U8)"trivial");
+        retval = pm_run((uint8_t *)"trivial");
         return (int)retval;
     }
 

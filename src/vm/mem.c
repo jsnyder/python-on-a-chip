@@ -73,10 +73,10 @@
  * Functions
  **************************************************************/
 
-U8
-mem_getByte(PmMemSpace_t memspace, P_U8 *paddr)
+uint8_t
+mem_getByte(PmMemSpace_t memspace, uint8_t **paddr)
 {
-    U8 b = 0;
+    uint8_t b = 0;
 
     switch (memspace)
     {
@@ -115,32 +115,32 @@ mem_getByte(PmMemSpace_t memspace, P_U8 *paddr)
 
 
 INLINE
-U16
-mem_getWord(PmMemSpace_t memspace, P_U8 *paddr)
+uint16_t
+mem_getWord(PmMemSpace_t memspace, uint8_t **paddr)
 {
     /* PyMite is little endien; get lo byte first */
-    U8 blo = mem_getByte(memspace, paddr);
-    U8 bhi = mem_getByte(memspace, paddr);
-    return (U16)(blo | (bhi << 8));
+    uint8_t blo = mem_getByte(memspace, paddr);
+    uint8_t bhi = mem_getByte(memspace, paddr);
+    return (uint16_t)(blo | (bhi << 8));
 }
 
 
 INLINE
-U32
-mem_getInt(PmMemSpace_t memspace, P_U8 *paddr)
+uint32_t
+mem_getInt(PmMemSpace_t memspace, uint8_t **paddr)
 {
     /* PyMite is little endien; get low word first */
-    U16 wlo = mem_getWord(memspace, paddr);
-    U16 whi = mem_getWord(memspace, paddr);
-    return (U32)(wlo | (whi << 8));
+    uint16_t wlo = mem_getWord(memspace, paddr);
+    uint16_t whi = mem_getWord(memspace, paddr);
+    return (uint32_t)(wlo | (whi << 8));
 }
 
 
 void
 mem_copy(PmMemSpace_t memspace,
-         P_U8 *pdest,
-         P_U8 *psrc,
-         U16 count)
+         uint8_t **pdest,
+         uint8_t **psrc,
+         uint16_t count)
 {
 
     /* copy memory from RAM */
@@ -155,7 +155,7 @@ mem_copy(PmMemSpace_t memspace,
     /* copy memory from non-RAM to RAM */
     else
     {
-        U8 b;
+        uint8_t b;
 
         for ( ; count > 0; count--)
         {
@@ -168,10 +168,10 @@ mem_copy(PmMemSpace_t memspace,
 }
 
 
-U16
-mem_getNumUtf8Bytes(PmMemSpace_t memspace, P_U8 *psrc)
+uint16_t
+mem_getNumUtf8Bytes(PmMemSpace_t memspace, uint8_t **psrc)
 {
-    P_U8 pbase = *psrc;
+    uint8_t *pbase = *psrc;
     while(mem_getByte(memspace, psrc) != 0);
     return *psrc - pbase - 1;
 }

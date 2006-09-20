@@ -84,7 +84,7 @@ extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t, signed char);
  * TODO print values out SCI or on LCD
  */
 void
-py_err(S16 release, S16 file, S16 line)
+py_err(uint16_t release, uint16_t file, uint16_t line)
 {
     for(;;);
 }
@@ -97,8 +97,8 @@ interpret(pPmFunc_t pfunc)
     pPmObj_t pobj1 = C_NULL;
     pPmObj_t pobj2 = C_NULL;
     pPmObj_t pobj3 = C_NULL;
-    S16 t16 = 0;
-    S8 t8 = 0;
+    int16_t t16 = 0;
+    int8_t t8 = 0;
     pPmFrame_t pframe = C_NULL; /* tmp: until thread contains fp */
 
     /* create a frame for the func */
@@ -117,7 +117,7 @@ interpret(pPmFunc_t pfunc)
     while(gVmGlobal.interpctrl > INTERP_CTRL_EXIT)
     {
         /* get byte; the func post-incrs IP */
-        switch((U8)mem_getByte(MS, &IP))
+        switch(mem_getByte(MS, &IP))
         {
             case STOP_CODE:
                 /* SystemError, unknown opcode */
@@ -378,8 +378,8 @@ interpret(pPmFunc_t pfunc)
                     }
 
                     /* Get the character from the string */
-                    t8 = (U8)((pPmString_t)pobj2)->
-                                 val[((pPmInt_t)pobj1)->val];
+                    t8 = (uint8_t)((pPmString_t)pobj2)->
+                                   val[((pPmInt_t)pobj1)->val];
 
                     /* Create a new string from the character */
                     retval = string_newFromChar(t8, &pobj3);
@@ -412,8 +412,7 @@ interpret(pPmFunc_t pfunc)
                     }
                     /* get the list item */
                     retval = list_getItem(pobj2,
-                                          (S16)(((pPmInt_t)
-                                                pobj1)->val),
+                                          (int16_t)((pPmInt_t)pobj1)->val,
                                           &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                 }
@@ -676,8 +675,8 @@ interpret(pPmFunc_t pfunc)
                     }
                     /* set the list item */
                     retval = list_setItem(pobj2,
-                                 (S16)(((pPmInt_t)pobj1)->val),
-                                 pobj3);
+                                          (int16_t)(((pPmInt_t)pobj1)->val),
+                                          pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     continue;
                 }
@@ -1314,8 +1313,8 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_INT) &&
                     (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_INT))
                 {
-                    S32 a = ((pPmInt_t)pobj2)->val;
-                    S32 b = ((pPmInt_t)pobj1)->val;
+                    int32_t a = ((pPmInt_t)pobj2)->val;
+                    int32_t b = ((pPmInt_t)pobj1)->val;
 
                     switch (t16)
                     {
@@ -1480,8 +1479,7 @@ interpret(pPmFunc_t pfunc)
 
                     /* get item */
                     retval = list_getItem(pobj2,
-                                          (S16)(((pPmInt_t)
-                                                pobj1)->val),
+                                          (int16_t)(((pPmInt_t)pobj1)->val),
                                           &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     /* incr counter */
@@ -1533,7 +1531,7 @@ interpret(pPmFunc_t pfunc)
 
             case SETUP_LOOP:
             {
-                P_U8 pchunk;
+                uint8_t *pchunk;
 
                 /* get block span (bytes) */
                 t16 = GET_ARG();
@@ -1608,7 +1606,7 @@ interpret(pPmFunc_t pfunc)
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Get the value from the code int */
-                retval = (U8)(((pPmInt_t)pobj2)->val & 0xFF);
+                retval = (uint8_t)(((pPmInt_t)pobj2)->val & 0xFF);
 
                 /* Raise exception by breaking with retval set to code */
                 break;
@@ -1664,7 +1662,7 @@ interpret(pPmFunc_t pfunc)
                     }
 
                     /* keep numargs */
-                    t8 = (S8)t16;
+                    t8 = (int8_t)t16;
 
                     /* pop args from stack */
                     while (--t16 >= 0)

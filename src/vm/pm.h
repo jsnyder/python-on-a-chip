@@ -40,7 +40,7 @@
  * Includes
  **************************************************************/
 
-#include "dwh_types.h"
+#include <stdint.h>
 
 /***************************************************************
  * Configurables
@@ -93,13 +93,13 @@
 #if __DEBUG__
 #define PM_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (U16)(line); \
+        gVmGlobal.errLineNum = (uint16_t)(line); \
         retval = PM_RET_ERR;                \
         for(;;)
 #else
 #define PM_ERR(line)                        \
         gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (U16)(line); \
+        gVmGlobal.errLineNum = (uint16_t)(line); \
         retval = PM_RET_ERR;                \
         return PM_RET_ERR
 #endif
@@ -198,7 +198,7 @@ typedef enum PmReturn_e
  * @param pusrimg       Address of the user image in the memory space
  * @return Return status
  */
-PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg);
+PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
 
 /**
  * Executes the named module
@@ -206,7 +206,7 @@ PmReturn_t pm_init(PmMemSpace_t memspace, P_U8 pusrimg);
  * @param modstr        Name of module to run
  * @return Return status
  */
-PmReturn_t pm_run(P_U8 modstr);
+PmReturn_t pm_run(uint8_t *modstr);
 
 
 #endif /* __PM_H__ */

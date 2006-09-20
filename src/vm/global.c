@@ -70,10 +70,11 @@ PmReturn_t
 global_init(void)
 {
     PmReturn_t retval;
-    P_U8 codestr = (P_U8)"code";
+    uint8_t *codestr = (uint8_t *)"code";
 
     /* clear the global struct less the heap */
-    sli_memset((P_U8)&gVmGlobal, '\0', sizeof(PmVmGlobal_t) - sizeof(PmHeap_t));
+    sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t) -
+                                            sizeof(PmHeap_t));
 
     /* set the PyMite release num (for debug and post mortem) */
     gVmGlobal.errVmRelease = PM_RELEASE;
@@ -94,7 +95,7 @@ global_init(void)
     gVmGlobal.negone.od.od_type = OBJ_TYPE_INT;
     gVmGlobal.negone.od.od_size = sizeof(PmInt_t);
     gVmGlobal.negone.od.od_const = 1;
-    gVmGlobal.negone.val = (S32)-1;
+    gVmGlobal.negone.val = (uint32_t)-1;
 
     /* init None */
     gVmGlobal.none.od.od_type = OBJ_TYPE_NON;
@@ -102,7 +103,7 @@ global_init(void)
     gVmGlobal.none.od.od_const = 1;
 
     /* Init "code" string obj */
-    retval = string_new((P_U8 *)&codestr, (pPmObj_t *)&gVmGlobal.pcodeStr);
+    retval = string_new((uint8_t **)&codestr, (pPmObj_t *)&gVmGlobal.pcodeStr);
 
     /* init empty builtins */
     gVmGlobal.builtins = C_NULL;
@@ -125,8 +126,8 @@ global_loadBuiltins(pPmFunc_t pmod)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    P_U8 bistr = (P_U8)"__bi";
-    P_U8 nonestr = (P_U8)"None";
+    uint8_t *bistr = (uint8_t *)"__bi";
+    uint8_t *nonestr = (uint8_t *)"None";
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
 

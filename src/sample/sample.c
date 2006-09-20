@@ -41,6 +41,6 @@ int main(void)
     retval = pm_init(MEMSPACE_RAM, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
-    retval = pm_run((P_U8)"sample");
+    retval = pm_run((uint8_t *)"sample");
     return (int)retval;
 }

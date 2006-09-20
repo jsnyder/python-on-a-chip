@@ -73,9 +73,9 @@ def id(o):
 
     /* Return object's address as an int on the stack */
 #ifdef TARGET_AVR
-    retval = int_new((S32)(S16)NATIVE_GET_LOCAL(0), &pr);
+    retval = int_new((int32_t)(int16_t)NATIVE_GET_LOCAL(0), &pr);
 #elif defined(TARGET_DESKTOP)
-    retval = int_new((S32)NATIVE_GET_LOCAL(0), &pr);
+    retval = int_new((int32_t)NATIVE_GET_LOCAL(0), &pr);
 #else
 #error Code is not implemented for the desired target
 #endif
@@ -156,8 +156,8 @@ def map(f, s):
     pPmObj_t pf = C_NULL;
     pPmObj_t ps = C_NULL;
     pPmObj_t pr = C_NULL;
-    S8 length = 0;
-    S8 i = 0;
+    int8_t length = 0;
+    int8_t i = 0;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 2)
@@ -217,7 +217,7 @@ def range(a, b, c):
     pPmObj_t pc = C_NULL;
     pPmObj_t pi = C_NULL;
     pPmObj_t pr = C_NULL;
-    U16 i = 0;
+    int16_t i = 0;
 
     switch (NATIVE_GET_NUM_ARGS())
     {
@@ -319,7 +319,7 @@ def _exn():
     """__NATIVE__
     PmReturn_t retval;
     pPmClass_t pexn;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* Alloc a class object with attributes dict */
     retval = heap_getChunk(sizeof(PmClass_t), &pchunk);

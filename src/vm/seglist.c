@@ -97,8 +97,8 @@ seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     pSegment_t pseg = C_NULL;
-    U8 i = 0;
-    P_U8 pchunk;
+    int8_t i = 0;
+    uint8_t *pchunk;
 
     /* if this is first item in seg, alloc and link seg */
     if (pseglist->sl_lastindx == 0)
@@ -176,11 +176,11 @@ seglist_clear(pSeglist_t pseglist)
 PmReturn_t
 seglist_findEqual(pSeglist_t pseglist,
                   pPmObj_t pobj,
-                  S8 * r_segnum,
-                  S8 * r_indx)
+                  int8_t *r_segnum,
+                  int8_t *r_indx)
 {
     pSegment_t pseg = C_NULL;
-    S8 i = 0;
+    int8_t i = 0;
 
     /* if index is out of bounds, raise SystemError */
     if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))
@@ -236,8 +236,8 @@ seglist_findEqual(pSeglist_t pseglist,
 
 PmReturn_t
 seglist_getItem(pSeglist_t pseglist,
-                S8 segnum,
-                S8 segindx,
+                int8_t segnum,
+                int8_t segindx,
                 pPmObj_t * r_pobj)
 {
     pSegment_t pseg = pseglist->sl_rootseg;
@@ -269,22 +269,22 @@ seglist_getItem(pSeglist_t pseglist,
 PmReturn_t
 seglist_insertItem(pSeglist_t pseglist,
                    pPmObj_t pobj,
-                   S8 segnum,
-                   S8 segindx)
+                   int8_t segnum,
+                   int8_t segindx)
 {
     PmReturn_t retval = PM_RET_OK;
     pSegment_t pseg = C_NULL;
     pPmObj_t pobj1 = C_NULL;
     pPmObj_t pobj2 = C_NULL;
-    S8 indx = 0;
-    S8 i = 0;
+    int8_t indx = 0;
+    int8_t i = 0;
 
     /* if the seglist has no segment, insert one */
     if (pseglist->sl_rootseg == C_NULL)
     {
         /* alloc and init segment */
         retval = heap_getChunk(sizeof(Segment_t),
-                               (P_U8 *)&pseglist->sl_rootseg
+                               (uint8_t **)&pseglist->sl_rootseg
                               );
         PM_RETURN_IF_ERROR(retval);
         OBJ_SET_TYPE(*pseglist->sl_rootseg, OBJ_TYPE_SEG);
@@ -345,7 +345,7 @@ seglist_insertItem(pSeglist_t pseglist,
             if (pseg->next == C_NULL)
             {
                 retval = heap_getChunk(sizeof(Segment_t),
-                                       (P_U8 *)&pseg->next);
+                                       (uint8_t **)&pseg->next);
                 /*
                  * XXX exception with hosed list,
                  * need to roll-back!
@@ -385,7 +385,7 @@ seglist_new(pSeglist_t * r_pseglist)
 {
     PmReturn_t retval = PM_RET_OK;
 
-    retval = heap_getChunk(sizeof(Seglist_t), (P_U8 *)r_pseglist);
+    retval = heap_getChunk(sizeof(Seglist_t), (uint8_t **)r_pseglist);
     PM_RETURN_IF_ERROR(retval);
 
     OBJ_SET_TYPE(**r_pseglist, OBJ_TYPE_SGL);
@@ -399,8 +399,8 @@ seglist_new(pSeglist_t * r_pseglist)
 PmReturn_t
 seglist_setItem(pSeglist_t pseglist,
                 pPmObj_t pobj,
-                S8 segnum,
-                S8 segindx)
+                int8_t segnum,
+                int8_t segindx)
 {
     pSegment_t pseg = pseglist->sl_rootseg;
 

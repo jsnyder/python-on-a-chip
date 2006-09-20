@@ -38,7 +38,7 @@ extern unsigned char usrlib_img[];
 
 int main(void)
 {
-    P_U8 pimg;
+    uint8_t *pimg;
     PmReturn_t retval = PM_RET_OK;
 
     heap_init();
@@ -46,7 +46,7 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     /* Read in the stdlib modules */
-    pimg = (P_U8)&stdlib_img;
+    pimg = (uint8_t *)&stdlib_img;
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);
     PM_RETURN_IF_ERROR(retval);
 
@@ -55,7 +55,7 @@ int main(void)
     PM_ASSERT(*pimg == C_NULL);
 
     /* Read in the usrlib modules */
-    pimg = (P_U8)&usrlib_img;
+    pimg = (uint8_t *)&usrlib_img;
     retval = img_findInMem(MEMSPACE_FLASH, &pimg);
     PM_RETURN_IF_ERROR(retval);
 

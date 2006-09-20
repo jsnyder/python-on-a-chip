@@ -56,7 +56,7 @@
  * @param paddr address in memoryspace of source string
  */
 #define string_loadFromImg(ms, paddr, r_pstring) \
-            string_create((ms), (paddr), (U8)1, (r_pstring))
+            string_create((ms), (paddr), (uint8_t)1, (r_pstring))
 
 /** 
  * create string from UTF-8 string in RAM
@@ -65,7 +65,7 @@
  * @param r_pstring Return arg; addr of ptr to string
  */
 #define string_new(s, r_pstring) \
-            string_create(MEMSPACE_RAM, (s), 0, (r_pstring))
+            string_create(MEMSPACE_RAM, (s), (uint8_t)0, (r_pstring))
 
 /***************************************************************
  * Types
@@ -82,7 +82,7 @@ typedef struct PmString_s
     PmObjDesc_t od;
 
     /** length of string */
-    U8 length;
+    uint8_t length;
 
 #if USE_STRING_CACHE
     /** ptr to next string in cache */
@@ -95,7 +95,7 @@ typedef struct PmString_s
      * Use length 1 here so that string-alloc function can use
      * "sizeof(PmString_t) + len" and there will be room for the null-term
      */
-    U8          val[1];
+    uint8_t val[1];
 } PmString_t, *pPmString_t;
 
 
@@ -134,8 +134,8 @@ typedef struct PmString_s
  * @return  Return status
  */
 PmReturn_t string_create(PmMemSpace_t memspace,
-                          P_U8 *paddr,
-                          U8 isimg,
+                          uint8_t **paddr,
+                          uint8_t isimg,
                           pPmObj_t *r_pstring);
 
 /**
@@ -145,7 +145,7 @@ PmReturn_t string_create(PmMemSpace_t memspace,
  * @param   r_psting Return arg; ptr to String obj
  * @return  Return status
  */
-PmReturn_t string_newFromChar(U8 c, pPmObj_t *r_pstring);
+PmReturn_t string_newFromChar(uint8_t c, pPmObj_t *r_pstring);
 
 /**
  * Compare two String objects for equality.
@@ -154,7 +154,7 @@ PmReturn_t string_newFromChar(U8 c, pPmObj_t *r_pstring);
  * @param   pstr2 Ptr to second string
  * @return  C_SAME if the strings are equivalent, C_DIFFER otherwise
  */
-S8 string_compare(pPmString_t, pPmString_t);
+int8_t string_compare(pPmString_t, pPmString_t);
 
 /**
  * Create a copy of the given string obj.

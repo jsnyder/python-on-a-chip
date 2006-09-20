@@ -85,13 +85,13 @@ typedef enum PmBlockType_e
 typedef struct PmBlock_s
 {
     /** obligatory obj descriptor */
-    PmObjDesc_t     od;
+    PmObjDesc_t od;
     /** ptr to backup stack ptr */
-    pPmObj_t       *b_sp;
+    pPmObj_t *b_sp;
     /** handler fxn obj */
-    P_U8            b_handler;
+    uint8_t *b_handler;
     /** block type */
-    PmBlockType_t   b_type:8;
+    PmBlockType_t b_type:8;
     /** next block in stack */
     struct PmBlock_s *next;
 } PmBlock_t, *pPmBlock_t;
@@ -111,27 +111,27 @@ typedef struct PmBlock_s
 typedef struct PmFrame_s
 {
     /** obligatory obj descriptor */
-    PmObjDesc_t     od;
+    PmObjDesc_t od;
     /** ptr to previous frame obj */
     struct PmFrame_s *fo_back;
     /** ptr to fxn obj */
-    pPmFunc_t       fo_func;
+    pPmFunc_t fo_func;
     /** mem space where func's CO comes from */
-    PmMemSpace_t    fo_memspace:8;
+    PmMemSpace_t fo_memspace:8;
     /** instrxn ptr (pts into memspace) */
-    P_U8            fo_ip;
+    uint8_t *fo_ip;
     /** current source line num */
-    U16             fo_line;
+    uint16_t fo_line;
     /** linked list of blocks */
-    pPmBlock_t      fo_blockstack;
+    pPmBlock_t fo_blockstack;
     /** local attributes dict (non-fast locals) */
-    pPmDict_t       fo_attrs;
+    pPmDict_t fo_attrs;
     /** global attributes dict (pts to root frame's globals */
-    pPmDict_t       fo_globals;
+    pPmDict_t fo_globals;
     /** points to next empty slot in fo_locals (1 past TOS) */
-    pPmObj_t       *fo_sp;
+    pPmObj_t *fo_sp;
     /** array of local vars and stack (space appended at alloc) */
-    pPmObj_t        fo_locals[0];
+    pPmObj_t fo_locals[0];
 } PmFrame_t, *pPmFrame_t;
 
 /**

@@ -55,7 +55,7 @@ typedef struct PmInt_s
     /** object descriptor */
     PmObjDesc_t od;
     /** integer value */
-    S32         val;
+    int32_t val;
 } PmInt_t, *pPmInt_t;
 
 
@@ -86,7 +86,7 @@ PmReturn_t int_dup(pPmObj_t pint, pPmObj_t * r_pint);
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
-PmReturn_t int_new(S32 val, pPmObj_t * r_pint);
+PmReturn_t int_new(int32_t val, pPmObj_t * r_pint);
 
 /**
  * Implement the UNARY_POSITIVE bcode.

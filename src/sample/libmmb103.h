@@ -22,8 +22,27 @@
 #endif
 
 /* headers */
-#include "dwh_types.h"
+/* #36: Deprecate dwh_types.h */
+/*#include "dwh_types.h"*/
+typedef unsigned char   U8;
+typedef signed char     S8;
+typedef unsigned int    U16;
+typedef signed int      S16;
+typedef unsigned long   U32;
+typedef signed long     S32;
+typedef float           F32;
+typedef double          F64;
 
+/* pointers to basic types */
+typedef void*           P_VOID;
+typedef U8*             P_U8;
+typedef S8*             P_S8;
+typedef U16*            P_U16;
+typedef S16*            P_S16;
+typedef U32*            P_U32;
+typedef S32*            P_S32;
+typedef F32*            P_F32;
+typedef F64*            P_F64;
 
 
 /***************************************************************

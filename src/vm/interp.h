@@ -45,8 +45,6 @@
  **************************************************************/
 
 /** frame pointer ; currently for single thread */
-/* XXX not valid cuz interpret() is reentrant and FP is set at top of interp */
-/*#define FP              (gVmGlobal.pframe)*/
 #define FP              pframe
 /** main module pointer (referred to by root frame) */
 #define MP              (gVmGlobal.pmod)
@@ -337,7 +335,7 @@ typedef enum PmBcode_e
  * @param   line Line number of the interpreter file 
  *               reporting the error.
  */
-void py_err(S16 release, S16 file, S16 line);
+void py_err(uint16_t release, uint16_t file, uint16_t line);
 
 
 /**

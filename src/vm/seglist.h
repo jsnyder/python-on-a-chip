@@ -83,7 +83,7 @@ typedef struct Seglist_s
     /** ptr to last segment */
     pSegment_t sl_lastseg;
     /** index of (one past) last obj in last segment */
-    S8 sl_lastindx;
+    int8_t sl_lastindx;
 } Seglist_t, *pSeglist_t;
 
 
@@ -143,8 +143,8 @@ void seglist_clear(pSeglist_t pseglist);
  */
 PmReturn_t seglist_findEqual(pSeglist_t pseglist,
                              pPmObj_t pobj,
-                             S8 * r_segnum,
-                             S8 * r_indx);
+                             int8_t *r_segnum,
+                             int8_t *r_indx);
 
 
 /**
@@ -160,8 +160,8 @@ PmReturn_t seglist_findEqual(pSeglist_t pseglist,
  *          PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_getItem(pSeglist_t pseglist,
-                           S8 segnum,
-                           S8 segindx,
+                           int8_t segnum,
+                           int8_t segindx,
                            pPmObj_t * r_pobj);
 
 
@@ -192,8 +192,8 @@ PmReturn_t seglist_new(pSeglist_t * r_pseglist);
 PmReturn_t
 seglist_insertItem(pSeglist_t pseglist,
                    pPmObj_t pobj,
-                   S8 segnum,
-                   S8 segindx);
+                   int8_t segnum,
+                   int8_t segindx);
 
 /**
  * Put the item in the designated slot and segment.
@@ -209,7 +209,7 @@ seglist_insertItem(pSeglist_t pseglist,
  */
 PmReturn_t seglist_setItem(pSeglist_t pseglist,
                            pPmObj_t pobj,
-                           S8 segnum,
-                           S8 segindx);
+                           int8_t segnum,
+                           int8_t segindx);
 
 #endif /* __SEGLIST_H__ */

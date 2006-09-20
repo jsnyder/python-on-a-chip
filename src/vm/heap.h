@@ -87,10 +87,10 @@ typedef struct PmHeapDesc_s
 typedef struct PmHeap_s
 {
     /** the amount of heap space available */
-    U16 avail;
+    uint16_t avail;
 
     /** Global declaration of heap. */
-    U8 base[HEAP_SIZE];
+    uint8_t base[HEAP_SIZE];
 } PmHeap_t, *pPmHeap_t;
 
 
@@ -124,7 +124,7 @@ void heap_init(void);
  * @param   r_pchunk Addr of ptr to chunk (return).
  * @return  Return code
  */
-PmReturn_t heap_getChunk(U8 size, P_U8 *r_pchunk);
+PmReturn_t heap_getChunk(uint8_t size, uint8_t **r_pchunk);
 
 /**
  * Place the chunk back in the heap.

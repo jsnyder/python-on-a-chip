@@ -47,7 +47,7 @@
  * Macros
  **************************************************************/
 
-#define OBJ_IS_CONST(obj) ((obj).od.od_const != (U8)0)
+#define OBJ_IS_CONST(obj) ((obj).od.od_const != (uint8_t)0)
 #define OBJ_SET_CONST(obj, const) (obj).od.od_const = (const)
 #define OBJ_GET_GCVAL(obj) ((obj).od.od_gcval)
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
@@ -141,16 +141,16 @@ typedef struct PmObjDesc_s
      * so it must be accurate for the object
      * containing this descriptor.
      */
-    U8          od_size;
+    uint8_t od_size;
 
     /** object type */
     PmType_t    od_type:5;
 
     /** garbage collection mark value */
-    U8          od_gcval:2;
+    uint8_t od_gcval:2;
 
     /** constant pool object flag */
-    U8          od_const:1;
+    uint8_t od_const:1;
 
 } PmObjDesc_t, *pPmObjDesc_t;
 
@@ -184,20 +184,20 @@ typedef struct PmObj_s
  * The following lists the simple object types
  * and their image structures:
  * -None:
- *      -type:      S8 - OBJ_TYPE_NON
+ *      -type:      int8_t - OBJ_TYPE_NON
  *
  * -Int:
- *      -type:      S8 - OBJ_TYPE_INT
- *      -value:     S32 - signed integer value
+ *      -type:      int8_t - OBJ_TYPE_INT
+ *      -value:     int32_t - signed integer value
  *
  * -Float:
- *      -type:      S8 - OBJ_TYPE_FLOAT
- *      -value:     F32 - 32-bit floating point value
+ *      -type:      int8_t - OBJ_TYPE_FLOAT
+ *      -value:     float32_t - 32-bit floating point value
  *
  * -Slice (is this allowed in img?):
- *      -type:      S8 - OBJ_TYPE_SLICE
- *      -index1:    S16 - first index.
- *      -index2:    S16 - second index.
+ *      -type:      int8_t - OBJ_TYPE_SLICE
+ *      -index1:    int16_t - first index.
+ *      -index2:    int16_t - second index.
  *
  * @param   memspace memory space/type
  * @param   paddr ptr to ptr to obj
@@ -207,7 +207,7 @@ typedef struct PmObj_s
  * @return  Return status
  */
 PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
-                           P_U8 *paddr,
+                           uint8_t **paddr,
                            pPmObj_t * r_pobj);
 
 /**
@@ -219,7 +219,7 @@ PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
  * @param   type expected type of obj
  * @return  boolean if types match
  */
-S8 obj_isType(pPmObj_t pobj, PmType_t type);
+int8_t obj_isType(pPmObj_t pobj, PmType_t type);
 
 /**
  * Find the boolean value of the given object.
@@ -227,7 +227,7 @@ S8 obj_isType(pPmObj_t pobj, PmType_t type);
  * @param   pobj Ptr to object to test.
  * @return  Nonzero value if object is False.
  */
-S8 obj_isFalse(pPmObj_t pobj);
+int8_t obj_isFalse(pPmObj_t pobj);
 
 /**
  * Compare two objects for equality.
@@ -236,6 +236,6 @@ S8 obj_isFalse(pPmObj_t pobj);
  * @param   pobj2 Ptr to second object.
  * @return  C_SAME if the items are equivalent, C_DIFFER otherwise.
  */
-S8 obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
+int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
 
 #endif /* __OBJ_H__ */

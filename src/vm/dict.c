@@ -70,7 +70,7 @@ dict_new(pPmObj_t * r_pdict)
     pPmDict_t pdict = C_NULL;
 
     /* allocate a dict */
-    retval = heap_getChunk(sizeof(PmDict_t), (P_U8 *)r_pdict);
+    retval = heap_getChunk(sizeof(PmDict_t), (uint8_t **)r_pdict);
     PM_RETURN_IF_ERROR(retval);
 
     /* init dict fields */
@@ -117,8 +117,8 @@ PmReturn_t
 dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
 {
     PmReturn_t retval = PM_RET_OK;
-    S8 segnum = 0;
-    S8 indx = 0;
+    int8_t segnum = 0;
+    int8_t indx = 0;
 
     /* if null parms, raise SystemError */
     if ((pdict == C_NULL)
@@ -182,8 +182,8 @@ PmReturn_t
 dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
-    S8 segnum = 0;
-    S8 indx = 0;
+    int8_t segnum = 0;
+    int8_t indx = 0;
 
     /* if dict is null, raise SystemError */
     if (pdict == C_NULL)

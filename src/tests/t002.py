@@ -41,7 +41,7 @@ def push42():
     pPmObj_t pint = C_NULL;
     PmReturn_t retval;
 
-    retval = int_new((S32)42, &pint);
+    retval = int_new((int32_t)42, &pint);
     NATIVE_SET_TOS(pint);
 
     return retval;

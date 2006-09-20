@@ -69,7 +69,7 @@ int_dup(pPmObj_t pint, pPmObj_t * r_pint)
     PmReturn_t retval = PM_RET_OK;
 
     /* allocate new int */
-    retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pint);
+    retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pint);
     PM_RETURN_IF_ERROR(retval);
 
     /* copy value */
@@ -80,7 +80,7 @@ int_dup(pPmObj_t pint, pPmObj_t * r_pint)
 
 
 PmReturn_t
-int_new(S32 n, pPmObj_t * r_pint)
+int_new(int32_t n, pPmObj_t *r_pint)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -104,7 +104,7 @@ int_new(S32 n, pPmObj_t * r_pint)
     /* XXX search for int in pool? */
 
     /* else create and return new int obj */
-    retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pint);
+    retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pint);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = n;

@@ -74,17 +74,17 @@
 typedef struct PmCo_s
 {
     /** object descriptor */
-    PmObjDesc_t     od;
+    PmObjDesc_t  od;
     /** memory space selector */
-    PmMemSpace_t    co_memspace:8;
+    PmMemSpace_t co_memspace:8;
     /** address in memspace of code image */
-    P_U8            co_codeimgaddr;
+    uint8_t *co_codeimgaddr;
     /** address in RAM of names tuple */
-    pPmTuple_t      co_names;
+    pPmTuple_t co_names;
     /** address in RAM of constants tuple */
-    pPmTuple_t      co_consts;
+    pPmTuple_t co_consts;
     /** address in memspace of bytecode (or native function) */
-    P_U8            co_codeaddr;
+    uint8_t *co_codeaddr;
 } PmCo_t, *pPmCo_t;
 
 /**
@@ -99,11 +99,11 @@ typedef struct PmCo_s
 typedef struct PmNo_s
 {
     /** object descriptor */
-    PmObjDesc_t     od;
+    PmObjDesc_t od;
     /** expected num args to the func */
-    S8              no_argcount;
+    int8_t no_argcount;
     /** index into native function table */
-    S16             no_funcindx;
+    int16_t no_funcindx;
 } PmNo_t, *pPmNo_t;
 
 
@@ -127,7 +127,7 @@ typedef struct PmNo_s
  * All other types (Lists, Dicts, CodeObjs, Modules, Classes,
  * Functions, ClassInstances) are built at runtime.
  *
- * All multibyte values (S16, S32) are in Little Endian order
+ * All multibyte values are in Little Endian order
  * (least significant byte comes first in the byte stream).
  *
  * memspace and *paddr determine the start of the code image.
@@ -137,15 +137,15 @@ typedef struct PmNo_s
  * code img.
  *
  * The code image has the following structure:
- *      -type:      S8 - OBJ_TYPE_CIM
- *      -size:      S16 - number of bytes
+ *      -type:      8b - OBJ_TYPE_CIM
+ *      -size:      16b - number of bytes
  *                  the code image occupies.
- *      -argcount:  S8 - number of arguments to this code obj.
- *      -stacksz:   S8 - the maximum arg-stack size needed.
- *      -nlocals:   S8 - number of local vars in the code obj.
+ *      -argcount:  8b - number of arguments to this code obj.
+ *      -stacksz:   8b - the maximum arg-stack size needed.
+ *      -nlocals:   8b - number of local vars in the code obj.
  *      -names:     Tuple - tuple of string objs.
  *      -consts:    Tuple - tuple of objs.
- *      -code:      U8[] - bytecode array.
+ *      -code:      8b[] - bytecode array.
  *
  * @param   memspace memory space containing image
  * @param   paddr ptr to ptr to code img in memspace
@@ -157,7 +157,7 @@ typedef struct PmNo_s
  */
 PmReturn_t
 co_loadFromImg(PmMemSpace_t memspace,
-               P_U8 *paddr,
+               uint8_t **paddr,
                pPmObj_t * r_pco);
 
 /**
@@ -178,9 +178,9 @@ co_loadFromImg(PmMemSpace_t memspace,
  * code img.
  *
  * The native image has the following structure:
- *      -type:      S8 - OBJ_TYPE_CIM
- *      -argcount:  S8 - number of arguments to this code obj.
- *      -code:      S16 - index into native function table.
+ *      -type:      8b - OBJ_TYPE_CIM
+ *      -argcount:  8b - number of arguments to this code obj.
+ *      -code:      16b - index into native function table.
  *
  * @param   memspace memory space containing image
  * @param   paddr ptr to ptr to code img in memspace (return)
@@ -189,8 +189,8 @@ co_loadFromImg(PmMemSpace_t memspace,
  *          past end of code img
  */
 PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
-                          P_U8 * paddr,
-                          pPmObj_t * r_pno);
+                          uint8_t **paddr,
+                          pPmObj_t *r_pno);
 
 
 #endif /* __CODEOBJ_H__ */

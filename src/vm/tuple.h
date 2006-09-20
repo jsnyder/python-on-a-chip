@@ -64,7 +64,7 @@ typedef struct PmTuple_s
      * but if I set this type to S8, a 0-element tuple
 	 * is to small to be allocated.
 	 */
-    S16         length;
+    int16_t length;
     /** array of ptrs to objs */
     pPmObj_t    val[0];
 } PmTuple_t, *pPmTuple_t;
@@ -98,7 +98,7 @@ typedef struct PmTuple_s
  *          past end of last obj in tuple.
  */
 PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
-                             P_U8 *paddr,
+                             uint8_t **paddr,
                              pPmObj_t *r_ptuple);
 
 /**
@@ -109,7 +109,7 @@ PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
  * @param   r_ptuple Return by ref, ptr to new tuple
  * @return  Return status
  */
-PmReturn_t tuple_new(U16 n, pPmObj_t *r_ptuple);
+PmReturn_t tuple_new(uint16_t n, pPmObj_t *r_ptuple);
 
 /**
  * Create a copy of the tuple.

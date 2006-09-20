@@ -64,16 +64,16 @@
  **************************************************************/
 
 PmReturn_t
-frame_new(pPmObj_t pfunc, pPmObj_t * r_pobj)
+frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
-    S16 fsize = 0;
-    S8 stacksz = 0;
-    S8 nlocals = 0;
+    int16_t fsize = 0;
+    int8_t stacksz = 0;
+    int8_t nlocals = 0;
     pPmCo_t pco = C_NULL;
     pPmFrame_t pframe = C_NULL;
-    P_U8 paddr = C_NULL;
-    P_U8 pchunk;
+    uint8_t *paddr = C_NULL;
+    uint8_t *pchunk;
 
     /* get fxn's code obj */
     pco = ((pPmFunc_t)pfunc)->f_co;
@@ -112,7 +112,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t * r_pobj)
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
 
     /* return ptr to frame */
-    * r_pobj = (pPmObj_t)pframe;
+    *r_pobj = (pPmObj_t)pframe;
     return retval;
 }
 

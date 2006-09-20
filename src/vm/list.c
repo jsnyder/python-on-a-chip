@@ -93,7 +93,7 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
 
 
 PmReturn_t
-list_copy(pPmObj_t pobj, pPmObj_t * r_pobj)
+list_copy(pPmObj_t pobj, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_STUB;
     return retval;
@@ -101,11 +101,11 @@ list_copy(pPmObj_t pobj, pPmObj_t * r_pobj)
 
 
 PmReturn_t
-list_getItem(pPmObj_t plist, S16 index, pPmObj_t * r_pobj)
+list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_STUB;
-    S16 segnum = 0;
-    S16 segindx = 0;
+    int16_t segnum = 0;
+    int16_t segindx = 0;
 
     /*
      * no need to check type, since it's already done by:
@@ -134,7 +134,7 @@ list_getItem(pPmObj_t plist, S16 index, pPmObj_t * r_pobj)
 
 
 PmReturn_t
-list_insert(pPmObj_t plist, pPmObj_t pobj, S8 index)
+list_insert(pPmObj_t plist, pPmObj_t pobj, int8_t index)
 {
     PmReturn_t retval = PM_RET_STUB;
     return retval;
@@ -148,7 +148,7 @@ list_new(pPmObj_t *r_pobj)
     pPmList_t plist = C_NULL;
 
     /* allocate a list */
-    retval = heap_getChunk(sizeof(PmList_t), (P_U8 *)r_pobj);
+    retval = heap_getChunk(sizeof(PmList_t), (uint8_t **)r_pobj);
     PM_RETURN_IF_ERROR(retval);
 
     /* set list type, empty the contents */
@@ -164,12 +164,12 @@ list_new(pPmObj_t *r_pobj)
 PmReturn_t
 list_replicate(pPmObj_t psrclist,
                pPmObj_t pint,
-               pPmObj_t * r_pnewlist)
+               pPmObj_t *r_pnewlist)
 {
     PmReturn_t retval = PM_RET_OK;
-    S8 i = 0;
-    S8 j = 0;
-    S8 length = 0;
+    int8_t i = 0;
+    int8_t j = 0;
+    int8_t length = 0;
     pPmObj_t pitem = C_NULL;
 
     /* exception if any args are null */
@@ -214,7 +214,7 @@ list_replicate(pPmObj_t psrclist,
 
 
 PmReturn_t
-list_setItem(pPmObj_t pobj1, S16 index, pPmObj_t pobj2)
+list_setItem(pPmObj_t pobj1, int16_t index, pPmObj_t pobj2)
 {
     PmReturn_t retval = PM_RET_STUB;
     return retval;

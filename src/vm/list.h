@@ -57,7 +57,7 @@ typedef struct PmList_s
     /** object descriptor */
     PmObjDesc_t od;
     /** list length; number of objs linked */
-    S16 length;
+    int16_t length;
     /** ptr to linked list of nodes */
     pSeglist_t val;
 } PmList_t, *pPmList_t;
@@ -94,7 +94,7 @@ PmReturn_t list_new(pPmObj_t *r_pobj);
  * @return  Return status
  */
 PmReturn_t list_getItem(pPmObj_t plist,
-                        S16 index,
+                        int16_t index,
                         pPmObj_t *r_pobj);
 
 /**
@@ -106,7 +106,7 @@ PmReturn_t list_getItem(pPmObj_t plist,
  * @return  Return status
  */
 PmReturn_t list_setItem(pPmObj_t pobj1,
-                        S16 index,
+                        int16_t index,
                         pPmObj_t pobj2);
 
 /**
@@ -158,7 +158,7 @@ PmReturn_t list_replicate(pPmObj_t psrclist,
  */
 PmReturn_t list_insert(pPmObj_t plist,
                        pPmObj_t pobj,
-                       S8 index);
+                       int8_t index);
 
 /* XXX TODO - redo these using pobj / return status */
 #if 0

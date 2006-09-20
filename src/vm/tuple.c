@@ -64,11 +64,11 @@
  **************************************************************/
 
 PmReturn_t
-tuple_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t *r_ptuple)
+tuple_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
-    U8 i = 0;
-    U8 n = 0;
+    uint8_t i = 0;
+    uint8_t n = 0;
 
     /* get num objs in tuple */
     n = mem_getByte(memspace, paddr);
@@ -91,10 +91,10 @@ tuple_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t *r_ptuple)
 
 
 PmReturn_t
-tuple_new(U16 n, pPmObj_t * r_ptuple)
+tuple_new(uint16_t n, pPmObj_t *r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
-    U16 size = 0;
+    uint16_t size = 0;
 
     /* this size tuple not yet supported */
     /* XXX for larger tuple, break into segments */
@@ -107,7 +107,7 @@ tuple_new(U16 n, pPmObj_t * r_ptuple)
     size = sizeof(PmTuple_t) + (n * sizeof(pPmObj_t));
 
     /* allocate a tuple */
-    retval = heap_getChunk(size, (P_U8 *)r_ptuple);
+    retval = heap_getChunk(size, (uint8_t **)r_ptuple);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(**r_ptuple, OBJ_TYPE_TUP);
     /* set the number of objs in the tuple */
@@ -125,9 +125,9 @@ tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmTuple_t pnew = C_NULL;
-    P_U8 pchunk;
-    P_U8 pdest;
-    P_U8 psrc;
+    uint8_t *pchunk;
+    uint8_t *pdest;
+    uint8_t *psrc;
 
     /* ensure type */
     if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
@@ -140,8 +140,8 @@ tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmTuple_t)pchunk;
 
-    pdest = (P_U8)pnew;
-    psrc = (P_U8)ptup;
+    pdest = (uint8_t *)pnew;
+    psrc = (uint8_t *)ptup;
     mem_copy(MEMSPACE_RAM, &pdest, &psrc, OBJ_GET_SIZE(*ptup));
     *r_ptuple = (pPmObj_t)pnew;
     return PM_RET_OK;

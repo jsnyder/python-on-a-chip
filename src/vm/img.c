@@ -89,16 +89,16 @@
  * without filling memory.
  */
 PmReturn_t
-img_findInMem(PmMemSpace_t memspace, P_U8 *paddr)
+img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
 {
     PmReturn_t retval = PM_RET_ERR;
-    P_U8 imgtop = 0;
+    uint8_t *imgtop = 0;
     PmType_t type = 0;
-    S16 size = 0;
-    S8 n = 0;
+    int16_t size = 0;
+    uint8_t n = 0;
     pPmImgInfo_t pii = C_NULL;
     pPmObj_t pnamestr = C_NULL;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* addr is top of img */
     imgtop = *paddr;
@@ -152,10 +152,13 @@ img_findInMem(PmMemSpace_t memspace, P_U8 *paddr)
 
 
 PmReturn_t
-img_getName(PmMemSpace_t memspace, P_U8 *paddr, U8 n, pPmObj_t * r_pname)
+img_getName(PmMemSpace_t memspace,
+            uint8_t **paddr,
+            uint8_t n,
+            pPmObj_t *r_pname)
 {
     PmType_t type;
-    U8 b;
+    uint8_t b;
 
     /* XXX ensure it's a tuple */
     /* skip past type and size bytes */

@@ -60,13 +60,13 @@
  typedef struct PmImgInfo_s
  {
     /** the image's name as a String obj */
-    pPmString_t         ii_name;
+    pPmString_t ii_name;
     /** the memory space in which the image is located */
-    PmMemSpace_t        ii_memspace:8;
+    PmMemSpace_t ii_memspace:8;
     /** the starting address of the image */
-    P_U8                ii_addr;
+    uint8_t *ii_addr;
     /** ptr to next image ID struct */
-    struct PmImgInfo_s  *next;
+    struct PmImgInfo_s *next;
  } PmImgInfo_t, *pPmImgInfo_t;
 
 
@@ -89,7 +89,7 @@
  * @param   paddr ptr to address value to start search.
  * @return  Return status
  */
-PmReturn_t img_findInMem(PmMemSpace_t memspace, P_U8 *paddr);
+PmReturn_t img_findInMem(PmMemSpace_t memspace, uint8_t **paddr);
 
 /**
  * Load a string obj from the names tuple at the given index.
@@ -101,8 +101,8 @@ PmReturn_t img_findInMem(PmMemSpace_t memspace, P_U8 *paddr);
  * @return  Return status
  */
 PmReturn_t img_getName(PmMemSpace_t memspace,
-                       P_U8 *paddr,
-                       U8 n,
+                       uint8_t **paddr,
+                       uint8_t n,
                        pPmObj_t * r_pname);
 
 

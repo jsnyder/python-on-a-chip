@@ -66,7 +66,7 @@
  **************************************************************/
 
 PmReturn_t
-obj_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pobj)
+obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     PmObjDesc_t od;
@@ -86,7 +86,7 @@ obj_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pobj)
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
             /* allocate simple obj */
-            retval = heap_getChunk(sizeof(PmInt_t), (P_U8 *)r_pobj);
+            retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pobj);
             PM_RETURN_IF_ERROR(retval);
 
             /* Set the object's type */
@@ -132,7 +132,7 @@ obj_loadFromImg(PmMemSpace_t memspace, P_U8 *paddr, pPmObj_t * r_pobj)
 }
 
 
-S8
+int8_t
 obj_isType(pPmObj_t pobj, PmType_t type)
 {
     /* if null pointer or wrong type... */
@@ -144,7 +144,7 @@ obj_isType(pPmObj_t pobj, PmType_t type)
 }
 
 /* return true if the obj is false */
-S8
+int8_t
 obj_isFalse(pPmObj_t pobj)
 {
     /* return true if it's NULL or None */
@@ -191,7 +191,7 @@ obj_isFalse(pPmObj_t pobj)
 }
 
 
-S8
+int8_t
 obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 {
     /* null pointers are invalid */

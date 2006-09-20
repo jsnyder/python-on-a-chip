@@ -68,7 +68,7 @@ PmReturn_t
 mod_new(pPmObj_t pco, pPmObj_t * pmod)
 {
     PmReturn_t retval;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* if it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
@@ -93,7 +93,7 @@ PmReturn_t
 mod_import(pPmObj_t pstr, pPmObj_t * pmod)
 {
     pPmImgInfo_t pii = C_NULL;
-    P_U8 imgaddr = C_NULL;
+    uint8_t *imgaddr = C_NULL;
     pPmCo_t pco = C_NULL;
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj;

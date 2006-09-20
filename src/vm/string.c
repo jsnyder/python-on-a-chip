@@ -79,18 +79,18 @@ static pPmString_t pstrcache = C_NULL;
  */
 PmReturn_t
 string_create(PmMemSpace_t memspace,
-              P_U8 * paddr,
-              U8 isimg,
+              uint8_t ** paddr,
+              uint8_t isimg,
               pPmObj_t * r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
-    U8 len = 0;
+    uint8_t len = 0;
     pPmString_t pstr = C_NULL;
-    P_U8 pdst = C_NULL;
+    uint8_t *pdst = C_NULL;
 #if USE_STRING_CACHE
     pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* if not loading from image */
     if (isimg == 0)
@@ -117,10 +117,10 @@ string_create(PmMemSpace_t memspace,
     OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
     pstr->length = len;
     /* copy C-string into String obj */
-    pdst = (P_U8)&(pstr->val);
+    pdst = (uint8_t *)&(pstr->val);
     mem_copy(memspace, &pdst, paddr, len);
     /* zero-pad end of string */
-    for ( ; pdst < (P_U8)pstr + OBJ_GET_SIZE(*pstr); pdst++)
+    for ( ; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(*pstr); pdst++)
     {
         *pdst = 0;
     }
@@ -156,14 +156,14 @@ string_create(PmMemSpace_t memspace,
 
 
 PmReturn_t
-string_newFromChar(U8 c, pPmObj_t *r_pstring)
+string_newFromChar(uint8_t c, pPmObj_t *r_pstring)
 {
     PmReturn_t retval;
     pPmString_t pstr;
 #if USE_STRING_CACHE
     pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* Get space for String obj */
     retval = heap_getChunk(sizeof(PmString_t) + 1, &pchunk);
@@ -206,7 +206,7 @@ string_newFromChar(U8 c, pPmObj_t *r_pstring)
 }
 
 
-S8
+int8_t
 string_compare(pPmString_t pstr1, pPmString_t pstr2)
 {
     /* Return false if lengths are not equal */
@@ -228,7 +228,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmString_t pnew = C_NULL;
-    P_U8 pchunk;
+    uint8_t *pchunk;
 
     /* ensure string obj */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
@@ -251,8 +251,8 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 #endif
     /* copy string contents (and null term) */
     mem_copy(MEMSPACE_RAM,
-             (P_U8 *)&(pnew->val),
-             (P_U8 *)&(((pPmString_t)pstr)->val),
+             (uint8_t **)&(pnew->val),
+             (uint8_t **)&(((pPmString_t)pstr)->val),
              ((pPmString_t)pstr)->length + 1
             );
     *r_pstring = (pPmObj_t)pnew;
