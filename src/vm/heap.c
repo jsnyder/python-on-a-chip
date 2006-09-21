@@ -575,7 +575,7 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
     }
 
     /* else return out-of-memory exception */
-    return PM_RET_EX_MEM;
+    return PM_RAISE(PM_RET_EX_MEM, __LINE__);
 }
 
 

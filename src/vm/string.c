@@ -233,7 +233,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
     /* ensure string obj */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* allocate string obj */

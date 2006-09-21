@@ -73,7 +73,7 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
     /* if it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* alloc and init func obj */
@@ -101,7 +101,7 @@ mod_import(pPmObj_t pstr, pPmObj_t * pmod)
     /* if it's not a string obj, raise SyntaxError */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
-        return PM_RET_EX_SYNTAX;
+        return PM_RAISE(PM_RET_EX_SYNTAX, __LINE__);
     }
 
     /* iterate through the global img list */
@@ -116,7 +116,7 @@ mod_import(pPmObj_t pstr, pPmObj_t * pmod)
     /* if img was not found, raise ImportError */
     if (pii == C_NULL)
     {
-        return PM_RET_EX_IMPRT;
+        return PM_RAISE(PM_RET_EX_IMPRT, __LINE__);
     }
 
     /* make copy of addr */

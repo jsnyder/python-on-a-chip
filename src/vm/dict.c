@@ -91,7 +91,7 @@ dict_clear(pPmObj_t pdict)
     if ((pdict == C_NULL) ||
         (pdict->od.od_type != OBJ_TYPE_DIC))
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* clear length */
@@ -125,13 +125,13 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         || (pkey == C_NULL)
         || (pval == C_NULL))
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* if it's not a dict, raise TypeError */
     if (pdict->od.od_type != OBJ_TYPE_DIC)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* XXX if key is not hashable, raise TypeError */
@@ -188,19 +188,19 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if dict is null, raise SystemError */
     if (pdict == C_NULL)
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* if it's not a dict, raise TypeError */
     if (pdict->od.od_type != OBJ_TYPE_DIC)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* if dict is empty, raise KeyError */
     if (((pPmDict_t)pdict)->length <= 0)
     {
-        return PM_RET_EX_KEY;
+        return PM_RAISE(PM_RET_EX_KEY, __LINE__);
     }
 
     /* check for matching key */
@@ -211,7 +211,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if key not found, raise KeyError */
     if (retval == PM_RET_NO)
     {
-        retval = PM_RET_EX_KEY;
+        retval = PM_RAISE(PM_RET_EX_KEY, __LINE__);
     }
     /* return any other error */
     PM_RETURN_IF_ERROR(retval);

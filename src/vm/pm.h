@@ -89,6 +89,20 @@
  * Macros
  **************************************************************/
 
+/** 
+ * Returns an exception error code and stores debug data 
+ *
+ * This macro must be used as an rval statement.  That is, it must
+ * be used after an assignment such as "retval = " or a return statement
+ */
+#define PM_RAISE(exn, line) \
+        (exn); \
+        do \
+        { \
+            gVmGlobal.errFileId = __FILE_ID__; \
+            gVmGlobal.errLineNum = (uint16_t)(line); \
+        } while (0)
+
 /** puts debug info in registers, halts interpreter */
 #if __DEBUG__
 #define PM_ERR(line)                        \

@@ -185,7 +185,7 @@ seglist_findEqual(pSeglist_t pseglist,
     /* if index is out of bounds, raise SystemError */
     if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* set pseg to the segnum'th segment in the list */
@@ -198,7 +198,7 @@ seglist_findEqual(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PM_RET_EX_SYS;
+            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
         }
         pseg = pseg->next;
     }
@@ -248,7 +248,7 @@ seglist_getItem(pSeglist_t pseglist,
         /* if went past last segment, return nothing */
         if (pseg == C_NULL)
         {
-            return PM_RET_EX_SYS;
+            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
         }
         pseg = pseg->next;
     }
@@ -257,7 +257,7 @@ seglist_getItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg)
         && (segindx >= pseglist->sl_lastindx))
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* return ptr to obj in this seg at the index */
@@ -296,7 +296,7 @@ seglist_insertItem(pSeglist_t pseglist,
         /* if past end of list */
         if ((segnum != 0) || (segindx != 0))
         {
-            return PM_RET_EX_SYS;
+            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
         }
 
         /* insert obj in seglist */
@@ -316,7 +316,7 @@ seglist_insertItem(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PM_RET_EX_SYS;
+            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
         }
     }
 
@@ -325,7 +325,7 @@ seglist_insertItem(pSeglist_t pseglist,
         && (segindx >= pseglist->sl_lastindx))
     {
         /* caller must convert this err to exception */
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* insert obj and ripple copy all those afterward */
@@ -412,7 +412,7 @@ seglist_setItem(pSeglist_t pseglist,
         /* if ran past end of list, raise SystemError */
         if (pseg == C_NULL)
         {
-            return PM_RET_EX_SYS;
+            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
         }
     }
 
@@ -420,7 +420,7 @@ seglist_setItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg) &&
         (segindx >= pseglist->sl_lastindx))
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* set ptr to obj in this seg at the index */

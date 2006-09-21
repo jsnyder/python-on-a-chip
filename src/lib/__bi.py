@@ -48,7 +48,7 @@ def globals():
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Return calling frame's globals dict  on stack*/
@@ -68,7 +68,7 @@ def id(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Return object's address as an int on the stack */
@@ -95,7 +95,7 @@ def len(s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Get first arg */
@@ -122,7 +122,7 @@ def len(s):
 
         default:
             /* If not a string or sequence type, raise TypeError */
-            retval = PM_RET_EX_TYPE;
+            retval = PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     NATIVE_SET_TOS(pr);
@@ -138,7 +138,7 @@ def locals():
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Return calling frame's local attrs dict on the stack */
@@ -162,7 +162,7 @@ def map(f, s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Get args */
@@ -172,7 +172,7 @@ def map(f, s):
     /* If args are wrong type, raise TypeError */
     if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Get the sequence length based on type */
@@ -191,7 +191,7 @@ def map(f, s):
             break;
 
         default:
-            return PM_RET_EX_TYPE;
+            return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* XXX: Do a dummy map, fill func with Nones */
@@ -241,13 +241,13 @@ def range(a, b, c):
             /* If 3rd arg is 0, ValueError */
             if (((pPmInt_t)pc)->val == 0)
             {
-                return PM_RET_EX_VAL;
+                return PM_RAISE(PM_RET_EX_VAL, __LINE__);
             }
             break;
 
         default:
             /* If wrong number of args, raise TypeError */
-            return PM_RET_EX_TYPE;
+            return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Allocate list */
@@ -298,7 +298,7 @@ def type(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* Get arg */

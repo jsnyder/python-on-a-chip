@@ -118,7 +118,7 @@ int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
     
     /* create new int obj */
@@ -132,7 +132,7 @@ int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* create new int obj */
@@ -146,7 +146,7 @@ int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* create new int obj */

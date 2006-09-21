@@ -74,7 +74,7 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     if ((pco->od.od_type != OBJ_TYPE_COB) &&
         (pco->od.od_type != OBJ_TYPE_NOB))
     {
-        return PM_RET_EX_SYS;
+        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
     }
 
     /* allocate a func obj */
@@ -124,7 +124,7 @@ class_new(pPmObj_t pmeths,
         (pbases->od.od_type != OBJ_TYPE_TUP) ||
         (pname->od.od_type != OBJ_TYPE_STR))
     {
-        return PM_RET_EX_TYPE;
+        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
     }
 
     /* allocate a class obj */
