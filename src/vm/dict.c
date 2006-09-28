@@ -87,11 +87,14 @@ dict_new(pPmObj_t * r_pdict)
 PmReturn_t
 dict_clear(pPmObj_t pdict)
 {
+    PmReturn_t retval = PM_RET_OK;
+
     /* if null or not a dict, raise TypeError */
     if ((pdict == C_NULL) ||
         (pdict->od.od_type != OBJ_TYPE_DIC))
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* clear length */
@@ -103,7 +106,7 @@ dict_clear(pPmObj_t pdict)
         seglist_clear(((pPmDict_t)pdict)->d_keys);
         seglist_clear(((pPmDict_t)pdict)->d_vals);
     }
-    return PM_RET_OK;
+    return retval;
 }
 
 
@@ -125,13 +128,15 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         || (pkey == C_NULL)
         || (pval == C_NULL))
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* if it's not a dict, raise TypeError */
     if (pdict->od.od_type != OBJ_TYPE_DIC)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* XXX if key is not hashable, raise TypeError */
@@ -188,19 +193,22 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if dict is null, raise SystemError */
     if (pdict == C_NULL)
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* if it's not a dict, raise TypeError */
     if (pdict->od.od_type != OBJ_TYPE_DIC)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* if dict is empty, raise KeyError */
     if (((pPmDict_t)pdict)->length <= 0)
     {
-        return PM_RAISE(PM_RET_EX_KEY, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_KEY, __LINE__);
+        return retval;
     }
 
     /* check for matching key */
@@ -211,7 +219,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if key not found, raise KeyError */
     if (retval == PM_RET_NO)
     {
-        retval = PM_RAISE(PM_RET_EX_KEY, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_KEY, __LINE__);
     }
     /* return any other error */
     PM_RETURN_IF_ERROR(retval);

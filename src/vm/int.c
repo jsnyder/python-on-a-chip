@@ -85,17 +85,17 @@ int_new(int32_t n, pPmObj_t *r_pint)
     PmReturn_t retval = PM_RET_OK;
 
     /* if n is 0,1,-1, return global int */
-    if (n == 0) 
+    if (n == 0)
     {
         *r_pint = PM_ZERO;
         return PM_RET_OK;
     }
-    if (n == 1) 
+    if (n == 1)
     {
         *r_pint = PM_ONE;
         return PM_RET_OK;
     }
-    if (n == -1) 
+    if (n == -1)
     {
         *r_pint = PM_NEGONE;
         return PM_RET_OK;
@@ -114,13 +114,16 @@ int_new(int32_t n, pPmObj_t *r_pint)
 
 PmReturn_t
 int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
-{    
+{
+    PmReturn_t retval;
+
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
-    
+
     /* create new int obj */
     return int_new(((pPmInt_t)pobj)->val, r_pint);
 }
@@ -129,10 +132,13 @@ int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
 PmReturn_t
 int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
 {
+    PmReturn_t retval;
+
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* create new int obj */
@@ -143,10 +149,13 @@ int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
 PmReturn_t
 int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
 {
+    PmReturn_t retval;
+
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* create new int obj */

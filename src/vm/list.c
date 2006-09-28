@@ -71,13 +71,15 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
     /* if either obj is null, raise ValueError exception */
     if ((plist == C_NULL) || (pobj == C_NULL))
     {
-        return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        return retval;
     }
 
     /* if pobj1 is not a list, raise a ValueError exception */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
-        return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        return retval;
     }
 
     /* append object to list */
@@ -116,7 +118,8 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
     /*
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LIST)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
     */
 
@@ -177,20 +180,23 @@ list_replicate(pPmObj_t psrclist,
         || (pint == C_NULL)
         || (r_pnewlist == C_NULL))
     {
-        return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        return retval;
     }
 
     /* exception if first arg is not a list */
     if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)
     {
-        return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        return retval;
     }
     length = ((pPmList_t)psrclist)->length;
 
     /* exception if second arg is not an int */
     if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        return retval;
     }
     /* XXX limit size of int? */
 

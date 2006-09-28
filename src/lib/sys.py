@@ -49,13 +49,14 @@ maxint = 0x7FFFFFFF     # 2147483647
 def exit(val):
     """__NATIVE__
     pPmObj_t pval = C_NULL;
+    PmReturn_t retval;
 
     /* If no arg given, assume return 0 */
     if (NATIVE_GET_NUM_ARGS() == 0)
     {
         NATIVE_SET_TOS(PM_ZERO);
     }
-    
+
     /* If 1 arg given, put it on stack */
     else if (NATIVE_GET_NUM_ARGS() == 1)
     {
@@ -66,11 +67,13 @@ def exit(val):
     /* If wrong number of args, raise TypeError */
     else
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Raise the SystemExit exception */
-    return PM_RAISE(PM_RET_EX_EXIT, __LINE__);
+    PM_RAISE(retval, PM_RET_EX_EXIT, __LINE__);
+    return retval;
     """
     pass
 

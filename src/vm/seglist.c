@@ -181,11 +181,13 @@ seglist_findEqual(pSeglist_t pseglist,
 {
     pSegment_t pseg = C_NULL;
     int8_t i = 0;
+    PmReturn_t retval;
 
     /* if index is out of bounds, raise SystemError */
     if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* set pseg to the segnum'th segment in the list */
@@ -198,7 +200,8 @@ seglist_findEqual(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
         }
         pseg = pseg->next;
     }
@@ -241,6 +244,7 @@ seglist_getItem(pSeglist_t pseglist,
                 pPmObj_t * r_pobj)
 {
     pSegment_t pseg = pseglist->sl_rootseg;
+    PmReturn_t retval;
 
     /* scan to proper seg, error check along the way */
     for (; segnum > 0; segnum--)
@@ -248,7 +252,8 @@ seglist_getItem(pSeglist_t pseglist,
         /* if went past last segment, return nothing */
         if (pseg == C_NULL)
         {
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
         }
         pseg = pseg->next;
     }
@@ -257,7 +262,8 @@ seglist_getItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg)
         && (segindx >= pseglist->sl_lastindx))
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* return ptr to obj in this seg at the index */
@@ -279,7 +285,7 @@ seglist_insertItem(pSeglist_t pseglist,
     int8_t indx = 0;
     int8_t i = 0;
     uint8_t *pchunk;
-    
+
     /* if the seglist has no segment, insert one */
     if (pseglist->sl_rootseg == C_NULL)
     {
@@ -296,7 +302,8 @@ seglist_insertItem(pSeglist_t pseglist,
         /* if past end of list */
         if ((segnum != 0) || (segindx != 0))
         {
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
         }
 
         /* insert obj in seglist */
@@ -316,7 +323,8 @@ seglist_insertItem(pSeglist_t pseglist,
          */
         if (pseg == C_NULL)
         {
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
         }
     }
 
@@ -325,7 +333,8 @@ seglist_insertItem(pSeglist_t pseglist,
         && (segindx >= pseglist->sl_lastindx))
     {
         /* caller must convert this err to exception */
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* insert obj and ripple copy all those afterward */
@@ -399,6 +408,7 @@ seglist_setItem(pSeglist_t pseglist,
                 int8_t segindx)
 {
     pSegment_t pseg = pseglist->sl_rootseg;
+    PmReturn_t retval;
 
     /* scan to proper seg, error check along the way */
     for (; segnum > 0; segnum--)
@@ -408,7 +418,8 @@ seglist_setItem(pSeglist_t pseglist,
         /* if ran past end of list, raise SystemError */
         if (pseg == C_NULL)
         {
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
         }
     }
 
@@ -416,7 +427,8 @@ seglist_setItem(pSeglist_t pseglist,
     if ((pseg == pseglist->sl_lastseg) &&
         (segindx >= pseglist->sl_lastindx))
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* set ptr to obj in this seg at the index */

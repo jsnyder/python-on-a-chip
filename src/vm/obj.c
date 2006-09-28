@@ -112,7 +112,8 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
         case OBJ_TYPE_FXN:
         case OBJ_TYPE_CLI:
             /* these types should not be in an img obj */
-            return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            return retval;
 
         /* if it's a native code img, load into a code obj */
         case OBJ_TYPE_NIM:

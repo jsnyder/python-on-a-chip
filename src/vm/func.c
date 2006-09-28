@@ -70,12 +70,13 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     pPmFunc_t pfunc = C_NULL;
     uint8_t *pchunk;
     pPmObj_t pobj;
-    
+
     /* ensure pco pts to code obj or native obj */
     if ((pco->od.od_type != OBJ_TYPE_COB) &&
         (pco->od.od_type != OBJ_TYPE_NOB))
     {
-        return PM_RAISE(PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
     /* allocate a func obj */
@@ -126,7 +127,8 @@ class_new(pPmObj_t pmeths,
         (pbases->od.od_type != OBJ_TYPE_TUP) ||
         (pname->od.od_type != OBJ_TYPE_STR))
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* allocate a class obj */

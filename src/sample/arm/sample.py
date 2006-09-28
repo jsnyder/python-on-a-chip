@@ -33,14 +33,16 @@ def getButtons(n):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* If arg is not an int, raise TypeError */
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     if ((AT91F_PIO_GetInput(AT91C_BASE_PIOA) & SW1_MASK) == 0)
@@ -72,18 +74,21 @@ def setLeds(n):
     """__NATIVE__
     pPmObj_t pn;
     int32_t n;
+    PmReturn_t retval;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* If arg is not an int, raise TypeError */
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Get int value from the arg */

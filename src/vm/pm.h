@@ -95,13 +95,18 @@
  * This macro must be used as an rval statement.  That is, it must
  * be used after an assignment such as "retval = " or a return statement
  */
-#define PM_RAISE(exn, line) \
-        (exn); \
+#if __DEBUG__
+#define PM_RAISE(retexn, exn, line) \
         do \
         { \
+            retexn = (exn); \
             gVmGlobal.errFileId = __FILE_ID__; \
             gVmGlobal.errLineNum = (uint16_t)(line); \
         } while (0)
+#else
+#define PM_RAISE(retexn, exn, line) \
+        retexn = (exn)
+#endif
 
 /** puts debug info in registers, halts interpreter */
 #if __DEBUG__

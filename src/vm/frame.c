@@ -81,7 +81,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     /* TypeError if passed func's CO is not a true COB */
     if (pco->od.od_type != OBJ_TYPE_COB)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* get sizes needed to calc frame size */

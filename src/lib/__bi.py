@@ -44,11 +44,13 @@ C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
 def globals():
     """__NATIVE__
     pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Return calling frame's globals dict  on stack*/
@@ -68,7 +70,8 @@ def id(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Return object's address as an int on the stack */
@@ -95,7 +98,8 @@ def len(s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Get first arg */
@@ -122,7 +126,7 @@ def len(s):
 
         default:
             /* If not a string or sequence type, raise TypeError */
-            retval = PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
     }
 
     NATIVE_SET_TOS(pr);
@@ -134,11 +138,13 @@ def len(s):
 def locals():
     """__NATIVE__
     pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Return calling frame's local attrs dict on the stack */
@@ -162,7 +168,8 @@ def map(f, s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Get args */
@@ -172,7 +179,8 @@ def map(f, s):
     /* If args are wrong type, raise TypeError */
     if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Get the sequence length based on type */
@@ -191,7 +199,8 @@ def map(f, s):
             break;
 
         default:
-            return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            return retval;
     }
 
     /* XXX: Do a dummy map, fill func with Nones */
@@ -241,13 +250,15 @@ def range(a, b, c):
             /* If 3rd arg is 0, ValueError */
             if (((pPmInt_t)pc)->val == 0)
             {
-                return PM_RAISE(PM_RET_EX_VAL, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+                return retval;
             }
             break;
 
         default:
             /* If wrong number of args, raise TypeError */
-            return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            return retval;
     }
 
     /* Allocate list */
@@ -277,7 +288,7 @@ def range(a, b, c):
             retval = int_new(i, &pi);
             PM_RETURN_IF_ERROR(retval);
 
-            list_append(pr, pi);
+            retval = list_append(pr, pi);
             PM_RETURN_IF_ERROR(retval);
         }
     }
@@ -298,7 +309,8 @@ def type(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        return PM_RAISE(PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        return retval;
     }
 
     /* Get arg */
