@@ -69,7 +69,8 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
 {
     PmReturn_t retval;
     uint8_t *pchunk;
-
+    pPmObj_t pobj;
+    
     /* if it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
     {
@@ -84,7 +85,8 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
     /* alloc and init attrs dict */
-    retval = dict_new((pPmObj_t *)&((pPmFunc_t)*pmod)->f_attrs);
+    retval = dict_new(&pobj);
+    ((pPmFunc_t)*pmod)->f_attrs = (pPmDict_t)pobj;
     return retval;
 }
 

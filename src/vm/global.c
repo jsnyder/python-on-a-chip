@@ -71,7 +71,8 @@ global_init(void)
 {
     PmReturn_t retval;
     uint8_t *codestr = (uint8_t *)"code";
-
+    pPmObj_t pobj;
+    
     /* clear the global struct less the heap */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t) -
                                             sizeof(PmHeap_t));
@@ -83,19 +84,19 @@ global_init(void)
     gVmGlobal.zero.od.od_type = OBJ_TYPE_INT;
     gVmGlobal.zero.od.od_size = sizeof(PmInt_t);
     gVmGlobal.zero.od.od_const = 1;
-    gVmGlobal.zero.val = 0;
+    gVmGlobal.zero.val = (int32_t)0;
 
     /* init one */
     gVmGlobal.one.od.od_type = OBJ_TYPE_INT;
     gVmGlobal.one.od.od_size = sizeof(PmInt_t);
     gVmGlobal.one.od.od_const = 1;
-    gVmGlobal.one.val = 1;
+    gVmGlobal.one.val = (int32_t)1;
 
     /* init negone */
     gVmGlobal.negone.od.od_type = OBJ_TYPE_INT;
     gVmGlobal.negone.od.od_size = sizeof(PmInt_t);
     gVmGlobal.negone.od.od_const = 1;
-    gVmGlobal.negone.val = (uint32_t)-1;
+    gVmGlobal.negone.val = (int32_t)-1;
 
     /* init None */
     gVmGlobal.none.od.od_type = OBJ_TYPE_NON;
@@ -103,7 +104,8 @@ global_init(void)
     gVmGlobal.none.od.od_const = 1;
 
     /* Init "code" string obj */
-    retval = string_new((uint8_t **)&codestr, (pPmObj_t *)&gVmGlobal.pcodeStr);
+    retval = string_new((uint8_t **)&codestr, &pobj);
+    gVmGlobal.pcodeStr = (pPmString_t)pobj;
 
     /* init empty builtins */
     gVmGlobal.builtins = C_NULL;

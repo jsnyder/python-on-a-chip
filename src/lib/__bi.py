@@ -74,7 +74,7 @@ def id(o):
     /* Return object's address as an int on the stack */
 #ifdef TARGET_AVR
     retval = int_new((int32_t)(int16_t)NATIVE_GET_LOCAL(0), &pr);
-#elif defined(TARGET_DESKTOP)
+#elif defined(TARGET_DESKTOP) || defined(TARGET_ARM)
     retval = int_new((int32_t)NATIVE_GET_LOCAL(0), &pr);
 #else
 #error Code is not implemented for the desired target
@@ -320,13 +320,15 @@ def _exn():
     PmReturn_t retval;
     pPmClass_t pexn;
     uint8_t *pchunk;
+    pPmObj_t pobj;
 
     /* Alloc a class object with attributes dict */
     retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pexn = (pPmClass_t)pchunk;
     OBJ_SET_TYPE(*pexn, OBJ_TYPE_EXN);
-    retval = dict_new((pPmObj_t *)&pexn->cl_attrs);
+    retval = dict_new(&pobj);
+    pexn->cl_attrs = (pPmDict_t)pobj;
 
     NATIVE_SET_TOS((pPmObj_t)pexn);
 

@@ -26,6 +26,12 @@ ifeq ($(TARGET), AVR)
 	# TARGET_MCU should equal avr-gcc option "-mmcu" possible values.
 	TARGET_MCU := atmega103
 	HEAP_SIZE = 0x0D00
+else
+ifeq ($(TARGET), ARM)
+	# TARGET_MCU should equal arm-elf-gcc option "-mcpu" possible values.
+	TARGET_MCU := arm7tdmi
+	HEAP_SIZE = 0x0D00
+endif
 endif
 
 # Export config to child makefiles

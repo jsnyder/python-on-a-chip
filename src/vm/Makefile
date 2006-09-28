@@ -8,7 +8,6 @@ PMSTDLIB_SOURCES = ../lib/__bi.py \
 
 TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x1000
-TARGET_MCU ?= atmega103
 
 PMIMGCREATOR := ../tools/pmImgCreator.py
 DEFS = -DTARGET_$(TARGET) -DHEAP_SIZE=$(HEAP_SIZE)
@@ -22,12 +21,22 @@ PRODUCT_VM := libpmvm.a
 
 ifeq ($(TARGET), DESKTOP)
 	CFLAGS += -ansi
-endif
+else
 ifeq ($(TARGET), AVR)
+	TARGET_MCU ?= atmega103
 	AR = avr-ar
 	CC = avr-gcc
 	SIZE = avr-size
 	CFLAGS += -mmcu=$(TARGET_MCU) -DTARGET_MCU=$(TARGET_MCU)
+else
+ifeq ($(TARGET), ARM)
+	TARGET_MCU ?= arm7tdmi
+	AR = arm-elf-ar
+	CC = arm-elf-gcc
+	SIZE = arm-elf-size
+	CFLAGS += -mcpu=$(TARGET_MCU) -mthumb -mthumb-interwork -DTARGET_MCU=$(TARGET_MCU)
+endif
+endif
 endif
 
 .PHONY: all size clean

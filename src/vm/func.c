@@ -69,7 +69,8 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     PmReturn_t retval = PM_RET_OK;
     pPmFunc_t pfunc = C_NULL;
     uint8_t *pchunk;
-
+    pPmObj_t pobj;
+    
     /* ensure pco pts to code obj or native obj */
     if ((pco->od.od_type != OBJ_TYPE_COB) &&
         (pco->od.od_type != OBJ_TYPE_NOB))
@@ -88,8 +89,9 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     /* create attrs dict for regular func (not native) */
     if (pco->od.od_type == OBJ_TYPE_COB)
     {
-        retval = dict_new((pPmObj_t *)&pfunc->f_attrs);
+        retval = dict_new(&pobj);
         PM_RETURN_IF_ERROR(retval);
+        pfunc->f_attrs = (pPmDict_t)pobj;
     }
     else
     {

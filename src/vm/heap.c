@@ -291,9 +291,8 @@ heap_markImgInfoStruct(void)
     {
         /* mark the img name string object */
         HEAP_MARK_IF_UNMARKED(pii->ii_name, retval);
-
-        /* exit on any error */
         PM_RETURN_IF_ERROR(retval);
+
         pii = pii->next;
     }
     return retval;
@@ -473,7 +472,13 @@ heap_getChunk0(uint8_t size, uint8_t **r_pchunk)
             pchunk2 = pcleanheap;
             /* try the next clean heap */
             pcleanheap = pcleanheap->next;
-            /* XXX be sure this doesn't count toward freemem */
+
+            /*
+             * Issue #40: Fix heap chunk transfer.
+             * Preemptively decrease heap available amount
+             * since heap_freeChunk will increase it by same amount
+             */
+            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
             heap_freeChunk((pPmObj_t)pchunk2);
         }
 
@@ -499,7 +504,7 @@ heap_getChunk0(uint8_t size, uint8_t **r_pchunk)
             else
             {
                 OBJ_SET_SIZE(*pcleanheap, OBJ_GET_SIZE(*pcleanheap) - size);
-                pchunk2 = (pPmHeapDesc_t)((uint8_t *)pcleanheap 
+                pchunk2 = (pPmHeapDesc_t)((uint8_t *)pcleanheap
                                           + OBJ_GET_SIZE(*pcleanheap));
                 OBJ_SET_SIZE(*pchunk2, size);
             }
@@ -543,15 +548,19 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
 
-    /* halt if size request is invalid */
-    if ((size < HEAP_MIN_CHUNK_SIZE)
-#if HEAP_MAX_CHUNK_SIZE != 255
-        || (size > HEAP_MAX_CHUNK_SIZE)
-#endif
-       )
-    {
+    if (size < HEAP_MIN_CHUNK_SIZE) {
+        size = HEAP_MIN_CHUNK_SIZE;
+    }
+
+    /* Halt if size request is invalid */
+    if (size > HEAP_MAX_CHUNK_SIZE) {
         PM_ERR(__LINE__);
     }
+
+#ifdef TARGET_ARM
+    /* Round up to a multiple of 4 bytes (to maintain alignment) */
+    size = (((size - 1) >> 2) + 1) << 2;
+#endif
 
     /* if a chunk is available, return with it */
     retval = heap_getChunk0(size, r_pchunk);
@@ -559,9 +568,6 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
     {
         return retval;
     }
-
-    /* XXX GC isn't tested yet, halt here */
-    /* PM_ERR(__LINE__); */
 
     /* else collect garbage */
     heap_markRoots();

@@ -73,7 +73,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
     pPmObj_t pobj;
     pPmCo_t pco = C_NULL;
     uint8_t *pchunk;
-
+    
     /* store ptr to top of code img (less type byte) */
     uint8_t *pci = *paddr - 1;
     /* get size of code img */
@@ -91,12 +91,14 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
 
     /* load names (tuple obj) */
     *paddr = pci + CI_NAMES_FIELD;
-    retval = obj_loadFromImg(memspace, paddr, (pPmObj_t *)&(pco->co_names));
+    retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
+    pco->co_names = (pPmTuple_t)pobj;
 
     /* load consts (tuple obj) assume it follows names */
-    retval = obj_loadFromImg(memspace, paddr, (pPmObj_t *)&(pco->co_consts));
+    retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
+    pco->co_consts = (pPmTuple_t)pobj;
 
     /* set the od_const flag for all consts */
     for (i = 0; i < pco->co_consts->length; i++)

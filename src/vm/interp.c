@@ -1110,14 +1110,14 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN)
                     || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
-                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
+                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->
                                     f_attrs;
                 }
                 else if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLO)
                          || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLI)
                          || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_EXN))
                 {
-                    pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
+                    pobj2 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
                 /* Other types result in an AttributeError */
                 else
@@ -1126,15 +1126,15 @@ interpret(pPmFunc_t pfunc)
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
-                if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(*pobj2) != OBJ_TYPE_DIC)
                 {
                     retval = PM_RAISE(PM_RET_EX_SYS, __LINE__);
                     break;
                 }
                 /* get name/key obj */
-                pobj2 = FP->fo_func->f_co->co_names->val[t16];
+                pobj3 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in obj's dict */
-                retval = dict_setItem(pobj1, pobj2, PM_POP());
+                retval = dict_setItem(pobj2, pobj3, PM_POP());
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
@@ -1610,7 +1610,7 @@ interpret(pPmFunc_t pfunc)
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Get the value from the code int */
-                retval = (uint8_t)(((pPmInt_t)pobj2)->val & 0xFF);
+                retval = (PmReturn_t)(((pPmInt_t)pobj2)->val & 0xFF);
 
                 /* Raise exception by breaking with retval set to code */
                 break;

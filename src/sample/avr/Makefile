@@ -33,8 +33,8 @@
 
 
 # PyMite Configuration
-LIBNATIVE_SOURCES = ../lib/mmb.py
-PMIMGCREATOR := ../tools/pmImgCreator.py
+LIBNATIVE_SOURCES = ../../lib/mmb.py
+PMIMGCREATOR := ../../tools/pmImgCreator.py
 PM_HEAP_SIZE = 0x0D00
 
 
@@ -89,7 +89,7 @@ CSTANDARD = -std=gnu99
 CDEFS = -D F_CPU=7.3728E6 -D HEAP_SIZE=$(PM_HEAP_SIZE) -D TARGET_AVR
 
 # Place -I options here
-CINCS = -I../vm
+CINCS = -I../../vm
 
 
 # Compiler flags.
@@ -161,7 +161,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # PyMite
-LDFLAGS += -L../vm -lpmvm -L. -lmmb103
+LDFLAGS += -L../../vm -lpmvm -L. -lmmb103
 
 
 

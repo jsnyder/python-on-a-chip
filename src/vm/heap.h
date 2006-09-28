@@ -60,8 +60,13 @@
  */
 #define HEAP_MAX_FRAG_SIZE  2
 
-/** The maximum size a chunk can be */
-#define HEAP_MAX_CHUNK_SIZE 255
+/**
+ * The maximum size a chunk can be.
+ * Must be less than 256 since uint8_t is used to keep its size.
+ * Set to 252 so it is 4 less than 256.
+ * This helps with alignment for TARGET_ARM and doesn't harm other targets.
+ */
+#define HEAP_MAX_CHUNK_SIZE 252
 
 /** The minimum size a chunk can be */
 #define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
@@ -117,7 +122,7 @@ void heap_init(void);
  *
  * The chunk will be at least the requested size.
  * The actual size can be found in the return
- * chunk's od.od_size.  
+ * chunk's od.od_size.
  * Garbage will be collected if necessary.
  *
  * @param   size Size of the chunk in bytes.
