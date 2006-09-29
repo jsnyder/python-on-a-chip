@@ -211,17 +211,6 @@ PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
                            pPmObj_t * r_pobj);
 
 /**
- * Check the object's type.  If object is null ptr
- * or not of the given type, return C_FALSE.
- * Otherwise return C_TRUE.
- *
- * @param   pobj pointer to obj to test
- * @param   type expected type of obj
- * @return  boolean if types match
- */
-int8_t obj_isType(pPmObj_t pobj, PmType_t type);
-
-/**
  * Find the boolean value of the given object.
  *
  * @param   pobj Ptr to object to test.

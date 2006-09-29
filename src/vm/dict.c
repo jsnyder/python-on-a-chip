@@ -75,7 +75,7 @@ dict_new(pPmObj_t * r_pdict)
 
     /* init dict fields */
     pdict = (pPmDict_t)*r_pdict;
-    pdict->od.od_type = OBJ_TYPE_DIC;
+    OBJ_SET_TYPE(*pdict, OBJ_TYPE_DIC);
     pdict->length = 0;
     retval = seglist_new(&pdict->d_keys);
     PM_RETURN_IF_ERROR(retval);
@@ -91,7 +91,7 @@ dict_clear(pPmObj_t pdict)
 
     /* if null or not a dict, raise TypeError */
     if ((pdict == C_NULL) ||
-        (pdict->od.od_type != OBJ_TYPE_DIC))
+        (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
@@ -133,7 +133,7 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
     }
 
     /* if it's not a dict, raise TypeError */
-    if (pdict->od.od_type != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
@@ -198,7 +198,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     }
 
     /* if it's not a dict, raise TypeError */
-    if (pdict->od.od_type != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;

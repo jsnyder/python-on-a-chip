@@ -123,7 +123,7 @@ ut_list_new_002(void)
     pPmObj_t pobj = C_NULL;
 
     retval = list_new(&pobj);
-    if (OBJ_IS_CONST(pobj))
+    if (OBJ_IS_CONST(*pobj))
     {
         TEST_ERR(__LINE__);
     }

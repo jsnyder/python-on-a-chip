@@ -72,8 +72,8 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     pPmObj_t pobj;
 
     /* ensure pco pts to code obj or native obj */
-    if ((pco->od.od_type != OBJ_TYPE_COB) &&
-        (pco->od.od_type != OBJ_TYPE_NOB))
+    if ((OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB) &&
+        (OBJ_GET_TYPE(*pco) != OBJ_TYPE_NOB))
     {
         PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
         return retval;
@@ -85,10 +85,10 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     pfunc = (pPmFunc_t)pchunk;
 
     /* init func */
-    pfunc->od.od_type = OBJ_TYPE_FXN;
+    OBJ_SET_TYPE(*pfunc, OBJ_TYPE_FXN);
     pfunc->f_co = (pPmCo_t)pco;
     /* create attrs dict for regular func (not native) */
-    if (pco->od.od_type == OBJ_TYPE_COB)
+    if (OBJ_GET_TYPE(*pco) == OBJ_TYPE_COB)
     {
         retval = dict_new(&pobj);
         PM_RETURN_IF_ERROR(retval);
@@ -123,9 +123,9 @@ class_new(pPmObj_t pmeths,
     uint8_t *nmstr = (uint8_t *)"__nm";
 
     /* ensure types */
-    if ((pmeths->od.od_type != OBJ_TYPE_DIC) ||
-        (pbases->od.od_type != OBJ_TYPE_TUP) ||
-        (pname->od.od_type != OBJ_TYPE_STR))
+    if ((OBJ_GET_TYPE(*pmeths) != OBJ_TYPE_DIC) ||
+        (OBJ_GET_TYPE(*pbases) != OBJ_TYPE_TUP) ||
+        (OBJ_GET_TYPE(*pname) != OBJ_TYPE_STR))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
@@ -134,7 +134,7 @@ class_new(pPmObj_t pmeths,
     /* allocate a class obj */
     retval = heap_getChunk(sizeof(PmFunc_t), (uint8_t **)r_pclass);
     PM_RETURN_IF_ERROR(retval);
-    (*r_pclass)->od.od_type = OBJ_TYPE_CLO;
+    OBJ_SET_TYPE(**r_pclass, OBJ_TYPE_CLO);
     /* class has no access to its CO */
     ((pPmFunc_t)*r_pclass)->f_co = C_NULL;
     ((pPmFunc_t)*r_pclass)->f_attrs = (pPmDict_t)pmeths;

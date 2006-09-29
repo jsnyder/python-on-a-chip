@@ -1449,7 +1449,7 @@ interpret(pPmFunc_t pfunc)
                     break;
                 }
                 /* dup a const int to allow it to incr (TRASH)*/
-                if (OBJ_GET_TYPE(*pobj1) != 0)
+                if (OBJ_GET_CONST(*pobj1) != 0)
                 {
                     retval = int_dup(pobj1, &pobj1);
                     PM_BREAK_IF_ERROR(retval);

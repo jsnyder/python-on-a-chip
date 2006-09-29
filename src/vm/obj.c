@@ -133,17 +133,6 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 }
 
 
-int8_t
-obj_isType(pPmObj_t pobj, PmType_t type)
-{
-    /* if null pointer or wrong type... */
-    if ((pobj == C_NULL) || (OBJ_GET_TYPE(*pobj) != type))
-    {
-        return C_FALSE;
-    }
-    return C_TRUE;
-}
-
 /* return true if the obj is false */
 int8_t
 obj_isFalse(pPmObj_t pobj)

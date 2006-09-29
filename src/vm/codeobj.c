@@ -85,7 +85,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
     pco = (pPmCo_t)pchunk;
 
     /* fill in the CO struct */
-    pco->od.od_type = OBJ_TYPE_COB;
+    OBJ_SET_TYPE(*pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
 
@@ -104,7 +104,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
     for (i = 0; i < pco->co_consts->length; i++)
     {
         pobj = pco->co_consts->val[i];
-        pobj->od.od_const = C_TRUE;
+        OBJ_SET_CONST(*pobj, C_TRUE);
     }
 
     /* start of bcode always follows consts */
@@ -131,7 +131,7 @@ no_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pno)
     pno = (pPmNo_t)pchunk;
 
     /* fill in the NO struct */
-    pno->od.od_type = OBJ_TYPE_NOB;
+    OBJ_SET_TYPE(*pno, OBJ_TYPE_NOB);
     pno->no_argcount = mem_getByte(memspace, paddr);
     /* get index into native fxn table */
     pno->no_funcindx = (int16_t)mem_getWord(memspace, paddr);
