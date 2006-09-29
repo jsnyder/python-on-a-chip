@@ -120,6 +120,7 @@ def beep(f, ms):
     pPmObj_t pms = C_NULL;
     U16 f;
     U16 ms;
+    PmReturn_t retval;
 
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 2)
