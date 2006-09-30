@@ -548,13 +548,16 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
 
-    if (size < HEAP_MIN_CHUNK_SIZE) {
+    if (size < HEAP_MIN_CHUNK_SIZE) 
+    {
         size = HEAP_MIN_CHUNK_SIZE;
     }
 
-    /* Halt if size request is invalid */
-    if (size > HEAP_MAX_CHUNK_SIZE) {
-        PM_ERR(__LINE__);
+    /* If size request is invalid, raise a SystemError */
+    if (size > HEAP_MAX_CHUNK_SIZE) 
+    {
+        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        return retval;
     }
 
 #ifdef TARGET_ARM

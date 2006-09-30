@@ -328,17 +328,6 @@ typedef enum PmBcode_e
  **************************************************************/
 
 /**
- * System error, immediate halt with report.
- *
- * @param   release ID of the interpreter release.
- * @param   file ID of the interpreter file reporting the error.
- * @param   line Line number of the interpreter file 
- *               reporting the error.
- */
-void py_err(uint16_t release, uint16_t file, uint16_t line);
-
-
-/**
  * Interpret the function's bcode.
  *
  * The given obj may be a function, module, or class.

@@ -104,17 +104,6 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
             retval = tuple_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-        case OBJ_TYPE_LST:
-        case OBJ_TYPE_DIC:
-        case OBJ_TYPE_COB:
-        case OBJ_TYPE_MOD:
-        case OBJ_TYPE_CLO:
-        case OBJ_TYPE_FXN:
-        case OBJ_TYPE_CLI:
-            /* these types should not be in an img obj */
-            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
-            return retval;
-
         /* if it's a native code img, load into a code obj */
         case OBJ_TYPE_NIM:
             retval = no_loadFromImg(memspace, paddr, r_pobj);
@@ -125,9 +114,10 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
             retval = co_loadFromImg(memspace, paddr, r_pobj);
             break;
 
+        /* All other types should not be in an img obj */
         default:
-            /* XXX invalid type for image obj */
-            PM_ERR(__LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            break;
     }
     return retval;
 }

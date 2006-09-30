@@ -89,13 +89,14 @@
  * Macros
  **************************************************************/
 
-/** 
- * Returns an exception error code and stores debug data 
+/**
+ * Returns an exception error code and stores debug data
  *
  * This macro must be used as an rval statement.  That is, it must
  * be used after an assignment such as "retval = " or a return statement
  */
-#if __DEBUG__
+#define __DEBUG__
+#ifdef __DEBUG__
 #define PM_RAISE(retexn, exn, line) \
         do \
         { \
@@ -106,21 +107,6 @@
 #else
 #define PM_RAISE(retexn, exn, line) \
         retexn = (exn)
-#endif
-
-/** puts debug info in registers, halts interpreter */
-#if __DEBUG__
-#define PM_ERR(line)                        \
-        gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (uint16_t)(line); \
-        retval = PM_RET_ERR;                \
-        for(;;)
-#else
-#define PM_ERR(line)                        \
-        gVmGlobal.errFileId = __FILE_ID__;  \
-        gVmGlobal.errLineNum = (uint16_t)(line); \
-        retval = PM_RET_ERR;                \
-        return PM_RET_ERR
 #endif
 
 /** error macro for unit tests */
@@ -209,7 +195,7 @@ typedef enum PmReturn_e
  **************************************************************/
 
 /**
- * Initializes the PyMite virtual machine and  indexes the user's application 
+ * Initializes the PyMite virtual machine and indexes the user's application
  * image.  The VM heap and globals are reset.  The argument, pusrimg, may be
  * null for interactive sessions.
  *
@@ -227,5 +213,14 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
  */
 PmReturn_t pm_run(uint8_t *modstr);
 
+
+#ifdef TARGET_DESKTOP
+/**
+ * Reports the return status to stdout and prints exception info if raised
+ *
+ * @param result        Return status from pm_run()
+ */
+void pm_reportResult(PmReturn_t result);
+#endif /* TARGET_DESKTOP */
 
 #endif /* __PM_H__ */

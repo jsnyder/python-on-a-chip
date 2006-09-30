@@ -82,3 +82,27 @@ PmReturn_t pm_run(uint8_t *modstr)
 
     return retval;
 }
+
+
+#ifdef TARGET_DESKTOP
+#include "stdio.h"
+
+void pm_reportResult(PmReturn_t result)
+{
+    if (result == PM_RET_OK)
+    {
+        puts("Ok.");
+    }
+    else if (result >= PM_RET_ASSERT_FAIL)
+    {
+        puts("Error.");
+    }
+    else
+    {
+        printf("Exception: 0x%0X\n", result);
+        printf("  Release: 0x%0X\n", gVmGlobal.errVmRelease);
+        printf("  FileId:  0x%0X\n", gVmGlobal.errFileId);
+        printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+    }
+}
+#endif /* TARGET_DESKTOP */

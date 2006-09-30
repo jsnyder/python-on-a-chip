@@ -63,6 +63,7 @@ int main(void)
     pimg -= 1;
     PM_ASSERT(*pimg == C_NULL);
 
+    pm_reportResult(retval);
     return retval;
 }
 

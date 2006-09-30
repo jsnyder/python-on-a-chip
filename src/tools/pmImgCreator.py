@@ -298,12 +298,14 @@ class PmImgCreator:
         # if creating usr lib, create placeholder in 0th index
         if self.imgtarget == "usr":
             self.nativetable.append((NATIVE_FUNC_PREFIX + "placeholder_func",
-                                    "\n/*\n"
-                                    " * Use placeholder because an index \n"
-                                    " * value of zero denotes the stdlib.\n"
-                                    " * This function should not be called.\n"
-                                    " */\n"
-                                    "return PM_RET_EX_SYS;\n"
+                                    "\n    /*\n"
+                                    "     * Use placeholder because an index \n"
+                                    "     * value of zero denotes the stdlib.\n"
+                                    "     * This function should not be called.\n"
+                                    "     */\n"
+                                    "    PmReturn_t retval;\n"
+                                    "    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);\n"
+                                    "    return retval;\n"
                                    ))
 
         # for each src file, convert and format

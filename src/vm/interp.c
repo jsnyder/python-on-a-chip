@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2006/09/29   #45: Finish interpret loop edits
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
@@ -76,19 +77,6 @@ extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t, signed char);
 /***************************************************************
  * Functions
  **************************************************************/
-
-/*
- * Halts via infinite loop.
- * Error report is in the registers containing
- * the parameters.  In avr-gcc these are regs R25-20.
- * TODO print values out SCI or on LCD
- */
-void
-py_err(uint16_t release, uint16_t file, uint16_t line)
-{
-    for(;;);
-}
-
 
 PmReturn_t
 interpret(pPmFunc_t pfunc)
@@ -169,11 +157,6 @@ interpret(pPmFunc_t pfunc)
                 retval = int_negative(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj2);
-                if (pobj2 == C_NULL)
-                {
-                    /* memory error? */
-                    PM_ERR(__LINE__);
-                }
                 continue;
 
             case UNARY_NOT:
@@ -205,11 +188,6 @@ interpret(pPmFunc_t pfunc)
                 retval = int_bitInvert(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj2);
-                if (pobj2 == C_NULL)
-                {
-                    /* memory error? */
-                    PM_ERR(__LINE__);
-                }
                 continue;
 
             case BINARY_POWER:
@@ -672,7 +650,8 @@ interpret(pPmFunc_t pfunc)
                     /* ensure subscr is an int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_ERR(__LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        break;
                     }
                     /* set the list item */
                     retval = list_setItem(pobj2,
@@ -701,99 +680,93 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case BINARY_LSHIFT:
-                /* if neither args are ints, TypeError */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val <<
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                pobj1 = PM_POP();
+                retval = int_new(
+                            ((pPmInt_t)PM_POP())->val <<
+                            ((pPmInt_t)pobj1)->val,
+                            &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
+                continue;
 
             case BINARY_RSHIFT:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val >>
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                pobj1 = PM_POP();
+                retval = int_new(
+                            ((pPmInt_t)PM_POP())->val >>
+                            ((pPmInt_t)pobj1)->val,
+                            &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
+                continue;
 
             case BINARY_AND:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val &
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                pobj1 = PM_POP();
+                retval = int_new(
+                            ((pPmInt_t)PM_POP())->val &
+                            ((pPmInt_t)pobj1)->val,
+                            &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
+                continue;
 
             case BINARY_XOR:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val ^
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* else it's a TypeError */
                 PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
                 break;
+                }
+
+                pobj1 = PM_POP();
+                retval = int_new(
+                            ((pPmInt_t)PM_POP())->val ^
+                            ((pPmInt_t)pobj1)->val,
+                            &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
+                continue;
 
             case BINARY_OR:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val |
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
-
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                pobj1 = PM_POP();
+                retval = int_new(
+                            ((pPmInt_t)PM_POP())->val |
+                            ((pPmInt_t)pobj1)->val,
+                            &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj2);
+                continue;
 
             case INPLACE_POWER:
             case PRINT_EXPR:
@@ -806,159 +779,155 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case INPLACE_LSHIFT:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val <<
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                        continue;
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val <<=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                        continue;
-                    }
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                /* If target obj is a constant obj */
+                if (OBJ_IS_CONST(*TOS1))
+                {
+                    pobj1 = PM_POP();
+                    retval = int_new(
+                                ((pPmInt_t)PM_POP())->val <<
+                                ((pPmInt_t)pobj1)->val,
+                                &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
+                /* otherwise do true in-place operation */
+                else
+                {
+                    ((pPmInt_t)TOS1)->val <<=
+                            ((pPmInt_t)TOS)->val;
+                    SP--;
+                    continue;
+                }
 
             case INPLACE_RSHIFT:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val >>
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                        continue;
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val >>=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                        continue;
-                    }
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                /* if target obj is a constant obj */
+                if (OBJ_IS_CONST(*TOS1)) {
+                    pobj1 = PM_POP();
+                    retval = int_new(
+                                ((pPmInt_t)PM_POP())->val >>
+                                ((pPmInt_t)pobj1)->val,
+                                &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
+                /* otherwise do true in-place operation */
+                else
+                {
+                    ((pPmInt_t)TOS1)->val >>=
+                            ((pPmInt_t)TOS)->val;
+                    SP--;
+                    continue;
+                }
 
             case INPLACE_AND:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val &
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                        continue;
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val &=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                        continue;
-                    }
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                /* if target obj is a constant obj */
+                if (OBJ_IS_CONST(*TOS1)) {
+                    pobj1 = PM_POP();
+                    retval = int_new(
+                                ((pPmInt_t)PM_POP())->val &
+                                ((pPmInt_t)pobj1)->val,
+                                &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
+                /* otherwise do true in-place operation */
+                else
+                {
+                    ((pPmInt_t)TOS1)->val &=
+                            ((pPmInt_t)TOS)->val;
+                    SP--;
+                    continue;
+                }
 
             case INPLACE_XOR:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val ^
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                        continue;
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val ^=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                        continue;
-                    }
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                /* if target obj is a constant obj */
+                if (OBJ_IS_CONST(*TOS1)) {
+                    pobj1 = PM_POP();
+                    retval = int_new(
+                                ((pPmInt_t)PM_POP())->val ^
+                                ((pPmInt_t)pobj1)->val,
+                                &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
+                /* otherwise do true in-place operation */
+                else
+                {
+                    ((pPmInt_t)TOS1)->val ^=
+                            ((pPmInt_t)TOS)->val;
+                    SP--;
+                    continue;
+                }
 
             case INPLACE_OR:
-                /* if both objs are ints, perform the op */
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                /* If either arg is not an int, raise a TypeError */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val |
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                        continue;
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val |=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                        continue;
-                    }
+                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    break;
                 }
 
-                /* else it's a TypeError */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
-                break;
+                /* if target obj is a constant obj */
+                if (OBJ_IS_CONST(*TOS1)) {
+                    pobj1 = PM_POP();
+                    retval = int_new(
+                                ((pPmInt_t)PM_POP())->val |
+                                ((pPmInt_t)pobj1)->val,
+                                &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
+                /* otherwise do true in-place operation */
+                else
+                {
+                    ((pPmInt_t)TOS1)->val |=
+                            ((pPmInt_t)TOS)->val;
+                    SP--;
+                    continue;
+                }
 
             case BREAK_LOOP:
                 {
@@ -967,7 +936,8 @@ interpret(pPmFunc_t pfunc)
                     /* ensure there's a block */
                     if (pb1 == C_NULL)
                     {
-                        PM_ERR(__LINE__);
+                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        break;
                     }
 
                     /* delete blocks until first loop block */
@@ -1025,21 +995,21 @@ interpret(pPmFunc_t pfunc)
                 {
                     /* get ptr to top block */
                     pPmBlock_t pb = FP->fo_blockstack;
-                    /* if there's a block */
-                    if (pb != C_NULL)
+                    /* If there's no block, raise SystemError */
+                    if (pb == C_NULL)
                     {
-                        /* pop block */
-                        FP->fo_blockstack = pb->next;
-                        /* set stack to previous level */
-                        SP = pb->b_sp;
-                        /* delete block */
-                        heap_freeChunk((pPmObj_t)pb);
-                        continue;
+                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        break;
                     }
 
-                    /* SystemError, nonexistent block */
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
-                    break;
+                    /* pop block */
+                    FP->fo_blockstack = pb->next;
+                    /* set stack to previous level */
+                    SP = pb->b_sp;
+                    /* delete block */
+                    heap_freeChunk((pPmObj_t)pb);
+                    continue;
+
                 }
 
             case END_FINALLY:
@@ -1620,9 +1590,10 @@ interpret(pPmFunc_t pfunc)
                 /* get num args */
                 t16 = GET_ARG();
                 /* ensure no keyword args */
-                if ((t16 > 255) || (t16 < 0))
+                if ((t16 & (uint16_t)0xFF00) != 0)
                 {
-                    PM_ERR(__LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    break;
                 }
                 /* get the func */
                 pobj1 = STACK(t16);
@@ -1663,7 +1634,8 @@ interpret(pPmFunc_t pfunc)
                     /* ensure num args fits in native frame */
                     if (t16 > NATIVE_NUM_LOCALS)
                     {
-                        PM_ERR(__LINE__);
+                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        break;
                     }
 
                     /* keep numargs */
