@@ -216,10 +216,17 @@ interpret(pPmFunc_t pfunc)
                 {
                     /* int number of times to duplicate */
                     pobj1 = PM_POP();
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        break;
+                    }
+                    t16 = (int16_t)((pPmInt_t)pobj1)->val;
+
                     /* list that is copied */
                     pobj2 = PM_POP();
                     retval = list_replicate(pobj2,
-                                            pobj1,
+                                            t16,
                                             &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);

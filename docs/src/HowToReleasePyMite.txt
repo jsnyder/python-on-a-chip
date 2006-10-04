@@ -47,17 +47,26 @@ in the prescribed order:
         - ``make html``
         - ``make TAGS``
         - ``make check``
-        - ``make clean; make TARGET=AVR; cd src/sample; make``
-        - Record the size of the sample app in the ticket
+        - ``make clean; make TARGET=ARM; cd src/sample/arm; make; cd ../../..``
+        - ``make clean; make TARGET=AVR; cd src/sample/avr; make; cd ../../..``
+        - Record the size of the AVR sample app in the ticket
 
     - Verify that a sample app runs on an AVR device; this can be done in
       one of the following ways:
 
         - Download and run a known good app on an actual AVR device
-        - Build and run a known good app in Atmel's AvrStudio simulator.
+        - Build and run a known good app in Atmel's AvrStudio simulator
         - Run a known good app on an AVR simulator
 
-    - Check-in the branch
+    - Verify that a sample app runs on an ARM device; this can be done in
+      one of the following ways:
+
+        - Download and run a known good app on an actual ARM device
+        - Build and run a known good app in IAR's Embedded Workbench for Arm,
+          Kickstart edition
+        - Run a known good app on an ARM simulator
+
+    - Check-in the branch and review
     - Mainline the branch
     - Tag the mainline: ``svn cp https://svn.pymite.python-hosting.com/trunk
       https://svn.pymite.python-hosting.com/tags/pymite-RR``

@@ -75,10 +75,10 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
         return retval;
     }
 
-    /* if pobj1 is not a list, raise a ValueError exception */
+    /* if pobj1 is not a list, raise a TypeError exception */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
-        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
     }
 
@@ -95,33 +95,31 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
 
 
 PmReturn_t
-list_copy(pPmObj_t pobj, pPmObj_t *r_pobj)
-{
-    PmReturn_t retval = PM_RET_STUB;
-    return retval;
-}
-
-
-PmReturn_t
 list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_STUB;
     int16_t segnum = 0;
     int16_t segindx = 0;
 
-    /*
-     * no need to check type, since it's already done by:
-     * the bytecodes: BINARY_SUBSCR, UNPACK_SEQUENCE, FOR_LOOP.
-     * BUT
-     * if someone else calls, we'll need to check.
-     */
-    /*
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LIST)
+    /* If it's not a list, raise TypeError */
+    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
     }
-    */
+
+    /* Adjust the index */
+    if (index < 0)
+    {
+        index += ((pPmList_t)plist)->length;
+    }
+
+    /* Check the bounds of the index */
+    if ((index < 0) || (index >= ((pPmList_t)plist)->length))
+    {
+        PM_RAISE(retval, PM_RET_EX_INDX, __LINE__);
+        return retval;
+    }
 
     /* convert list index into seglist index */
     segnum = index / SEGLIST_OBJS_PER_SEG;
@@ -165,8 +163,15 @@ list_new(pPmObj_t *r_pobj)
 
 
 PmReturn_t
+list_copy(pPmObj_t pobj, pPmObj_t *r_pobj)
+{
+    return list_replicate(pobj, 1, r_pobj);
+}
+
+
+PmReturn_t
 list_replicate(pPmObj_t psrclist,
-               pPmObj_t pint,
+               int16_t n,
                pPmObj_t *r_pnewlist)
 {
     PmReturn_t retval = PM_RET_OK;
@@ -177,35 +182,26 @@ list_replicate(pPmObj_t psrclist,
 
     /* exception if any args are null */
     if ((psrclist == C_NULL)
-        || (pint == C_NULL)
         || (r_pnewlist == C_NULL))
     {
         PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
         return retval;
     }
 
-    /* exception if first arg is not a list */
+    /* If first arg is not a list, raise TypeError */
     if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)
     {
-        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
         return retval;
     }
     length = ((pPmList_t)psrclist)->length;
-
-    /* exception if second arg is not an int */
-    if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
-    {
-        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
-        return retval;
-    }
-    /* XXX limit size of int? */
 
     /* allocate new list */
     retval = list_new(r_pnewlist);
     PM_RETURN_IF_ERROR(retval);
 
     /* copy srclist the designated number of times */
-    for (i = ((pPmInt_t)pint)->val; i > 0; i--)
+    for (i = n; i > 0; i--)
     {
         /* iterate over the length of srclist */
         for (j = 0; j < length; j++)

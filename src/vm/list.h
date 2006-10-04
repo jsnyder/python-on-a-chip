@@ -139,13 +139,13 @@ PmReturn_t list_append(pPmObj_t plist, pPmObj_t pobj);
  * This implements the python code "[0,...] * N"
  * where the list can be any list and N is an integer.
  *
- * @param   pobj1 The source list to replicate
- * @param   pobj2 The integer number of times to replicate it
- * @param   r_pobj Return; new list with its contents set.
+ * @param   psrclist The source list to replicate
+ * @param   n The integer number of times to replicate it
+ * @param   r_pnewlist Return; new list with its contents set.
  * @return  Return status
  */
 PmReturn_t list_replicate(pPmObj_t psrclist,
-                          pPmObj_t pint,
+                          int16_t n,
                           pPmObj_t * r_pnewlist);
 
 /**

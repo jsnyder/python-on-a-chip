@@ -4,10 +4,10 @@ TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x1000
 TARGET_MCU ?= atmega103
 
-PMIMGCREATOR := ../tools/pmImgCreator.py
+PMIMGCREATOR := ../../tools/pmImgCreator.py
 DEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET)
 CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(DEFS)
-CFLAGS += -I../vm
+CFLAGS += -I../../vm
 SOURCES = $(wildcard t???.c)
 PY_SOURCES = $(SOURCES:.c=.py)
 EXECS = $(SOURCES:.c=.out)
@@ -26,7 +26,7 @@ endif
 
 # Build an executable from the C sources
 %.out : %*_nat.c %*_img.c %.c
-	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../vm/libpmvm.a
+	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../../vm/libpmvm.a
 ifeq ($(TARGET), DESKTOP)
 	$(addprefix ./,$@)
 endif
@@ -44,7 +44,7 @@ all : check
 check : vm $(EXECS)
 
 vm :
-	make -C ../vm
+	make -C ../../vm
 
 # Removes files made by default make
 clean :

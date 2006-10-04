@@ -1,0 +1,103 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+===================
+PyMite Self Testing
+===================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes PyMite's self tests.  In doing so, it serves as an
+informational  document for the PyMite developer and is of little use to
+the PyMite user.
+
+Overview
+--------
+
+PyMite has two types of self tests: unit tests and system tests found in
+``src/tests/unit/`` and ``src/tests/system/``, respectively.  `Unit tests`_
+are meant to validate that a particular module of source code is working
+properly.  `System tests`_, on the other hand, are conducted on a complete,
+integrated system to evaluate the system's compliance to its design and
+to expose any regressions to previous defects.
+
+.. _`Unit tests`: http://en.wikipedia.org/wiki/Unit_testing
+.. _`System tests`: http://en.wikipedia.org/wiki/System_testing
+
+
+Unit Tests
+----------
+
+Three unit test frameworks were evaluated for use in the PyMite project:
+`MinUnit`_, `CuTest`_ and `Check`_.  MinUnit is exactly what it says, a minimal
+unit testing framework for C.  However, it does not provide a mechanism for
+grouping tests into suites or reporting failures in a useful fashion.
+
+.. _`MinUnit`: http://www.jera.com/techinfo/jtns/jtn002.html
+.. _`CuTest`: http://cutest.sourceforge.net/
+.. _`Check`: http://sourceforge.net/projects/check/
+
+The Check framework is at the other end of the spectrum.  It provides a
+complete set of assert statements and a robust reporting system.  The down
+sides of Check are that it is a somewhat large package to try to include in
+PyMite.
+
+The CuTest framework is just right.  It is one .c file and one .h file.
+It has a handful of useful assert statements and reporting on stdout.
+The CuTest license allows direct inclusion of CuTest source in any project.
+CuTest is a quick learn if you are familiar with unit testing.
+
+An appropriate set of unit tests shall be created using the chosen framework
+and shall be compiled and run by the ``make check`` command.  The test harness
+shall be written in such a way that if an error occurs or a test fails, the
+``make check`` command exits with an error code.  Since ``make check`` is part
+of the standard PyMite build process for mainlining, an error in unit tests
+is considered a build break and will serve to notify the programmer that the
+code is not in a valid state for mainlining.
+
+The wording "an appropriate set of unit tests" is intentionally ambiguous.
+The author knows no good way to calculate an optimal amount of tests,
+so the amount shall be determined by good judgment.
+One suggestion for a baseline amount of tests is that every built in object
+type-- Int, List, Dict, etc.--should have tests for the most common uses of
+each of its methods.
+
+Unit tests can also be written for the Test First Coding practice if the
+developer follows that practice.
+
+
+System Tests
+------------
+
+A System Test is a full PyMite program: an application image including bytecode
+that is executed by the ``interp()`` function.  It is the application code
+that may be performing a test, exercising a portion of the VM or just
+executing random bytecodes in an attempt to expose an error.
+
+System tests are good tests to create when adding a new feature to PyMite.
+The test serves as proof-of-concept code and its defect-free pass through
+the test harness proves feature completion.
+
+Unit tests can also be written for the Test First Coding practice if the
+developer follows that practice.
+
+
+Conclusion
+----------
+
+PyMite has two types of tests, Unit Tests and System Tests, that must run
+without error or failures as part of the development process.  It is also
+strongly suggested to create one test of either type as a part of fixing
+an issue.  Unit tests are for very precise, small-scale issues.  System tests
+are for broad, general issues.  Since both test types have automated harnesses,
+testing is quick and easy and should be performed often.
+
+.. :mode=rest:

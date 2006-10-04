@@ -95,8 +95,7 @@
  * This macro must be used as an rval statement.  That is, it must
  * be used after an assignment such as "retval = " or a return statement
  */
-#define __DEBUG__
-#ifdef __DEBUG__
+#if __DEBUG__
 #define PM_RAISE(retexn, exn, line) \
         do \
         { \
