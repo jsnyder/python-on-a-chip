@@ -33,7 +33,7 @@ def getButtons(n):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -41,7 +41,7 @@ def getButtons(n):
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -79,7 +79,7 @@ def setLeds(n):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -87,7 +87,7 @@ def setLeds(n):
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

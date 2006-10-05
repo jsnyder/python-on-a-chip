@@ -233,7 +233,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
     /* ensure string obj */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

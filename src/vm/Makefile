@@ -19,6 +19,9 @@ SOURCES = $(wildcard *.c) $(SOURCE_IMG) $(SOURCE_NAT)
 OBJECTS = $(SOURCES:.c=.o)
 PRODUCT_VM := libpmvm.a
 
+ifeq ($(DEBUG),true)
+	DEFS += -D__DEBUG__=1
+endif
 ifeq ($(TARGET), DESKTOP)
 	CFLAGS += -ansi
 else

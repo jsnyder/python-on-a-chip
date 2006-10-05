@@ -93,7 +93,7 @@ dict_clear(pPmObj_t pdict)
     if ((pdict == C_NULL) ||
         (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC))
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -128,14 +128,14 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         || (pkey == C_NULL)
         || (pval == C_NULL))
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
     /* if it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -193,21 +193,21 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if dict is null, raise SystemError */
     if (pdict == C_NULL)
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
     /* if it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
     /* if dict is empty, raise KeyError */
     if (((pPmDict_t)pdict)->length <= 0)
     {
-        PM_RAISE(retval, PM_RET_EX_KEY, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_KEY);
         return retval;
     }
 
@@ -219,7 +219,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     /* if key not found, raise KeyError */
     if (retval == PM_RET_NO)
     {
-        PM_RAISE(retval, PM_RET_EX_KEY, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_KEY);
     }
     /* return any other error */
     PM_RETURN_IF_ERROR(retval);

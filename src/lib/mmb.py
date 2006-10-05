@@ -56,7 +56,7 @@ def adcGet(c):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -64,7 +64,7 @@ def adcGet(c):
     pc = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -90,7 +90,7 @@ def adcGetBMA(c):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -98,7 +98,7 @@ def adcGetBMA(c):
     pc = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -125,7 +125,7 @@ def beep(f, ms):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -135,7 +135,7 @@ def beep(f, ms):
     if ((OBJ_GET_TYPE(*pf) != OBJ_TYPE_INT) ||
         (OBJ_GET_TYPE(*pms) != OBJ_TYPE_INT))
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -164,7 +164,7 @@ def digGet(c):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -172,7 +172,7 @@ def digGet(c):
     pc = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -196,7 +196,7 @@ def digGetByte():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -219,7 +219,7 @@ def dipGet(c):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -227,7 +227,7 @@ def dipGet(c):
     pc = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -251,7 +251,7 @@ def dipGetByte():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -271,7 +271,7 @@ def init():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -297,7 +297,7 @@ def lcdClrScr():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -321,7 +321,7 @@ def lcdPrintStr(ps):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -329,7 +329,7 @@ def lcdPrintStr(ps):
     ps = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -357,7 +357,7 @@ def lcdSetLine(n):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -365,7 +365,7 @@ def lcdSetLine(n):
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -388,7 +388,7 @@ def lcdTitleScreen():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -411,7 +411,7 @@ def pwmA(s):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -419,7 +419,7 @@ def pwmA(s):
     ps = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -445,7 +445,7 @@ def pwmB(s):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -453,7 +453,7 @@ def pwmB(s):
     ps = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -478,7 +478,7 @@ def sciGetByte():
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -500,7 +500,7 @@ def sciPutByte(c):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -523,7 +523,7 @@ def sciPutByte(c):
     /* Otherwise, throw type exception */
     else
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -543,7 +543,7 @@ def sciPutStr(s):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -551,7 +551,7 @@ def sciPutStr(s):
     ps = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -576,7 +576,7 @@ def sleepms(ms):
     /* If wrong number of args, throw type exception */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -584,7 +584,7 @@ def sleepms(ms):
     pms = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pms) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

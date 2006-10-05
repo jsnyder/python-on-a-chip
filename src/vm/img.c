@@ -118,7 +118,7 @@ img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
         type = mem_getByte(memspace, paddr);
         if (type != OBJ_TYPE_TUP)
         {
-            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
         }
         /* get index of last obj in tuple */
@@ -180,7 +180,7 @@ img_getName(PmMemSpace_t memspace,
     type = mem_getByte(memspace, paddr);
     if (type != OBJ_TYPE_STR)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

@@ -556,7 +556,7 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
     /* If size request is invalid, raise a SystemError */
     if (size > HEAP_MAX_CHUNK_SIZE) 
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
@@ -584,7 +584,7 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
     }
 
     /* else return out-of-memory exception */
-    PM_RAISE(retval, PM_RET_EX_MEM, __LINE__);
+    PM_RAISE(retval, PM_RET_EX_MEM);
     return retval;
 }
 

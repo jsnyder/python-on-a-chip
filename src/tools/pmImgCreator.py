@@ -304,7 +304,7 @@ class PmImgCreator:
                                     "     * This function should not be called.\n"
                                     "     */\n"
                                     "    PmReturn_t retval;\n"
-                                    "    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);\n"
+                                    "    PM_RAISE(retval, PM_RET_EX_SYS);\n"
                                     "    return retval;\n"
                                    ))
 

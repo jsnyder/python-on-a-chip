@@ -67,12 +67,12 @@ def exit(val):
     /* If wrong number of args, raise TypeError */
     else
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
     /* Raise the SystemExit exception */
-    PM_RAISE(retval, PM_RET_EX_EXIT, __LINE__);
+    PM_RAISE(retval, PM_RET_EX_EXIT);
     return retval;
     """
     pass

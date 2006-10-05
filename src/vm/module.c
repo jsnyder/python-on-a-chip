@@ -74,7 +74,7 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
     /* if it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -104,7 +104,7 @@ mod_import(pPmObj_t pstr, pPmObj_t * pmod)
     /* if it's not a string obj, raise SyntaxError */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
-        PM_RAISE(retval, PM_RET_EX_SYNTAX, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYNTAX);
         return retval;
     }
 
@@ -120,7 +120,7 @@ mod_import(pPmObj_t pstr, pPmObj_t * pmod)
     /* if img was not found, raise ImportError */
     if (pii == C_NULL)
     {
-        PM_RAISE(retval, PM_RET_EX_IMPRT, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_IMPRT);
         return retval;
     }
 

@@ -120,7 +120,7 @@ int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -137,7 +137,7 @@ int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -154,7 +154,7 @@ int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
     /* ensure it's an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

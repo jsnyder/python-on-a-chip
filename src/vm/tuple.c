@@ -100,7 +100,7 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
     /* XXX for larger tuple, break into segments */
     if (n > 100)
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
@@ -133,7 +133,7 @@ tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
     /* ensure type */
     if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 

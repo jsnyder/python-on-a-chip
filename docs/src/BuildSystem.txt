@@ -50,7 +50,7 @@ The file containing the image of the PyMite libraries is what is built when
 Available Targets
 -----------------
 
-GNU project have, by convention, a set of typical targets that can be built.
+GNU projects have, by convention, a set of typical targets that can be built.
 The PyMite build system shall support the following set of targets
 by typing ``make`` `<target>` at the command prompt:
 
@@ -78,13 +78,47 @@ by typing ``make`` `<target>` at the command prompt:
     Compiles and executes PyMite self-tests found in ``src/tests/``.
 
 
-Testing
--------
+Build Options
+-------------
 
-While it is possible to write unit tests for PyMite's VM.  It is often more
-effective to write small Python programs to run in the PyMite VM to test the
-VM and libraries.  The tests in ``src/tests/`` do exactly this.  By running
-``make check``, the VM, pmstdlib, and all programs in ``src/tests/`` are built.
+There are a handful of build options that one can provide to ``make`` that
+alter PyMite's behavior or set its configuration in some way.  The following
+is a list of the build options and their possible values.
+
+``DEBUG``:
+    Builds PyMite with extra debugging information and code.
+    Possible values: ``true``, ``false``.  The default is ``false``.
+    Example: ``make DEBUG=true``
+
+``HEAP_SIZE``:
+    Specifies the desired size of the PyMite heap in bytes.
+    Possible values can be any positive integer.  To avoid errors, the size
+    should be less than the size of physical memory and (for ARM targets)
+    an integer multiple of 4.  The default value depends on the ``TARGET``.
+    See the Makefile for details.  Example: ``make HEAP_SIZE=0x1000``
+
+``TARGET``:
+    Specifies the intended build target.  Possible values: ``ARM``, ``AVR``,
+    ``DESKTOP``.  The default is ``DESKTOP``.  Example: ``make TARGET=AVR``
+
+``TARGET_MCU``:
+    Specifies the precise chip to compile for when ``TARGET`` is something
+    other than ``DESKTOP``.  For example, if the ``TARGET=AVR``, the
+    ``TARGET_MCU`` can be any value that would be given as an argument to
+    ``avr-gcc -mmcu``.  The default value depends on ``TARGET``; there is no
+    value when ``TARGET`` is ``DESKTOP``.  See the Makefile for details.
+    Example: ``make TARGET=AVR TARGET_MCU=atmega128``.
+
+
+Self Testing
+------------
+
+PyMite has both unit tests and system tests to provide some amount of
+code validity.  Running ``make check`` will build the VM if needed and all self
+tests and then execute the self tests.  More details on self tests can be found
+in Testing_
+
+.. _Testing: Testing.html
 
 Testing the VM is primarily intended for the desktop target because the desktop
 offers greater resources (size and execution speed) and can quickly run all

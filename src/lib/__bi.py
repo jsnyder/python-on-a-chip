@@ -49,7 +49,7 @@ def globals():
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -70,7 +70,7 @@ def id(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -98,7 +98,7 @@ def len(s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -126,7 +126,7 @@ def len(s):
 
         default:
             /* If not a string or sequence type, raise TypeError */
-            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE);
     }
 
     NATIVE_SET_TOS(pr);
@@ -143,7 +143,7 @@ def locals():
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -168,7 +168,7 @@ def map(f, s):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 2)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -179,7 +179,7 @@ def map(f, s):
     /* If args are wrong type, raise TypeError */
     if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -199,7 +199,7 @@ def map(f, s):
             break;
 
         default:
-            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
     }
 
@@ -250,14 +250,14 @@ def range(a, b, c):
             /* If 3rd arg is 0, ValueError */
             if (((pPmInt_t)pc)->val == 0)
             {
-                PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_VAL);
                 return retval;
             }
             break;
 
         default:
             /* If wrong number of args, raise TypeError */
-            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
     }
 
@@ -309,7 +309,7 @@ def type(o):
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

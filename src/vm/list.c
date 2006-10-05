@@ -71,14 +71,14 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
     /* if either obj is null, raise ValueError exception */
     if ((plist == C_NULL) || (pobj == C_NULL))
     {
-        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
     }
 
     /* if pobj1 is not a list, raise a TypeError exception */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -104,7 +104,7 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
     /* If it's not a list, raise TypeError */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
@@ -117,7 +117,7 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
     /* Check the bounds of the index */
     if ((index < 0) || (index >= ((pPmList_t)plist)->length))
     {
-        PM_RAISE(retval, PM_RET_EX_INDX, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_INDX);
         return retval;
     }
 
@@ -184,14 +184,14 @@ list_replicate(pPmObj_t psrclist,
     if ((psrclist == C_NULL)
         || (r_pnewlist == C_NULL))
     {
-        PM_RAISE(retval, PM_RET_EX_VAL, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
     }
 
     /* If first arg is not a list, raise TypeError */
     if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
     length = ((pPmList_t)psrclist)->length;

@@ -109,7 +109,7 @@ interpret(pPmFunc_t pfunc)
         {
             case STOP_CODE:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case POP_TOP:
@@ -146,7 +146,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError if TOS is not an int */
                 if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
                 /* when TOS is an int, this is a no-op */
@@ -173,14 +173,14 @@ interpret(pPmFunc_t pfunc)
 
             case UNARY_CONVERT:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case UNARY_INVERT:
                 /* TypeError if it's not an int */
                 if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
                 /* else perform bit-wise complement */
@@ -192,7 +192,7 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_POWER:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case BINARY_MULTIPLY:
@@ -218,7 +218,7 @@ interpret(pPmFunc_t pfunc)
                     pobj1 = PM_POP();
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
                     t16 = (int16_t)((pPmInt_t)pobj1)->val;
@@ -236,7 +236,7 @@ interpret(pPmFunc_t pfunc)
                 /* else it's a TypeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -250,7 +250,7 @@ interpret(pPmFunc_t pfunc)
                     /* ZeroDivisionError */
                     if (((pPmInt_t)pobj1)->val == 0)
                     {
-                        PM_RAISE(retval, PM_RET_EX_ZDIV, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_ZDIV);
                         break;
                     }
                     /* perform division */
@@ -266,7 +266,7 @@ interpret(pPmFunc_t pfunc)
                 /* else it's a TypeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -279,7 +279,7 @@ interpret(pPmFunc_t pfunc)
                     /* ZeroDivisionError */
                     if (((pPmInt_t)pobj1)->val == 0)
                     {
-                        PM_RAISE(retval, PM_RET_EX_ZDIV, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_ZDIV);
                         break;
                     }
                     retval = int_new(
@@ -294,7 +294,7 @@ interpret(pPmFunc_t pfunc)
                 /* else it's a TypeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -316,7 +316,7 @@ interpret(pPmFunc_t pfunc)
                 /* else it's a TypeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -338,7 +338,7 @@ interpret(pPmFunc_t pfunc)
                 /* else it's a TypeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -358,7 +358,7 @@ interpret(pPmFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
 
@@ -377,7 +377,7 @@ interpret(pPmFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
                     /* get the tuple item */
@@ -392,7 +392,7 @@ interpret(pPmFunc_t pfunc)
                     /* TypeError; sequence index must be int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
                     /* get the list item */
@@ -413,7 +413,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError; unsubscriptable object */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -455,7 +455,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError; unhashable type */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -474,7 +474,7 @@ interpret(pPmFunc_t pfunc)
             case DELETE_SLICE_2:
             case DELETE_SLICE_3:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case INPLACE_ADD:
@@ -505,7 +505,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -537,7 +537,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -569,7 +569,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError; unsupported type */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -578,14 +578,14 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
                 /* ZeroDivisionError */
                 if (((pPmInt_t)TOS)->val == 0)
                 {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_ZDIV);
                     break;
                 }
 
@@ -614,14 +614,14 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
                 /* ZeroDivisionError */
                 if (((pPmInt_t)TOS)->val == 0)
                 {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_ZDIV);
                     break;
                 }
 
@@ -657,7 +657,7 @@ interpret(pPmFunc_t pfunc)
                     /* ensure subscr is an int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
-                        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
                     /* set the list item */
@@ -678,12 +678,12 @@ interpret(pPmFunc_t pfunc)
                 }
 
                 /* TypeError for all else */
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
 
             case DELETE_SUBSCR:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case BINARY_LSHIFT:
@@ -691,7 +691,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -709,7 +709,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -727,7 +727,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -745,7 +745,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
                 }
 
@@ -763,7 +763,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
                 pobj1 = PM_POP();
@@ -782,7 +782,7 @@ interpret(pPmFunc_t pfunc)
             case PRINT_ITEM_TO:
             case PRINT_NEWLINE_TO:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case INPLACE_LSHIFT:
@@ -790,7 +790,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -821,7 +821,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -851,7 +851,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -881,7 +881,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -911,7 +911,7 @@ interpret(pPmFunc_t pfunc)
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -943,7 +943,7 @@ interpret(pPmFunc_t pfunc)
                     /* ensure there's a block */
                     if (pb1 == C_NULL)
                     {
-                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_SYS);
                         break;
                     }
 
@@ -995,7 +995,7 @@ interpret(pPmFunc_t pfunc)
             case IMPORT_STAR:
             case EXEC_STMT:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case POP_BLOCK:
@@ -1005,7 +1005,7 @@ interpret(pPmFunc_t pfunc)
                     /* If there's no block, raise SystemError */
                     if (pb == C_NULL)
                     {
-                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_SYS);
                         break;
                     }
 
@@ -1022,7 +1022,7 @@ interpret(pPmFunc_t pfunc)
             case END_FINALLY:
             case BUILD_CLASS:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
 
@@ -1047,7 +1047,7 @@ interpret(pPmFunc_t pfunc)
 
             case DELETE_NAME:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case UNPACK_SEQUENCE:
@@ -1100,13 +1100,13 @@ interpret(pPmFunc_t pfunc)
                 /* Other types result in an AttributeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_ATTR, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_ATTR);
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
                 if (OBJ_GET_TYPE(*pobj2) != OBJ_TYPE_DIC)
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
                 /* get name/key obj */
@@ -1118,7 +1118,7 @@ interpret(pPmFunc_t pfunc)
 
             case DELETE_ATTR:
                 /* SystemError, unimplemented opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case STORE_GLOBAL:
@@ -1137,7 +1137,7 @@ interpret(pPmFunc_t pfunc)
 
             case DELETE_GLOBAL:
                 /* SystemError, unimplemented opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case DUP_TOPX:
@@ -1166,7 +1166,7 @@ interpret(pPmFunc_t pfunc)
                 else
                 {
                     /* Python compiler is responsible for keeping arg <= 3 */
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
                 continue;
@@ -1201,7 +1201,7 @@ interpret(pPmFunc_t pfunc)
                         if (retval == PM_RET_EX_KEY)
                         {
                             /* name not defined, raise NameError */
-                            PM_RAISE(retval, PM_RET_EX_NAME, __LINE__);
+                            PM_RAISE(retval, PM_RET_EX_NAME);
                             break;
                         }
                     }
@@ -1266,13 +1266,13 @@ interpret(pPmFunc_t pfunc)
                 /* Other types result in an AttributeError */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_ATTR, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_ATTR);
                     break;
                 }
                 /* if attrs is not a dict, raise SystemError */
                 if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_DIC)
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
                 /* get name */
@@ -1304,13 +1304,13 @@ interpret(pPmFunc_t pfunc)
                         case COMP_GE: t8 = (a >= b); break;
                         case COMP_IN: /* fallthrough */
                         case COMP_NOT_IN:
-                            PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                            PM_RAISE(retval, PM_RET_EX_TYPE);
                             break;
                         case COMP_IS: t8 = (pobj1 == pobj2); break;
                         case COMP_IS_NOT: t8 = (pobj1 != pobj2); break;
                         /* Other compares are not yet supported */
                         default:
-                            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                            PM_RAISE(retval, PM_RET_EX_SYS);
                             break;
                     }
                     PM_BREAK_IF_ERROR(retval);
@@ -1342,7 +1342,7 @@ interpret(pPmFunc_t pfunc)
                 /* Other compare not implemented yet */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
                 PM_PUSH(pobj3);
@@ -1381,7 +1381,7 @@ interpret(pPmFunc_t pfunc)
 
             case IMPORT_FROM:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case JUMP_FORWARD:
@@ -1422,7 +1422,7 @@ interpret(pPmFunc_t pfunc)
                 /* ensure index is an int */
                 if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                 {
-                    PM_RAISE(retval, PM_RET_EX_INDX, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_INDX);
                     break;
                 }
                 /* dup a const int to allow it to incr (TRASH)*/
@@ -1473,7 +1473,7 @@ interpret(pPmFunc_t pfunc)
                 /* TypeError: loop over non-sequence */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -1498,7 +1498,7 @@ interpret(pPmFunc_t pfunc)
                     /* no such global, raise NameError */
                     if (retval == PM_RET_EX_KEY)
                     {
-                        PM_RAISE(retval, PM_RET_EX_NAME, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_NAME);
                         break;
                     }
                 }
@@ -1508,7 +1508,7 @@ interpret(pPmFunc_t pfunc)
 
             case CONTINUE_LOOP:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case SETUP_LOOP:
@@ -1536,7 +1536,7 @@ interpret(pPmFunc_t pfunc)
             case SETUP_EXCEPT:
             case SETUP_FINALLY:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case LOAD_FAST:
@@ -1551,7 +1551,7 @@ interpret(pPmFunc_t pfunc)
 
             case DELETE_FAST:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case SET_LINENO:
@@ -1564,7 +1564,7 @@ interpret(pPmFunc_t pfunc)
                 /* Only supports taking 1 arg for now */
                 if (t16 != 1)
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
 
@@ -1572,7 +1572,7 @@ interpret(pPmFunc_t pfunc)
                 pobj1 = PM_POP();
                 if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_EXN)
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
@@ -1599,7 +1599,7 @@ interpret(pPmFunc_t pfunc)
                 /* ensure no keyword args */
                 if ((t16 & (uint16_t)0xFF00) != 0)
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                    PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
                 /* get the func */
@@ -1641,7 +1641,7 @@ interpret(pPmFunc_t pfunc)
                     /* ensure num args fits in native frame */
                     if (t16 > NATIVE_NUM_LOCALS)
                     {
-                        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                        PM_RAISE(retval, PM_RET_EX_SYS);
                         break;
                     }
 
@@ -1718,7 +1718,7 @@ interpret(pPmFunc_t pfunc)
             case EXTENDED_ARG:
             default:
                 /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
         } /* switch (interpret) */

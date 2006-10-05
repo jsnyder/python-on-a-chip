@@ -75,7 +75,7 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
     if ((OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB) &&
         (OBJ_GET_TYPE(*pco) != OBJ_TYPE_NOB))
     {
-        PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
@@ -127,7 +127,7 @@ class_new(pPmObj_t pmeths,
         (OBJ_GET_TYPE(*pbases) != OBJ_TYPE_TUP) ||
         (OBJ_GET_TYPE(*pname) != OBJ_TYPE_STR))
     {
-        PM_RAISE(retval, PM_RET_EX_TYPE, __LINE__);
+        PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 

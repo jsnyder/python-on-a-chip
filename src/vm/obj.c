@@ -116,7 +116,7 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 
         /* All other types should not be in an img obj */
         default:
-            PM_RAISE(retval, PM_RET_EX_SYS, __LINE__);
+            PM_RAISE(retval, PM_RET_EX_SYS);
             break;
     }
     return retval;

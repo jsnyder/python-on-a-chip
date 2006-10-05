@@ -96,20 +96,17 @@
  * be used after an assignment such as "retval = " or a return statement
  */
 #if __DEBUG__
-#define PM_RAISE(retexn, exn, line) \
+#define PM_RAISE(retexn, exn) \
         do \
         { \
             retexn = (exn); \
             gVmGlobal.errFileId = __FILE_ID__; \
-            gVmGlobal.errLineNum = (uint16_t)(line); \
+            gVmGlobal.errLineNum = (uint16_t)__LINE__; \
         } while (0)
 #else
-#define PM_RAISE(retexn, exn, line) \
+#define PM_RAISE(retexn, exn) \
         retexn = (exn)
 #endif
-
-/** error macro for unit tests */
-#define TEST_ERR(arg)   for(;;)
 
 /** return an error code if it is not PM_RET_OK */
 #define PM_RETURN_IF_ERROR(retval)  if((retval) != PM_RET_OK) \
