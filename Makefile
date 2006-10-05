@@ -15,6 +15,9 @@ MKDIR := mkdir -p
 TAGS := ctags
 CSCOPE := cscope
 
+pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
+PYCSCOPE := $(call pathsearch,pycscope.py)
+
 VPATH := . src/vm src/lib docs/src
 
 # Build configuration
@@ -51,7 +54,7 @@ html : docs/src/*.txt
 TAGS :
 	$(TAGS) -R *
 	$(CSCOPE) -b -c -R
-	cd src/tools && pycscope.py -R *.py
+	$(if $(PYCSCOPE), cd src/tools && $(PYCSCOPE) -R *.py)
 
 dist : check docs
 ifndef PYMITE_RELEASE
