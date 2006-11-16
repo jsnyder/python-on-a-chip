@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2006/11/15   #53: Fix Win32/x86 build break
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -41,36 +42,6 @@
 /***************************************************************
  * Constants
  **************************************************************/
-
-/**
- * Static initial size of the heap.
- * A value should be provided by the makefile
- *
- * PORT:    Set the size of the entire heap.
- */
-#ifndef HEAP_SIZE
-#error HEAP_SIZE not defined by the build environment
-#endif
-
-/**
- * The maximum amount of internal fragmentation
- * (in bytes) allowed in an allocated chunk.
- *
- * PORT:    Set the desired frag limit.
- */
-#define HEAP_MAX_FRAG_SIZE  2
-
-/**
- * The maximum size a chunk can be.
- * Must be less than 256 since uint8_t is used to keep its size.
- * Set to 252 so it is 4 less than 256.
- * This helps with alignment for TARGET_ARM and doesn't harm other targets.
- */
-#define HEAP_MAX_CHUNK_SIZE 252
-
-/** The minimum size a chunk can be */
-#define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
-
 
 /***************************************************************
  * Macros
@@ -89,17 +60,6 @@ typedef struct PmHeapDesc_s
 } PmHeapDesc_t, *pPmHeapDesc_t;
 
 
-typedef struct PmHeap_s
-{
-    /** the amount of heap space available */
-    uint16_t avail;
-
-    /** Global declaration of heap. */
-    uint8_t base[HEAP_SIZE];
-} PmHeap_t, *pPmHeap_t;
-
-
-
 /***************************************************************
  * Globals
  **************************************************************/
@@ -115,7 +75,7 @@ typedef struct PmHeap_s
  *
  * @return  nothing.
  */
-void heap_init(void);
+PmReturn_t heap_init(void);
 
 /**
  * Returns a free chunk from the heap.
@@ -136,6 +96,6 @@ PmReturn_t heap_getChunk(uint8_t size, uint8_t **r_pchunk);
  *
  * @param   ptr Pointer to object to free.
  */
-void heap_freeChunk(pPmObj_t);
+PmReturn_t heap_freeChunk(pPmObj_t);
 
 #endif /* __HEAP_H__ */

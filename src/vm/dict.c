@@ -103,8 +103,8 @@ dict_clear(pPmObj_t pdict)
     /* clear the keys and values seglists if needed */
     if (((pPmDict_t)pdict)->d_keys != C_NULL)
     {
-        seglist_clear(((pPmDict_t)pdict)->d_keys);
-        seglist_clear(((pPmDict_t)pdict)->d_vals);
+        PM_RETURN_IF_ERROR(seglist_clear(((pPmDict_t)pdict)->d_keys));
+        retval = seglist_clear(((pPmDict_t)pdict)->d_vals);
     }
     return retval;
 }

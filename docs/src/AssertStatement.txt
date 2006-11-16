@@ -40,7 +40,7 @@ A simple example assert statement looks like this::
 
     assert arg != None
 
-The above line of code compiles to the following bytecode::
+The above line of code compiles to the following bytecode in Python 2.4::
 
     >>> co = compile("assert arg != None","fn","single")
     >>> dis.disco(co)
@@ -69,6 +69,16 @@ in these words::
 
 Implementation
 --------------
+
+The Python compiler changed the way it generates bytecode for the ``assert``
+statement in Python 2.4.  Prior to 2.4, Python looked to the ``__debug__`` name
+to determine if assert code should be executed.  After 2.4, the compiler
+includes the code in the assert block by default or excludes it if ``-O``
+optimization is turned on.  The implementation that handles ``assert``
+statements in PyMite requires that the user compile the application source
+code with Python 2.4 or later.  Since PyMite system and unit tests use the
+assert statement, using Python 2.4 or later shall be a requirement for
+building PyMite.
 
 To support the ``assert`` statement a built-in named ``AssertionError`` must
 exist and the ``RAISE_VARARGS`` (1) bytecode must be implemented.  To create

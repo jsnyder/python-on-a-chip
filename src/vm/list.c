@@ -207,6 +207,7 @@ list_replicate(pPmObj_t psrclist,
         for (j = 0; j < length; j++)
         {
             retval = list_getItem(psrclist, j, &pitem);
+            PM_RETURN_IF_ERROR(retval);
             retval = list_append(*r_pnewlist, pitem);
             PM_RETURN_IF_ERROR(retval);
         }

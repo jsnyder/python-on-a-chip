@@ -29,6 +29,7 @@
  * Log
  * ---
  *
+ * 2006/11/15   #53: Fix Win32/x86 build break
  * 2006/09/14   #27: Fix S16/U16 are 32-bits on DESKTOP
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -49,8 +50,26 @@
  * Constants
  **************************************************************/
 
-/** A flag to profile heap object allocation sizes */
-#define HEAP_MEASURE    0
+/**
+ * Static initial size of the heap.
+ * A value should be provided by the makefile
+ */
+#ifndef HEAP_SIZE
+#error HEAP_SIZE not defined by the build environment
+#endif
+
+/**
+ * The maximum size a chunk can be.
+ * Must be less than 256 since uint8_t is used to keep its size.
+ * Set to 252 so it is 4 less than 256.
+ * This helps with alignment for targets that need aligned
+ * pointers such as TARGET_DESKTOP and TARGET_ARM and it doesn't
+ * harm other targets.
+ */
+#define HEAP_MAX_CHUNK_SIZE 252
+
+/** The minimum size a chunk can be */
+#define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
 
 
 /***************************************************************
@@ -71,25 +90,31 @@
  * Types
  **************************************************************/
 
+typedef struct PmHeap_s
+{
+    /** Global declaration of heap. */
+    uint8_t base[HEAP_SIZE];
+
+    /** the amount of heap space available */
+    uint16_t avail;
+} PmHeap_t, *pPmHeap_t;
+
+
 /***************************************************************
  * Globals
  **************************************************************/
 
-/** ptr to list of free chunks */
+/** The PyMite heap */
+static PmHeap_t pmHeap;
+
+/** Ptr to list of free chunks; sorted smallest to largest. */
 static pPmHeapDesc_t pfreelist;
 
 /** ptr to clean heap (the big chunk) */
 static pPmHeapDesc_t pcleanheap;
 
-#if HEAP_MEASURE
-/** Size of heap histogram table */
-#define HIST_TABLE_SIZE 20
-/** An array to hold the heap size histogram. */
-static int8_t * heaphist[HIST_TABLE_SIZE];
-#endif /* HEAP_MEASURE */
-
 /** garbage collector marking value */
-static uint8_t heap_gcval = 0;
+static uint8_t heap_gcval;
 
 
 /***************************************************************
@@ -340,25 +365,27 @@ heap_markRoots(void)
 
 
 /*
- * Heap (de)allocation functions
+ * Initializes the heap to a list of large chunks
  */
-void
+PmReturn_t
 heap_init(void)
 {
     pPmHeapDesc_t pchunk = C_NULL;
     uint16_t size = 0;
 
-    /* zero all memory in the heap (optional?) */
-    sli_memset((uint8_t *)&gVmGlobal.heap, '\0', sizeof(gVmGlobal.heap));
+    /* Zero all memory in the heap (optional?) and other heap globals */
+    sli_memset((uint8_t *)&pmHeap, '\0', sizeof(PmHeap_t));
+    pfreelist = C_NULL;
+    heap_gcval = 0;
 
-    /* init global amount of heap space remaining */
-    gVmGlobal.heap.avail = HEAP_SIZE;
+    /* Set amount of heap space remaining */
+    pmHeap.avail = HEAP_SIZE;
 
     /* pcleanheap pts to list of large chunks */
-    pcleanheap = (pPmHeapDesc_t)&gVmGlobal.heap.base;
+    pcleanheap = (pPmHeapDesc_t)&pmHeap.base;
     pchunk = pcleanheap;
 
-    /* init list of large chunks */
+    /* Init list of large chunks */
     size = HEAP_SIZE;
     while (size > HEAP_MAX_CHUNK_SIZE)
     {
@@ -368,28 +395,43 @@ heap_init(void)
         pchunk = pchunk->next;
     }
 
-    /* set fields of last fragment */
-    OBJ_SET_SIZE(*pchunk, size);
-    pchunk->next = C_NULL;
+    /* If last fragment can be a chunk, set its fields */
+    if(size >= HEAP_MIN_CHUNK_SIZE)
+    {
+        OBJ_SET_SIZE(*pchunk, size);
+        pchunk->next = C_NULL;
+    }
 
-#if HEAP_MEASURE
-    /* to show where list starts; need to add 1 to result */
-    heaphist[0] = 0xFF;
-#endif
+    /* If last fragment can't be a chunk, terminate penultimate chunk */
+    else
+    {
+        pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk - HEAP_MAX_CHUNK_SIZE);
+        pchunk->next = C_NULL;
+
+        /* Reduce heap available amount by size of unused last fragment */
+        pmHeap.avail -= size;
+    }
+
+    return PM_RET_OK;
 }
 
 
 /**
- * Obtain a chunk of memory using hybrid best fit.
+ * Obtains a chunk of memory using a hybrid best fit algorithm.
  *
- * Search the free list for a chunk that is
- * large enough to meet the requested size,
- * but not HEAP_MAX_FRAG_SIZE bytes more.
- * If no such chunk is found, carve a chunk
- * out of the clean heap, if available.
- * If still nothing, use the free list chunk
- * if large enough (without FRAG limit).
- * If still nothing, return null.
+ * Stage 1:
+ * Searches the free list for a chunk that is the requested size.
+ * If found, that chunk is used.
+ *
+ * Stage 2:
+ * If no chunk is found yet and the clean heap is large enough,
+ * a new chunk is carved out of the clean heap and that chunk is used.
+ *
+ * Stage 3:
+ * If no chunk is found yet and a larger-than-requested free list chunk
+ * was found in Stage 1, that chunk is used.
+ *
+ * If still nothing, sets r_pchunk to null and raises an out-of-mem exception.
  *
  * @param size Requested chunk size
  * @param r_pchunk Return ptr to chunk
@@ -397,203 +439,160 @@ heap_init(void)
  */
 static
 PmReturn_t
-heap_getChunk0(uint8_t size, uint8_t **r_pchunk)
-{
-    pPmHeapDesc_t pchunk1 = C_NULL;
-    pPmHeapDesc_t pchunk2 = C_NULL;
-
-#if HEAP_MEASURE
-    /* if larger than hist table, store in 0th element */
-    if (size-HEAP_MIN_CHUNK_SIZE >= HIST_TABLE_SIZE)
-    {
-        heaphist[0]++;
-    }
-
-    /* else count the size */
-    else
-    {
-        heaphist[size-HEAP_MIN_CHUNK_SIZE-1]++;
-    }
-#endif /* HEAP_MEASURE */
-
-    /* if the free list has chunks, search it */
-    if (pfreelist != C_NULL)
-    {
-        /* start at beginning of free list */
-        pchunk1 = pfreelist;
-
-        /* if first chunk is best fit */
-        if ((OBJ_GET_SIZE(*pchunk1) >= size) &&
-            (OBJ_GET_SIZE(*pchunk1) <= (size + HEAP_MAX_FRAG_SIZE)))
-        {
-            /* relink list and return first chunk */
-            pfreelist = pfreelist->next;
-            /* reduce heap available amount */
-            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk1);
-            *r_pchunk = (uint8_t *)pchunk1;
-            return PM_RET_OK;
-        }
-
-        /* else search list for proper sized chunk */
-        while ((pchunk1->next != C_NULL) &&
-               (OBJ_GET_SIZE(*pchunk1->next) < size))
-        {
-             pchunk1 = pchunk1->next;
-        }
-
-        /*
-         * if this is not the last chunk,
-         * and it's a best fit, unlink and use it.
-         * if not, we might use pchunk1->next later (first fit).
-         */
-        if ((pchunk1->next != C_NULL) &&
-            (OBJ_GET_SIZE(*pchunk1->next) <=
-             (size + HEAP_MAX_FRAG_SIZE)))
-        {
-            /* unlink chunk */
-            pchunk2 = pchunk1->next;
-            pchunk1->next = pchunk1->next->next;
-            /* reduce heap available amount */
-            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
-            *r_pchunk = (uint8_t *)pchunk2;
-            return PM_RET_OK;
-        }
-    }
-
-    /* if nothing from free list, check the clean heap */
-    if (pcleanheap != C_NULL)
-    {
-        /*
-         * if the clean heap is not large enough
-         * put the fragment in the free list
-         */
-        if (OBJ_GET_SIZE(*pcleanheap) < size)
-        {
-            pchunk2 = pcleanheap;
-            /* try the next clean heap */
-            pcleanheap = pcleanheap->next;
-
-            /*
-             * Issue #40: Fix heap chunk transfer.
-             * Preemptively decrease heap available amount
-             * since heap_freeChunk will increase it by same amount
-             */
-            gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
-            heap_freeChunk((pPmObj_t)pchunk2);
-        }
-
-        /*
-         * carve chunk out of back of clean heap
-         * if there is one and it is large enough
-         */
-        if ((pcleanheap != C_NULL) &&
-            ((OBJ_GET_SIZE(*pcleanheap) - size) >= 0))
-        {
-
-            /*
-             * if potential clean heap remnant is too small,
-             * use the entire chunk and setup next clean heap
-             */
-            if ((OBJ_GET_SIZE(*pcleanheap) - size) < HEAP_MIN_CHUNK_SIZE)
-            {
-                pchunk2 = pcleanheap;
-                pcleanheap = pcleanheap->next;
-            }
-
-            /* else carve chunk out of clean heap */
-            else
-            {
-                OBJ_SET_SIZE(*pcleanheap, OBJ_GET_SIZE(*pcleanheap) - size);
-                pchunk2 = (pPmHeapDesc_t)((uint8_t *)pcleanheap
-                                          + OBJ_GET_SIZE(*pcleanheap));
-                OBJ_SET_SIZE(*pchunk2, size);
-            }
-
-            /* reduce heap available amount */
-            gVmGlobal.heap.avail -= size;
-            *r_pchunk = (uint8_t *)pchunk2;
-            return PM_RET_OK;
-        }
-    }
-
-    /*
-     * if nothing from clean heap,
-     * try first fit (again) ignoring the FRAG limit
-     */
-    if ((pchunk1 != C_NULL)
-        && (pchunk1->next != C_NULL)
-        && (OBJ_GET_SIZE(*pchunk1->next) >= size))
-    {
-        pchunk2 = pchunk1->next;
-        pchunk1->next = pchunk1->next->next;
-        /* reduce heap available amount */
-        gVmGlobal.heap.avail -= OBJ_GET_SIZE(*pchunk2);
-        *r_pchunk = (uint8_t *)pchunk2;
-        return PM_RET_OK;
-    }
-
-    /* no chunk of that size available */
-    *r_pchunk = C_NULL;
-    return PM_RET_ERR;
-}
-
-
-/*
- * Filter out invalid sizes.
- * Obtain a chunk of at least the desired size
- * from the heap.  Perform GC if necessary.
- */
-PmReturn_t
-heap_getChunk(uint8_t size, uint8_t **r_pchunk)
+heap_getChunkImpl(uint8_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
+    pPmHeapDesc_t pchunk1 = C_NULL;
+    pPmHeapDesc_t pchunk2 = C_NULL;
+    pPmHeapDesc_t pchunk3 = C_NULL;
 
-    if (size < HEAP_MIN_CHUNK_SIZE) 
+    /* Stage 1: Check the free list for chunk of exact size (Best Fit) */
+    if (pfreelist != C_NULL)
     {
-        size = HEAP_MIN_CHUNK_SIZE;
+        /* If the first chunk is the best fit, use it */
+        if (OBJ_GET_SIZE(*pfreelist) == size)
+        {
+            *r_pchunk = (uint8_t *)pfreelist;
+            pmHeap.avail -= OBJ_GET_SIZE(*pfreelist);
+            pfreelist = pfreelist->next;
+            return PM_RET_OK;
+        }
+        /* pchunk1 may be larger than requested (may use it in Stage 3) */
+
+        /* Linear search for a chunk size equal or greater than requested */
+        pchunk1 = pfreelist;
+        pchunk2 = pfreelist->next;
+        if (pchunk2 != C_NULL)
+        {
+            while ((pchunk2->next != C_NULL) && (OBJ_GET_SIZE(*pchunk2) < size))
+            {
+                 pchunk1 = pchunk2;
+                 pchunk2 = pchunk2->next;
+            }
+        }
+
+        /* If pchunk2 is the best fit, use it */
+        if ((pchunk2 != C_NULL) && (OBJ_GET_SIZE(*pchunk2) == size))
+        {
+            *r_pchunk = (uint8_t *)pchunk2;
+            pmHeap.avail -= OBJ_GET_SIZE(*pchunk2);
+            pchunk1->next = pchunk2->next;
+            return PM_RET_OK;
+        }
+        /* pchunk2 may be larger than requested (may use it in Stage 3) */
     }
 
-    /* If size request is invalid, raise a SystemError */
-    if (size > HEAP_MAX_CHUNK_SIZE) 
+    /* Stage 2: Check the clean heap (Best Fit) */
+    /* If clean heap chunk is not big enough, free it and try next clean page */
+    if ((pcleanheap != C_NULL) && (size > OBJ_GET_SIZE(*pcleanheap)))
     {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
+        pchunk3 = pcleanheap;
+        pcleanheap = pcleanheap->next;
+        pmHeap.avail -= OBJ_GET_SIZE(*pchunk3);
+        heap_freeChunk((pPmObj_t)pchunk3);
     }
 
-#ifdef TARGET_ARM
-    /* Round up to a multiple of 4 bytes (to maintain alignment) */
-    size = (((size - 1) >> 2) + 1) << 2;
-#endif
-
-    /* if a chunk is available, return with it */
-    retval = heap_getChunk0(size, r_pchunk);
-    if (retval == PM_RET_OK)
+    /* If clean heap is big enough, get a chunk from it */
+    if ((pcleanheap != C_NULL) && (OBJ_GET_SIZE(*pcleanheap) >= size))
     {
-        return retval;
-    }
+        /* If potential remnant is too small, use the entire chunk */
+        if ((OBJ_GET_SIZE(*pcleanheap) - size) < HEAP_MIN_CHUNK_SIZE)
+        {
+            pchunk2 = pcleanheap;
+            pcleanheap = pcleanheap->next;
+        }
 
-    /* else collect garbage */
-    heap_markRoots();
-    /* XXX heap_sweep();*/
+        /* Else carve chunk out of back of clean heap */
+        else
+        {
+            /* Reduce the size of the clean heap */
+            OBJ_SET_SIZE(*pcleanheap, OBJ_GET_SIZE(*pcleanheap) - size);
 
-    /* now, if a chunk is available, return with it */
-    retval = heap_getChunk0(size, r_pchunk);
-    if (retval == PM_RET_OK)
-    {
+            /* Create a new chunk and set its size */
+            pchunk2 = (pPmHeapDesc_t)((uint8_t *)pcleanheap
+                                      + OBJ_GET_SIZE(*pcleanheap));
+            OBJ_SET_SIZE(*pchunk2, size);
+        }
+
+        /* Return the chunk and reduce heap available amount */
+        *r_pchunk = (uint8_t *)pchunk2;
+        pmHeap.avail -= size;
         return PM_RET_OK;
     }
 
-    /* else return out-of-memory exception */
+    /* Stage 3: Try first fit from Stage 1 */
+
+    /* If pchunk1 from Stage 1 is large enough, use it (First Fit) */
+    if ((pchunk1 != C_NULL) && (OBJ_GET_SIZE(*pchunk1) >= size))
+    {
+        C_ASSERT(pchunk1 == pfreelist);
+
+        *r_pchunk = (uint8_t *)pchunk1;
+        pmHeap.avail -= OBJ_GET_SIZE(*pchunk1);
+        pfreelist = pfreelist->next;
+        return PM_RET_OK;
+    }
+
+    /* If pchunk2 from Stage 1 is large enough, use it (First Fit) */
+    if ((pchunk2 != C_NULL) && (OBJ_GET_SIZE(*pchunk2) >= size))
+    {
+        *r_pchunk = (uint8_t *)pchunk2;
+        pmHeap.avail -= OBJ_GET_SIZE(*pchunk2);
+        pchunk1->next = pchunk2->next;
+        return PM_RET_OK;
+    }
+
+    /* No chunk of appropriate size was found, return out-of-mem exception */
+    *r_pchunk = C_NULL;
     PM_RAISE(retval, PM_RET_EX_MEM);
     return retval;
 }
 
 
 /*
- * Release chunk to free list.
- * Free list is sorted smallest to largest.
+ * High-level interface to get an allocated chunk of memory.
+ * Filters out invalid sizes.  Rounds up to the next multiple of 4 for
+ * 32-bit architectures.  Obtains a chunk of at least the desired size.
+ * Performs GC if necessary and the global auto GC flag is enabled.
  */
-void
+PmReturn_t
+heap_getChunk(uint8_t size, uint8_t **r_pchunk)
+{
+    PmReturn_t retval;
+
+    /* Ensure size request is valid */
+    C_ASSERT(size < HEAP_MAX_CHUNK_SIZE);
+
+    if (size < HEAP_MIN_CHUNK_SIZE)
+    {
+        size = HEAP_MIN_CHUNK_SIZE;
+    }
+
+#if defined(TARGET_ARM) || defined(TARGET_DESKTOP)
+    /* Round up to a multiple of 4 bytes (to maintain alignment) */
+    size = ((size + 3) & ~3);
+#endif
+
+    /* If a chunk is available, return with it */
+    retval = heap_getChunkImpl(size, r_pchunk);
+    C_ASSERT(((uint32_t)*r_pchunk & 3) == 0);
+
+    /* If first attempt yielded no chunk and auto GC flag is asserted, run GC */
+    if ((retval != PM_RET_OK) && (gVmGlobal.auto_gc != C_FALSE))
+    {
+        heap_markRoots();
+        /* XXX heap_sweep();*/
+
+        /* now, if a chunk is available, return with it */
+        retval = heap_getChunkImpl(size, r_pchunk);
+    }
+
+    return retval;
+}
+
+
+/* Release chunk to free list which is sorted smallest to largest */
+PmReturn_t
 heap_freeChunk(pPmObj_t ptr)
 {
     pPmHeapDesc_t oldchunk = (pPmHeapDesc_t)ptr;
@@ -601,34 +600,40 @@ heap_freeChunk(pPmObj_t ptr)
     pPmHeapDesc_t pchunk1;
     pPmHeapDesc_t pchunk2;
 
-    /* increase heap available amount */
-    gVmGlobal.heap.avail += OBJ_GET_SIZE(*ptr);
+    C_ASSERT(((uint8_t *)ptr >= pmHeap.base)
+             && ((uint8_t *)ptr < pmHeap.base + HEAP_SIZE));
 
-    /* if freelist is empty or oldchunk is smallest */
-    if ((pfreelist == C_NULL) ||
-        (OBJ_GET_SIZE(*pfreelist) >= size))
+    /* Increase heap available amount */
+    pmHeap.avail += OBJ_GET_SIZE(*ptr);
+
+    /* If free list is empty or oldchunk is smallest, add to head of list */
+    if ((pfreelist == C_NULL) || (OBJ_GET_SIZE(*pfreelist) >= size))
     {
         oldchunk->next = pfreelist;
         pfreelist = oldchunk;
-        return;
+        return PM_RET_OK;
     }
 
-    /* sentinel1 at start of list */
-    pchunk1 = pfreelist;
-    /* sentinel2 leads sentinel1 */
-    pchunk2 = pchunk1->next;
+    /* If free list has only one item, append oldchunk */
+    if (pfreelist->next == C_NULL)
+    {
+        oldchunk->next = C_NULL;
+        pfreelist->next = oldchunk;
+        return PM_RET_OK;
+    }
 
-    /* scan freelist for insertion point */
-    while ((pchunk2 != C_NULL) &&
-           (OBJ_GET_SIZE(*pchunk2) < size))
+    /* Scan free list for insertion point */
+    pchunk1 = pfreelist;
+    pchunk2 = pfreelist->next;
+    while ((pchunk2->next != C_NULL) && (OBJ_GET_SIZE(*pchunk2) < size))
     {
         pchunk1 = pchunk2;
         pchunk2 = pchunk2->next;
     }
 
-    /* link chunk */
+    /* Insert chunk into free list */
     oldchunk->next = pchunk2;
     pchunk1->next = oldchunk;
-    return;
-}
 
+    return PM_RET_OK;
+}

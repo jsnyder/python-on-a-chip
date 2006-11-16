@@ -47,6 +47,17 @@ The file containing the image of the PyMite libraries is what is built when
 .. _`GNU make`: http://www.gnu.org/software/make/
 
 
+Requirements
+------------
+
+The PyMite build process requires Python version 2.4 or later to be used
+to compile Python source for use in PyMite.  While most semantics in PyMite
+need only Python 2.0 or later, the ``assert`` statement specifically requires
+Python 2.4.  This is because the bytecode generated from an ``assert``
+statement changed in Python 2.4.  PyMite attempts to keep up-to-date with the
+desktop Python and therefore implements the 2.4 method of handling ``assert``.
+Python 2.5 is not yet supported and should not be used.
+
 Available Targets
 -----------------
 

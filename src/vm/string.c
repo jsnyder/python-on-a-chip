@@ -137,10 +137,10 @@ string_create(PmMemSpace_t memspace,
         if (string_compare(pcacheentry, pstr) == C_SAME)
         {
             /* free the string */
-            heap_freeChunk((pPmObj_t)pstr);
+            retval = heap_freeChunk((pPmObj_t)pstr);
             /* return ptr to old */
             *r_pstring = (pPmObj_t)pcacheentry;
-            return PM_RET_OK;
+            return retval;
         }
     }
 
@@ -188,10 +188,10 @@ string_newFromChar(uint8_t c, pPmObj_t *r_pstring)
         if (string_compare(pcacheentry, pstr) == C_SAME)
         {
             /* free the string */
-            heap_freeChunk((pPmObj_t)pstr);
+            retval = heap_freeChunk((pPmObj_t)pstr);
             /* return ptr to old */
             *r_pstring = (pPmObj_t)pcacheentry;
-            return PM_RET_OK;
+            return retval;
         }
     }
 

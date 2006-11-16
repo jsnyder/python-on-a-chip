@@ -104,6 +104,9 @@ typedef struct PmVmGlobal_s
     /** The single native frame */
     PmNativeFrame_t nativeframe;
 
+    /** Flag to dis/allow automatic garbage collection */
+    uint8_t auto_gc;
+
     /** PyMite release value for when an error occurs */
     uint8_t errVmRelease;
 
@@ -121,10 +124,6 @@ typedef struct PmVmGlobal_s
      * A negative value signals an error exit.
      */
     PmInterpCtrl_t interpctrl;
-
-    /** The PyMite heap */
-    PmHeap_t heap;
-    /* DO NOT PUT ANYTHING BELOW THIS */
 } PmVmGlobal_t, *pPmVmGlobal_t;
 
 
@@ -139,19 +138,19 @@ extern PmVmGlobal_t gVmGlobal;
  * Prototypes
  **************************************************************/
 
-/** 
- * Initialize the global struct 
+/**
+ * Initializes the global struct
  *
  * @return Return status
  */
 PmReturn_t global_init(void);
 
 /**
- * Load the builtins dict into the given module's attrs.
+ * Loads the builtins dict into the given module's attrs.
  *
- * Load the "__bt" module and set the builtins dict
+ * Loads the "__bt" module and sets the builtins dict
  * to point to __bt's attributes dict.
- * Create "None" = None entry in builtins.
+ * Creates "None" = None entry in builtins.
  *
  * @param pmod Module whose attrs recieves builtins
  * @return  Return status

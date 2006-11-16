@@ -72,10 +72,9 @@ global_init(void)
     PmReturn_t retval;
     uint8_t *codestr = (uint8_t *)"code";
     pPmObj_t pobj;
-    
-    /* clear the global struct less the heap */
-    sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t) -
-                                            sizeof(PmHeap_t));
+
+    /* clear the global struct */
+    sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
 
     /* set the PyMite release num (for debug and post mortem) */
     gVmGlobal.errVmRelease = PM_RELEASE;
@@ -162,9 +161,9 @@ global_loadBuiltins(pPmFunc_t pmod)
     PM_RETURN_IF_ERROR(retval);
 
     /* deallocate builtins module */
-    heap_freeChunk((pPmObj_t)pbimod);
+    retval = heap_freeChunk((pPmObj_t)pbimod);
 
-    return PM_RET_OK;
+    return retval;
 }
 
 /***************************************************************

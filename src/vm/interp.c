@@ -953,7 +953,7 @@ interpret(pPmFunc_t pfunc)
                     {
                         pobj2 = (pPmObj_t)pb1;
                         pb1 = pb1->next;
-                        heap_freeChunk(pobj2);
+                        PM_BREAK_IF_ERROR(heap_freeChunk(pobj2));
                     }
                     /* restore SP */
                     SP = pb1->b_sp;
@@ -961,7 +961,7 @@ interpret(pPmFunc_t pfunc)
                     IP = pb1->b_handler;
                     /* pop and delete this block */
                     FP->fo_blockstack = pb1->next;
-                    heap_freeChunk((pPmObj_t)pb1);
+                    PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb1));
                 }
                 continue;
 
@@ -989,7 +989,7 @@ interpret(pPmFunc_t pfunc)
                 /* push frame's return val */
                 PM_PUSH(pobj2);
                 /* deallocate expired frame */
-                heap_freeChunk(pobj1);
+                PM_BREAK_IF_ERROR(heap_freeChunk(pobj1));
                 continue;
 
             case IMPORT_STAR:
@@ -1014,7 +1014,7 @@ interpret(pPmFunc_t pfunc)
                     /* set stack to previous level */
                     SP = pb->b_sp;
                     /* delete block */
-                    heap_freeChunk((pPmObj_t)pb);
+                    PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
                     continue;
 
                 }

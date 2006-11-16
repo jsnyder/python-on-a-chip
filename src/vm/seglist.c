@@ -149,7 +149,7 @@ seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj)
 }
 
 
-void
+PmReturn_t
 seglist_clear(pSeglist_t pseglist)
 {
     pSegment_t pseg1 = C_NULL;
@@ -161,7 +161,7 @@ seglist_clear(pSeglist_t pseglist)
     while (pseg1 != C_NULL)
     {
         pseg2 = pseg1->next;
-        heap_freeChunk((pPmObj_t)pseg1);
+        PM_RETURN_IF_ERROR(heap_freeChunk((pPmObj_t)pseg1));
         pseg1 = pseg2;
     }
 #endif
@@ -170,6 +170,8 @@ seglist_clear(pSeglist_t pseglist)
     ((pSeglist_t)pseglist)->sl_rootseg = C_NULL;
     ((pSeglist_t)pseglist)->sl_lastseg = C_NULL;
     ((pSeglist_t)pseglist)->sl_lastindx = 0;
+
+    return PM_RET_OK;
 }
 
 
@@ -182,6 +184,9 @@ seglist_findEqual(pSeglist_t pseglist,
     pSegment_t pseg = C_NULL;
     int8_t i = 0;
     PmReturn_t retval;
+
+    C_ASSERT(pseglist != C_NULL);
+    C_ASSERT(pobj != C_NULL);
 
     /* if index is out of bounds, raise SystemError */
     if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))

@@ -49,7 +49,7 @@
  * Macros
  **************************************************************/
 
-/** 
+/**
  * load string from image
  *
  * @param ms memoryspace paddr points to
@@ -58,7 +58,7 @@
 #define string_loadFromImg(ms, paddr, r_pstring) \
             string_create((ms), (paddr), (uint8_t)1, (r_pstring))
 
-/** 
+/**
  * create string from UTF-8 string in RAM
  *
  * @param s address in RAM of source string
@@ -89,7 +89,7 @@ typedef struct PmString_s
     struct PmString_s * next;
 #endif /* USE_STRING_CACHE */
 
-    /** 
+    /**
      * Null-term char array
      *
      * Use length 1 here so that string-alloc function can use

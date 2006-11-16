@@ -85,7 +85,6 @@ PmReturn_t pm_run(uint8_t *modstr)
 
 
 #ifdef TARGET_DESKTOP
-#include "stdio.h"
 
 void pm_reportResult(PmReturn_t result)
 {
@@ -99,10 +98,12 @@ void pm_reportResult(PmReturn_t result)
     }
     else
     {
-        printf("Exception: 0x%0X\n", result);
-        printf("  Release: 0x%0X\n", gVmGlobal.errVmRelease);
-        printf("  FileId:  0x%0X\n", gVmGlobal.errFileId);
+        printf("Exception: 0x%02X\n", result);
+        printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
+#if __DEBUG__
+        printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
         printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+#endif
     }
 }
 #endif /* TARGET_DESKTOP */

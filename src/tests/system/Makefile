@@ -5,8 +5,8 @@ HEAP_SIZE ?= 0x1000
 TARGET_MCU ?= atmega103
 
 PMIMGCREATOR := ../../tools/pmImgCreator.py
-DEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET)
-CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(DEFS)
+CDEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET) -D__DEBUG__=1
+CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(CDEFS)
 CFLAGS += -I../../vm
 SOURCES = $(wildcard t???.c)
 PY_SOURCES = $(SOURCES:.c=.py)

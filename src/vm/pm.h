@@ -41,6 +41,9 @@
  **************************************************************/
 
 #include <stdint.h>
+#ifdef TARGET_DESKTOP
+#include <stdio.h>
+#endif
 
 /***************************************************************
  * Configurables
@@ -61,13 +64,9 @@
  **************************************************************/
 
 /* System global defs */
-#ifdef NULL
-/** null for C code */
-#define C_NULL          NULL
-#else
+
 /** null for C code */
 #define C_NULL          0
-#endif
 
 /** false for C code */
 #define C_FALSE         0
@@ -112,8 +111,13 @@
 #define PM_RETURN_IF_ERROR(retval)  if((retval) != PM_RET_OK) \
                                         return (retval)
 
+#if __DEBUG__
 /** If the boolean expression fails, return the ASSERT error code */
-#define PM_ASSERT(boolexpr) if (!(boolexpr)) return PM_RET_ASSERT_FAIL
+#define C_ASSERT(boolexpr) if (!((boolexpr))) return PM_RET_ASSERT_FAIL
+#else
+/** Assert statements are removed from production code */
+#define C_ASSERT(boolexpr)
+#endif
 
 /***************************************************************
  * Enums

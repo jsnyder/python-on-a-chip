@@ -116,7 +116,7 @@ seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);
  *
  * @param pseglist Ptr to seglist to empty
  */
-void seglist_clear(pSeglist_t pseglist);
+PmReturn_t seglist_clear(pSeglist_t pseglist);
 
 
 /**
