@@ -184,8 +184,7 @@ PmReturn_t seglist_new(pSeglist_t * r_pseglist);
  *
  * @param   pseglist Ptr to seglist in which object is placed.
  * @param   pobj Ptr to object which is inserted.
- * @param   segnum Segment number
- * @param   segindx Index within segment
+ * @param   index Index within seglist
  * @return  Return status; PM_RET_OK if the item was inserted.
  *              Any error condition comes from heap_getChunk.
  */
@@ -194,7 +193,6 @@ seglist_insertItem(pSeglist_t pseglist,
                    pPmObj_t pobj,
                    int8_t segnum,
                    int8_t segindx);
-
 /**
  * Put the item in the designated slot and segment.
  * This is intended to be used after seglist_findEqual()

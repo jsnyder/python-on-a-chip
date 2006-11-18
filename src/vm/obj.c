@@ -220,6 +220,56 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 }
 
 
+/* Returns the object sequence[index] */
+PmReturn_t
+seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj)
+{
+    PmReturn_t retval;
+    uint8_t c;
+
+    switch (OBJ_GET_TYPE(*pobj))
+    {
+        case OBJ_TYPE_STR:
+            /* Adjust for negative index */
+            if (index < 0)
+            {
+                index += ((pPmString_t)pobj)->length;
+            }
+
+            /* Raise IndexError if index is out of bounds */
+            if ((index < 0) || (index > ((pPmString_t)pobj)->length))
+            {
+                PM_RAISE(retval, PM_RET_EX_INDX);
+                break;
+            }
+
+            /* Get the character from the string */
+            c = ((pPmString_t)pobj)->val[index];
+
+            /* Create a new string from the character */
+            retval = string_newFromChar(c, r_pobj);
+            break;
+
+        case OBJ_TYPE_TUP:
+            /* Get the tuple item */
+            retval = tuple_getItem(pobj, index, r_pobj);
+            break;
+
+        case OBJ_TYPE_LST:
+            /* Get the list item */
+            retval = list_getItem(pobj, index, r_pobj);
+            break;
+
+        default:
+            /* Raise TypeError, unsubscriptable object */
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            break;
+    }
+
+    return retval;
+}
+
+
 /***************************************************************
  * Test
  **************************************************************/

@@ -97,7 +97,7 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
 PmReturn_t
 list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
 {
-    PmReturn_t retval = PM_RET_STUB;
+    PmReturn_t retval;
     int16_t segnum = 0;
     int16_t segindx = 0;
 
@@ -135,9 +135,46 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
 
 
 PmReturn_t
-list_insert(pPmObj_t plist, pPmObj_t pobj, int8_t index)
+list_insert(pPmObj_t plist, int8_t index, pPmObj_t pobj)
 {
-    PmReturn_t retval = PM_RET_STUB;
+    PmReturn_t retval;
+    int16_t len;
+    int8_t segnum;
+    int8_t segindx;
+
+    C_ASSERT(plist != C_NULL);
+    C_ASSERT(pobj != C_NULL);
+
+    /* Raise a TypeError if plist is not a List */
+    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    {
+        retval = PM_RET_EX_TYPE;
+        PM_RETURN_IF_ERROR(retval);
+    }
+
+    /* Adjust an out-of-bounds index value */
+    len = ((pPmList_t)plist)->length;
+    if (index < 0)
+    {
+        index += len;
+    }
+    if (index < 0)
+    {
+        index = 0;
+    }
+    if (index > len)
+    {
+        index = len;
+    }
+
+    /* Insert the item in the container */
+    segnum = index / SEGLIST_OBJS_PER_SEG;
+    segindx = index % SEGLIST_OBJS_PER_SEG;
+    retval = seglist_insertItem(((pPmList_t)plist)->val, pobj, segnum, segindx);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Increment the length of this list */
+    ((pPmList_t)plist)->length++;
     return retval;
 }
 

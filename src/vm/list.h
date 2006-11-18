@@ -157,8 +157,8 @@ PmReturn_t list_replicate(pPmObj_t psrclist,
  * @return  Return status
  */
 PmReturn_t list_insert(pPmObj_t plist,
-                       pPmObj_t pobj,
-                       int8_t index);
+                       int8_t index,
+                       pPmObj_t pobj);
 
 /* XXX TODO - redo these using pobj / return status */
 #if 0

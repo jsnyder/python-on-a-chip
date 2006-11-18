@@ -344,80 +344,28 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_SUBSCR:
                 /* Implements TOS = TOS1[TOS]. */
-                /* get subscr */
+
+                /* get index */
                 pobj1 = PM_POP();
                 /* get sequence */
                 pobj2 = PM_POP();
 
-                /* XXX issue #10: create seq_getSubscript(); */
-                /* XXX index out of range exception? */
-
-                /* if it's a string */
-                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_STR)
+                if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
                 {
-                    /* TypeError; sequence index must be int */
-                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_TYPE);
-                        break;
-                    }
-
-                    /* Get the character from the string */
-                    t8 = (uint8_t)((pPmString_t)pobj2)->
-                                   val[((pPmInt_t)pobj1)->val];
-
-                    /* Create a new string from the character */
-                    retval = string_newFromChar(t8, &pobj3);
-                    PM_BREAK_IF_ERROR(retval);
-                }
-
-                /* if it's a tuple */
-                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
-                {
-                    /* TypeError; sequence index must be int */
-                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_TYPE);
-                        break;
-                    }
-                    /* get the tuple item */
-                    /* XXX index out of range exception? */
-                    pobj3 = ((pPmTuple_t)pobj2)->val[
-                                ((pPmInt_t)pobj1)->val];
-                }
-
-                /* if it's a list */
-                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
-                {
-                    /* TypeError; sequence index must be int */
-                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_TYPE);
-                        break;
-                    }
-                    /* get the list item */
-                    retval = list_getItem(pobj2,
-                                          (int16_t)((pPmInt_t)pobj1)->val,
-                                          &pobj3);
-                    PM_BREAK_IF_ERROR(retval);
-                }
-
-                /* if it's a dict */
-                else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
-                {
-                    /* get the dict item */
                     retval = dict_getItem(pobj2, pobj1, &pobj3);
-                    PM_BREAK_IF_ERROR(retval);
                 }
-
-                /* TypeError; unsubscriptable object */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
+                    /* Raise a TypeError if index is not an Integer */
+                    if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+                    t16 = ((pPmInt_t)pobj1)->val;
+                    retval = seq_getSubscript(pobj2, t16, &pobj3);
                 }
-
-                /* push item and continue */
+                PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj3);
                 continue;
 
@@ -953,15 +901,20 @@ interpret(pPmFunc_t pfunc)
                     {
                         pobj2 = (pPmObj_t)pb1;
                         pb1 = pb1->next;
-                        PM_BREAK_IF_ERROR(heap_freeChunk(pobj2));
+                        retval = heap_freeChunk(pobj2);
+                        PM_BREAK_IF_ERROR(retval);
                     }
+                    /* Test again outside while loop */
+                    PM_BREAK_IF_ERROR(retval);
+
                     /* restore SP */
                     SP = pb1->b_sp;
                     /* goto handler */
                     IP = pb1->b_handler;
                     /* pop and delete this block */
                     FP->fo_blockstack = pb1->next;
-                    PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb1));
+                    retval = heap_freeChunk((pPmObj_t)pb1);
+                    PM_BREAK_IF_ERROR(retval);
                 }
                 continue;
 
@@ -1055,26 +1008,19 @@ interpret(pPmFunc_t pfunc)
                 t16 = GET_ARG();
                 /* get ptr to sequence */
                 pobj1 = PM_POP();
-                /* push objs onto stack based on type */
-                if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
+
+                /* Push sequence's objs onto stack */
+                if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
+                    || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST))
                 {
                     for (; --t16 >= 0; )
                     {
-                        /* XXX should copy simple objs ? */
-                        PM_PUSH(((pPmTuple_t)pobj1)->val[t16]);
-                    }
-                }
-                else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
-                {
-                    for (; --t16 >= 0; )
-                    {
-                        /* XXX should copy simple objs */
-                        retval = list_getItem(pobj1,
-                                              t16,
-                                              &pobj2);
+                        retval = seq_getSubscript(pobj1, t16, &pobj2);
                         PM_BREAK_IF_ERROR(retval);
                         PM_PUSH(pobj2);
                     }
+                    /* Test again outside the for loop */
+                    PM_BREAK_IF_ERROR(retval);
                 }
                 continue;
 
@@ -1233,14 +1179,19 @@ interpret(pPmFunc_t pfunc)
                     /* get obj */
                     pobj2 = PM_POP();
                     /* insert obj into list */
-                    retval = list_insert(pobj1, pobj2, 0);
+                    retval = list_insert(pobj1, 0, pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
+                /* Test again outside for loop */
+                PM_BREAK_IF_ERROR(retval);
+
                 /* push list onto stack */
                 PM_PUSH(pobj1);
                 continue;
 
             case BUILD_MAP:
+                /* Argument is ignored */
+                t16 = GET_ARG();
                 retval = dict_new(&pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj1);

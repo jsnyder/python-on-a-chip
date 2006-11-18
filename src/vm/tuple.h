@@ -62,7 +62,7 @@ typedef struct PmTuple_s
 	 * length of tuple
      * I don't expect a tuple to ever exceed 255 elements,
      * but if I set this type to S8, a 0-element tuple
-	 * is to small to be allocated.
+	 * is too small to be allocated.
 	 */
     int16_t length;
     /** array of ptrs to objs */
@@ -122,5 +122,15 @@ PmReturn_t tuple_new(uint16_t n, pPmObj_t *r_ptuple);
  * @return  Return status
  */
 PmReturn_t tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple);
+
+/**
+ * Get the object in the tuple at the index.
+ *
+ * @param   pobj Ptr to tuple obj
+ * @param   index Index into tuple
+ * @param   r_pobj Return; ptr to return obj
+ * @return  Return status
+ */
+PmReturn_t tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj);
 
 #endif /* __TUPLE_H__ */

@@ -150,6 +150,30 @@ tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
 }
 
 
+PmReturn_t
+tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj)
+{
+    PmReturn_t retval = PM_RET_OK;
+
+    /* Adjust for negative index */
+    if (index < 0)
+    {
+        index += ((pPmTuple_t)ptup)->length;
+    }
+
+    /* Raise IndexError if index is out of bounds */
+    if ((index < 0) || (index > ((pPmTuple_t)ptup)->length))
+    {
+        PM_RAISE(retval, PM_RET_EX_INDX);
+    }
+
+    /* Get the tuple item */
+    *r_pobj = ((pPmTuple_t)ptup)->val[index];
+
+    return retval;
+}
+
+
 /***************************************************************
  * Test
  **************************************************************/

@@ -227,4 +227,14 @@ int8_t obj_isFalse(pPmObj_t pobj);
  */
 int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
 
+/**
+ * Returns the object from sequence[index]
+ *
+ * @param   pobj Ptr to sequence object to get object from
+ * @param   index Int index into the sequence
+ * @param   r_pobj Return arg, object from sequence
+ * @return  Return status
+ */
+PmReturn_t seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj);
+
 #endif /* __OBJ_H__ */
