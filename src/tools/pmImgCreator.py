@@ -162,7 +162,7 @@ UNIMPLEMENTED_BCODES = (
 #    "UNARY_NEGATIVE", "UNARY_NOT",
     "UNARY_CONVERT",
 #    "UNARY_INVERT",
-    "BINARY_POWER",
+#    "BINARY_POWER",
 #    "BINARY_MULTIPLY", "BINARY_DIVIDE", "BINARY_MODULO",
 #    "BINARY_ADD", "BINARY_SUBTRACT",
 #    "BINARY_SUBSCR",
@@ -177,7 +177,7 @@ UNIMPLEMENTED_BCODES = (
     "DELETE_SUBSCR",
 #    "BINARY_LSHIFT",
 #    "BINARY_RSHIFT", "BINARY_AND", "BINARY_XOR", "BINARY_OR",
-    "INPLACE_POWER",
+#    "INPLACE_POWER",
 #    "PRINT_EXPR", "PRINT_ITEM", "PRINT_NEWLINE",
 #    "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
 #    "INPLACE_LSHIFT", "INPLACE_RSHIFT",
@@ -781,7 +781,7 @@ class PmImgCreator:
 
         # for each entry create fxn
         for (funcname, funcstr) in self.nativetable:
-            fileBuff.append("static PmReturn_t\n"
+            fileBuff.append("PmReturn_t\n"
                             "%s(pPmFrame_t pframe, signed char numargs)\n"
                             "{\n"
                             "%s\n"

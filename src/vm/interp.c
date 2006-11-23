@@ -73,6 +73,7 @@
 
 extern PmReturn_t (* std_nat_fxn_table[])(pPmFrame_t, signed char);
 extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t, signed char);
+PmReturn_t nat___bi_pow(pPmFrame_t pframe, signed char numargs);
 
 /***************************************************************
  * Functions
@@ -191,9 +192,19 @@ interpret(pPmFunc_t pfunc)
                 continue;
 
             case BINARY_POWER:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
+            case INPLACE_POWER:
+                /* Put args in native frame */
+                gVmGlobal.nativeframe.nf_locals[1] = PM_POP();
+                gVmGlobal.nativeframe.nf_locals[0] = TOS;
+
+                /* CALL NATIVE FXN */
+                retval = nat___bi_pow(FP, 2);
+                /* RETURN FROM NATIVE FXN */
+
+                /* Put result on stack */
+                TOS = gVmGlobal.nativeframe.nf_stack;
+                PM_BREAK_IF_ERROR(retval);
+                continue;
 
             case BINARY_MULTIPLY:
             case INPLACE_MULTIPLY:
@@ -554,7 +565,6 @@ interpret(pPmFunc_t pfunc)
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
 
-            case INPLACE_POWER:
             case PRINT_EXPR:
             case PRINT_ITEM:
             case PRINT_NEWLINE:
