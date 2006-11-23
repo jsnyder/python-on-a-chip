@@ -44,7 +44,7 @@ all : check
 check : vm $(EXECS)
 
 vm :
-	make -C ../../vm
+	make -C ../../vm DEBUG=true
 
 # Removes files made by default make
 clean :

@@ -80,7 +80,7 @@ def id(o):
 #elif defined(TARGET_DESKTOP) || defined(TARGET_ARM)
     retval = int_new((int32_t)NATIVE_GET_LOCAL(0), &pr);
 #else
-#error Code is not implemented for the desired target
+#error Native function, __bi.id(), is not implemented for the desired target
 #endif
     NATIVE_SET_TOS(pr);
 

@@ -38,6 +38,7 @@
  *
  * Log:
  *
+ * 2006/11/18   #54: Change seglist API
  * 2002/12/20   First.
  */
 
@@ -50,7 +51,7 @@
  **************************************************************/
 
 /** Defines the length of the object array in a segment */
-#define SEGLIST_OBJS_PER_SEG    8
+#define SEGLIST_OBJS_PER_SEG 8
 
 
 /***************************************************************
@@ -83,7 +84,7 @@ typedef struct Seglist_s
     /** ptr to last segment */
     pSegment_t sl_lastseg;
     /** index of (one past) last obj in last segment */
-    int8_t sl_lastindx;
+    int16_t sl_length;
 } Seglist_t, *pSeglist_t;
 
 
@@ -105,8 +106,7 @@ typedef struct Seglist_s
  * @param indx Index of object to obtain
  * @return Return status
  */
-PmReturn_t
-seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);
+PmReturn_t seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);
 
 
 /**
@@ -120,31 +120,20 @@ PmReturn_t seglist_clear(pSeglist_t pseglist);
 
 
 /**
- * Find the first obj equal to pobj in the seglist.
- * Start searching the list at the given segnum and indx.
- * Return a boolean if an equal object is found,
- * and the segment number and index of that obj (by reference).
+ * Finds the first obj equal to pobj in the seglist.
+ * Starts searching the list at the given segnum and indx.
  *
  * @param   pseglist The seglist to search
  * @param   pobj The object to match
- * @param   r_segnum Return; The number of segment of where
- *              to start the search.  Zero is the first segment.
- *              If a match is found, return the segment number
- *              by reference.  If no match is found,
- *              this value is undefined.
- * @param   r_indx Return; the index into the segment of where
- *              to start the search.
- *              Zero is the first obj in the segment.
- *              If a match is found, return the index
- *              by reference.  If no match is found,
- *              this value is undefined.
+ * @param   r_index Return arg; the index of where to start the search.
+ *          If a match is found, return the index by reference.
+ *          If no match is found, this value is undefined.
  * @return  Return status; PM_RET_OK means a matching object
  *          was found.  PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_findEqual(pSeglist_t pseglist,
                              pPmObj_t pobj,
-                             int8_t *r_segnum,
-                             int8_t *r_indx);
+                             int16_t *r_index);
 
 
 /**
@@ -153,16 +142,14 @@ PmReturn_t seglist_findEqual(pSeglist_t pseglist,
  * are the coordinates of the object to get.
  *
  * @param   pseglist Ptr to seglist to scan
- * @param   pobj Ptr to object found at the coordinates (return)
- * @param   segnum Segment number coordinate
- * @param   indx Index coordinate within segment
+ * @param   index Index of item to get
+ * @param   r_pobj Return arg; Ptr to object at the index
  * @return  Return status; PM_RET_OK if object found.
  *          PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_getItem(pSeglist_t pseglist,
-                           int8_t segnum,
-                           int8_t segindx,
-                           pPmObj_t * r_pobj);
+                           int16_t index,
+                           pPmObj_t *r_pobj);
 
 
 /**
@@ -171,7 +158,7 @@ PmReturn_t seglist_getItem(pSeglist_t pseglist,
  * @param   r_pseglist return; Address of ptr to new seglist
  * @return  Return status
  */
-PmReturn_t seglist_new(pSeglist_t * r_pseglist);
+PmReturn_t seglist_new(pSeglist_t *r_pseglist);
 
 
 /**
@@ -184,15 +171,14 @@ PmReturn_t seglist_new(pSeglist_t * r_pseglist);
  *
  * @param   pseglist Ptr to seglist in which object is placed.
  * @param   pobj Ptr to object which is inserted.
- * @param   index Index within seglist
+ * @param   index Index into seglist before which item is inserted
  * @return  Return status; PM_RET_OK if the item was inserted.
  *              Any error condition comes from heap_getChunk.
  */
-PmReturn_t
-seglist_insertItem(pSeglist_t pseglist,
-                   pPmObj_t pobj,
-                   int8_t segnum,
-                   int8_t segindx);
+PmReturn_t seglist_insertItem(pSeglist_t pseglist,
+                              pPmObj_t pobj,
+                              int16_t index);
+
 /**
  * Put the item in the designated slot and segment.
  * This is intended to be used after seglist_findEqual()
@@ -200,14 +186,12 @@ seglist_insertItem(pSeglist_t pseglist,
  *
  * @param   pseglist Ptr to seglist in which object is placed.
  * @param   pobj Ptr to object which is set.
- * @param   segnum Segment number
- * @param   segindx Index within segment
+ * @param   index Index into seglist of where to put object.
  * @return  Return status; PM_RET_OK if object is set.
  *              PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_setItem(pSeglist_t pseglist,
                            pPmObj_t pobj,
-                           int8_t segnum,
-                           int8_t segindx);
+                           int16_t index);
 
 #endif /* __SEGLIST_H__ */

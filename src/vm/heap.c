@@ -637,3 +637,11 @@ heap_freeChunk(pPmObj_t ptr)
 
     return PM_RET_OK;
 }
+
+
+PmReturn_t
+heap_getAvail(uint16_t *r_avail)
+{
+    *r_avail = pmHeap.avail;
+    return PM_RET_OK;
+}

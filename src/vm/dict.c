@@ -120,8 +120,7 @@ PmReturn_t
 dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
 {
     PmReturn_t retval = PM_RET_OK;
-    int8_t segnum = 0;
-    int8_t indx = 0;
+    int16_t indx = 0;
 
     /* if null parms, raise SystemError */
     if ((pdict == C_NULL)
@@ -143,39 +142,22 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
     /* XXX if key's hash hasn't been calculated */
 
     /* check for matching key */
-    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys,
-                               pkey,
-                               &segnum,
-                               &indx);
+    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
 
     /* if found a matching key, replace val obj */
     if (retval == PM_RET_OK)
     {
-        retval = seglist_setItem(((pPmDict_t)pdict)->d_vals,
-                                 pval,
-                                 segnum,
-                                 indx);
-        PM_RETURN_IF_ERROR(retval);
-        /* incr length */
-        ((pPmDict_t)pdict)->length++;
-        return PM_RET_OK;
+        retval = seglist_setItem(((pPmDict_t)pdict)->d_vals, pval, indx);
+        return retval;
     }
 
     /* if no matching key, insert the key,val pair */
     if (retval == PM_RET_NO)
     {
-        retval = seglist_insertItem(((pPmDict_t)pdict)->d_keys,
-                                    pkey,
-                                    0,
-                                    0);
-        /* XXX if error here, dict might be hosed */
+        retval = seglist_insertItem(((pPmDict_t)pdict)->d_keys, pkey, 0);
         PM_RETURN_IF_ERROR(retval);
-        retval = seglist_insertItem(((pPmDict_t)pdict)->d_vals,
-                                    pval,
-                                    0,
-                                    0);
+        retval = seglist_insertItem(((pPmDict_t)pdict)->d_vals, pval, 0);
         PM_RETURN_IF_ERROR(retval);
-        /* incr length */
         ((pPmDict_t)pdict)->length++;
         return PM_RET_OK;
     }
@@ -187,8 +169,7 @@ PmReturn_t
 dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
-    int8_t segnum = 0;
-    int8_t indx = 0;
+    int16_t indx = 0;
 
     /* if dict is null, raise SystemError */
     if (pdict == C_NULL)
@@ -212,10 +193,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     }
 
     /* check for matching key */
-    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys,
-                               pkey,
-                               &segnum,
-                               &indx);
+    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
     /* if key not found, raise KeyError */
     if (retval == PM_RET_NO)
     {
@@ -225,10 +203,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     PM_RETURN_IF_ERROR(retval);
 
     /* key was found, get obj from vals */
-    retval = seglist_getItem(((pPmDict_t)pdict)->d_vals,
-                             segnum,
-                             indx,
-                             r_pobj);
+    retval = seglist_getItem(((pPmDict_t)pdict)->d_vals, indx, r_pobj);
     return retval;
 }
 

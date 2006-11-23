@@ -98,8 +98,6 @@
 #define PM_RAISE(retexn, exn) \
         do \
         { \
-            C_ASSERT(exn >= PM_RET_EX); \
-            C_ASSERT(exn <= PM_RET_EX_WARN); \
             retexn = (exn); \
             gVmGlobal.errFileId = __FILE_ID__; \
             gVmGlobal.errLineNum = (uint16_t)__LINE__; \

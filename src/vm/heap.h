@@ -47,6 +47,15 @@
  * Macros
  **************************************************************/
 
+#ifdef __DEBUG__
+#define DEBUG_PRINT_HEAP_AVAIL(s) \
+    do { uint16_t n; heap_getAvail(&n); printf(s "heap avail = %d\n", n); } \
+    while (0)
+#else
+#define DEBUG_PRINT_HEAP_AVAIL(s)
+#endif
+
+
 /***************************************************************
  * Types
  **************************************************************/
@@ -97,5 +106,13 @@ PmReturn_t heap_getChunk(uint8_t size, uint8_t **r_pchunk);
  * @param   ptr Pointer to object to free.
  */
 PmReturn_t heap_freeChunk(pPmObj_t);
+
+/**
+ * Returns the number of bytes available in the heap
+ *
+ * @param   r_avail Return arg; number of bytes available in the heap
+ * @return  Return code
+ */
+PmReturn_t heap_getAvail(uint16_t *r_avail);
 
 #endif /* __HEAP_H__ */

@@ -4,15 +4,19 @@
 /* Need to declare this array since no PyMite application is linked */
 const unsigned char usr_nat_fxn_table[] = {};
 
+CuSuite *getSuite_testHeap(void);
 CuSuite *getSuite_testDict(void);
 CuSuite *getSuite_testList(void);
+CuSuite *getSuite_testSeglist(void);
 
 
 int main(void)
 {
     CuString *output = CuStringNew();
-    CuSuite* suite = CuSuiteNew();
+    CuSuite *suite = CuSuiteNew();
 
+    CuSuiteAddSuite(suite, getSuite_testHeap());
+    CuSuiteAddSuite(suite, getSuite_testSeglist());
     CuSuiteAddSuite(suite, getSuite_testDict());
     CuSuiteAddSuite(suite, getSuite_testList());
 

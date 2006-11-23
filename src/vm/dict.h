@@ -48,8 +48,9 @@
 /**
  * Dict
  *
- * Contains ptr to two seglists; 
- * one for keys, the other for values
+ * Contains ptr to two seglists,
+ * one for keys, the other for values;
+ * and a length, the number of key/value pairs.
  */
 typedef struct PmDict_s
 {

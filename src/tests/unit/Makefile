@@ -1,16 +1,14 @@
 SHELL = /bin/sh
 
 TARGET ?= DESKTOP
-CDEFS = -DHEAP_SIZE=0x0D00
-CFLAGS = -I../../vm $(CDEFS)
+HEAP_SIZE ?= 0x1000
+
+CDEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET) -D__DEBUG__=1
+CFLAGS = -g -I../../vm $(CDEFS)
 UT_SOURCES = $(wildcard ut*.c)
 ALL_SOURCES = runTests.c CuTest.c $(UT_SOURCES)
 OBJS = $(ALL_SOURCES:.c=.o)
 PRODUCT = runTests.out
-
-ifeq ($(TARGET), DESKTOP)
-	CDEFS += -DTARGET_DESKTOP
-endif
 
 .PHONY: all check
 
@@ -31,7 +29,7 @@ CuTest.o : CuTest.c
 	$(CC) -c -o $@ $<
 
 vm :
-	make -C ../../vm
+	make -C ../../vm DEBUG=true
 
 # Removes files made by default make
 clean :

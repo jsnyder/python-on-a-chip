@@ -47,6 +47,7 @@
  * Log
  * ---
  *
+ * 2006/11/18   #54: Change seglist API
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -95,57 +96,7 @@
 PmReturn_t
 seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj)
 {
-    PmReturn_t retval = PM_RET_OK;
-    pSegment_t pseg = C_NULL;
-    int8_t i = 0;
-    uint8_t *pchunk;
-
-    /* if this is first item in seg, alloc and link seg */
-    if (pseglist->sl_lastindx == 0)
-    {
-        /* alloc and init new segment */
-        retval = heap_getChunk(sizeof(Segment_t), &pchunk);
-        PM_RETURN_IF_ERROR(retval);
-        pseg = (pSegment_t)pchunk;
-        OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
-        for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
-        {
-            pseg->s_val[i] = C_NULL;
-        }
-        pseg->next = C_NULL;
-
-        /* if this is the first seg, set as root */
-        if (pseglist->sl_rootseg == C_NULL)
-        {
-            pseglist->sl_rootseg = pseg;
-        }
-
-        /* else append the seg to the end */
-        else
-        {
-            pseglist->sl_lastseg->next = pseg;
-        }
-
-        /* either way, this is now the last segment */
-        pseglist->sl_lastseg = pseg;
-    }
-
-    /* else get last seg */
-    else
-    {
-        pseg = pseglist->sl_lastseg;
-    }
-
-    /* put object into segment */
-    pseg->s_val[pseglist->sl_lastindx] = pobj;
-
-    /* increment last index and reset if necessary */
-    if (++(pseglist->sl_lastindx) >= SEGLIST_OBJS_PER_SEG)
-    {
-        pseglist->sl_lastindx = 0;
-    }
-
-    return retval;
+    return seglist_insertItem(pseglist, pobj, pseglist->sl_length);
 }
 
 
@@ -169,181 +120,148 @@ seglist_clear(pSeglist_t pseglist)
     /* clear seglist fields */
     ((pSeglist_t)pseglist)->sl_rootseg = C_NULL;
     ((pSeglist_t)pseglist)->sl_lastseg = C_NULL;
-    ((pSeglist_t)pseglist)->sl_lastindx = 0;
+    ((pSeglist_t)pseglist)->sl_length = 0;
 
     return PM_RET_OK;
 }
 
 
 PmReturn_t
-seglist_findEqual(pSeglist_t pseglist,
-                  pPmObj_t pobj,
-                  int8_t *r_segnum,
-                  int8_t *r_indx)
+seglist_findEqual(pSeglist_t pseglist, pPmObj_t pobj, int16_t *r_index)
 {
-    pSegment_t pseg = C_NULL;
+    pSegment_t pseg;
     int8_t i = 0;
-    PmReturn_t retval;
+    uint8_t segindex;
 
     C_ASSERT(pseglist != C_NULL);
     C_ASSERT(pobj != C_NULL);
+    C_ASSERT((*r_index >= 0));
+    C_ASSERT((*r_index == 0) || (*r_index < pseglist->sl_length));
 
-    /* if index is out of bounds, raise SystemError */
-    if ((*r_indx < 0) || (*r_indx > SEGLIST_OBJS_PER_SEG))
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
-
-    /* set pseg to the segnum'th segment in the list */
+    /* Walk out to the starting segment */
     pseg = pseglist->sl_rootseg;
-    for (i = *r_segnum; i > 0; i--)
+    for (i = (*r_index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
     {
-        /*
-         * if the given segnum is larger than
-         * the number of segments, raise SystemError
-         */
-        if (pseg == C_NULL)
-        {
-            PM_RAISE(retval, PM_RET_EX_SYS);
-            return retval;
-        }
+        C_ASSERT(pseg != C_NULL);
         pseg = pseg->next;
     }
 
-    /* start search from this segment */
-    while (pseg != C_NULL)
+    /* Set the starting index within the segment */
+    segindex = *r_index % SEGLIST_OBJS_PER_SEG;
+
+    /* Search the remaining segments */
+    for ( ; pseg != C_NULL; pseg = pseg->next)
     {
-        while (*r_indx < SEGLIST_OBJS_PER_SEG)
+        while (segindex < SEGLIST_OBJS_PER_SEG)
         {
-            /* if seglist entry is null, we're past the end */
-            if (pseg->s_val[*r_indx] == C_NULL)
+            /* If past the end of the seglist, return no item found */
+            if (*r_index >= pseglist->sl_length)
             {
                 return PM_RET_NO;
             }
 
-            /*
-             * if the two objs are equal, return affirmation
-             * with segnum and indx referring to matching obj.
-             */
-            if (obj_compare(pobj, pseg->s_val[*r_indx]) == C_SAME)
+            /* If items are equal, return with index of found item */
+            if (obj_compare(pobj, pseg->s_val[segindex]) == C_SAME)
             {
                 return PM_RET_OK;
             }
-            (*r_indx)++;
+
+            /* Proceed to next item */
+            segindex++;
+            (*r_index)++;
         }
 
-        /* move on to next segment */
-        *r_indx = 0;
-        pseg = pseg->next;
-        (*r_segnum)++;
+        /* Proceed to next segment */
+        segindex = 0;
     }
     return PM_RET_NO;
 }
 
 
 PmReturn_t
-seglist_getItem(pSeglist_t pseglist,
-                int8_t segnum,
-                int8_t segindx,
-                pPmObj_t * r_pobj)
+seglist_getItem(pSeglist_t pseglist, int16_t index, pPmObj_t *r_pobj)
 {
-    pSegment_t pseg = pseglist->sl_rootseg;
-    PmReturn_t retval;
+    pSegment_t pseg;
+    int16_t i;
 
-    /* scan to proper seg, error check along the way */
-    for (; segnum > 0; segnum--)
+    C_ASSERT(pseglist != C_NULL);
+    C_ASSERT(index >= 0);
+    C_ASSERT(index < pseglist->sl_length);
+
+    /* Walk out to the proper segment */
+    pseg = pseglist->sl_rootseg;
+    C_ASSERT(pseg != C_NULL);
+    for (i = (index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
     {
-        /* if went past last segment, return nothing */
-        if (pseg == C_NULL)
-        {
-            PM_RAISE(retval, PM_RET_EX_SYS);
-            return retval;
-        }
         pseg = pseg->next;
+        C_ASSERT(pseg != C_NULL);
     }
 
-    /* if indx asks for obj beyond the seglist's last one */
-    if ((pseg == pseglist->sl_lastseg)
-        && (segindx >= pseglist->sl_lastindx))
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
-
-    /* return ptr to obj in this seg at the index */
-    *r_pobj = pseg->s_val[segindx];
+    /* Return ptr to obj in this seg at the index */
+    *r_pobj = pseg->s_val[index % SEGLIST_OBJS_PER_SEG];
     return PM_RET_OK;
 }
 
 
 PmReturn_t
-seglist_insertItem(pSeglist_t pseglist,
-                   pPmObj_t pobj,
-                   int8_t segnum,
-                   int8_t segindx)
+seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
 {
     PmReturn_t retval = PM_RET_OK;
     pSegment_t pseg = C_NULL;
     pPmObj_t pobj1 = C_NULL;
     pPmObj_t pobj2 = C_NULL;
     int8_t indx = 0;
-    int8_t i = 0;
+    int16_t i = 0;
     uint8_t *pchunk;
 
-    /* if the seglist has no segment, insert one */
-    if (pseglist->sl_rootseg == C_NULL)
+    C_ASSERT(index <= pseglist->sl_length);
+
+    /* If this is first item in seg */
+    if ((pseglist->sl_length % SEGLIST_OBJS_PER_SEG) == 0)
     {
-        /* alloc and init segment */
+        /* Alloc and init new segment */
         retval = heap_getChunk(sizeof(Segment_t), &pchunk);
         PM_RETURN_IF_ERROR(retval);
-        pseglist->sl_rootseg = (pSegment_t)pchunk;
-        OBJ_SET_TYPE(*pseglist->sl_rootseg, OBJ_TYPE_SEG);
+        pseg = (pSegment_t)pchunk;
+        OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
+        sli_memset((unsigned char *)pseg->s_val,
+                   0,
+                   SEGLIST_OBJS_PER_SEG * sizeof(pPmObj_t));
+        pseg->next = C_NULL;
 
-        /* seglist refers to the new segment */
-        pseglist->sl_lastseg = pseglist->sl_rootseg;
-        pseglist->sl_lastindx = 0;
-
-        /* if past end of list */
-        if ((segnum != 0) || (segindx != 0))
+        /* If this is the first seg, set as root */
+        if (pseglist->sl_rootseg == C_NULL)
         {
-            PM_RAISE(retval, PM_RET_EX_SYS);
-            return retval;
+            pseglist->sl_rootseg = pseg;
         }
 
-        /* insert obj in seglist */
-        pseglist->sl_rootseg->s_val[0] = pobj;
-        pseglist->sl_lastindx++;
-        return PM_RET_OK;
+        /* Else append the seg to the end */
+        else
+        {
+            pseglist->sl_lastseg->next = pseg;
+        }
+
+        /* Either way, this is now the last segment */
+        pseglist->sl_lastseg = pseg;
     }
 
-    /* else, iterate until pseg pts to segnum'th segment */
-    for (pseg = pseglist->sl_rootseg; segnum > 0; segnum--)
+    /* Else get last seg */
+    else
+    {
+        pseg = pseglist->sl_lastseg;
+    }
+
+    /* Walk out to the proper segment */
+    pseg = pseglist->sl_rootseg;
+    C_ASSERT(pseg != C_NULL);
+    for (i = (index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
     {
         pseg = pseg->next;
-
-        /* if ran past end of list */
-        /* XXX what about inserting several indices past end?
-         * Not knowing the numSegs in the seglist is a reason to dislike seglists.
-         */
-        if (pseg == C_NULL)
-        {
-            PM_RAISE(retval, PM_RET_EX_SYS);
-            return retval;
-        }
+        C_ASSERT(pseg != C_NULL);
     }
 
-    /* if indx asks for obj beyond the seglist's last one */
-    if ((pseg == pseglist->sl_lastseg)
-        && (segindx >= pseglist->sl_lastindx))
-    {
-        /* caller must convert this err to exception */
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
-
-    /* insert obj and ripple copy all those afterward */
-    indx = segindx;
+    /* Insert obj and ripple copy all those afterward */
+    indx = index % SEGLIST_OBJS_PER_SEG;;
     pobj1 = pobj;
     while (pobj1 != C_NULL)
     {
@@ -352,46 +270,21 @@ seglist_insertItem(pSeglist_t pseglist,
         pobj1 = pobj2;
         indx++;
 
-        /* if indx exceeds this seg and need to go to next */
+        /* If indx exceeds this seg, go to next */
         if ((indx >= SEGLIST_OBJS_PER_SEG) && (pobj1 != C_NULL))
         {
-            /* create next seg if needed */
-            if (pseg->next == C_NULL)
-            {
-                retval = heap_getChunk(sizeof(Segment_t), &pchunk);
-                PM_RETURN_IF_ERROR(retval);
-                pseg->next = (Segment_t *)pchunk;
-
-                /* init segment */
-                pseg = pseg->next;
-                OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
-                for (i = 1; i < SEGLIST_OBJS_PER_SEG; i++)
-                {
-                    pseg->s_val[i] = C_NULL;
-                }
-                pseg->next = C_NULL;
-                /* seglist's lastseg pts to new seg */
-                pseglist->sl_lastseg = pseg;
-                pseglist->sl_lastindx = 0; /* incr'd below */
-                /* put obj in seg */
-                pseg->s_val[0] = pobj1;
-                pobj1 = C_NULL;
-            }
-            /* else skip to next seg and continue */
-            else
-            {
-                pseg = pseg->next;
-                indx = 0;
-            }
+            pseg = pseg->next;
+            C_ASSERT(pseg != C_NULL);
+            indx = 0;
         }
     }
-    pseglist->sl_lastindx++;
+    pseglist->sl_length++;
     return retval;
 }
 
 
 PmReturn_t
-seglist_new(pSeglist_t * r_pseglist)
+seglist_new(pSeglist_t *r_pseglist)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -401,43 +294,30 @@ seglist_new(pSeglist_t * r_pseglist)
     OBJ_SET_TYPE(**r_pseglist, OBJ_TYPE_SGL);
     (*r_pseglist)->sl_rootseg = C_NULL;
     (*r_pseglist)->sl_lastseg = C_NULL;
-    (*r_pseglist)->sl_lastindx = 0;
+    (*r_pseglist)->sl_length = 0;
     return retval;
 }
 
 
 PmReturn_t
-seglist_setItem(pSeglist_t pseglist,
-                pPmObj_t pobj,
-                int8_t segnum,
-                int8_t segindx)
+seglist_setItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
 {
-    pSegment_t pseg = pseglist->sl_rootseg;
-    PmReturn_t retval;
+    pSegment_t pseg;
+    int16_t i;
 
-    /* scan to proper seg, error check along the way */
-    for (; segnum > 0; segnum--)
+    C_ASSERT(index <= pseglist->sl_length);
+
+    /* Walk out to the proper segment */
+    pseg = pseglist->sl_rootseg;
+    C_ASSERT(pseg != C_NULL);
+    for (i = (index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
     {
         pseg = pseg->next;
-
-        /* if ran past end of list, raise SystemError */
-        if (pseg == C_NULL)
-        {
-            PM_RAISE(retval, PM_RET_EX_SYS);
-            return retval;
-        }
+        C_ASSERT(pseg != C_NULL);
     }
 
-    /* if indx is beyond the seglist's end, raise SystemError */
-    if ((pseg == pseglist->sl_lastseg) &&
-        (segindx >= pseglist->sl_lastindx))
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
-
-    /* set ptr to obj in this seg at the index */
-    pseg->s_val[segindx] = pobj;
+    /* Set item in this seg at the index */
+    pseg->s_val[index % SEGLIST_OBJS_PER_SEG] = pobj;
     return PM_RET_OK;
 }
 

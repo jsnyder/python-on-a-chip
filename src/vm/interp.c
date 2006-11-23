@@ -196,21 +196,22 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case BINARY_MULTIPLY:
-                /* if both objs are ints, simple multiply */
-                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+            case INPLACE_MULTIPLY:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val *
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val *
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
+                    PM_PUSH(pobj3);
                     continue;
                 }
 
-                /* if it's a list replication operation */
+                /* If it's a list replication operation */
                 else if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
                          && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_LST))
                 {
@@ -225,122 +226,109 @@ interpret(pPmFunc_t pfunc)
 
                     /* list that is copied */
                     pobj2 = PM_POP();
-                    retval = list_replicate(pobj2,
-                                            t16,
-                                            &pobj3);
+                    retval = list_replicate(pobj2, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
                 }
 
-                /* else it's a TypeError */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
 
             case BINARY_DIVIDE:
-                /* if both objs are ints, simple divide */
-                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
-                {
-                    pobj1 = PM_POP();
-
-                    /* ZeroDivisionError */
-                    if (((pPmInt_t)pobj1)->val == 0)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_ZDIV);
-                        break;
-                    }
-                    /* perform division */
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val /
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* else it's a TypeError */
-                else
+            case INPLACE_DIVIDE:
+                /* Raise TypeError if args aren't ints */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
+
+                /* Raise ZeroDivisionError if denominator is zero */
+                if (((pPmInt_t)TOS)->val == 0)
+                {
+                    PM_RAISE(retval, PM_RET_EX_ZDIV);
+                    break;
+                }
+
+                /* Otherwise perform operation */
+                pobj1 = PM_POP();
+                pobj2 = PM_POP();
+                retval = int_new(((pPmInt_t)pobj2)->val /
+                                 ((pPmInt_t)pobj1)->val,
+                                 &pobj3);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj3);
+                continue;
 
             case BINARY_MODULO:
-                /* if both objs are ints, perform modulo */
-                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
-                {
-                    pobj1 = PM_POP();
-                    /* ZeroDivisionError */
-                    if (((pPmInt_t)pobj1)->val == 0)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_ZDIV);
-                        break;
-                    }
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val %
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* else it's a TypeError */
-                else
+            case INPLACE_MODULO:
+                /* Raise TypeError if args aren't ints */
+                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
+                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
+
+                /* Raise ZeroDivisionError if denominator is zero */
+                if (((pPmInt_t)TOS)->val == 0)
+                {
+                    PM_RAISE(retval, PM_RET_EX_ZDIV);
+                    break;
+                }
+
+                /* Otherwise perform operation */
+                pobj1 = PM_POP();
+                pobj2 = PM_POP();
+                retval = int_new(((pPmInt_t)pobj2)->val %
+                                 ((pPmInt_t)pobj1)->val,
+                                 &pobj3);
+                PM_BREAK_IF_ERROR(retval);
+                PM_PUSH(pobj3);
+                continue;
 
             case BINARY_ADD:
-                /* if both objs are ints, perform the op */
+            case INPLACE_ADD:
+                /* If both objs are ints, perform the op */
                 if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val +
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val +
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
+                    PM_PUSH(pobj3);
                     continue;
                 }
 
-                /* else it's a TypeError */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
 
             case BINARY_SUBTRACT:
-                /* if both objs are ints, perform the op */
+            case INPLACE_SUBTRACT:
+                /* If both objs are ints, perform the op */
                 if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
                     pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val -
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val -
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
+                    PM_PUSH(pobj3);
                     continue;
                 }
 
-                /* else it's a TypeError */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
 
             case BINARY_SUBSCR:
                 /* Implements TOS = TOS1[TOS]. */
@@ -425,174 +413,6 @@ interpret(pPmFunc_t pfunc)
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
-            case INPLACE_ADD:
-                if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
-                {
-                    /* if int is constant, make new result */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val +
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                    }
-
-                    /* else result stores in-place */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val +=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                    }
-                    continue;
-                }
-
-                /* TypeError; unsupported type */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-            case INPLACE_SUBTRACT:
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
-                {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val -
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val -=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                    }
-                    continue;
-                }
-
-                /* TypeError; unsupported type */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-            case INPLACE_MULTIPLY:
-                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
-                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
-                {
-                    /* if target obj is a constant obj */
-                    if (OBJ_IS_CONST(*TOS1)) {
-                        pobj1 = PM_POP();
-                        retval = int_new(
-                                    ((pPmInt_t)PM_POP())->val *
-                                    ((pPmInt_t)pobj1)->val,
-                                    &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                    }
-
-                    /* otherwise do true in-place operation */
-                    else
-                    {
-                        ((pPmInt_t)TOS1)->val *=
-                                ((pPmInt_t)TOS)->val;
-                        SP--;
-                    }
-                    continue;
-                }
-
-                /* TypeError; unsupported type */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-            case INPLACE_DIVIDE:
-                /* TypeError; unsupported type */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* ZeroDivisionError */
-                if (((pPmInt_t)TOS)->val == 0)
-                {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val /
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val /=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                }
-                continue;
-
-            case INPLACE_MODULO:
-                /* TypeError; unsupported type */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* ZeroDivisionError */
-                if (((pPmInt_t)TOS)->val == 0)
-                {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val %
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val %=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                }
-                continue;
-
             case STORE_SUBSCR:
                 /* implements TOS1[TOS] = TOS2 */
                 pobj1 = PM_POP();
@@ -635,93 +455,104 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case BINARY_LSHIFT:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
+            case INPLACE_LSHIFT:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
+                    pobj1 = PM_POP();
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val <<
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
+                    continue;
                 }
 
-                pobj1 = PM_POP();
-                retval = int_new(
-                            ((pPmInt_t)PM_POP())->val <<
-                            ((pPmInt_t)pobj1)->val,
-                            &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
-                continue;
-
-            case BINARY_RSHIFT:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                pobj1 = PM_POP();
-                retval = int_new(
-                            ((pPmInt_t)PM_POP())->val >>
-                            ((pPmInt_t)pobj1)->val,
-                            &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
-                continue;
-
-            case BINARY_AND:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                pobj1 = PM_POP();
-                retval = int_new(
-                            ((pPmInt_t)PM_POP())->val &
-                            ((pPmInt_t)pobj1)->val,
-                            &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
-                continue;
-
-            case BINARY_XOR:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
+                /* Otherwise raise a TypeError */
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
+
+            case BINARY_RSHIFT:
+            case INPLACE_RSHIFT:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                {
+                    pobj1 = PM_POP();
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val >>
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
+                    continue;
                 }
 
-                pobj1 = PM_POP();
-                retval = int_new(
-                            ((pPmInt_t)PM_POP())->val ^
-                            ((pPmInt_t)pobj1)->val,
-                            &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
-                continue;
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
+
+            case BINARY_AND:
+            case INPLACE_AND:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                {
+                    pobj1 = PM_POP();
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val &
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
+                    continue;
+                }
+
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
+
+            case BINARY_XOR:
+            case INPLACE_XOR:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
+                {
+                    pobj1 = PM_POP();
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val ^
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
+                    continue;
+                }
+
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
 
             case BINARY_OR:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
+            case INPLACE_OR:
+                /* If both objs are ints, perform the op */
+                if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
+                    && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_INT))
                 {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
+                    pobj1 = PM_POP();
+                    pobj2 = PM_POP();
+                    retval = int_new(((pPmInt_t)pobj2)->val |
+                                     ((pPmInt_t)pobj1)->val,
+                                     &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj3);
+                    continue;
                 }
-                pobj1 = PM_POP();
-                retval = int_new(
-                            ((pPmInt_t)PM_POP())->val |
-                            ((pPmInt_t)pobj1)->val,
-                            &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
-                continue;
+
+                /* Otherwise raise a TypeError */
+                PM_RAISE(retval, PM_RET_EX_TYPE);
+                break;
 
             case INPLACE_POWER:
             case PRINT_EXPR:
@@ -732,157 +563,6 @@ interpret(pPmFunc_t pfunc)
                 /* SystemError, unknown opcode */
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
-
-            case INPLACE_LSHIFT:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* If target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1))
-                {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val <<
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val <<=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                    continue;
-                }
-
-            case INPLACE_RSHIFT:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val >>
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val >>=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                    continue;
-                }
-
-            case INPLACE_AND:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val &
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val &=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                    continue;
-                }
-
-            case INPLACE_XOR:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val ^
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val ^=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                    continue;
-                }
-
-            case INPLACE_OR:
-                /* If either arg is not an int, raise a TypeError */
-                if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* if target obj is a constant obj */
-                if (OBJ_IS_CONST(*TOS1)) {
-                    pobj1 = PM_POP();
-                    retval = int_new(
-                                ((pPmInt_t)PM_POP())->val |
-                                ((pPmInt_t)pobj1)->val,
-                                &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj2);
-                    continue;
-                }
-
-                /* otherwise do true in-place operation */
-                else
-                {
-                    ((pPmInt_t)TOS1)->val |=
-                            ((pPmInt_t)TOS)->val;
-                    SP--;
-                    continue;
-                }
 
             case BREAK_LOOP:
                 {
