@@ -68,12 +68,8 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
 {
     PmReturn_t retval = PM_RET_STUB;
 
-    /* if either obj is null, raise ValueError exception */
-    if ((plist == C_NULL) || (pobj == C_NULL))
-    {
-        PM_RAISE(retval, PM_RET_EX_VAL);
-        return retval;
-    }
+    C_ASSERT(plist != C_NULL);
+    C_ASSERT(pobj != C_NULL);
 
     /* if pobj1 is not a list, raise a TypeError exception */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
@@ -203,13 +199,8 @@ list_replicate(pPmObj_t psrclist,
     int8_t length = 0;
     pPmObj_t pitem = C_NULL;
 
-    /* exception if any args are null */
-    if ((psrclist == C_NULL)
-        || (r_pnewlist == C_NULL))
-    {
-        PM_RAISE(retval, PM_RET_EX_VAL);
-        return retval;
-    }
+    C_ASSERT(psrclist != C_NULL);
+    C_ASSERT(r_pnewlist != C_NULL);
 
     /* If first arg is not a list, raise TypeError */
     if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)

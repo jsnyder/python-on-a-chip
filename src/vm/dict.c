@@ -89,9 +89,10 @@ dict_clear(pPmObj_t pdict)
 {
     PmReturn_t retval = PM_RET_OK;
 
-    /* if null or not a dict, raise TypeError */
-    if ((pdict == C_NULL) ||
-        (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC))
+    C_ASSERT(pdict != C_NULL);
+
+    /* Raise TypeError if arg is not a dict */
+    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -122,14 +123,9 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
     PmReturn_t retval = PM_RET_OK;
     int16_t indx = 0;
 
-    /* if null parms, raise SystemError */
-    if ((pdict == C_NULL)
-        || (pkey == C_NULL)
-        || (pval == C_NULL))
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
+    C_ASSERT(pdict != C_NULL);
+    C_ASSERT(pkey != C_NULL);
+    C_ASSERT(pval != C_NULL);
 
     /* if it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
@@ -171,12 +167,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     PmReturn_t retval = PM_RET_OK;
     int16_t indx = 0;
 
-    /* if dict is null, raise SystemError */
-    if (pdict == C_NULL)
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
+    C_ASSERT(pdict != C_NULL);
 
     /* if it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)

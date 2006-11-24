@@ -579,11 +579,7 @@ interpret(pPmFunc_t pfunc)
                     pPmBlock_t pb1 = FP->fo_blockstack;
 
                     /* ensure there's a block */
-                    if (pb1 == C_NULL)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_SYS);
-                        break;
-                    }
+                    C_ASSERT(pb1 != C_NULL);
 
                     /* delete blocks until first loop block */
                     while ((pb1->b_type != B_LOOP)
@@ -646,11 +642,7 @@ interpret(pPmFunc_t pfunc)
                     /* get ptr to top block */
                     pPmBlock_t pb = FP->fo_blockstack;
                     /* If there's no block, raise SystemError */
-                    if (pb == C_NULL)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_SYS);
-                        break;
-                    }
+                    C_ASSERT(pb != C_NULL);
 
                     /* pop block */
                     FP->fo_blockstack = pb->next;

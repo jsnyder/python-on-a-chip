@@ -127,9 +127,10 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 int8_t
 obj_isFalse(pPmObj_t pobj)
 {
-    /* return true if it's NULL or None */
-    if ((pobj == C_NULL) ||
-        (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_NON))
+    C_ASSERT(pobj != C_NULL);
+
+    /* return true if it's None */
+    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_NON)
     {
         return C_TRUE;
     }
@@ -157,17 +158,29 @@ obj_isFalse(pPmObj_t pobj)
         return ((pPmString_t)pobj)->val[0] == C_NULL;
     }
 
-    /* XXX the following are waiting on length fields */
     /* an empty tuple is false */
+    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_TUP)
+    {
+        return ((pPmTuple_t)pobj)->length == 0;
+    }
+
     /* an empty list is false */
+    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_LST)
+    {
+        return ((pPmList_t)pobj)->length == 0;
+    }
+
     /* an empty dict is false */
+    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_DIC)
+    {
+        return ((pPmDict_t)pobj)->length == 0;
+    }
 
     /*
      * the following types are always not false:
      * CodeObj, Function, Module, Class, ClassInstance.
      */
     return C_FALSE;
-    /* XXX what about NATive and CIM code img? */
 }
 
 
