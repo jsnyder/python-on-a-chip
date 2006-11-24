@@ -21,6 +21,9 @@
 # Tests new builtin functions
 #
 
+#
+# Test ord()
+#
 c = ord("t")
 assert c == 116
 
@@ -30,6 +33,10 @@ assert c == 0xff
 c = ord("\0")
 assert c == 0
 
+
+#
+# Test chr()
+#
 n = chr(0)
 assert n == "\0"
 
@@ -43,3 +50,26 @@ i = 32
 while i >= 0:
     assert ord(chr(i)) == i
     i -= 1
+
+#
+# Test abs()
+#
+n = 255
+m = abs(n)
+assert m == n
+assert m is n
+
+n = -42
+m = abs(n)
+assert m is not n
+assert m == -n
+
+
+#
+# Test sum()
+#
+s = [2, 5, 6]
+assert sum(s) == 13
+
+s = (2, 5, 6)
+assert sum(s) == 13

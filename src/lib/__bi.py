@@ -42,6 +42,45 @@ C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
 
 #### FUNCS
 
+def abs(n):
+    """__NATIVE__
+    pPmObj_t pn;
+    pPmObj_t pm;
+    int32_t n;
+    PmReturn_t retval = PM_RET_OK;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Raise ValueError if arg is not int within range(256) */
+    pn = NATIVE_GET_LOCAL(0);
+    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* Push the absolute value onto the stack */
+    n = ((pPmInt_t)pn)->val;
+    if (n >= 0)
+    {
+        NATIVE_SET_TOS(pn);
+    }
+    else
+    {
+        retval = int_new(-n, &pm);
+        NATIVE_SET_TOS(pm);
+    }
+
+    return retval;
+    """
+    pass
+
+
 def chr(n):
     """__NATIVE__
     pPmObj_t ps;
@@ -419,6 +458,65 @@ def range(a, b, c):
 
     /* Return list */
     NATIVE_SET_TOS(pr);
+    return retval;
+    """
+    pass
+
+
+def sum(s):
+    """__NATIVE__
+    pPmObj_t ps;
+    pPmObj_t pn;
+    pPmObj_t po;
+    int32_t n;
+    uint16_t len;
+    uint16_t i;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Get the length of the sequence */
+    ps = NATIVE_GET_LOCAL(0);
+    if (OBJ_GET_TYPE(*ps) == OBJ_TYPE_TUP)
+    {
+        len = ((pPmTuple_t)ps)->length;
+    }
+    else if (OBJ_GET_TYPE(*ps) == OBJ_TYPE_LST)
+    {
+        len = ((pPmTuple_t)ps)->length;
+    }
+    
+    /* Raise TypeError if arg is not a sequence */
+    else
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Calculate the sum of the sequence */
+    n = 0;
+    for (i = 0; i < len; i++)
+    {
+        retval = seq_getSubscript(ps, i, &po);
+
+        /* Raise TypeError if item is not an integer */
+        if (OBJ_GET_TYPE(*po) != OBJ_TYPE_INT)
+        {
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            return retval;
+        }
+
+        /* Add value to sum */
+        n += ((pPmInt_t)po)->val;
+    }
+
+    retval = int_new(n, &pn);
+    NATIVE_SET_TOS(pn);
     return retval;
     """
     pass
