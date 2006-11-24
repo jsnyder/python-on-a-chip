@@ -28,6 +28,7 @@
 # LOG
 # ---
 #
+# 2006/11/24    #26: Implement more builtin functions
 # 2006/08/21    #28: Adapt native libs to use the changed func calls
 # 2002/12/20    Added globals, locals, range.
 # 2002/12/19    Created.
@@ -40,6 +41,39 @@ C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
 
 
 #### FUNCS
+
+def chr(n):
+    """__NATIVE__
+    pPmObj_t ps;
+    pPmObj_t pn;
+    int32_t n;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    pn = NATIVE_GET_LOCAL(0);
+    n = ((pPmInt_t)pn)->val;
+
+    /* Raise ValueError if arg is not int within range(256) */
+    if ((OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT) || (n < 0) || (n > 255))
+
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* Create char string from  integer value */
+    retval = string_newFromChar((uint8_t)n, &ps);
+    NATIVE_SET_TOS(ps);
+    return retval;
+    """
+    pass
+
 
 def globals():
     """__NATIVE__
@@ -213,6 +247,40 @@ def map(f, s):
         PM_RETURN_IF_ERROR(retval);
     }
 
+    return retval;
+    """
+    pass
+
+
+def ord(s):
+    """__NATIVE__
+    pPmObj_t ps;
+    pPmObj_t pn;
+    int32_t n;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    ps = NATIVE_GET_LOCAL(0);
+
+    /* Raise TypeError if arg is not string of length 1 */
+    if ((OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
+        || (((pPmString_t)ps)->length != 1))
+
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Get integer value of character */
+    n = ((pPmString_t)ps)->val[0];
+    retval = int_new(n, &pn);
+    NATIVE_SET_TOS(pn);
     return retval;
     """
     pass
