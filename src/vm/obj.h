@@ -177,7 +177,7 @@ typedef struct PmObj_s
  **************************************************************/
 
 /**
- * Load an object from an image in memory.
+ * Loads an object from an image in memory.
  * Return pointer to object.
  * Leave add pointing one byte past end of obj.
  *
@@ -211,7 +211,7 @@ PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
                            pPmObj_t * r_pobj);
 
 /**
- * Find the boolean value of the given object.
+ * Finds the boolean value of the given object.
  *
  * @param   pobj Ptr to object to test.
  * @return  Nonzero value if object is False.
@@ -219,13 +219,22 @@ PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
 int8_t obj_isFalse(pPmObj_t pobj);
 
 /**
- * Compare two objects for equality.
+ * Compares two objects for equality.
  *
  * @param   pobj1 Ptr to first object.
  * @param   pobj2 Ptr to second object.
  * @return  C_SAME if the items are equivalent, C_DIFFER otherwise.
  */
 int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
+
+/**
+ * Compares two sequences for equality
+ *
+ * @param   pobj1 Ptr to first sequence.
+ * @param   pobj2 Ptr to second sequence.
+ * @return  C_SAME if the seuqences are equivalent, C_DIFFER otherwise.
+ */
+int8_t seq_compare(pPmObj_t pobj1, pPmObj_t pobj2);
 
 /**
  * Returns the object from sequence[index]

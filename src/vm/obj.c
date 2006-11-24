@@ -186,7 +186,7 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
         return C_SAME;
     }
 
-    /* if types are different, return false */
+    /* if types are different, objs must differ */
     if (OBJ_GET_TYPE(*pobj1) != OBJ_GET_TYPE(*pobj2))
     {
         return C_DIFFER;
@@ -208,15 +208,76 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 
         case OBJ_TYPE_TUP:
         case OBJ_TYPE_LST:
+            return seq_compare(pobj1, pobj2);
+
         case OBJ_TYPE_DIC:
         default:
             /* XXX fix these */
             return C_DIFFER;
     }
 
-    /* XXX fix these */
     /* all other types would need same pointer to be true */
     return C_DIFFER;
+}
+
+
+/*
+ * Compares two sequence objects
+ * Assumes both objects are of same type (guaranteed by obj_compare)
+ */
+int8_t
+seq_compare(pPmObj_t pobj1, pPmObj_t pobj2)
+{
+    int16_t l1;
+    int16_t l2;
+    pPmObj_t pa;
+    pPmObj_t pb;
+    PmReturn_t retval;
+    int8_t retcompare;
+
+    /* Get the lengths of supported types or return differ */
+    if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
+    {
+        l1 = ((pPmTuple_t)pobj1)->length;
+        l2 = ((pPmTuple_t)pobj2)->length;
+    }
+    else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
+    {
+        l1 = ((pPmList_t)pobj2)->length;
+        l2 = ((pPmList_t)pobj2)->length;
+    }
+    else
+    {
+        return C_DIFFER;
+    }
+
+    /* Return if the lengths differ */
+    if (l1 != l2)
+    {
+        return C_DIFFER;
+    }
+
+    /* Compare all items in the sequences */
+    while (--l1 >= 0)
+    {
+        retval = seq_getSubscript(pobj1, l1, &pa);
+        if (retval != PM_RET_OK)
+        {
+            return C_DIFFER;
+        }
+        retval = seq_getSubscript(pobj2, l1, &pb);
+        if (retval != PM_RET_OK)
+        {
+            return C_DIFFER;
+        }
+        retcompare = obj_compare(pa, pb);
+        if (retcompare != C_SAME)
+        {
+            return retcompare;
+        }
+    }
+
+    return C_SAME;
 }
 
 
