@@ -123,75 +123,145 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 }
 
 
-/* return true if the obj is false */
+/* Returns true if the obj is false */
 int8_t
 obj_isFalse(pPmObj_t pobj)
 {
     C_ASSERT(pobj != C_NULL);
 
     /* return true if it's None */
-    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_NON)
+    switch (OBJ_GET_TYPE(*pobj))
     {
-        return C_TRUE;
+        /* None evaluates to false */
+        case OBJ_TYPE_NON:
+            return C_FALSE;
+
+        /* Only the integer zero is false */
+        case OBJ_TYPE_INT:
+            return ((pPmInt_t)pobj)->val == 0;
+
+        /* An empty string is false */
+        case OBJ_TYPE_STR:
+            return ((pPmString_t)pobj)->length == 0;
+
+        /* An empty tuple is false */
+        case OBJ_TYPE_TUP:
+            return ((pPmTuple_t)pobj)->length == 0;
+
+        /* An empty list is false */
+        case OBJ_TYPE_LST:
+            return ((pPmList_t)pobj)->length == 0;
+
+        /* An empty dict is false */
+        case OBJ_TYPE_DIC:
+            return ((pPmDict_t)pobj)->length == 0;
+
+        /*
+         * The following types are always not false:
+         * CodeObj, Function, Module, Class, ClassInstance.
+         */
+        default:
+            return C_FALSE;
+    }
+}
+
+
+/* Returns true if the item is in the container object */
+PmReturn_t
+obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
+{
+    PmReturn_t retval = PM_RET_NO;
+    pPmObj_t ptestItem;
+    int16_t i;
+    uint8_t c;
+
+    switch(OBJ_GET_TYPE(*pobj))
+    {
+        case OBJ_TYPE_TUP:
+            /* Iterate over tuple to find item */
+            for (i=0; i<((pPmTuple_t)pobj)->length; i++)
+            {
+                PM_RETURN_IF_ERROR(tuple_getItem(pobj, i, &ptestItem));
+
+                if (obj_compare(pitem, ptestItem) == C_SAME)
+                {
+                    retval = PM_RET_OK;
+                    break;
+                }
+            }
+            break;
+
+        case OBJ_TYPE_STR:
+            /* Raise a TypeError if item is not a string */
+            if ((OBJ_GET_TYPE(*pitem) != OBJ_TYPE_STR))
+            {
+                retval = PM_RET_EX_TYPE;
+                break;
+            }
+
+            /* Empty string is alway present */
+            if (((pPmString_t)pitem)->length == 0)
+            {
+                retval = PM_RET_OK;
+                break;
+            }
+
+            /* Raise a ValueError exception if the string is more than 1 char */
+            else if (((pPmString_t)pitem)->length != 1)
+            {
+                retval = PM_RET_EX_VAL;
+                break;
+            }
+
+            /* Iterate over string to find char */
+            c = ((pPmString_t)pitem)->val[0];
+            for (i=0; i<((pPmString_t)pobj)->length; i++)
+            {
+                if (c == ((pPmString_t)pobj)->val[i])
+                {
+                    retval = PM_RET_OK;
+                    break;
+                }
+            }
+            break;
+
+        case OBJ_TYPE_LST:
+            /* Iterate over list to find item */
+            for (i=0; i<((pPmList_t)pobj)->length; i++)
+            {
+                PM_RETURN_IF_ERROR(list_getItem(pobj, i, &ptestItem));
+
+                if (obj_compare(pitem, ptestItem) == C_SAME)
+                {
+                    retval = PM_RET_OK;
+                    break;
+                }
+            }
+            break;
+
+        case OBJ_TYPE_DIC:
+            /* Check if the item is one of the keys of the dict */
+            retval = dict_getItem(pobj, pitem, &ptestItem);
+            if (retval == PM_RET_EX_KEY)
+            {
+                retval = PM_RET_NO;
+            }
+            break;
+
+        default:
+            retval = PM_RET_EX_TYPE;
+            break;
     }
 
-    /* the integer zero is false */
-    if ((OBJ_GET_TYPE(*pobj) == OBJ_TYPE_INT) &&
-        (((pPmInt_t)pobj)->val == 0))
-    {
-        return C_TRUE;
-    }
-
-    /* the floating point value of 0.0 is false */
-    /*
-    if ((OBJ_GET_TYPE(*pobj) == OBJ_TYPE_FLT) &&
-        (((pPmFloat)pobj)->val == 0.0))
-    {
-        retrun C_TRUE;
-    }
-    */
-
-    /* an empty string is false */
-    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_STR)
-    {
-        /* XXX this is for null-term string */
-        return ((pPmString_t)pobj)->val[0] == C_NULL;
-    }
-
-    /* an empty tuple is false */
-    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_TUP)
-    {
-        return ((pPmTuple_t)pobj)->length == 0;
-    }
-
-    /* an empty list is false */
-    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_LST)
-    {
-        return ((pPmList_t)pobj)->length == 0;
-    }
-
-    /* an empty dict is false */
-    if (OBJ_GET_TYPE(*pobj) == OBJ_TYPE_DIC)
-    {
-        return ((pPmDict_t)pobj)->length == 0;
-    }
-
-    /*
-     * the following types are always not false:
-     * CodeObj, Function, Module, Class, ClassInstance.
-     */
-    return C_FALSE;
+    return retval;
 }
 
 
 int8_t
 obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 {
-    /* null pointers are invalid */
-    if ((pobj1 == C_NULL) || (pobj2 == C_NULL))
-    {
-        return C_DIFFER;
-    }
+    C_ASSERT(pobj1 != C_NULL);
+    C_ASSERT(pobj2 != C_NULL);
 
     /* check if pointers are same */
     if (pobj1 == pobj2)

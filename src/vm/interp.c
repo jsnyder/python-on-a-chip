@@ -921,6 +921,8 @@ interpret(pPmFunc_t pfunc)
                 pobj1 = PM_POP();
                 pobj2 = PM_POP();
                 t16 = GET_ARG();
+
+                /* Handle all integer-to-integer comparisons */
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_INT) &&
                     (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_INT))
                 {
@@ -949,34 +951,57 @@ interpret(pPmFunc_t pfunc)
                     PM_BREAK_IF_ERROR(retval);
                     pobj3 = (t8) ? PM_TRUE : PM_FALSE;
                 }
-                else if (t16 == COMP_EQ)
-                {
-                    if (obj_compare(pobj1, pobj2) == C_SAME)
-                    {
-                        pobj3 = PM_TRUE;
-                    }
-                    else
-                    {
-                        pobj3 = PM_FALSE;
-                    }
-                }
-                else if (t16 == COMP_NE)
-                {
-                    if (obj_compare(pobj1, pobj2) == C_DIFFER)
-                    {
-                        pobj3 = PM_TRUE;
-                    }
-                    else
-                    {
-                        pobj3 = PM_FALSE;
-                    }
-                }
 
-                /* Other compare not implemented yet */
+                /* Handle non-integer comparisons */
                 else
                 {
-                    PM_RAISE(retval, PM_RET_EX_SYS);
-                    break;
+                    retval = PM_RET_OK;
+                    switch (t16)
+                    {
+                        /* Handle equality comparisons for non-intger types */
+                        case COMP_EQ:
+                        case COMP_NE:
+                            pobj3 = PM_FALSE;
+                            t8 = obj_compare(pobj1, pobj2);
+                            if (((t8 == C_SAME) && (t16 == COMP_EQ))
+                                || ((t8 == C_DIFFER) && (t16 == COMP_NE)))
+                            {
+                                pobj3 = PM_TRUE;
+                            }
+                            else
+                            {
+                                pobj3 = PM_FALSE;
+                            }
+                            break;
+
+                        /* Handle membership comparisons */
+                        case COMP_IN:
+                        case COMP_NOT_IN:
+                            pobj3 = PM_FALSE;
+                            retval = obj_isIn(pobj1, pobj2);
+                            if (retval == PM_RET_OK)
+                            {
+                                if (t16 == COMP_IN)
+                                {
+                                    pobj3 = PM_TRUE;
+                                }
+                            }
+                            else if (retval == PM_RET_NO)
+                            {
+                                retval = PM_RET_OK;
+                                if (t16 == COMP_NOT_IN)
+                                {
+                                    pobj3 = PM_TRUE;
+                                }
+                            }
+                            break;
+
+                        /* Other comparisons are not implemented */
+                        default:
+                            PM_RAISE(retval, PM_RET_EX_SYS);
+                            break;
+                    }
+                    PM_BREAK_IF_ERROR(retval);
                 }
                 PM_PUSH(pobj3);
                 continue;

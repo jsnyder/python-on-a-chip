@@ -325,6 +325,9 @@ def ord(s):
     pass
 
 
+#
+# This implementation is needed by bytecodes BINARY_POWER and INPLACE_POWER
+#
 def pow(x, y):
     """__NATIVE__
     pPmObj_t px;

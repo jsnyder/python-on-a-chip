@@ -219,6 +219,14 @@ PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
 int8_t obj_isFalse(pPmObj_t pobj);
 
 /**
+ * Returns the boolean true if the item is in the object
+ *
+ * @param   pobj Ptr to container object
+ * @param   pitem Ptr to item
+ */
+PmReturn_t obj_isIn(pPmObj_t pobj, pPmObj_t pitem);
+
+/**
  * Compares two objects for equality.
  *
  * @param   pobj1 Ptr to first object.
