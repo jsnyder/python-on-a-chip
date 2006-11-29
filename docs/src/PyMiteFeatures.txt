@@ -1,0 +1,261 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+===============
+PyMite Features
+===============
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the features of the Python language that
+are supported by PyMite.  In doing so, it serves as a guide to the user.
+
+Overview
+--------
+
+PyMite is targeted toward 8-bit microcontrollers with limited program and
+random access memories.  In order to operate in this embedded environment,
+PyMite had to sacrifice many features found in desktop Python.
+This document attempts to itemize the features found in PyMite in order
+to convey to the user what is possible when using this programming environment.
+
+Invocation Options and Environment Variables
+--------------------------------------------
+
+Small embedded systems rarely have consoles or an operating system or a
+desktop-style shell-like interface.  Usually, the application is executed
+directly when the target device is powered up or reset.  For these reasons,
+PyMite DOES NOT have any invocation options or observe any environment
+variables.
+
+Lexical Entities
+----------------
+
+Keywords
+~~~~~~~~
+
+PyMite supports the following subset of Python's keywords::
+
+    and         elif        if          not         while
+    assert      else        import      or
+    break       for         in          pass
+    def         global      is          return
+
+PyMite DOES NOT support these keywords::
+
+    class       exec        print
+    continue    finally     raise
+    del         from        try
+    except      lambda      yield
+
+Identifiers
+~~~~~~~~~~~
+
+PyMite observes the same rules as Python for identifiers::
+
+    (letter | "_") (letter | digit | "_")*
+
+However, NO special actions (or inactions) are taken for identifiers
+with the special forms: `_ident`, `__ident__` and `__ident`.
+
+String Literals
+~~~~~~~~~~~~~~~
+
+PyMite supports 8-bits per character strings, BUT NOT Unicode.
+Forms a string literal can take::
+
+    "a string enclosed by double quotes"
+    'another string delimited by single quotes and with a " inside'
+    '''a string containing embedded newlines and quote (') marks, can be
+    delimited with triple quotes.'''
+    """ may also use 3- double quotes as delimiters """
+    r'a raw string where \ are kept literal: handy for regular expressions and windows paths!'
+    R"another raw string"   -- raw strings cannot end with a \
+
+All string literal escape forms are supported except those that describe
+a Unicode character.
+
+=============== ============================================================
+Escape          Meaning
+=============== ============================================================
+\\newline       Ignored (escape newline)
+\\ \\           Backslash (\\)
+\\e             Escape (ESC)
+\\v             Vertical Tab (VT)
+\\'             Single quote (')
+\\f             Formfeed (FF)
+\\0oo           Char with octal value oo
+\\"             Double quote (")
+\\n             Linefeed (LF)
+\\a             Bell (BEL)
+\\r             Carriage Return (CR)
+\\xhh           Char with hex value hh
+\\b             Backspace (BS)
+\\t             Horizontal Tab (TAB)
+\\AnyOtherChar  Left as-is, including the backslash, e.g. str('\z') == '\\z'
+=============== ============================================================
+
+Boolean Constants
+~~~~~~~~~~~~~~~~~
+
+PyMite DOES NOT yet support the ``bool`` datatype or the boolean constants:
+``True`` or ``False``.
+
+Numbers
+~~~~~~~
+
+PyMite supports only the typical 32-bit signed integer number type.
+
+    - Decimal integer: 1234,
+    - Octal integer: 0177 (begins with a 0)
+    - Hex integer: 0xFF (begins with 0x or 0X)
+
+PyMite DOES NOT support Long, Float or Complex numbers.
+
+Sequences
+~~~~~~~~~
+
+PyMite supports String, Tuple and List sequence types
+
+    - String (type str; max length 249 chars)
+      '', '1', "12", 'hello\n'
+    - Tuple (type tuple; max length 32767)
+      () (1,) (1,2) # parentheses are optional if len > 0
+    - List (type list; max length 32767)
+      [] [1] [1,2]
+
+- Indexing is 0-based. Negative indices (usually) mean count backwards from end
+  of sequence.
+- Sequence slicing is NOT fully supported.  Only the sequence-copy form `seq[:]`
+  is supported.
+
+Dictionaries (Mappings)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+PyMite supports Dictionaries having up to 32767 key, value pairs.
+PyMite does NOT enforce that the key be a hashable type; it is the programmer's
+duty to use a proper type as the key to a dict.
+Values can be of any type.
+
+Operator Precedence
+~~~~~~~~~~~~~~~~~~~
+
+PyMite keeps the same operator precedence as Python.
+
+=========================== ================================================
+Operator                    Comment
+=========================== ================================================
+, [...] {...} `...`         Tuple, list & dict. creation; string conv.
+s[i] s[:] s.attr f(...)     Index & copy; attributes, function calls
++x, -x, ~x                  Unary operators
+x**y                        Power
+x*y x/y x%y                 Mult, division, modulo
+x+y x-y                     Addition, subtraction
+x<<y   x>>y                 Bit shifting
+x&y                         Bitwise and
+x^y                         Bitwise exclusive or
+x|y                         Bitwise or
+x<y  x<=y  x>y  x>=y        Comparison
+x==y x!=y                   Comparison
+x is y   x is not y         Identity
+x in s   x not in s  ,      Membership
+not x                       Boolean negation
+x and y                     Boolean and
+x or y                      Boolean or
+=========================== ================================================
+
+PyMite DOES NOT support overriding type operators using the special forms of
+identifiers.  For example, ``__add__()`` WILL NOT implement or override
+the ``+`` operator.
+
+
+Basic Types and Their Operations
+--------------------------------
+
+Comparisons
+~~~~~~~~~~~
+
+=========== ================================================================
+Comparison  Meaning
+=========== ================================================================
+**<**       Strictly less than
+**<=**      Less than or equal to
+**>**       Strictly greater than
+**>=**      Greater than or equal to
+**==**      Equal to
+**!=**      Not equal to
+**is**      Object identity
+**is not**  Negated object identity
+=========== ================================================================
+
+None
+~~~~
+
+``None`` is used as default return value on functions.  Built-in single object.
+``None`` is a constant; trying to bind a value to the name ``None`` is now a
+syntax error.
+
+Boolean Operators
+~~~~~~~~~~~~~~~~~
+
+=================== ========================================================
+Val or Op           Evaluates to
+=================== ========================================================
+``None``, zero      Considered false
+Empty sequences     Considered false
+Empty mappings      Considered false
+All other values    Considered true
+**not** x           True if x is false, else false
+x **or** y          If x is false then y, else x
+x **and** y         If x is false then x, else y
+=================== ========================================================
+
+Built-in Functions
+------------------
+
+Built-in functions are defined in the module ``__bi`` which is automatically
+imported.
+
+=========== ================================================================
+Function    Result
+=========== ================================================================
+abs(x)      The absolute value of the number `x`
+chr(i)      Returns one-character string whose ASCII code is integer i.
+globals()   Returns a dictionary containing the current global variables.
+id()        Returns a unique integer identifier for object.
+len(obj)    Returns the length (the number of items) of a sequence or
+            dictionary.
+locals()    Returns a dictionary containing current local variables.
+map()       <Exists but is not correctly implemented>
+ord(c)      Returns integer ASCII value of c (a string of len 1).
+pow(x,y)    Returns x to power y. See also ``**`` operator.
+range(...)  Returns list of ints from >= start and < end.
+            With 1 arg, list from 0..arg-1.
+            With 2 args, list from start..end-1.
+            With 3 args, list from start up to end by step.
+sum(s)      Returns the sum of a sequence of numbers (not strings).
+            Returns ``0`` when the sequence is empty.
+type(obj)   Returns an integer representing the `type` of an object.
+            See obj.h in PyMite for the value of each type.
+=========== ================================================================
+
+Library Modules
+---------------
+
+PyMite DOES NOT offer any of the library modules from Python.  Instead, PyMite
+offers its own set of library modules, some of which have the same name as
+a module name from Python.
+
+PyMite offers the following library module::
+
+    sys
+
+.. :mode=rest:
