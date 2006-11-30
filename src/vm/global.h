@@ -104,9 +104,6 @@ typedef struct PmVmGlobal_s
     /** The single native frame */
     PmNativeFrame_t nativeframe;
 
-    /** Flag to dis/allow automatic garbage collection */
-    uint8_t auto_gc;
-
     /** PyMite release value for when an error occurs */
     uint8_t errVmRelease;
 

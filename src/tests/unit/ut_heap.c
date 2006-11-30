@@ -124,6 +124,35 @@ ut_heap_freeChunk_000(CuTest *tc)
 }
 
 
+/**
+ * Tests heap_sweep():
+ *      retval is OK
+ *      avail returns to pre-allocated value after sweep
+ */
+void
+ut_heap_sweep_000(CuTest *tc)
+{
+    uint16_t avail1;
+    uint16_t avail2;
+    uint8_t *pchunk;
+    PmReturn_t retval;
+
+    retval = heap_init();
+    retval = heap_getAvail(&avail1);
+    retval = heap_getChunk(16, &pchunk);
+    retval = heap_getChunk(32, &pchunk);
+    retval = heap_getChunk(24, &pchunk);
+    retval = heap_getAvail(&avail2);
+    CuAssertTrue(tc, avail2 != avail1);
+
+    retval = heap_collectGarbage();
+    CuAssertTrue(tc, retval == PM_RET_OK);
+
+    retval = heap_getAvail(&avail2);
+    CuAssertTrue(tc, avail2 == avail1);
+}
+
+
 /** Make a suite from all tests in this file */
 CuSuite *getSuite_testHeap(void)
 {
@@ -133,6 +162,7 @@ CuSuite *getSuite_testHeap(void)
 	SUITE_ADD_TEST(suite, ut_heap_getChunk_000);
 	SUITE_ADD_TEST(suite, ut_heap_getAvail_000);
 	SUITE_ADD_TEST(suite, ut_heap_freeChunk_000);
+	SUITE_ADD_TEST(suite, ut_heap_sweep_000);
 
     return suite;
 }

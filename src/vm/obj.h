@@ -51,6 +51,8 @@
 #define OBJ_SET_CONST(obj, const) (obj).od.od_const = (const)
 #define OBJ_GET_GCVAL(obj) ((obj).od.od_gcval)
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
+#define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
+#define OBJ_SET_GCFREE(obj, free) ((obj).od.od_gcfree = (uint8_t)free)
 #define OBJ_GET_SIZE(obj) ((obj).od.od_size)
 #define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (size)
 #define OBJ_GET_TYPE(obj) ((obj).od.od_type)
@@ -147,7 +149,10 @@ typedef struct PmObjDesc_s
     PmType_t    od_type:5;
 
     /** garbage collection mark value */
-    uint8_t od_gcval:2;
+    uint8_t od_gcval:1;
+
+    /** Garbage collection free flag */
+    uint8_t od_gcfree:1;
 
     /** constant pool object flag */
     uint8_t od_const:1;
