@@ -20,6 +20,7 @@ ID  FILE
 0x11  sli.c
 0x12  string.c
 0x13  tuple.c
+0x14  seq.c       created 2006/11/29
 
 ---------------- IDs for Unit Test Files
 0x90  utest.c

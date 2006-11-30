@@ -174,6 +174,7 @@ typedef enum PmReturn_e
 #include "sli.h"
 #include "mem.h"
 #include "obj.h"
+#include "seq.h"
 #include "heap.h"
 #include "int.h"
 #include "string.h"

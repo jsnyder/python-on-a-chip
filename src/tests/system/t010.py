@@ -58,3 +58,11 @@ c,b,a = [2,5,6]
 assert c == 2
 assert b == 5
 assert a == 6
+
+#
+# #59: Improve bytecode UNPACK_SEQUENCE
+#
+a,b,c = "256"
+assert a == "2"
+assert b == "5"
+assert c == "6"

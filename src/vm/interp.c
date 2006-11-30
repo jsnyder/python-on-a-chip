@@ -686,24 +686,39 @@ interpret(pPmFunc_t pfunc)
                 break;
 
             case UNPACK_SEQUENCE:
-                /* get expected size of the sequence */
-                t16 = GET_ARG();
                 /* get ptr to sequence */
                 pobj1 = PM_POP();
 
-                /* Push sequence's objs onto stack */
-                if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
-                    || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST))
+                /*
+                 * Get the length of the sequence; this will
+                 * raise TypeError if obj is not a sequence.
+                 *
+                 * #59: Unpacking to a Dict shall not be supported
+                 */
+                retval = seq_getLength(pobj1, &t16);
+                if (retval != PM_RET_OK)
                 {
-                    for (; --t16 >= 0; )
-                    {
-                        retval = seq_getSubscript(pobj1, t16, &pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                        PM_PUSH(pobj2);
-                    }
-                    /* Test again outside the for loop */
-                    PM_BREAK_IF_ERROR(retval);
+                    GET_ARG();
+                    break;
                 }
+
+                /* Raise ValueError if seq length does not match num args */
+                if (t16 != GET_ARG())
+                {
+                    PM_RAISE(retval, PM_RET_EX_VAL);
+                    break;
+                }
+
+                /* Push sequence's objs onto stack */
+                for (; --t16 >= 0; )
+                {
+                    retval = seq_getSubscript(pobj1, t16, &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    PM_PUSH(pobj2);
+                }
+
+                /* Test again outside the for loop */
+                PM_BREAK_IF_ERROR(retval);
                 continue;
 
             case STORE_ATTR:
