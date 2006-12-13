@@ -257,4 +257,13 @@ PyMite offers the following library module::
 
     sys
 
+Thanks
+------
+
+The author would like to thank Richard Gruet for his work creating
+the `Python Quick Reference`_ which was of great assistance in the
+creation of this document.
+
+.. _`Python Quick Reference`: http://rgruet.free.fr/
+
 .. :mode=rest:

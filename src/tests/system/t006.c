@@ -52,7 +52,10 @@ int main(void)
 
     /* The module image list terminator must be a null */
     pimg -= 1;
-    C_ASSERT(*pimg == C_NULL);
+    if (*pimg != C_NULL)
+    {
+        return PM_RET_EX_SYS;
+    }
 
     /* Read in the usrlib modules */
     pimg = (uint8_t *)&usrlib_img;
@@ -61,7 +64,10 @@ int main(void)
 
     /* The module image list terminator must be a null */
     pimg -= 1;
-    C_ASSERT(*pimg == C_NULL);
+    if (*pimg != C_NULL)
+    {
+        return PM_RET_EX_SYS;
+    }
 
     pm_reportResult(retval);
     return retval;

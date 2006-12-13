@@ -4,7 +4,7 @@ TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x1000
 
 CDEFS = -DHEAP_SIZE=$(HEAP_SIZE) -DTARGET_$(TARGET) -D__DEBUG__=1
-CFLAGS = -g -I../../vm $(CDEFS)
+CFLAGS = -g -ggdb -I../../vm $(CDEFS)
 UT_SOURCES = $(wildcard ut*.c)
 ALL_SOURCES = runTests.c CuTest.c $(UT_SOURCES)
 OBJS = $(ALL_SOURCES:.c=.o)

@@ -11,7 +11,7 @@ HEAP_SIZE ?= 0x1000
 
 PMIMGCREATOR := ../tools/pmImgCreator.py
 DEFS = -DTARGET_$(TARGET) -DHEAP_SIZE=$(HEAP_SIZE)
-CFLAGS = -g -Os -Wall -gstabs -Wstrict-prototypes -Werror $(DEFS)
+CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(DEFS)
 ARFLAGS := rcs
 SOURCE_IMG := pmstdlib_img.c
 SOURCE_NAT := pmstdlib_nat.c
@@ -20,7 +20,7 @@ OBJECTS = $(SOURCES:.c=.o)
 PRODUCT_VM := libpmvm.a
 
 ifeq ($(DEBUG),true)
-	DEFS += -D__DEBUG__=1
+	DEFS += -g -ggdb -D__DEBUG__=1
 endif
 ifeq ($(TARGET), DESKTOP)
 	CFLAGS += -ansi

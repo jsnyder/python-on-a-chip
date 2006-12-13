@@ -92,13 +92,9 @@ void pm_reportResult(PmReturn_t result)
     {
         puts("Ok.");
     }
-    else if (result >= PM_RET_ASSERT_FAIL)
-    {
-        puts("Error.");
-    }
     else
     {
-        printf("Exception: 0x%02X\n", result);
+        printf("Error:     0x%02X\n", result);
         printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
 #if __DEBUG__
         printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);

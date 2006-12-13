@@ -119,7 +119,9 @@ typedef enum PmType_e
     /** Segment (within a seglist) */
     OBJ_TYPE_SEG = 0x14,
     /** Seglist */
-    OBJ_TYPE_SGL = 0x15
+    OBJ_TYPE_SGL = 0x15,
+    /** Sequence iterator */
+    OBJ_TYPE_SQI = 0x16,
 } PmType_t, *pPmType_t;
 
 

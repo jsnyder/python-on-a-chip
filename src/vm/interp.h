@@ -153,7 +153,7 @@ typedef enum PmBcode_e
     UNUSED_06,
     UNUSED_07,
     UNUSED_08,
-    UNUSED_09,
+    NOP,
     UNARY_POSITIVE,             /* d010 */
     UNARY_NEGATIVE,
     UNARY_NOT,
@@ -162,7 +162,7 @@ typedef enum PmBcode_e
     UNARY_INVERT,
     UNUSED_10,                  /* 0x10 */
     UNUSED_11,
-    UNUSED_12,
+    LIST_APPEND,
     BINARY_POWER,
     BINARY_MULTIPLY,            /* d020 */
     BINARY_DIVIDE,
@@ -170,10 +170,10 @@ typedef enum PmBcode_e
     BINARY_ADD,
     BINARY_SUBTRACT,
     BINARY_SUBSCR,
-    UNUSED_1A,
-    UNUSED_1B,
-    UNUSED_1C,
-    UNUSED_1D,
+    BINARY_FLOOR_DIVIDE,
+    BINARY_TRUE_DIVIDE,
+    INPLACE_FLOOR_DIVIDE,
+    INPLACE_TRUE_DIVIDE,
     SLICE_0,                    /* d030 */
     SLICE_1,
     SLICE_2,                    /* 0x20 */
@@ -212,7 +212,7 @@ typedef enum PmBcode_e
     BINARY_XOR,
     BINARY_OR,
     INPLACE_POWER,
-    UNUSED_44,
+    GET_ITER,
     UNUSED_45,
     PRINT_EXPR,                 /* d070 */
     PRINT_ITEM,
@@ -225,19 +225,22 @@ typedef enum PmBcode_e
     INPLACE_XOR,
     INPLACE_OR,
     BREAK_LOOP,                 /* 0x50 *//* d080 */
-    UNUSED_51,
+    WITH_CLEANUP,
     LOAD_LOCALS,
     RETURN_VALUE,
     IMPORT_STAR,
     EXEC_STMT,
-    UNUSED_56,
+    YIELD_VALUE,
     POP_BLOCK,
     END_FINALLY,
     BUILD_CLASS,
-    STORE_NAME,                 /* d090 */
+
+    /* Opcodes from here have an argument */
+    HAVE_ARGUMENT = 90,         /* d090 */
+    STORE_NAME = 90,
     DELETE_NAME,
     UNPACK_SEQUENCE,
-    UNUSED_5D,
+    FOR_ITER,
     UNUSED_5E,
     STORE_ATTR,
     DELETE_ATTR,                /* 0x60 */
@@ -258,7 +261,7 @@ typedef enum PmBcode_e
     JUMP_IF_FALSE,
     JUMP_IF_TRUE,               /* 0x70 */
     JUMP_ABSOLUTE,
-    FOR_LOOP,
+    FOR_LOOP,                   /* Deprecated in Python, legacy in PyMite */
     UNUSED_73,
     LOAD_GLOBAL,
     UNUSED_75,
@@ -271,7 +274,7 @@ typedef enum PmBcode_e
     LOAD_FAST,
     STORE_FAST,
     DELETE_FAST,
-    SET_LINENO,
+    SET_LINENO,                 /* Deprecated in Python, legacy in PyMite */
     UNUSED_80,                  /* 0x80 */
     UNUSED_81,
     RAISE_VARARGS,              /* d130 */
@@ -288,6 +291,7 @@ typedef enum PmBcode_e
     CALL_FUNCTION_KW,
     CALL_FUNCTION_VAR_KW,
     EXTENDED_ARG,
+    
     UNUSED_90, UNUSED_91, UNUSED_92, UNUSED_93,
     UNUSED_94, UNUSED_95, UNUSED_96, UNUSED_97,
     UNUSED_98, UNUSED_99, UNUSED_9A, UNUSED_9B,

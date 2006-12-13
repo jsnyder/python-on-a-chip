@@ -56,7 +56,7 @@ need only Python 2.0 or later, the ``assert`` statement specifically requires
 Python 2.4.  This is because the bytecode generated from an ``assert``
 statement changed in Python 2.4.  PyMite attempts to keep up-to-date with the
 desktop Python and therefore implements the 2.4 method of handling ``assert``.
-Python 2.5 is not yet supported and should not be used.
+Python 2.5 is supported and may be used.
 
 Available Targets
 -----------------

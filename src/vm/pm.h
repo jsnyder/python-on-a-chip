@@ -113,7 +113,18 @@
 
 #if __DEBUG__
 /** If the boolean expression fails, return the ASSERT error code */
-#define C_ASSERT(boolexpr) if (!((boolexpr))) return PM_RET_ASSERT_FAIL
+#define C_ASSERT(boolexpr) \
+    do \
+    { \
+        if (!((boolexpr))) \
+        { \
+            gVmGlobal.errFileId = __FILE_ID__; \
+            gVmGlobal.errLineNum = (uint16_t)__LINE__; \
+            return PM_RET_ASSERT_FAIL; \
+        }\
+    } \
+    while (0)
+    
 #else
 /** Assert statements are removed from production code */
 #define C_ASSERT(boolexpr)
@@ -159,7 +170,8 @@ typedef enum PmReturn_e
     PM_RET_EX_SYS     = 0xEC,   /**< system error */
     PM_RET_EX_TYPE    = 0xED,   /**< type error */
     PM_RET_EX_VAL     = 0xEE,   /**< value error */
-    PM_RET_EX_WARN    = 0xEF,   /**< warning */
+    PM_RET_EX_STOP    = 0xEF,   /**< stop iteration */
+    PM_RET_EX_WARN    = 0xF0,   /**< warning */
 } PmReturn_t;
 
 

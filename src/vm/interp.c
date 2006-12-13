@@ -141,6 +141,9 @@ interpret(pPmFunc_t pfunc)
                 TOS1 = TOS2;
                 TOS2 = TOS3;
                 TOS3 = pobj1;
+                /* Fallthrough */
+
+            case NOP:
                 continue;
 
             case UNARY_POSITIVE:
@@ -206,6 +209,18 @@ interpret(pPmFunc_t pfunc)
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
+            case GET_ITER:
+                /* Get the sequence from the top of stack */
+                pobj1 = TOS;
+
+                /* Convert sequence to sequence-iterator */
+                retval = seqiter_new(pobj1, &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+
+                /* Put sequence-iterator on top of stack */
+                TOS = pobj2;
+                continue;
+
             case BINARY_MULTIPLY:
             case INPLACE_MULTIPLY:
                 /* If both objs are ints, perform the op */
@@ -249,6 +264,8 @@ interpret(pPmFunc_t pfunc)
 
             case BINARY_DIVIDE:
             case INPLACE_DIVIDE:
+            case BINARY_FLOOR_DIVIDE:
+            case INPLACE_FLOOR_DIVIDE:
                 /* Raise TypeError if args aren't ints */
                 if ((OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                     || (OBJ_GET_TYPE(*TOS1) != OBJ_TYPE_INT))
@@ -721,6 +738,26 @@ interpret(pPmFunc_t pfunc)
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
+            case FOR_ITER:
+                t16 = GET_ARG();
+                pobj1 = TOS;
+
+                /* Get the next item in the sequence iterator */
+                retval = seqiter_getNext(pobj1, &pobj2);
+
+                /* If StopIteration, pop iterator and jump outside loop */
+                if (retval == PM_RET_EX_STOP)
+                {
+                    pobj1 = PM_POP();
+                    retval = PM_RET_OK;
+                    IP += t16;
+                    continue;
+                }
+
+                /* Push the next item onto the stack */
+                PM_PUSH(pobj2);
+                continue;
+
             case STORE_ATTR:
                 /* TOS.name = TOS1 */
                 /* get names index */
@@ -1079,6 +1116,8 @@ interpret(pPmFunc_t pfunc)
                 continue;
 
             case JUMP_ABSOLUTE:
+            case CONTINUE_LOOP:
+                /* Get target offset (bytes) */
                 t16 = GET_ARG();
                 /* jump to base_ip + arg */
                 IP = FP->fo_func->f_co->co_codeaddr + t16;
@@ -1179,11 +1218,6 @@ interpret(pPmFunc_t pfunc)
                 PM_PUSH(pobj2);
                 continue;
 
-            case CONTINUE_LOOP:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case SETUP_LOOP:
             {
                 uint8_t *pchunk;
@@ -1260,10 +1294,8 @@ interpret(pPmFunc_t pfunc)
                                       &pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
-                /* Get the value from the code int */
-                retval = (PmReturn_t)(((pPmInt_t)pobj2)->val & 0xFF);
-
                 /* Raise exception by breaking with retval set to code */
+                PM_RAISE(retval, (PmReturn_t)(((pPmInt_t)pobj2)->val & 0xFF));
                 break;
 
             case CALL_FUNCTION:

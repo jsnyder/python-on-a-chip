@@ -35,7 +35,7 @@
 
 # PyMite Configuration
 PMIMGCREATOR := ../../tools/pmImgCreator.py
-PM_HEAP_SIZE = 0x0D00
+PM_HEAP_SIZE = 0x2000
 
 FLASH_TOOL = SAM7UTILS
 #FLASH_TOOL = UVISION

@@ -300,6 +300,16 @@ heap_markObj(pPmObj_t pobj)
                 ((pSeglist_t)pobj)->sl_rootseg,
                 retval);
             break;
+
+        case OBJ_TYPE_SQI:
+            /* Mark the sequence iterator obj head */
+            OBJ_SET_GCVAL(*pobj, pmHeap.gcval);
+            
+            /* Mark the sequence */
+            HEAP_MARK_IF_UNMARKED(((pPmSeqIter_t)pobj)->si_sequence, retval);
+            PM_RETURN_IF_ERROR(retval);
+            break;
+
     }
     return retval;
 }
