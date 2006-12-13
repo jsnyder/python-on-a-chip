@@ -1,0 +1,129 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+===============
+PyMite Overview
+===============
+
+:Author:    Dean Hall
+:Id:        $Id: PyMiteOverview.txt 133 2006-12-05 20:38:15Z dwhall $
+
+Purpose
+-------
+
+This document gives an overview of PyMite the software and the project
+that develops it.  In doing so, it helps the newcomer understand the scope
+of the project and intended purpose of the software.
+
+Introduction
+------------
+
+PyMite is a flyweight Python interpreter written from scratch to execute on
+8-bit and larger microcontrollers with resources as limited as 32 KiB of
+program memory (flash) and 4 KiB of RAM. PyMite supports a subset of the
+Python syntax and can execute a subset of its bytecodes.
+PyMite can also be compiled, tested and executed on a desktop computer.
+
+PyMite is targeted toward microcontrollers with limited program and
+random access memories.  In order to operate in this embedded environment,
+PyMite had to sacrifice many features found in desktop Python.
+However, the author feels that enough of Python's core abilities are present
+in PyMite to call PyMite a `flyweight Python interpreter` rather than
+a `Basic-like language with Python syntax`.
+
+Intended Audience
+-----------------
+
+With Python's reputation for being friendly to beginning programmers, PyMite
+should appeal to those who are programming microcontrollers for the first time.
+For those familiar with Python, PyMite should provide a rapid development
+environment.  And for those with Python and C or assembly experience, PyMite's
+`Native Function` interface provides a powerful way to embed low-level code
+in a PyMite function.  In short, PyMite has something for all levels of
+programmers.
+
+Python is a language that is easy to learn.  PyMite is just as easy to learn,
+if not more so because there is less to learn.  This should allow brand new
+and novice programmers a straightforward path to writing code for a
+microcontroller.  The entry-level programmer, though, will have to wait until
+PyMite is `ported` to the microcontroller that they are using.  By this, I mean,
+that in order to use the pins and peripherals of a specific microcontroller, 
+a C or assembly code library must be written to interface PyMite to that
+microcontroller.  Atmel's AVR family of 8-bit microcontrollers are a favorite
+of PyMite's lead developer and will likely have the necessary interface library
+available soon.  Atmel's ARM7TDMI family, a.k.a. the `SAM7` family, is also
+a lead candidate for an early porting interface.
+
+PyMite supports the important datatypes an experienced Python programmer
+expects: 32-bit signed integers, Strings, Tuples, Lists and Dictionaries
+(a.k.a. Dicts, Hashes and Maps).  PyMite also supports the basic flow
+control statements and logic statements.  However, some of Python's more
+advanced features such as list comprehension and generators are not supported.
+See `PyMiteFeatures`_ for a detailed description of what PyMite supports.
+Suffice to say, PyMite has enough to keep you busy.
+
+PyMite would not be complete without a way for the Python application code
+to call low-level routines to access the special features of a microcontroller.
+PyMite provides this advanced feature called `Native Function` and has a
+slick and easy way to implement them.  `Native Functions` are written by
+defining a function in Python code with the keyword ``pass`` as the function's
+body, but inserting C code in the function's documentation string.  Macros are
+provided to access the PyMite stack and arguments to the function.  Within
+the C code, the developer may write assembly code using the ``asm()`` statement
+if desired.  The context switch overhead to call a ``Native Function`` is near 
+that of calling a function from within C.  This fast and convenient interface
+between Python code and C code provides the advanced developer a means to access
+the low-level features of the microcontroller and PyMite itself.
+
+.. _PyMiteFeatures: ../html/PyMiteFeatures
+
+Obtaining PyMite
+----------------
+
+The PyMite project is hosted at http://pymite.python-hosting.com.
+The latest PyMite release is available for download from that site.
+The site also explains how to obtain the latest development version
+of PyMite via the Subversion_ source code management tool.
+
+PyMite does not have a set schedule for releases.  The current system is
+to make a release when a significant set of changes have been mainlined
+and a fair set of tests has shown the changes to be working to some degree.
+The determination of "significant" is up to the lead developer.
+
+.. _Subversion: http://subversion.tigris.org/
+
+The PyMite Project
+------------------
+
+http://pymite.python-hosting.com is a Trac_ site which serves as the center 
+for PyMite development.
+The latest PyMite release is available for download from that site.
+The user should be familiar with how to manipulate ``.tar.gz`` files.
+
+PyMite comes as a source distribution only.  The user will have to
+install a cross-compile toolchain in order to build PyMite for a target
+device.  PyMite uses a `Makefile` system and the GCC toolchain by default
+to build the PyMite library file.  The user is also responsible for
+writing a ``main()`` function in C, compiling that to an executable
+and downloading it to the microcontroller.  Sample projects are provided.
+
+.. _Trac: http://trac.edgewall.org/
+
+Future Work
+-----------
+
+The big areas for future work in PyMite are:
+    - Increase ease-of-use for novice users
+    - Provide a useful interface library for the AVR microcontroller
+    - Support threading with a thread library and scheduler
+
+If PyMite does not support your needs now, join the `PyMite discussion list`_
+to make your desire known and help make it happen.
+
+.. _`PyMite discussion list`: http://groups.google.com/group/pymite
+
+.. :mode=rest:
