@@ -62,6 +62,34 @@ in the prescribed order:
       one of the following ways:
 
         - Download and run a known good app on an actual ARM device
+        
+            - ``make clean; make TARGET=ARM; cd src/sample/arm; make``
+            - Connect the AT91SAM7S-EK to the computer via a USB cable
+            - Apply a jumper to JP28 for 5 seconds to clear flash; remove the
+              jumper
+            - Apply a jumper to JP5 for 30 seconds to restore SAM-BA; remove
+              the jumper
+            - Disconnect, pause and reconnect the AT91SAM7S-EK's USB cable
+              to reset the connection
+            - Run ``sam7``::
+
+                % sam7
+                found boot agent
+                Chip Version: 0
+                Embedded Processor: ARM7TDMI
+                NVRAM Region 1 Size: 64 K
+                NVRAM Region 2 Size: 0 K
+                SRAM Size: 16 K
+                Series: AT91SAM7Sxx
+                Page Size: 128 bytes
+                Lock Regions: 16
+                sam7> unlock_regions
+                unlocking region 0: done
+                unlocking region 1: done
+                sam7> flash sample.bin
+                sam7> boot_from_flash
+                sam7> <ctrl+c>
+
         - Build and run a known good app in IAR's Embedded Workbench for Arm,
           Kickstart edition
         - Run a known good app on an ARM simulator
@@ -73,7 +101,8 @@ in the prescribed order:
     - Make the distribution file:
 
         - Get a fresh `export` of the tag so no ``.svn`` artifacts are present;
-          the directory should be named ``pymite-RR``
+          the directory should be named ``pymite-RR``:
+          ``svn export https://svn.pymite.python-hosting.com/tags/pymite-RR pymite-RR``
         - Run ``make dist PYMITE_RELEASE=RR`` where `RR` is the release number
         - Tar and gzip the directory so it is named ``pymite-RR.tgz``
 

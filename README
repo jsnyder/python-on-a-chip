@@ -5,20 +5,18 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   03
+:Release:   04
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
 Purpose
 -------
 
-PyMite is a flyweight Python interpreter written from scratch
-to execute on 8-bit microcontrollers.  PyMite supports a subset
-of the Python 2.0 syntax and can execute a subset of the
-Python 2.0 bytecodes.  PyMite can be compiled, tested and
-executed on a desktop computer and also targeted for 8-bit
-embedded systems with resources as limited as 64 KiB of
-program memory (flash) and 4 KiB of RAM.
+PyMite is a flyweight Python interpreter written from scratch to execute
+on 8-bit and larger microcontrollers with resources as limited as 32 KiB
+of program memory (flash) and 4 KiB of RAM. PyMite supports a subset of
+the Python syntax and can execute a subset of the Python bytecodes.
+PyMite can also be compiled, tested and executed on a desktop computer.
 
 License
 -------
@@ -42,7 +40,7 @@ Public License v2.  A copy of the license is in the file ``LICENSE``.
     Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA  02110-1301, USA
 
-All of the documentation and the images contained therein are
+All of the documentation and images for PyMite are
 licensed under the GNU Free Documentation License.
 
     Copyright 2006 Dean Hall
@@ -61,7 +59,7 @@ system tests on the desktop:
 
     1. In the project root, run ``make`` to create ``libpmvm.a``
     2. In the project root, run ``make check`` to build and run
-       the tests ``src/tests/t0??.*``
+       the unit tests and the system tests.
 
 To build for AVR targets like the ATmega103 (refer to the Makefile for others):
 
@@ -69,17 +67,16 @@ To build for AVR targets like the ATmega103 (refer to the Makefile for others):
        to make an executable for ``src/tests/t003.*``
 
 The development system should have installed the GNU Compiler
-Collection version 3.4 or later and Python 2.0 or later.
-The author also uses avr-gcc to target Atmel AVR
-microcontrollers.
+Collection version 3.4 or later and Python 2.4 or later.
+The author also uses avr-gcc to target Atmel AVR microcontrollers.
 
-PyMite is developed on Mac OS X 10.4 and should also compile on
+PyMite is developed on Mac OS X and should also compile on
 GNU/Linux and Cygwin operating systems.  Since PyMite is so
 deeply embedded, it does not rely on many libraries.
 When compiling for the AVR, it will need avr-libc.
 
 PyMite builds as an archive.  The user should then build his
-own main() function following given examples and link in
+own main() function following examples in ``src/samples/`` and link in
 ``libpmvm.a`` and the appropriate PyMite native libraries.
 
 Discussion
@@ -99,6 +96,7 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
+    - Josh Lifton: Used PyMite in PhD work, donated many code fixes and tests.
     - Philipp Adelt: Enhancements to pmImgCreator.py, issues and fixes.
     - www.webfaction.com: for providing quality, free project hosting on
       www.python-hosting.com
@@ -106,7 +104,35 @@ My personal thanks go out to these people for their contribution to PyMite:
 Release Notes
 -------------
 
-This is PyMite release 03
+This is PyMite release 04
+
+* Release 04, 2006/12/14
+
+    - #62:  Created Release 04 package
+    - #51:  Updated to Python 2.5 bytecodes
+    - #57:  Created doc showing what PyMite does [not] support
+    - #60:  Implemented heap_sweep
+    - #59:  Improved bytecode UNPACK_SEQUENCE
+    - #58:  Added support for keyword "in"
+    - #26:  Implemented more builtin functions
+    - #49:  Removed null check from object methods
+    - #56:  Implemented \*_POWER bytecodes
+    - #17:  Completed the implementation of obj_isEqual()
+    - #54:  Changed seglist API so segnum/segindx are encapsulated
+    - #10:  Created sequence_getSubscript()
+    - #33:  Created new ARM target
+    - #36:  Deprecated dwh_types.h
+    - #53:  Fixed Win32/x86 build break
+    - #38:  Made use of pycscope.py conditional in Makefile
+    - #37:  Created PM_RAISE()
+    - #34:  Converted all "Py" to "Pm"
+    - #50:  Integrated __LINE__ into PM_RAISE
+    - #48:  Organized and deploy unit tests
+    - #45:  Finished interpret loop edits
+    - #35:  Macroized all operations on object descriptors
+    - #42:  Fixed misuse of PM_RAISE
+    - #43:  Fixed mem_getInt()
+    - #40:  Fixed heap chunk transfer
 
 * Release 03, 2006/09/17
 

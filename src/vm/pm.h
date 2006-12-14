@@ -56,7 +56,7 @@
  * It helps locate a defect when used in conjunction with a fileID
  * and line number.
  */
-#define PM_RELEASE  3
+#define PM_RELEASE  4
 
 
 /***************************************************************
