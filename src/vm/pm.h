@@ -157,7 +157,7 @@ typedef enum PmReturn_e
     /* return vals that indicate an exception occured */
     PM_RET_EX         = 0xE0,   /**< general exception */
     PM_RET_EX_EXIT    = 0xE1,   /**< system exit */
-    PM_RET_EX_FLOAT   = 0xE2,   /**< floating point error */
+    PM_RET_EX_IO      = 0xE2,   /**< Input/output error */
     PM_RET_EX_ZDIV    = 0xE3,   /**< zero division error */
     PM_RET_EX_ASSRT   = 0xE4,   /**< assertion error */
     PM_RET_EX_ATTR    = 0xE5,   /**< attribute error */
@@ -202,6 +202,8 @@ typedef enum PmReturn_e
 #include "img.h"
 #include "global.h"
 #include "misc.h"
+#include "plat/plat.h"
+
 
 /***************************************************************
  * Function Protos

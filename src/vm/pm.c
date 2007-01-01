@@ -17,6 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#undef __FILE_ID__
+#define __FILE_ID__ 0x15
 /**
  * PyMite User API
  *
@@ -38,6 +40,10 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
     PmReturn_t retval;
     uint8_t *pimg;
+
+    /* Initialize the hardware platform */
+    retval = plat_init();
+    PM_RETURN_IF_ERROR(retval);
 
     /* Initialize the heap and the globals */
     heap_init();

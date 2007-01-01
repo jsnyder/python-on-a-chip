@@ -40,6 +40,7 @@ PM_HEAP_SIZE = 0x0D00
 
 # MCU name
 MCU = atmega103
+F_CPU = 4000000UL
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -86,7 +87,7 @@ EXTRAINCDIRS =
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS = -D F_CPU=7.3728E6 -D HEAP_SIZE=$(PM_HEAP_SIZE) -D TARGET_AVR
+CDEFS = -D F_CPU=$(F_CPU) -D HEAP_SIZE=$(PM_HEAP_SIZE) -D TARGET_AVR
 
 # Place -I options here
 CINCS = -I../../vm
@@ -396,7 +397,7 @@ extcoff: $(TARGET).elf
 
 # PyMite: The native fxn table and bytecode image are generated from python source
 $(TARGET)_nat.c $(TARGET)_img.c: $(TARGET).py
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
+	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
 
 
 # Target: clean project.
