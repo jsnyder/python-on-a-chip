@@ -56,7 +56,7 @@ def abs(n):
         return retval;
     }
 
-    /* Raise ValueError if arg is not int within range(256) */
+    /* Raise ValueError if arg is not int */
     pn = NATIVE_GET_LOCAL(0);
     if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
     {
@@ -109,6 +109,72 @@ def chr(n):
     /* Create char string from  integer value */
     retval = string_newFromChar((uint8_t)n, &ps);
     NATIVE_SET_TOS(ps);
+    return retval;
+    """
+    pass
+
+
+def eval(co, g):
+    """__NATIVE__
+    PmReturn_t retval;
+    pPmObj_t pco;
+    pPmObj_t pfunc;
+    pPmObj_t pnewframe;
+    pPmObj_t pg = C_NULL;
+
+    /* If wrong number of args, raise TypeError */
+    if ((NATIVE_GET_NUM_ARGS() == 0) || (NATIVE_GET_NUM_ARGS() > 2))
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Raise ValueError if first arg is not a Code Object */
+    pco = NATIVE_GET_LOCAL(0);
+    if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* If 2nd arg exists, raise ValueError if it is not a Dict */
+    if (NATIVE_GET_NUM_ARGS() > 1)
+    {
+        pg = NATIVE_GET_LOCAL(1);
+        if (OBJ_GET_TYPE(*pg) != OBJ_TYPE_DIC)
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+    }
+
+    /* Create module from code object; same as func_new(), but faster */
+    retval = mod_new(pco, &pfunc);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Create frame from module object; globals is set to null */
+    retval = frame_new(pfunc, &pnewframe);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* If 2nd arg exists, use it as the global namespace for the new func */
+    if (NATIVE_GET_NUM_ARGS() > 0)
+    {
+        ((pPmFrame_t)pnewframe)->fo_globals = (pPmDict_t)pg;
+    }
+
+    /* Else use the current global namespace */
+    else
+    {
+        ((pPmFrame_t)pnewframe)->fo_globals = NATIVE_GET_PFRAME()->fo_globals;
+    }
+
+    /*
+     * Insert the new frame under the current frame
+     * so we return/jump to it after exiting from eval
+     */
+    ((pPmFrame_t)pnewframe)->fo_back = NATIVE_GET_PFRAME()->fo_back;
+    NATIVE_GET_PFRAME()->fo_back = (pPmFrame_t)pnewframe;
+    
     return retval;
     """
     pass
@@ -493,7 +559,7 @@ def sum(s):
     {
         len = ((pPmTuple_t)ps)->length;
     }
-    
+
     /* Raise TypeError if arg is not a sequence */
     else
     {
