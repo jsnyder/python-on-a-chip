@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: OBJ_TYPE_THR for thread objects (P.Adelt)
  * 2007/01/09   #75: Printing support (P.Adelt)
  * 2006/09/20   #35: Macroize all operations on object descriptors
@@ -250,8 +251,12 @@ int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
  * Print an object, thereby using objects helpers.
  * 
  * @param   pobj Ptr to object for printing.
+ * @param   marshallString Only has influence on the way strings are printed.
+ *                         If 0, just output the string bytewise. Otherwise,
+ *                         surround with single quotes and escape unprintable
+ *                         characters.
  * @return  Return status
  */
-PmReturn_t obj_print(pPmObj_t pobj);
+PmReturn_t obj_print(pPmObj_t pobj, uint8_t marshallString);
 
 #endif /* __OBJ_H__ */

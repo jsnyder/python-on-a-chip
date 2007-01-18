@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/28   First.
@@ -132,5 +133,15 @@ PmReturn_t tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple);
  * @return  Return status
  */
 PmReturn_t tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj);
+
+#ifdef HAVE_PRINT
+/**
+ * Print out a tuple. Uses obj_print() to print elements.
+ * 
+ * @param pobj Object to print.
+ * @return Return status
+ */
+PmReturn_t tuple_print(pPmObj_t pobj);
+#endif /* HAVE_PRINT */
 
 #endif /* __TUPLE_H__ */

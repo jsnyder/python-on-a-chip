@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: Printing support (P.Adelt)
  * 2006/09/20   #35: Macroize all operations on object descriptors
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
@@ -305,7 +306,7 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 }
 
 PmReturn_t
-obj_print(pPmObj_t pobj)
+obj_print(pPmObj_t pobj, uint8_t marshallString)
 {
     PmReturn_t retval = PM_RET_OK;
 #ifdef HAVE_PRINT
@@ -317,13 +318,16 @@ obj_print(pPmObj_t pobj)
             retval = int_print(pobj);
             break;
         case OBJ_TYPE_STR:
-            retval = string_print(pobj);
+            retval = string_print(pobj, marshallString);
             break;
         case OBJ_TYPE_DIC:
             retval = dict_print(pobj);
             break;
         case OBJ_TYPE_LST:
             retval = list_print(pobj);
+            break;
+        case OBJ_TYPE_TUP:
+            retval = tuple_print(pobj);
             break;
         default:
             /* Otherwise raise a TypeError */

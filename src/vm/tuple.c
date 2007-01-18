@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/28   First.
@@ -173,6 +174,38 @@ tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj)
     return retval;
 }
 
+#ifdef HAVE_PRINT
+PmReturn_t
+tuple_print(pPmObj_t ptup)
+{
+    PmReturn_t retval = PM_RET_OK;
+    int16_t index;
+
+    C_ASSERT(ptup != C_NULL);
+
+    /* if it's not a tuple, raise TypeError */
+    if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+    
+    plat_putByte('(');
+    
+    for (index = 0; index < ((pPmTuple_t)ptup)->length; index++)
+    {
+        if (index != 0)
+        {
+            plat_putByte(',');
+            plat_putByte(' ');
+        }
+        retval = obj_print(((pPmTuple_t)ptup)->val[index], 1);
+        PM_RETURN_IF_ERROR(retval);
+    }
+
+    return plat_putByte(')');
+}
+#endif /* HAVE_PRINT */
 
 /***************************************************************
  * Test

@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/10   #75: Printing support (P.Adelt)
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -263,7 +264,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 
 #ifdef HAVE_PRINT
 PmReturn_t
-string_print(pPmObj_t pstr)
+string_print(pPmObj_t pstr, uint8_t marshall)
 {
     uint8_t i, ch;
     PmReturn_t retval = PM_RET_OK;
@@ -277,8 +278,11 @@ string_print(pPmObj_t pstr)
         return retval;
     }
     
-    retval = plat_putByte('\'');
-    PM_RETURN_IF_ERROR(retval);
+    if (marshall)
+    {
+        retval = plat_putByte('\'');
+        PM_RETURN_IF_ERROR(retval);
+    }
 
     for (i = 0; i<(((pPmString_t)pstr)->length); i++)
     {
@@ -289,12 +293,7 @@ string_print(pPmObj_t pstr)
             retval = plat_putByte('\\');
             PM_RETURN_IF_ERROR(retval);
         }
-        if (ch >= 32 && ch < 128)
-        {
-            retval = plat_putByte(ch);
-            PM_RETURN_IF_ERROR(retval);
-        } 
-        else
+        if (marshall && (ch < 32 || ch >= 128))
         {
             /* Construct escape for the hexdigit */
             uint8_t tBuffer[5];
@@ -316,9 +315,20 @@ string_print(pPmObj_t pstr)
                 retval = plat_putByte(tBuffer[k]);
                 PM_RETURN_IF_ERROR(retval);
             }
+        } 
+        else
+        {
+            /* simply output character */
+            retval = plat_putByte(ch);
+            PM_RETURN_IF_ERROR(retval);
         }
     }
-    return plat_putByte('\'');
+    if (marshall)
+    {
+        retval = plat_putByte('\'');
+    }
+
+    return retval;
 }
 #endif /* HAVE_PRINT */
 

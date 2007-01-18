@@ -37,7 +37,7 @@
  * with these, helper routines in the object type are compiled in that allow
  * printing of the object.
  */
-#define HAVE_PRINT 
+#define HAVE_PRINT
 
 /**
  * When defined, the AVR target configures Timer/Counter0 to generate an

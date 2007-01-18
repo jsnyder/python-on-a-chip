@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/10   #75: Printing support (P.Adelt)
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -168,14 +169,15 @@ PmReturn_t string_copy(pPmObj_t pstr, pPmObj_t *r_pstring);
 
 #ifdef HAVE_PRINT
 /**
- * Sends out a string object bytewise in a way similar to CPythons
- * str._str__(). It escapes non-printable and non-ASCII
- * characters using the "\xhh" escape sequence.
+ * Sends out a string object bytewise. Escaping and framing is configurable
+ * via marshall.
  * 
  * @param pobj Ptr to string object
+ * @param marshall If 0, print out string as is. Otherwise escape unprintable
+ *                 characters and surround string with single quotes.
  * @return Return status
  */
-PmReturn_t string_print(pPmObj_t pstr);
+PmReturn_t string_print(pPmObj_t pstr, uint8_t marshall);
 #endif /* HAVE_STRING */
 
 #endif /* __STRING_H__ */

@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: Changed IMPORT_NAME, printing (P.Adelt)
  * 2007/01/09   #75: Restructed for green threading (P.Adelt)
  * 2006/09/29   #45: Finish interpret loop edits
@@ -600,7 +601,7 @@ interpret(const uint8_t returnOnNoThreads)
             #ifdef HAVE_PRINT
                 /* Print out topmost stack element */
                 pobj1 = PM_POP(); 
-                obj_print(pobj1);
+                obj_print(pobj1, 0);
                 continue;
             #endif /* HAVE_PRINT */
             case PRINT_NEWLINE:

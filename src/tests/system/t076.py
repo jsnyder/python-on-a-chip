@@ -17,18 +17,19 @@
 #
 
 #
-# System Test 060
-# Tests if print operation properly outputs string and a newline. Also tests
+# System Test 076
+# Tests if print operation properly outputs string along with a newline.
+# Also tests proper escaping when outputting strings in dicts and lists.
 # printing integers, dicts and lists.
 #
 
-
-print "escaping \\x80: \x80"
-i = -42
-string = "a string"
-print i
-print string
-l = [i, string]
-d = {i:string}
-print l
+a = "123\x08456"
+b = 987
+c = [a,b]
+d = {a:b}
+e = (c,d)
+print a
+print b
+print c
 print d
+print e

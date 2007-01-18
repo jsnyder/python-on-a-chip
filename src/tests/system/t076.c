@@ -15,7 +15,7 @@
  */
 
 /**
- * System Test 060
+ * System Test 076
  *
  * Prints out some objects. Tests if print operation properly escapes
  * strings and if newline works.
@@ -23,6 +23,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/01   #75: First (P.Adelt)
  */
 
@@ -41,7 +42,7 @@ int main(void)
     retval = pm_init(MEMSPACE_FLASH, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
-    retval = pm_run((uint8_t *)"t060");
+    retval = pm_run((uint8_t *)"t076");
     pm_reportResult(retval);
     return (int)retval;
     #else

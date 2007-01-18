@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: Printing support (P.Adelt)
  * 2007/01/09   #75: implemented list_remove() and list_index() (P.Adelt)
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -324,7 +325,7 @@ list_print(pPmObj_t plist)
         }
         retval = seglist_getItem(vals, index, &pobj1);
         PM_RETURN_IF_ERROR(retval);
-        retval = obj_print(pobj1);
+        retval = obj_print(pobj1, 1);
         PM_RETURN_IF_ERROR(retval);
     }
 
