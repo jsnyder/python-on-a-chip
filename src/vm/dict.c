@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Printing support (P.Adelt)
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/30   First.
@@ -198,6 +199,52 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
     return retval;
 }
 
+#ifdef HAVE_PRINT
+PmReturn_t
+dict_print(pPmObj_t pdict)
+{
+    PmReturn_t retval = PM_RET_OK;
+    int16_t index;
+    pSeglist_t keys, vals;
+    pPmObj_t pobj1;
+
+    C_ASSERT(pdict != C_NULL);
+
+    /* if it's not a dict, raise TypeError */
+    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+    
+    plat_putByte('{');
+    
+    keys = ((pPmDict_t)pdict)->d_keys;
+    vals = ((pPmDict_t)pdict)->d_vals;
+
+    /* if dict is empty, raise KeyError */
+    for (index = 0; index < ((pPmDict_t)pdict)->length; index++)
+    {
+        if (index != 0)
+        {
+            plat_putByte(',');
+            plat_putByte(' ');
+        }
+        retval = seglist_getItem(keys, index, &pobj1);
+        PM_RETURN_IF_ERROR(retval);
+        retval = obj_print(pobj1);
+        PM_RETURN_IF_ERROR(retval);
+
+        plat_putByte(':');
+        retval = seglist_getItem(vals, index, &pobj1);
+        PM_RETURN_IF_ERROR(retval);
+        retval = obj_print(pobj1);
+        PM_RETURN_IF_ERROR(retval);
+    }
+
+    return plat_putByte('}');
+}
+#endif /* HAVE_PRINT */
 
 /***************************************************************
  * Test

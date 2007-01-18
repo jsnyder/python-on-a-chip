@@ -35,17 +35,22 @@
 /***************************************************************
  * Includes
  **************************************************************/
-
+ 
+ #include "thread.h"
+ 
 /***************************************************************
  * Constants
  **************************************************************/
+
+#define INTERP_LOOP_FOREVER          0
+#define INTERP_RETURN_ON_NO_THREADS  1
 
 /***************************************************************
  * Macros
  **************************************************************/
 
 /** frame pointer ; currently for single thread */
-#define FP              pframe
+#define FP              (gVmGlobal.pthread->pframe)
 /** main module pointer (referred to by root frame) */
 #define MP              (gVmGlobal.pmod)
 /** instruction pointer */
@@ -55,6 +60,8 @@
 #define SP              (FP->fo_sp)
 /** memspace where the frame's func's CO came from */
 #define MS              (FP->fo_memspace)
+/** pointer to the globals dict */
+#define GP              (gVmGlobal.globals)
 
 /** top of stack */
 #define TOS             (*(SP - 1))
@@ -108,26 +115,6 @@ typedef enum PmCompare_e
     COMP_IS_NOT,            /**< is not */
     COMP_EXN_MATCH          /**< do exceptions match */
 } PmCompare_t, *pPmCompare_t;
-
-/**
- * Interpreter return values
- *
- * Used to control interpreter loop
- * and indicate return value.
- * Negative values indicate erroneous results.
- * Positive values indicate "continue interpreting",
- * but first do something special like reschedule threads
- * or (TBD) sweep the heap.
- */
-typedef enum PmInterpCtrl_e
-{
-    /* other erroneous exits go here with negative values */
-    INTERP_CTRL_ERR = -1,   /**< Generic error causes exit */
-    INTERP_CTRL_EXIT = 0,   /**< Normal execution exit */
-    INTERP_CTRL_CONT = 1,   /**< Continue interpreting */
-    INTERP_CTRL_RESCHED = 2, /**< Reschedule threads */
-    /* all positive values indicate "continue interpreting" */
-} PmInterpCtrl_t, *pPmInterpCtrl_t;
 
 /**
  * Byte code enumeration
@@ -332,15 +319,41 @@ typedef enum PmBcode_e
  **************************************************************/
 
 /**
- * Interpret the function's bcode.
+ * Interpret the available threads. Does not return.
  *
- * The given obj may be a function, module, or class.
- * Create a frame for the given function and begin to interpret
- * the bytecode to which it refers.
- *
- * @param   pfunc Ptr to function object to interpret.
- * @return  nothing.
+ * @param returnOnNoThreads Loop forever if 0, exit with status if no more
+ *                          threads left.
+ * @return Return status if called with returnOnNoThreads != 0,
+ *         will not return otherwise.
  */
-PmReturn_t interpret(pPmFunc_t pfunc);
+PmReturn_t interpret(const uint8_t returnOnNoThreads);
+
+/**
+ * Selects a thread to run and changes the VM internal variables to
+ * let the switch-loop execute the chosen one in the next iteration.
+ * For the moment the algorithm is primitive and will change the
+ * thread each time it is called in a round-robin fashion.
+ */
+PmReturn_t interp_reschedule(void);
+
+/**
+ * Creates a thread object and adds it to the queue of threads to be
+ * executed while interpret() is running.
+ * 
+ * The given obj may be a function, module, or class.
+ * Creates a frame for the given function.
+ *
+ * @param pfunc Ptr to function to be executed as a thread.
+ * @return Return status
+ */
+PmReturn_t interp_addThread(pPmFunc_t pfunc);
+
+/**
+ * Set reschedule flag.
+ * @param boolean Reschedule on next occasion if boolean is true; clear
+ *                the flag otherwise.
+ */
+void interp_setRescheduleFlag(uint8_t boolean);
+
 
 #endif /* __INTERP_H__ */

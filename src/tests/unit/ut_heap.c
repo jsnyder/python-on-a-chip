@@ -156,13 +156,13 @@ ut_heap_sweep_000(CuTest *tc)
 /** Make a suite from all tests in this file */
 CuSuite *getSuite_testHeap(void)
 {
-	CuSuite* suite = CuSuiteNew();
+    CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, ut_heap_init_000);
-	SUITE_ADD_TEST(suite, ut_heap_getChunk_000);
-	SUITE_ADD_TEST(suite, ut_heap_getAvail_000);
-	SUITE_ADD_TEST(suite, ut_heap_freeChunk_000);
-	SUITE_ADD_TEST(suite, ut_heap_sweep_000);
+    SUITE_ADD_TEST(suite, ut_heap_init_000);
+    SUITE_ADD_TEST(suite, ut_heap_getChunk_000);
+    SUITE_ADD_TEST(suite, ut_heap_getAvail_000);
+    SUITE_ADD_TEST(suite, ut_heap_freeChunk_000);
+    SUITE_ADD_TEST(suite, ut_heap_sweep_000);
 
     return suite;
 }

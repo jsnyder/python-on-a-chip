@@ -26,6 +26,7 @@
  *
  * Log:
  *
+ * 2007/01/09   #75: Printing support (P.Adelt)
  * 2002/05/04   First.
  */
 
@@ -119,5 +120,16 @@ PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t * r_pint);
  * @param   pobj Pointer to target object
  */
 PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint);
+
+#ifdef HAVE_PRINT
+/**
+ * Sends out an integer object in decimal notation with MSB first.
+ * The number is preceded with a "-" when necessary.
+ * 
+ * @param pObj Ptr to int object
+ * @return Return status
+ */
+PmReturn_t int_print(pPmObj_t pint);
+#endif /* HAVE_PRINT */
 
 #endif /* __INT_H__ */

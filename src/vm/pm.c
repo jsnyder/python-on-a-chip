@@ -27,14 +27,24 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Refactored for green thread support (P.Adelt)
  * 2006/09/16   #16: Create pm_init() that does the initial housekeeping
  */
 
 #include "pm.h"
+#ifdef TARGET_AVR
+#include "avr/interrupt.h"
+#endif /* TARGET_AVR */
 
+/** Number of millisecond-ticks to pass before scheduler is run */
+#define PM_THREAD_TIMESLICE_MS  10
 
 extern unsigned char stdlib_img[];
 
+/* Stores the timer millisecond-ticks since system start */
+volatile uint32_t pm_timerMsTicks = 0;
+/* Stores tick timestamp of last scheduler run */
+volatile uint32_t pm_lastRescheduleTimestamp = 0;
 
 PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
@@ -79,16 +89,54 @@ PmReturn_t pm_run(uint8_t *modstr)
     retval = mod_import(pstring, &pmod);
     PM_RETURN_IF_ERROR(retval);
 
-    /* Load builtins into root module */
-    retval = global_loadBuiltins((pPmFunc_t)pmod);
+    /* Load builtins into thread */
+    retval = global_setBuiltins((pPmFunc_t)pmod);
     PM_RETURN_IF_ERROR(retval);
-
+    
     /* Interpret the module's bcode */
-    retval = interpret((pPmFunc_t)pmod);
+    retval = interp_addThread((pPmFunc_t)pmod);
+    PM_RETURN_IF_ERROR(retval);
+    retval = interpret(INTERP_RETURN_ON_NO_THREADS);
 
     return retval;
 }
 
+void pm_printError(PmReturn_t result)
+{
+#ifdef TARGET_DESKTOP
+        printf("Error:     0x%02X\n", result);
+        printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
+#if __DEBUG__
+        printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
+        printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+#endif
+#endif
+}
+
+/* Warning: Can be called in interrupt context! */
+PmReturn_t
+pm_vmPeriodic(uint16_t usecsSinceLastCall)
+{
+    /* Add the full milliseconds to pm_timerMsTicks and store additional
+     * microseconds for the next run. Thus, usecsSinceLastCall must be
+     * less than 2^16-1000 so it will not overflow usecResidual.
+     */ 
+    static uint16_t usecResidual = 0;
+    C_ASSERT(usecsSinceLastCall < 64536);
+    /* TODO Potential for optimization: Division is calculated twice. */
+    usecResidual += usecsSinceLastCall;
+    pm_timerMsTicks += usecResidual/1000;
+    usecResidual %= 1000;
+
+    /* check if enough time has passed for a scheduler run */
+    if ((pm_timerMsTicks - pm_lastRescheduleTimestamp)
+        >= PM_THREAD_TIMESLICE_MS)
+    {
+        interp_setRescheduleFlag(1);
+        pm_lastRescheduleTimestamp = pm_timerMsTicks;
+    }
+    return PM_RET_OK;
+}
 
 #ifdef TARGET_DESKTOP
 
@@ -100,12 +148,7 @@ void pm_reportResult(PmReturn_t result)
     }
     else
     {
-        printf("Error:     0x%02X\n", result);
-        printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
-#if __DEBUG__
-        printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
-        printf("  LineNum: %d\n", gVmGlobal.errLineNum);
-#endif
+        pm_printError(result);
     }
 }
 #endif /* TARGET_DESKTOP */

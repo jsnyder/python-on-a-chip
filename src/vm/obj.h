@@ -27,6 +27,8 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: OBJ_TYPE_THR for thread objects (P.Adelt)
+ * 2007/01/09   #75: Printing support (P.Adelt)
  * 2006/09/20   #35: Macroize all operations on object descriptors
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -70,7 +72,7 @@
  * tool.
  * The hashable types are grouped together for convenience.
  *
- * WARNING: od_type must be at least 5 bits!
+ * WARNING: od_type must be at most 5 bits! (must be < 0x20)
  */
 typedef enum PmType_e
 {
@@ -122,6 +124,8 @@ typedef enum PmType_e
     OBJ_TYPE_SGL = 0x15,
     /** Sequence iterator */
     OBJ_TYPE_SQI = 0x16,
+    /** Thread */
+    OBJ_TYPE_THR = 0x17,
 } PmType_t, *pPmType_t;
 
 
@@ -241,5 +245,13 @@ PmReturn_t obj_isIn(pPmObj_t pobj, pPmObj_t pitem);
  * @return  C_SAME if the items are equivalent, C_DIFFER otherwise.
  */
 int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
+
+/**
+ * Print an object, thereby using objects helpers.
+ * 
+ * @param   pobj Ptr to object for printing.
+ * @return  Return status
+ */
+PmReturn_t obj_print(pPmObj_t pobj);
 
 #endif /* __OBJ_H__ */

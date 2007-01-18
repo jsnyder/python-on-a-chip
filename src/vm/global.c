@@ -28,6 +28,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Restructured for green threads (P.Adelt)
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
@@ -46,6 +47,8 @@
  * Constants
  **************************************************************/
 
+uint8_t *global_bistr = (uint8_t *)"__bi";
+
 /***************************************************************
  * Macros
  **************************************************************/
@@ -59,7 +62,7 @@
  **************************************************************/
 
 /** Most PyMite globals all in one convenient place */
-PmVmGlobal_t gVmGlobal;
+volatile PmVmGlobal_t gVmGlobal;
 
 
 /***************************************************************
@@ -114,36 +117,54 @@ global_init(void)
 
     /* clear ptrs */
     /*FP = C_NULL;*//* fp is local to interp, until thread struct is made */
-
-    /* interpreter loop return value */
-    gVmGlobal.interpctrl = INTERP_CTRL_CONT;
+    
+    /* create empty globals dict */
+    dict_new((pPmObj_t*)&(gVmGlobal.globals));
+    
+    /* create empty threadList */
+    list_new((pPmObj_t*)&(gVmGlobal.threadList));
 
     return retval;
 }
 
-
 PmReturn_t
-global_loadBuiltins(pPmFunc_t pmod)
+global_setBuiltins(pPmFunc_t pmod)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    uint8_t *bistr = (uint8_t *)"__bi";
+    
+    if (PM_PBUILTINS == C_NULL)
+    {
+        /* need to load builtins first */
+        global_loadBuiltins();
+    }
+    /* put builtins module in the module's attrs dict */
+    retval = string_new(&global_bistr, &pkey);
+    PM_RETURN_IF_ERROR(retval);
+    return dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
+}
+
+
+PmReturn_t
+global_loadBuiltins(void)
+{
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t pkey = C_NULL;
     uint8_t *nonestr = (uint8_t *)"None";
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
 
     /* import the builtins */
-    retval = string_new(&bistr, &pstr);
+    retval = string_new(&global_bistr, &pstr);
     PM_RETURN_IF_ERROR(retval);
     retval = mod_import(pstr, &pbimod);
     PM_RETURN_IF_ERROR(retval);
 
     /* must interpret builtins' root code to set the attrs */
-    retval = interpret((pPmFunc_t)pbimod);
+    C_ASSERT(gVmGlobal.threadList->length == 0);
+    interp_addThread((pPmFunc_t)pbimod);
+    retval = interpret(INTERP_RETURN_ON_NO_THREADS);
     PM_RETURN_IF_ERROR(retval);
-
-    /* reset interpreter to run */
-    gVmGlobal.interpctrl = INTERP_CTRL_CONT;
 
     /* builtins points to the builtins module's attrs dict */
     gVmGlobal.builtins = ((pPmFunc_t)pbimod)->f_attrs;
@@ -152,12 +173,6 @@ global_loadBuiltins(pPmFunc_t pmod)
     retval = string_new(&nonestr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem(PM_PBUILTINS, pkey, PM_NONE);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* put builtins module in the module's attrs dict */
-    retval = string_new(&bistr, &pkey);
-    PM_RETURN_IF_ERROR(retval);
-    retval = dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
     PM_RETURN_IF_ERROR(retval);
 
     /* deallocate builtins module */

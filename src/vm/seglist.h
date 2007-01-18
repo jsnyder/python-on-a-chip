@@ -38,6 +38,7 @@
  *
  * Log:
  *
+ * 2006/01/09   Implemented seglist_removeItem() (P.Adelt)
  * 2006/11/18   #54: Change seglist API
  * 2002/12/20   First.
  */
@@ -193,5 +194,15 @@ PmReturn_t seglist_insertItem(pSeglist_t pseglist,
 PmReturn_t seglist_setItem(pSeglist_t pseglist,
                            pPmObj_t pobj,
                            int16_t index);
+
+/**
+ * Remove the item at the given index.
+ *
+ * @param   pseglist Ptr to seglist in which object is removed.
+ * @param   index Index into seglist of where to put object.
+ * @return  Return status
+ */
+PmReturn_t seglist_removeItem(pSeglist_t pseglist,
+                              uint16_t index);
 
 #endif /* __SEGLIST_H__ */

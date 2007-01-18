@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Printing support (P.Adelt)
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/05/04   First.
@@ -162,6 +163,47 @@ int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
     return int_new(~((pPmInt_t)pobj)->val, r_pint);
 }
 
+#ifdef HAVE_PRINT
+PmReturn_t
+int_print(pPmObj_t pint)
+{
+    /* 2^31-1 has 10 decimal digits, plus sign and zero byte */
+    uint8_t tBuffer[10+1+1];
+    uint8_t bytesWritten, k;
+    PmReturn_t retval = PM_RET_OK;
+
+    C_ASSERT(pint != C_NULL);
+
+    /* ensure string obj */
+    if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    #ifdef TARGET_AVR
+    bytesWritten = snprintf_P((uint8_t*)&tBuffer, sizeof(tBuffer),
+        PSTR("%li"), ((pPmInt_t)pint)->val);
+    #else
+    /* This does not use snprintf because glibc's snprintf is only
+     * included for compiles without strict-ansi.
+     */
+    bytesWritten = sprintf((void*)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
+    #endif /* !TARGET_AVR */
+    
+
+    /* Sanity check */
+    C_ASSERT(bytesWritten != 0);
+    C_ASSERT(bytesWritten < sizeof(tBuffer));
+
+    for (k=0; k<bytesWritten; k++)
+    {
+        retval = plat_putByte(tBuffer[k]);
+        PM_RETURN_IF_ERROR(retval);
+    }
+    return PM_RET_OK;
+}
+#endif /* HAVE_PRINT */
 
 /***************************************************************
  * Test

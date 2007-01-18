@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/10   #75: Printing support (P.Adelt)
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -260,6 +261,66 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
     return retval;
 }
 
+#ifdef HAVE_PRINT
+PmReturn_t
+string_print(pPmObj_t pstr)
+{
+    uint8_t i, ch;
+    PmReturn_t retval = PM_RET_OK;
+
+    C_ASSERT(pstr != C_NULL);
+
+    /* ensure string obj */
+    if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+    
+    retval = plat_putByte('\'');
+    PM_RETURN_IF_ERROR(retval);
+
+    for (i = 0; i<(((pPmString_t)pstr)->length); i++)
+    {
+        ch = ((pPmString_t)pstr)->val[i];
+        if (ch == '\\')
+        {
+            /* Output an additional backslash to escape it. */
+            retval = plat_putByte('\\');
+            PM_RETURN_IF_ERROR(retval);
+        }
+        if (ch >= 32 && ch < 128)
+        {
+            retval = plat_putByte(ch);
+            PM_RETURN_IF_ERROR(retval);
+        } 
+        else
+        {
+            /* Construct escape for the hexdigit */
+            uint8_t tBuffer[5];
+            uint8_t k;
+            #ifdef TARGET_AVR
+            snprintf_P((uint8_t*)&tBuffer, sizeof(tBuffer), PSTR("\\x%02x"), ch);
+            for (k=0; k<4; k++)
+                retval = plat_putByte(tBuffer[k]);
+                PM_RETURN_IF_ERROR(retval);
+            #else 
+            /* This does not use snprintf because glibc's snprintf is only
+             * included for compiles without strict-ansi.
+             */
+            sprintf((void*)&tBuffer, "\\x%02x", ch);
+            #endif /* !TARGET_AVR */
+
+            for (k=0; k<4; k++)
+            {
+                retval = plat_putByte(tBuffer[k]);
+                PM_RETURN_IF_ERROR(retval);
+            }
+        }
+    }
+    return plat_putByte('\'');
+}
+#endif /* HAVE_PRINT */
 
 /***************************************************************
  * Test

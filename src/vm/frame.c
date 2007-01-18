@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: fo_isImport for thread support (P.Adelt)
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
  * 2002/04/20   First.
@@ -88,6 +89,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     /* get sizes needed to calc frame size */
     paddr = pco->co_codeimgaddr + CI_STACKSIZE_FIELD;
     stacksz = mem_getByte(pco->co_memspace, &paddr);
+    /* now paddr points to CI_NLOCALS_FIELD */
     nlocals = mem_getByte(pco->co_memspace, &paddr);
     fsize = sizeof(PmFrame_t) + (stacksz + nlocals) *
             sizeof(pPmObj_t);
@@ -111,6 +113,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pframe->fo_attrs = ((pPmFunc_t)pfunc)->f_attrs;
     /* empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
+    /* by default, this is a normal frame, not an import call one */
+    pframe->fo_isImport = 0;
 
     /* return ptr to frame */
     *r_pobj = (pPmObj_t)pframe;

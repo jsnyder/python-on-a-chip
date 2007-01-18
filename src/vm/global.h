@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Restructured for green threads (P.Adelt)
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
  * 2002/04/22   First.
@@ -98,9 +99,6 @@ typedef struct PmVmGlobal_s
     /** Ptr to stack of code image info. */
     pPmImgInfo_t pimglist;
 
-    /** Ptr to current python frame */
-    pPmFrame_t pframe;
-
     /** The single native frame */
     PmNativeFrame_t nativeframe;
 
@@ -112,15 +110,19 @@ typedef struct PmVmGlobal_s
 
     /** Line number for when an error occurs */
     uint16_t errLineNum;
+    
+    /** Interpreter global namespace */
+    pPmDict_t globals;
+    
+    /** Thread list */
+    pPmList_t threadList;
 
-    /**
-     * Interpreter loop control value
-     *
-     * A positive value means continue interpreting.
-     * A zero value means normal interpreter exit.
-     * A negative value signals an error exit.
-     */
-    PmInterpCtrl_t interpctrl;
+    /** Ptr to current thread */
+    pPmThread_t pthread;
+    
+    /** flag to trigger rescheduling */
+    uint8_t reschedule:1;
+    
 } PmVmGlobal_t, *pPmVmGlobal_t;
 
 
@@ -128,7 +130,7 @@ typedef struct PmVmGlobal_s
  * Globals
  **************************************************************/
 
-extern PmVmGlobal_t gVmGlobal;
+extern volatile PmVmGlobal_t gVmGlobal;
 
 
 /***************************************************************
@@ -143,15 +145,26 @@ extern PmVmGlobal_t gVmGlobal;
 PmReturn_t global_init(void);
 
 /**
- * Loads the builtins dict into the given module's attrs.
- *
- * Loads the "__bt" module and sets the builtins dict
+ * Sets the builtins dict into the given module's attrs.
+ * 
+ * If not yet done, loads the "__bt" module via global_loadBuiltins().
+ * Restrictions described in that functions documentation apply.
+ * 
+ * @param pmod Module whose attrs receive builtins
+ * @return Return status
+ */
+PmReturn_t global_setBuiltins(pPmFunc_t pmod);
+
+/**
+ * Loads the "__bt" module and sets the builtins dict (PM_PBUILTINS)
  * to point to __bt's attributes dict.
  * Creates "None" = None entry in builtins.
+ * 
+ * When run, there should not be any other threads in the interpreter
+ * thread list yet.
  *
- * @param pmod Module whose attrs recieves builtins
  * @return  Return status
  */
-PmReturn_t global_loadBuiltins(pPmFunc_t pmod);
+PmReturn_t global_loadBuiltins(void);
 
 #endif /* __GLOBAL_H__ */

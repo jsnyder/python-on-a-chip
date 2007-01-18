@@ -26,6 +26,8 @@
  *
  * Log:
  *
+ * 2007/01/09   #75: Printing support (P.Adelt)
+ * 2007/01/09   #75: implemented list_remove() and list_index() (P.Adelt)
  * 2003/02/11   Refactored to pobj/return status model.
  * 2002/04/22   First.
  */
@@ -160,13 +162,44 @@ PmReturn_t list_insert(pPmObj_t plist,
                        int16_t index,
                        pPmObj_t pobj);
 
+/**
+ * Remove a given object from the list.
+ * 
+ * @param   plist Ptr to list obj
+ * @param   item Ptr to object to be removed
+ * @return  Return status
+ */
+PmReturn_t list_remove(pPmObj_t plist,
+                       pPmObj_t item);
+
+/**
+ * Find the first index of the item that matches pitem.
+ * Returns an ValueError Exception if the item is not found.
+ * 
+ * @param   plist Ptr to list obj
+ * @param   item Ptr to object to be removed
+ * @param   r_index Addr of the variable for index
+ * @return  Return status
+ */
+PmReturn_t list_index(pPmObj_t plist,
+                      pPmObj_t pitem,
+                      uint16_t* r_index);
+
+#ifdef HAVE_PRINT
+/**
+ * Print out a list. Uses obj_print() to print elements.
+ * 
+ * @param pobj Object to print.
+ * @return Return status
+ */
+PmReturn_t list_print(pPmObj_t pobj);
+#endif /* HAVE_PRINT */
+
 /* XXX TODO - redo these using pobj / return status */
 #if 0
 S8              list_count(pPmObj_t plist);
 void            list_extend(pPmObj_t plista, PmObj_t plistb);
-void            list_index(pPmObj_t plist, PmObj_t pitem);
 pPmObj_t        list_pop(pPmObj_t plist);
-void            list_remove(pPmObj_t plist, PmObj_t item);
 void            list_reverse(pPmObj_t plist)
 void            list_sort(pPmObj_t plist)
 #endif

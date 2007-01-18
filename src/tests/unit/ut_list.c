@@ -26,6 +26,7 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Tests for list_removeItem() (P.Adelt)
  * 2006/10/04   #48: Organize and deploy unit tests
  * 2003/01/12   First.
  */
@@ -88,6 +89,112 @@ ut_list_append_000(CuTest *tc)
     CuAssertTrue(tc, pval == PM_ONE);
     retval = list_getItem(pobj, -1, &pval);
     CuAssertTrue(tc, pval == PM_ONE);
+}
+
+/**
+ * Test list_removeItem():
+ *      Remove from non-list object, expect a TypeError
+ *      New list, append item0..4
+ *          expect list length == 5
+ *      Remove item0 (first),
+ *          expect list length == 4,
+ *          expect list[0] == item1,
+ *          expect list[-1] == item4
+ *      Remove item5,
+ *          expect ValueError
+ *      Remove item4 (last),
+ *          expect list length == 3,
+ *          expect list[-1] == item3,
+ *      Remove item4
+ *          expect ValueError
+ *      Remove item2 (middle),
+ *          expect list length == 2,
+ *          expect list[0] == item1,
+ *          expect list[1] == item3
+ *      Remove item1, item3 (rest),
+ *          expect list length == 0
+ *      Append item5,
+ *          expect list length == 1
+ *          expect list[0] == item5
+ */
+void
+ut_list_removeItem_000(CuTest *tc)
+{
+    pPmObj_t pobj = C_NULL;
+    pPmObj_t pval;
+    pPmObj_t pitem0, pitem1, pitem2, pitem3, pitem4, pitem5;
+    PmReturn_t retval;
+
+    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = list_new(&pobj);
+    
+    retval = int_new(0, &pitem0);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = int_new(1, &pitem1);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = int_new(2, &pitem2);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = int_new(3, &pitem3);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = int_new(4, &pitem4);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = int_new(5, &pitem5);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    
+    retval = list_append(pobj, pitem0);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = list_append(pobj, pitem1);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = list_append(pobj, pitem2);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = list_append(pobj, pitem3);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = list_append(pobj, pitem4);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    
+    
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 5);
+    
+    retval = list_remove(pobj, pitem0);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 4);
+    retval = list_getItem(pobj, 0, &pval);
+    CuAssertTrue(tc, pval == pitem1);
+    retval = list_getItem(pobj, -1, &pval);
+    CuAssertTrue(tc, pval == pitem4);
+
+    retval = list_remove(pobj, pitem5);
+    CuAssertTrue(tc, retval == PM_RET_EX_VAL);
+
+    retval = list_remove(pobj, pitem4);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 3);
+    retval = list_getItem(pobj, -1, &pval);
+    CuAssertTrue(tc, pval == pitem3);
+
+    retval = list_remove(pobj, pitem4);
+    CuAssertTrue(tc, retval == PM_RET_EX_VAL);
+
+    retval = list_remove(pobj, pitem2);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 2);
+    retval = list_getItem(pobj, 0, &pval);
+    CuAssertTrue(tc, pval == pitem1);
+    retval = list_getItem(pobj, 1, &pval);
+    CuAssertTrue(tc, pval == pitem3);
+
+    retval = list_remove(pobj, pitem1);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    retval = list_remove(pobj, pitem3);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 0);
+
+    retval = list_append(pobj, pitem5);
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertTrue(tc, ((pPmList_t)pobj)->length == 1);
+    retval = list_getItem(pobj, 0, &pval);
+    CuAssertTrue(tc, pval == pitem5);
+
 }
 
 
@@ -302,6 +409,7 @@ CuSuite *getSuite_testList(void)
     SUITE_ADD_TEST(suite, ut_list_getItem_000);
     SUITE_ADD_TEST(suite, ut_list_copy_000);
     SUITE_ADD_TEST(suite, ut_list_replicate_000);
+    SUITE_ADD_TEST(suite, ut_list_removeItem_000);
 
 /* Uncomment below when list_setItem() is implemented */
 /*  SUITE_ADD_TEST(suite, ut_list_setItem_000);*/

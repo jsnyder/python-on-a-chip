@@ -41,8 +41,9 @@
  **************************************************************/
 
 #include <stdint.h>
-#ifdef TARGET_DESKTOP
 #include <stdio.h>
+#ifdef TARGET_AVR
+#include <avr/pgmspace.h>
 #endif
 
 /***************************************************************
@@ -110,6 +111,10 @@
 /** return an error code if it is not PM_RET_OK */
 #define PM_RETURN_IF_ERROR(retval)  if((retval) != PM_RET_OK) \
                                         return (retval)
+
+/** print an error message if argument is not PM_RET_OK */
+#define PM_PRINT_IF_ERROR(retval)   if ((retval) != PM_RET_OK) \
+                                        pm_printError(retval)
 
 #if __DEBUG__
 /** If the boolean expression fails, return the ASSERT error code */
@@ -179,10 +184,13 @@ typedef enum PmReturn_e
  * Global Declarations
  **************************************************************/
 
+extern volatile uint32_t pm_timerMsTicks;
+
 /***************************************************************
  * Includes (order is critical)
  **************************************************************/
 
+#include "pmfeatures.h"
 #include "sli.h"
 #include "mem.h"
 #include "obj.h"
@@ -202,6 +210,7 @@ typedef enum PmReturn_e
 #include "img.h"
 #include "global.h"
 #include "misc.h"
+#include "thread.h"
 #include "plat/plat.h"
 
 
@@ -228,6 +237,17 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
  */
 PmReturn_t pm_run(uint8_t *modstr);
 
+/**
+ * Needs to be called periodically by a platform specific means.
+ * For the desktop target, it is periodically called using a signal.
+ * For embedded targets, it needs to be called periodically. It should
+ * be called from a timer interrupt.
+ * 
+ * @param usecsSinceLastCall Microseconds (not less than those) that passed
+ *                           since last call. This must be <64535.
+ * @return Return status
+ */
+PmReturn_t pm_vmPeriodic(uint16_t usecsSinceLastCall);
 
 #ifdef TARGET_DESKTOP
 /**
@@ -237,5 +257,12 @@ PmReturn_t pm_run(uint8_t *modstr);
  */
 void pm_reportResult(PmReturn_t result);
 #endif /* TARGET_DESKTOP */
+
+/**
+ * Prints exception information for result. Does nothing on non-desktop targets.
+ * 
+ * @param result        Return status to be displayed.
+ */
+void pm_printError(PmReturn_t result);
 
 #endif /* __PM_H__ */

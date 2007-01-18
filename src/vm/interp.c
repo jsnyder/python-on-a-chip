@@ -27,6 +27,8 @@
  * Log
  * ---
  *
+ * 2007/01/09   #75: Changed IMPORT_NAME, printing (P.Adelt)
+ * 2007/01/09   #75: Restructed for green threading (P.Adelt)
  * 2006/09/29   #45: Finish interpret loop edits
  * 2006/09/10   #20: Implement assert statement
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
@@ -80,7 +82,7 @@ PmReturn_t nat___bi_pow(pPmFrame_t pframe, signed char numargs);
  **************************************************************/
 
 PmReturn_t
-interpret(pPmFunc_t pfunc)
+interpret(const uint8_t returnOnNoThreads)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj1 = C_NULL;
@@ -88,23 +90,35 @@ interpret(pPmFunc_t pfunc)
     pPmObj_t pobj3 = C_NULL;
     int16_t t16 = 0;
     int8_t t8 = 0;
-    pPmFrame_t pframe = C_NULL; /* tmp: until thread contains fp */
-
-    /* create a frame for the func */
-    retval = frame_new((pPmObj_t)pfunc, &pobj1);
+    
+    /* activate a thread the first time */
+    retval = interp_reschedule();
     PM_RETURN_IF_ERROR(retval);
-    FP = (pPmFrame_t)pobj1;
-
-    /*
-     * set globals dict to same as root frame's attrs.
-     * root frame's attrs points to root func's attrs,
-     * which contains builtins.
-     */
-    FP->fo_globals = FP->fo_attrs;
-
+    
     /* interpret loop */
-    while(gVmGlobal.interpctrl > INTERP_CTRL_EXIT)
+    while(1)
     {
+        if (gVmGlobal.pthread == C_NULL)
+        {
+            if (returnOnNoThreads)
+            {
+                /* user chose to return on no threads left */
+                return retval;
+            }
+            /* without a frame there is nothing to execute, so reschedule
+             * (possibly activating a recently added thread). */
+            retval = interp_reschedule();
+            PM_BREAK_IF_ERROR(retval);
+            continue;
+        }
+        
+        /* Time for switching threads? */
+        if (gVmGlobal.reschedule)
+        {
+            retval = interp_reschedule();
+            PM_BREAK_IF_ERROR(retval);
+        }
+        
         /* get byte; the func post-incrs IP */
         switch(mem_getByte(MS, &IP))
         {
@@ -582,9 +596,19 @@ interpret(pPmFunc_t pfunc)
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
 
-            case PRINT_EXPR:
             case PRINT_ITEM:
+            #ifdef HAVE_PRINT
+                /* Print out topmost stack element */
+                pobj1 = PM_POP(); 
+                obj_print(pobj1);
+                continue;
+            #endif /* HAVE_PRINT */
             case PRINT_NEWLINE:
+            #ifdef HAVE_PRINT
+                plat_putByte('\n');
+                continue;
+            #endif /* HAVE_PRINT */
+            case PRINT_EXPR:
             case PRINT_ITEM_TO:
             case PRINT_NEWLINE_TO:
                 /* SystemError, unknown opcode */
@@ -633,17 +657,20 @@ interpret(pPmFunc_t pfunc)
                 pobj2 = PM_POP();
                 /* keep ref of expiring frame */
                 pobj1 = (pPmObj_t)FP;
-                /* if no previous frame, quit interpreter */
+                /* if no previous frame, quit thread */
                 if (FP->fo_back == C_NULL)
                 {
-                    gVmGlobal.interpctrl = INTERP_CTRL_EXIT;
+                    gVmGlobal.pthread->interpctrl = INTERP_CTRL_EXIT;
                     retval = PM_RET_OK;
                     break;
                 }
                 /* else return to previous frame */
                 FP = FP->fo_back;
                 /* push frame's return val */
-                PM_PUSH(pobj2);
+                /* except if this the frame was import-originated */
+                if (!(FP->fo_isImport)) {
+                    PM_PUSH(pobj2);
+                }
                 /* deallocate expired frame */
                 PM_BREAK_IF_ERROR(heap_freeChunk(pobj1));
                 continue;
@@ -1069,24 +1096,26 @@ interpret(pPmFunc_t pfunc)
                 PM_BREAK_IF_ERROR(retval);
                 /* module overwrites None on stack */
                 TOS = pobj2;
+                
+                /* XXX duplicate code with CALL_FUNCTION */
 
-                /*
-                 * XXX recursion into interpreter.
-                 * This must happen like this because the
-                 * root code of the imported module returns
-                 * with a None object on the stack, and the
-                 * interpreter does not know to pop it
-                 * for cleanup.
-                 * Solutions are: A. to create a state var
-                 * to track when interp is in import_name-code
-                 * and pop on return.  B. to replace
-                 * the push(none)return from the module's root
-                 * bytecode with new RETURN_EMPTY bcode.
-                 * or C. recurse into interp...
-                 */
-                retval = interpret((pPmFunc_t)pobj2);
+                /* make frameObj from pCO */
+                retval = frame_new(pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
-                gVmGlobal.interpctrl = INTERP_CTRL_CONT;
+                /* frame's globals is same as parent's */
+                ((pPmFrame_t)pobj3)->fo_globals =
+                        FP->fo_globals;
+
+                /* no arguments to pass */
+
+                /* keep ref to current frame */
+                ((pPmFrame_t)pobj3)->fo_back = FP;
+                /* handle to have None popped on return */
+                ((pPmFrame_t)pobj3)->fo_isImport = 1;
+                
+                /* set new frame */
+                FP = (pPmFrame_t)pobj3;
+
                 continue;
 
             case IMPORT_FROM:
@@ -1430,15 +1459,75 @@ interpret(pPmFunc_t pfunc)
 
         /*
          * If execution reaches this point, it is because
-         * either a return value (from above) is not OK
-         * (an error or exception), or the return value is OK
-         * and the interpreter is exiting.
+         * a return value (from above) is not OK or we should exit the thread
+         * (return of the function). In any case, remove the
+         * current thread and reschedule.
          */
-        return retval;
+        if (retval != PM_RET_OK)
+        {
+            pm_printError(retval);
+        }
+
+        list_remove((pPmObj_t)gVmGlobal.threadList, (pPmObj_t)gVmGlobal.pthread); 
+        gVmGlobal.pthread = C_NULL;
+        retval = interp_reschedule();
+        PM_BREAK_IF_ERROR(retval);
 
     } /* while */
-
+    
     return retval;
+}
+
+PmReturn_t
+interp_reschedule(void)
+{
+    PmReturn_t retval = PM_RET_OK;
+    static uint8_t threadIndex = 0;
+    
+    if (gVmGlobal.threadList->length == 0) {
+    gVmGlobal.pthread = C_NULL;
+    } else {
+        threadIndex = (threadIndex+1) % (gVmGlobal.threadList->length); 
+        retval = list_getItem((pPmObj_t)gVmGlobal.threadList, threadIndex, (pPmObj_t*)&gVmGlobal.pthread);
+        PM_RETURN_IF_ERROR(retval);
+    }
+    interp_setRescheduleFlag(0);
+    return retval;
+}
+
+PmReturn_t
+interp_addThread(pPmFunc_t pfunc)
+{
+    PmReturn_t retval;
+    pPmObj_t pframe;
+    pPmObj_t pthread;
+    
+    /* create a frame for the func */
+    retval = frame_new((pPmObj_t)pfunc, &pframe);
+    PM_RETURN_IF_ERROR(retval);
+
+    /*
+     * set thread's globals dict to same as interpreter globals.
+     */
+    ((pPmFrame_t)pframe)->fo_globals = GP;
+    
+    /* As this is the module's function, locals are identical to
+     * globals.
+     */
+    ((pPmFrame_t)pframe)->fo_attrs = GP;
+    
+    /* create a thread with this new frame */
+    retval = thread_new(pframe, &pthread);
+    PM_RETURN_IF_ERROR(retval);
+    
+    /* add thread to end of list */
+    return list_append((pPmObj_t)gVmGlobal.threadList, pthread);
+}
+
+void
+interp_setRescheduleFlag(uint8_t boolean)
+{
+    gVmGlobal.reschedule = boolean;
 }
 
 

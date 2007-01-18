@@ -182,13 +182,13 @@ ut_dict_getItem_000(CuTest *tc)
 /** Make a suite from all tests in this file */
 CuSuite *getSuite_testDict(void)
 {
-	CuSuite* suite = CuSuiteNew();
+    CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, ut_dict_new_000);
-	SUITE_ADD_TEST(suite, ut_dict_setItem_000);
-	SUITE_ADD_TEST(suite, ut_dict_setItem_001);
-	SUITE_ADD_TEST(suite, ut_dict_clear_000);
-	SUITE_ADD_TEST(suite, ut_dict_getItem_000);
+    SUITE_ADD_TEST(suite, ut_dict_new_000);
+    SUITE_ADD_TEST(suite, ut_dict_setItem_000);
+    SUITE_ADD_TEST(suite, ut_dict_setItem_001);
+    SUITE_ADD_TEST(suite, ut_dict_clear_000);
+    SUITE_ADD_TEST(suite, ut_dict_getItem_000);
 
     return suite;
 }

@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/10   #75: Printing support (P.Adelt)
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
  * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
  *              unsigned not signed or void
@@ -165,5 +166,16 @@ int8_t string_compare(pPmString_t, pPmString_t);
  */
 PmReturn_t string_copy(pPmObj_t pstr, pPmObj_t *r_pstring);
 
+#ifdef HAVE_PRINT
+/**
+ * Sends out a string object bytewise in a way similar to CPythons
+ * str._str__(). It escapes non-printable and non-ASCII
+ * characters using the "\xhh" escape sequence.
+ * 
+ * @param pobj Ptr to string object
+ * @return Return status
+ */
+PmReturn_t string_print(pPmObj_t pstr);
+#endif /* HAVE_STRING */
 
 #endif /* __STRING_H__ */

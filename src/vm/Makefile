@@ -67,4 +67,5 @@ size : $(PRODUCT_VM)
 # Remove files made by default make
 clean :
 	@$(RM) $(PRODUCT_VM)
+	@$(RM) $(OBJECTS)
 	@$(RM) $(SOURCE_IMG) $(SOURCE_NAT)

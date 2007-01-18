@@ -23,9 +23,16 @@
  * Log
  * ---
  *
+ * 2007/01/10   #75: Added time tick service for desktop (POSIX) and AVR.
  * 2006/12/26   #65: Create plat module with put and get routines
  */
 
+#ifndef PLAT_H_
+#define PLAT_H_
+
+/***************************************************************
+ * Prototypes
+ **************************************************************/
 
 /**
  * Initializes the platform as needed by the routines
@@ -47,3 +54,11 @@ PmReturn_t plat_getByte(uint8_t *b);
  */
 PmReturn_t plat_putByte(uint8_t b);
 
+/**
+ * Get the number of timer ticks that have passed since system start.
+ * On embedded targets, this operatoin is made atomic by temporarily disabling
+ * the interrupts. The old state is restored afterwards.
+ */
+uint32_t plat_getMsTicks(void);
+
+#endif /* PLAT_H_ */

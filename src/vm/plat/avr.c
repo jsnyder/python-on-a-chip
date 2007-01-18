@@ -25,14 +25,37 @@
  * Log
  * ---
  *
+ * 2007/01/10   #75: Added time tick service for desktop (POSIX) and AVR. (P.Adelt)
  * 2006/12/26   #65: Create plat module with put and get routines
  */
 
 
 #include <stdio.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include "../pm.h"
+
+/***************************************************************
+ * Constants
+ **************************************************************/
+ 
+#ifdef AVR_DEFAULT_TIMER_SOURCE
+
+/* Hint: 1,000,000 µs/s * 256 T/C0 clock cycles per tick * 8 CPU clocks per  
+ * T/C0 clock cycle / x,000,000 CPU clock cycles per second -> µs per tick  
+ */  
+#define PLAT_TIME_PER_TICK_USEC (1000000ULL*256ULL*8ULL/F_CPU)
+
+#endif /* AVR_DEFAULT_TIMER_SOURCE */
+  
+/***************************************************************
+ * Defines
+ **************************************************************/
+
+/***************************************************************
+ * Functions
+ **************************************************************/
 
 
 /*
@@ -50,9 +73,36 @@ plat_init(void)
     /* Enable the transmit and receive pins */
     UCR = _BV(TXEN) | _BV(RXEN);
     /* PORT END */
+    
+    #ifdef AVR_DEFAULT_TIMER_SOURCE
+    /* PORT BEGIN: Configure a timer that fits your needs. */
+    /* Use T/C0 in synchronous mode, aim for a tick rate of
+     * several hundred Hz */
+    #if (TARGET_MCU == atmega103) || (TARGET_MCU == atmega128)
+    /* set T/C0 to use synchronous clock */
+    ASSR &= ~(1<<AS0);
+    /* set prescaler to /8 */
+    TCCR0 &= ~0x07;
+    TCCR0 |= (1<<CS01);
+    #else
+    #error No timer configuration is implemented for this AVR.
+    #endif 
+    #endif /* AVR_DEFAULT_TIMER_SOURCE */
+    /* PORT END */
 
     return PM_RET_OK;
 }
+
+#ifdef AVR_DEFAULT_TIMER_SOURCE
+ISR(TIMER0_OVF_vect) 
+{
+    /* TODO Find a clever way to handle bad return code, maybe use 
+     * PM_PRINT_IF_ERROR(retval) when that works on AVR inside an
+     * interrupt.
+     */ 
+    pm_vmPeriodic(PLAT_TIME_PER_TICK_USEC);
+}
+#endif
 
 
 /*
@@ -99,4 +149,18 @@ plat_putByte(uint8_t b)
     /* PORT END */
 
     return PM_RET_OK;
+}
+
+/* remember that 32bit-accesses are non-atomic on AVR */
+uint32_t
+plat_getMsTicks(void)
+{
+    uint32_t result;
+    /* Critical section start */
+    unsigned char _sreg = SREG;
+    cli();
+    result = pm_timerMsTicks;
+    SREG = _sreg;
+    /* Critical section end */
+    return result;
 }

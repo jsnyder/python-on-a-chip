@@ -114,7 +114,7 @@ class HeapSim:
             # if first fit is best fit (meets fragmentation limit)
             # unlink and return this address
             if (p != NULL and heap[p][SIZE] >= size and
-			    heap[p][SIZE] <= size + MAX_FRAG):
+                heap[p][SIZE] <= size + MAX_FRAG):
                 heap[heap[p][PREV]][NEXT] = heap[p][NEXT]
                 heap[heap[p][NEXT]][PREV] = heap[p][PREV]
                 heap[p] = [p, size]
@@ -130,7 +130,7 @@ class HeapSim:
             return addr
 
         #### if nothing from cleanheap, try first fit (without frag limit)
-		# if first fit is big enough
+        # if first fit is big enough
         if (p != NULL) and (heap[p][SIZE] >= size):
 
             # unlink and return address

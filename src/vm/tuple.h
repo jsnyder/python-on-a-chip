@@ -59,11 +59,11 @@ typedef struct PmTuple_s
     /** object descriptor */
     PmObjDesc_t od;
     /**
-	 * length of tuple
+     * length of tuple
      * I don't expect a tuple to ever exceed 255 elements,
      * but if I set this type to S8, a 0-element tuple
-	 * is too small to be allocated.
-	 */
+     * is too small to be allocated.
+     */
     int16_t length;
     /** array of ptrs to objs */
     pPmObj_t    val[0];
