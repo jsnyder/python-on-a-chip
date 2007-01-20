@@ -668,8 +668,9 @@ interpret(const uint8_t returnOnNoThreads)
                 /* else return to previous frame */
                 FP = FP->fo_back;
                 /* push frame's return val */
-                /* except if this the frame was import-originated */
-                if (!(FP->fo_isImport)) {
+                /* except if the expiring frame was import-originated */
+                if (!(((pPmFrame_t)pobj1)->fo_isImport)) 
+                {
                     PM_PUSH(pobj2);
                 }
                 /* deallocate expired frame */
