@@ -13,7 +13,7 @@ Purpose
 -------
 
 PyMite is a flyweight Python interpreter written from scratch to execute
-on 8-bit and larger microcontrollers with resources as limited as 32 KiB
+on 8-bit and larger microcontrollers with resources as limited as 64 KiB
 of program memory (flash) and 4 KiB of RAM. PyMite supports a subset of
 the Python syntax and can execute a subset of the Python bytecodes.
 PyMite can also be compiled, tested and executed on a desktop computer.
