@@ -56,7 +56,9 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
     PM_RETURN_IF_ERROR(retval);
 
     /* Initialize the heap and the globals */
-    heap_init();
+    retval = heap_init();
+    PM_RETURN_IF_ERROR(retval);
+
     retval = global_init();
     PM_RETURN_IF_ERROR(retval);
 
@@ -92,7 +94,7 @@ PmReturn_t pm_run(uint8_t *modstr)
     /* Load builtins into thread */
     retval = global_setBuiltins((pPmFunc_t)pmod);
     PM_RETURN_IF_ERROR(retval);
-    
+
     /* Interpret the module's bcode */
     retval = interp_addThread((pPmFunc_t)pmod);
     PM_RETURN_IF_ERROR(retval);
@@ -120,7 +122,7 @@ pm_vmPeriodic(uint16_t usecsSinceLastCall)
     /* Add the full milliseconds to pm_timerMsTicks and store additional
      * microseconds for the next run. Thus, usecsSinceLastCall must be
      * less than 2^16-1000 so it will not overflow usecResidual.
-     */ 
+     */
     static uint16_t usecResidual = 0;
     C_ASSERT(usecsSinceLastCall < 64536);
     /* TODO Potential for optimization: Division is calculated twice. */

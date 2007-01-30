@@ -74,9 +74,10 @@
  * Prototypes
  **************************************************************/
 
-extern PmReturn_t (* std_nat_fxn_table[])(pPmFrame_t, signed char);
-extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t, signed char);
-PmReturn_t nat___bi_pow(pPmFrame_t pframe, signed char numargs);
+extern PmReturn_t (* std_nat_fxn_table[])(pPmFrame_t *, signed char);
+extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t *, signed char);
+PmReturn_t nat___bi_pow(pPmFrame_t *pframe, signed char numargs);
+
 
 /***************************************************************
  * Functions
@@ -91,6 +92,7 @@ interpret(const uint8_t returnOnNoThreads)
     pPmObj_t pobj3 = C_NULL;
     int16_t t16 = 0;
     int8_t t8 = 0;
+    uint8_t bc;
     
     /* activate a thread the first time */
     retval = interp_reschedule();
@@ -121,7 +123,8 @@ interpret(const uint8_t returnOnNoThreads)
         }
         
         /* get byte; the func post-incrs IP */
-        switch(mem_getByte(MS, &IP))
+        bc = mem_getByte(MS, &IP);
+        switch(bc)
         {
             case STOP_CODE:
                 /* SystemError, unknown opcode */
@@ -216,7 +219,7 @@ interpret(const uint8_t returnOnNoThreads)
                 gVmGlobal.nativeframe.nf_locals[0] = TOS;
 
                 /* CALL NATIVE FXN */
-                retval = nat___bi_pow(FP, 2);
+                retval = nat___bi_pow(&FP, 2);
                 /* RETURN FROM NATIVE FXN */
 
                 /* Put result on stack */
@@ -597,24 +600,33 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
 
+#ifdef HAVE_PRINT
+            case PRINT_EXPR:
+                /* Print interactive expression */
+                /* Fallthrough */
+
             case PRINT_ITEM:
-            #ifdef HAVE_PRINT
                 /* Print out topmost stack element */
                 pobj1 = PM_POP(); 
-                obj_print(pobj1, 0);
-                continue;
-            #endif /* HAVE_PRINT */
+                retval = obj_print(pobj1, 0);
+                PM_BREAK_IF_ERROR(retval);
+                if (bc != PRINT_EXPR)
+                {
+                    continue;
+                }
+                /* If bytecode is PRINT_EXPR, fallthrough to print a newline */
+
             case PRINT_NEWLINE:
-            #ifdef HAVE_PRINT
-                plat_putByte('\n');
+                retval = plat_putByte('\n');
+                PM_BREAK_IF_ERROR(retval);
                 continue;
-            #endif /* HAVE_PRINT */
-            case PRINT_EXPR:
+
             case PRINT_ITEM_TO:
             case PRINT_NEWLINE_TO:
                 /* SystemError, unknown opcode */
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
+#endif /* HAVE_PRINT */
 
             case BREAK_LOOP:
                 {
@@ -1401,19 +1413,29 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Positive index is a stdlib func */
                     if (t16 >= 0)
                     {
-                        retval = std_nat_fxn_table[t16](FP, t8);
+                        retval = std_nat_fxn_table[t16](&FP, t8);
                     }
                     /* Negative index is a usrlib func */
                     else
                     {
-                        retval = usr_nat_fxn_table[-t16](FP, t8);
+                        retval = usr_nat_fxn_table[-t16](&FP, t8);
                     }
                     /*
                      * RETURN FROM NATIVE FXN
                      */
 
-                    /* pop func, push result */
-                    TOS = gVmGlobal.nativeframe.nf_stack;
+                    /* If the frame pointer was switched, proceed with it */
+                    if (retval == PM_RET_FRAME_SWITCH)
+                    {
+                        TOS = PM_NONE;
+                        retval = PM_RET_OK;
+                    }
+                    
+                    /* Otherwise, return the result from the native function */
+                    else
+                    {
+                        TOS = gVmGlobal.nativeframe.nf_stack;
+                    }
                     PM_BREAK_IF_ERROR(retval);
                 }
                 continue;

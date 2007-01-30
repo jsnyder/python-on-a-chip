@@ -632,9 +632,6 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
 
     /* If a chunk is available, return with it */
     retval = heap_getChunkImpl(size, r_pchunk);
-#if defined(TARGET_ARM) || defined(TARGET_DESKTOP)
-    C_ASSERT(((uint32_t)*r_pchunk & 3) == 0);
-#endif
 
     if (retval == PM_RET_EX_MEM)
     {
@@ -662,6 +659,10 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
     
     /* Indicate chunk is no longer free */
     OBJ_SET_GCFREE(**(pPmObj_t *)r_pchunk, C_FALSE);
+
+#if defined(TARGET_ARM) || defined(TARGET_DESKTOP)
+    C_ASSERT(((uint32_t)*r_pchunk & 3) == 0);
+#endif
 
     return retval;
 }

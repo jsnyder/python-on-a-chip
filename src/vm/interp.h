@@ -86,7 +86,7 @@
 /** gets the nth local var from the native frame locals */
 #define NATIVE_GET_LOCAL(n) (gVmGlobal.nativeframe.nf_locals[n])
 /** gets a pointer to the frame that called this native fxn */
-#define NATIVE_GET_PFRAME()   (pframe)
+#define NATIVE_GET_PFRAME()   (*ppframe)
 /** gets the number of args passed to the native fxn */
 #define NATIVE_GET_NUM_ARGS() (numargs)
 

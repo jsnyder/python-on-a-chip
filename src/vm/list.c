@@ -234,9 +234,32 @@ list_replicate(pPmObj_t psrclist,
 
 
 PmReturn_t
-list_setItem(pPmObj_t pobj1, int16_t index, pPmObj_t pobj2)
+list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj)
 {
-    PmReturn_t retval = PM_RET_STUB;
+    PmReturn_t retval;
+    
+    /* If it's not a list, raise TypeError */
+    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Adjust the index */
+    if (index < 0)
+    {
+        index += ((pPmList_t)plist)->length;
+    }
+
+    /* Check the bounds of the index */
+    if ((index < 0) || (index >= ((pPmList_t)plist)->length))
+    {
+        PM_RAISE(retval, PM_RET_EX_INDX);
+        return retval;
+    }
+
+    /* Set the item */    
+    retval = seglist_setItem(((pPmList_t)plist)->val, pobj, index);
     return retval;
 }
 

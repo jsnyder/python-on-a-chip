@@ -66,11 +66,11 @@ PmReturn_t
 plat_init(void)
 {
     /* Let POSIX' SIGALRM fire every full millisecond. */
-    struct sigaction alarmaction;
-    memset(&alarmaction, 0, sizeof(struct sigaction));
-    alarmaction.sa_handler = plat_sigalrm_handler;
-
-    sigaction(SIGALRM, &alarmaction, NULL);
+    /* 
+     * #67 Using sigaction complicates the use of getchar (below),
+     * so signal() is used instead.
+     */
+    signal(SIGALRM, plat_sigalrm_handler);
     ualarm(1000, 1000);
 
     return PM_RET_OK;
@@ -111,6 +111,7 @@ plat_putByte(uint8_t b)
     PmReturn_t retval = PM_RET_OK;
 
     i = putchar(b);
+    fflush(stdout);
 
     if ((i != b) || (i == EOF))
     {

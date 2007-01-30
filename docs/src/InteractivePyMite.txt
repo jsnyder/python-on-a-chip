@@ -1,0 +1,125 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+==================
+Interactive PyMite
+==================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the design, implementation and use of the interactive
+session for PyMite.  In doing so, it serves as a design document for the PyMite
+developer and a user manual for the PyMite user.
+
+Overview
+--------
+
+Interactive PyMite (ipm) is a core feature of PyMite that allows the user to
+type lines of source code on a host computer that is to be executed on a target
+device.  Ipm provides rapid code experimentation much like `Python's
+interactive mode`_.  Ipm is made from two pieces: the interactive
+interface running on the host (ipm-host) and a program running on the target
+that communicates with the host and executes the interactive code (ipm-target).
+
+.. _`Python's interactive mode`: http://docs.python.org/tut/node4.html#SECTION004120000000000000000
+
+Design of ipm-host
+------------------
+
+Ipm-host shall be a program that runs on a host computer (desktop or laptop)
+and shall run on 3 popular operating systems (Mac OS X, Linux and MS-Win32).
+Ipm-host shall provide an interactive interface much like CPython's interactive
+mode.  The user shall provide the desired method to connect to the target as
+an option given to ipm-host.  Ipm-host shall connect to the target over the
+designated connection method and communicate bi-directionally with the target.
+
+Ipm-host shall print a prompt and accept user input.  Three types of input are
+accepted: source code to be executed on the target, commands that change
+the operating environment, and commands to interrupt or quit the interactive
+session.
+
+When the user types source code, the code shall be compiled to a code image
+using pmImgCreator.py found in src/tools.  The image shall be sent over the
+connection to the target device.  Ipm-host shall read all reply characters
+from the connection until the byte, 0x04, is received.  Ipm-host shall
+print the reply to the host's screen and repeat the process.
+
+Ipm-host commands are TBD.  One early estimate of a command is
+``load <module>``.  Which may compile a module on the host to an image and
+transfer the image to the target where it is stored in a persistent memory.
+Ipm-host commands should not use names that are Python keywords and ipm
+users shall not be able to name variables that are names of ipm commands.
+
+Ipm-host shall accept two special control commands: Ctrl+C and Ctrl+D.
+Ctrl+C shall interrupt ipm-host as it waits for a reply from the target
+and cause ipm-host to ignore any response from the target.
+Ctrl+D shall cause ipm-host to send the byte, 0x00, over the connection
+as a signal to ipm-target to quit; and then ipm-host shall itself quit.
+
+
+Design of ipm-target
+--------------------
+
+Ipm-target shall be a program that runs in the PyMite VM on the target device
+(embedded and desktop).  Ipm-host shall be implemented in the ``ipm`` module.
+The target device must be explicitly programmed to initiate the ipm-target
+program.
+
+Ipm-target shall wait indefinitely for input over the target's standard
+connection.  Ipm-target expects a code image.  The second byte in the code
+image contains the size of the entire image.  Ipm-target shall read the exact
+number of bytes to obtain the code image.  Ipm-target converts the code image
+to a code object and then calls the built-in function ``eval()`` on that code
+object.  The code image shall contain within it any commands to print output,
+no extra printing is done by ipm-target.  After the code is executed ipm-target
+sends the byte, 0x04, out the connection to indicate that evaluation is
+complete and that ipm-target is ready for the next image.
+
+
+Using ipm
+---------
+
+A sample project has been created to build PyMite for the desktop target.
+The output of this project is used by ipm-host when it is
+commanded to connect using the "desktop" connection.  Perform the following
+steps to run ipm completely on the desktop:
+
+1. Build PyMite with a large stack and debugging enabled::
+
+    $ make clean; make STACK_SIZE=0xF000 DEBUG=true
+
+2. Build the ipm-desktop sample project::
+
+    $ cd src/sample/ipm-desktop; make STACK_SIZE=0xF00 DEBUG=true
+
+3. Run ipm-host using the desktop connection::
+
+    $ cd ../../tools; ./ipm.py -d
+
+Ipm-host should launch and print its startup message followed by the ipm prompt.
+Now you may type source code and see the results.  Type Ctrl+D when you are
+done.  The following is a sample interactive session::
+
+    ipm> import plat; plat.puts("timmy")
+    timmy
+    ipm> d={}
+    ipm> d[0] = None
+    ipm> d[1] = "one"
+    ipm> d[2] = abs(-99)
+    ipm> d[3] = len(range(5))
+    ipm> d['hello'] = "world"
+    ipm> t=(2,"tuple")
+    ipm> d[t] = []
+    ipm> print d
+    {(2, 'tuple'):[], 'hello':'world', 3:5, 2:99, 1:'one', 0:None}
+    ipm>
+
+.. :mode=rest:

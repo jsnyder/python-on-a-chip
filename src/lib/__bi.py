@@ -114,16 +114,22 @@ def chr(n):
     pass
 
 
-def eval(co, g):
+#
+# Evaluates a given code object (created by Co()).
+# Optionally accepts a globals dict as the second parameter
+# Optionally accepts a locals dict as the third parameter
+#
+def eval(co, g, l):
     """__NATIVE__
     PmReturn_t retval;
     pPmObj_t pco;
     pPmObj_t pfunc;
     pPmObj_t pnewframe;
     pPmObj_t pg = C_NULL;
+    pPmObj_t pl = C_NULL;
 
     /* If wrong number of args, raise TypeError */
-    if ((NATIVE_GET_NUM_ARGS() == 0) || (NATIVE_GET_NUM_ARGS() > 2))
+    if ((NATIVE_GET_NUM_ARGS() == 0) || (NATIVE_GET_NUM_ARGS() > 3))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -138,10 +144,21 @@ def eval(co, g):
     }
 
     /* If 2nd arg exists, raise ValueError if it is not a Dict */
-    if (NATIVE_GET_NUM_ARGS() > 1)
+    if (NATIVE_GET_NUM_ARGS() >= 2)
     {
         pg = NATIVE_GET_LOCAL(1);
         if (OBJ_GET_TYPE(*pg) != OBJ_TYPE_DIC)
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+    }
+
+    /* If 3rd arg exists, raise ValueError if it is not a Dict */
+    if (NATIVE_GET_NUM_ARGS() >= 3)
+    {
+        pl = NATIVE_GET_LOCAL(2);
+        if (OBJ_GET_TYPE(*pl) != OBJ_TYPE_DIC)
         {
             PM_RAISE(retval, PM_RET_EX_VAL);
             return retval;
@@ -156,10 +173,21 @@ def eval(co, g):
     retval = frame_new(pfunc, &pnewframe);
     PM_RETURN_IF_ERROR(retval);
 
+    /* TODO: pnewframe's attrs created in mod_new are aboute to become garbage */
+    /* 
+     * By default use calling frame's attrs as local namespace.
+     * This works for ipm because the interactive mode 
+     * needs a locals namespace that persists across calls to eval()
+     */
+    ((pPmFrame_t)pnewframe)->fo_attrs = NATIVE_GET_PFRAME()->fo_attrs;
+
     /* If 2nd arg exists, use it as the global namespace for the new func */
-    if (NATIVE_GET_NUM_ARGS() > 0)
+    if (NATIVE_GET_NUM_ARGS() >= 2)
     {
         ((pPmFrame_t)pnewframe)->fo_globals = (pPmDict_t)pg;
+        
+        /* If only globals is given, locals defaults to it */
+        ((pPmFrame_t)pnewframe)->fo_attrs = (pPmDict_t)pg;        
     }
 
     /* Else use the current global namespace */
@@ -168,12 +196,20 @@ def eval(co, g):
         ((pPmFrame_t)pnewframe)->fo_globals = NATIVE_GET_PFRAME()->fo_globals;
     }
 
+    /* If 3rd arg exists, use it as the local namespace for the new func */
+    if (NATIVE_GET_NUM_ARGS() >= 3)
+    {
+        ((pPmFrame_t)pnewframe)->fo_attrs = (pPmDict_t)pl;
+    }
+
     /*
-     * Insert the new frame under the current frame
-     * so we return/jump to it after exiting from eval
+     * Set the fo_back frame so flow returns to eval()'s caller when completed.
+     * Set the frame pointer so the new frame is interpreted immediately
+     * after this function returns.
      */
-    ((pPmFrame_t)pnewframe)->fo_back = NATIVE_GET_PFRAME()->fo_back;
-    NATIVE_GET_PFRAME()->fo_back = (pPmFrame_t)pnewframe;
+    ((pPmFrame_t)pnewframe)->fo_back = NATIVE_GET_PFRAME();
+    NATIVE_GET_PFRAME() = (pPmFrame_t)pnewframe;
+    retval = PM_RET_FRAME_SWITCH;
     
     return retval;
     """
@@ -610,6 +646,43 @@ def type(o):
     /* Create int from type enum */
     retval = int_new(OBJ_GET_TYPE(*po), &pr);
     NATIVE_SET_TOS(pr);
+    return retval;
+    """
+    pass
+
+
+#
+# Creates a code object from the given image string
+#
+def Co(i):
+    """__NATIVE__
+    PmReturn_t retval;
+    pPmObj_t pimg;
+    pPmObj_t pco;
+    uint8_t *imgaddr;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Raise ValueError if arg is not a string */
+    pimg = NATIVE_GET_LOCAL(0);
+    if (OBJ_GET_TYPE(*pimg) != OBJ_TYPE_STR)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* Create a code object from the image */
+    imgaddr = (uint8_t *)&((pPmString_t)pimg)->val;
+    retval = obj_loadFromImg(MEMSPACE_RAM, &imgaddr, &pco);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Return the code object */
+    NATIVE_SET_TOS(pco);
     return retval;
     """
     pass

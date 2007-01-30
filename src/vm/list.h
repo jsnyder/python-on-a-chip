@@ -107,9 +107,7 @@ PmReturn_t list_getItem(pPmObj_t plist,
  * @param   pobj2 Ptr to obj
  * @return  Return status
  */
-PmReturn_t list_setItem(pPmObj_t pobj1,
-                        int16_t index,
-                        pPmObj_t pobj2);
+PmReturn_t list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 
 /**
  * Make a copy of the given list.

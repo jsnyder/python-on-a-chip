@@ -129,7 +129,7 @@
         }\
     } \
     while (0)
-    
+
 #else
 /** Assert statements are removed from production code */
 #define C_ASSERT(boolexpr)
@@ -157,7 +157,8 @@ typedef enum PmReturn_e
     PM_RET_NO         = 0xFF,   /**< general "no result" */
     PM_RET_ERR        = 0xFE,   /**< general failure */
     PM_RET_STUB       = 0xFD,   /**< return val for stub fxn */
-    PM_RET_ASSERT_FAIL= 0xFC,   /**< assertion failure */
+    PM_RET_ASSERT_FAIL = 0xFC,  /**< assertion failure */
+    PM_RET_FRAME_SWITCH = 0xFD, /**< frame pointer was modified */
 
     /* return vals that indicate an exception occured */
     PM_RET_EX         = 0xE0,   /**< general exception */

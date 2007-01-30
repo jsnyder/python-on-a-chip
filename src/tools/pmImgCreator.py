@@ -187,7 +187,7 @@ UNIMPLEMENTED_BCODES = (
 #    "BINARY_RSHIFT", "BINARY_AND", "BINARY_XOR", "BINARY_OR",
 #    "INPLACE_POWER", "GET_ITER",
 #    "PRINT_EXPR", "PRINT_ITEM", "PRINT_NEWLINE",
-#    "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
+    "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
 #    "INPLACE_LSHIFT", "INPLACE_RSHIFT",
 #    "INPLACE_AND", "INPLACE_XOR", "INPLACE_OR",
 #    "BREAK_LOOP",
@@ -773,14 +773,14 @@ class PmImgCreator:
         # for each entry create fxn
         for (funcname, funcstr) in self.nativetable:
             fileBuff.append("PmReturn_t\n"
-                            "%s(pPmFrame_t pframe, signed char numargs)\n"
+                            "%s(pPmFrame_t *ppframe, signed char numargs)\n"
                             "{\n"
                             "%s\n"
                             "}\n\n" % (funcname, funcstr))
 
         # create fxn table
         fileBuff.append("/* native function lookup table */\n"
-                        "PmReturn_t (* %s[])(pPmFrame_t, signed char) =\n"
+                        "PmReturn_t (* %s[])(pPmFrame_t *, signed char) =\n"
                         "{\n" % (NATIVE_TABLE_NAME[self.imgtarget]))
 
         # put all native funcs in the table

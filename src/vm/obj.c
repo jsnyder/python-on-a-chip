@@ -305,15 +305,26 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     return C_DIFFER;
 }
 
+
+#ifdef HAVE_PRINT
 PmReturn_t
 obj_print(pPmObj_t pobj, uint8_t marshallString)
 {
     PmReturn_t retval = PM_RET_OK;
-#ifdef HAVE_PRINT
+
     C_ASSERT(pobj != C_NULL);
-    
+
     switch (OBJ_GET_TYPE(*pobj))
     {
+        case OBJ_TYPE_NON:
+            if (marshallString)
+            {
+                plat_putByte('N');
+                plat_putByte('o');
+                plat_putByte('n');
+                retval = plat_putByte('e');
+            }
+            break;
         case OBJ_TYPE_INT:
             retval = int_print(pobj);
             break;
@@ -334,9 +345,9 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             PM_RAISE(retval, PM_RET_EX_TYPE);
             break;
     }
-#endif /* HAVE_PRINT */
     return retval;
 }
+#endif /* HAVE_PRINT */
 
 
 /***************************************************************

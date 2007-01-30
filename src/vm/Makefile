@@ -5,7 +5,8 @@
 # Configure the contents of pmstdlib by editing this list
 PMSTDLIB_SOURCES = ../lib/__bi.py \
                    ../lib/sys.py \
-                   ../lib/plat.py
+                   ../lib/plat.py \
+                   ../lib/ipm.py
 
 TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x1000
