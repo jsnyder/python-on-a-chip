@@ -95,12 +95,17 @@ def chr(n):
         return retval;
     }
 
+    /* Raise TypeError if arg is not an int */
     pn = NATIVE_GET_LOCAL(0);
-    n = ((pPmInt_t)pn)->val;
+    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
 
     /* Raise ValueError if arg is not int within range(256) */
-    if ((OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT) || (n < 0) || (n > 255))
-
+    n = ((pPmInt_t)pn)->val;
+    if ((n < 0) || (n > 255))
     {
         PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
@@ -174,9 +179,9 @@ def eval(co, g, l):
     PM_RETURN_IF_ERROR(retval);
 
     /* TODO: pnewframe's attrs created in mod_new are aboute to become garbage */
-    /* 
+    /*
      * By default use calling frame's attrs as local namespace.
-     * This works for ipm because the interactive mode 
+     * This works for ipm because the interactive mode
      * needs a locals namespace that persists across calls to eval()
      */
     ((pPmFrame_t)pnewframe)->fo_attrs = NATIVE_GET_PFRAME()->fo_attrs;
@@ -185,9 +190,9 @@ def eval(co, g, l):
     if (NATIVE_GET_NUM_ARGS() >= 2)
     {
         ((pPmFrame_t)pnewframe)->fo_globals = (pPmDict_t)pg;
-        
+
         /* If only globals is given, locals defaults to it */
-        ((pPmFrame_t)pnewframe)->fo_attrs = (pPmDict_t)pg;        
+        ((pPmFrame_t)pnewframe)->fo_attrs = (pPmDict_t)pg;
     }
 
     /* Else use the current global namespace */
@@ -210,7 +215,7 @@ def eval(co, g, l):
     ((pPmFrame_t)pnewframe)->fo_back = NATIVE_GET_PFRAME();
     NATIVE_GET_PFRAME() = (pPmFrame_t)pnewframe;
     retval = PM_RET_FRAME_SWITCH;
-    
+
     return retval;
     """
     pass
