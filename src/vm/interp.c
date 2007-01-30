@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/01/29   #80: Fix DUP_TOPX bytecode
  * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: Changed IMPORT_NAME, printing (P.Adelt)
  * 2007/01/09   #75: Restructed for green threading (P.Adelt)
@@ -872,17 +873,17 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj1 = TOS;
                     pobj2 = TOS1;
-                    PM_PUSH(pobj1);
                     PM_PUSH(pobj2);
+                    PM_PUSH(pobj1);
                 }
                 else if (t16 == 3)
                 {
                     pobj1 = TOS;
                     pobj2 = TOS1;
                     pobj3 = TOS2;
-                    PM_PUSH(pobj1);
-                    PM_PUSH(pobj2);
                     PM_PUSH(pobj3);
+                    PM_PUSH(pobj2);
+                    PM_PUSH(pobj1);
                 }
                 else
                 {
