@@ -382,13 +382,6 @@ class PmImgCreator:
                           _U8_to_str((obj >> 16) & 0xff) + \
                           _U8_to_str((obj >> 24) & 0xff)
 
-            #if its a float
-            elif objtype == types.FloatType:
-                # marker, float (little endian)
-                imgstr += _U8_to_str(OBJ_TYPE_FLT)
-                # get bits of a float
-                imgstr += struct.pack('f', obj)
-
             #if its a code object
             elif objtype == types.CodeType:
                 #determine if it's native or regular
