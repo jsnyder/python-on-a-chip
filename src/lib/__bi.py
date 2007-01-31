@@ -255,13 +255,7 @@ def id(o):
     }
 
     /* Return object's address as an int on the stack */
-#ifdef TARGET_AVR
-    retval = int_new((int32_t)(int16_t)NATIVE_GET_LOCAL(0), &pr);
-#elif defined(TARGET_DESKTOP) || defined(TARGET_ARM)
-    retval = int_new((int32_t)NATIVE_GET_LOCAL(0), &pr);
-#else
-#error Native function, __bi.id(), is not implemented for the desired target
-#endif
+    retval = int_new((int)NATIVE_GET_LOCAL(0), &pr);
     NATIVE_SET_TOS(pr);
 
     return retval;

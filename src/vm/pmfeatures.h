@@ -39,13 +39,4 @@
  */
 #define HAVE_PRINT
 
-/**
- * When defined, the AVR target configures Timer/Counter0 to generate an
- * overflow interrupt to call pm_vmPeriodic().
- * If you configure T/C0 yourself, disable this define and be sure to
- * periodically call pm_vmPeriodic(usec)!
- * Has no meaning on non-AVR.
- */
-#define AVR_DEFAULT_TIMER_SOURCE
-
 #endif /*FEATURES_H_*/

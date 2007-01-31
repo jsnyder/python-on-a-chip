@@ -266,7 +266,9 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 PmReturn_t
 string_print(pPmObj_t pstr, uint8_t marshall)
 {
-    uint8_t i, ch;
+    uint8_t i;
+    uint8_t ch;
+    uint8_t nibble;
     PmReturn_t retval = PM_RET_OK;
 
     C_ASSERT(pstr != C_NULL);
@@ -293,28 +295,20 @@ string_print(pPmObj_t pstr, uint8_t marshall)
             retval = plat_putByte('\\');
             PM_RETURN_IF_ERROR(retval);
         }
+        
+        /* If the marshalled char is not printable, print its hex escape code */
         if (marshall && (ch < 32 || ch >= 128))
         {
-            /* Construct escape for the hexdigit */
-            uint8_t tBuffer[5];
-            uint8_t k;
-            #ifdef TARGET_AVR
-            snprintf_P((uint8_t*)&tBuffer, sizeof(tBuffer), PSTR("\\x%02x"), ch);
-            for (k=0; k<4; k++)
-                retval = plat_putByte(tBuffer[k]);
-                PM_RETURN_IF_ERROR(retval);
-            #else 
-            /* This does not use snprintf because glibc's snprintf is only
-             * included for compiles without strict-ansi.
-             */
-            sprintf((void*)&tBuffer, "\\x%02x", ch);
-            #endif /* !TARGET_AVR */
+            plat_putByte('\\');
+            plat_putByte('x');
 
-            for (k=0; k<4; k++)
-            {
-                retval = plat_putByte(tBuffer[k]);
-                PM_RETURN_IF_ERROR(retval);
-            }
+            nibble = (ch >> 4) + '0';
+            if (nibble > '9') nibble += ('a' - '0' - 10);
+            plat_putByte(nibble);
+
+            nibble = (ch & 0x0F) + '0';
+            if (nibble > '9') nibble += ('a' - '0' - 10);
+            plat_putByte(nibble);
         } 
         else
         {

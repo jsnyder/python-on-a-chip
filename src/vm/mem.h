@@ -78,20 +78,17 @@ typedef enum PmMemSpace_e
  **************************************************************/
 
 /**
- * Return the byte at the given address in memspace.
+ * Returns the byte at the given address in memspace.
  *
- * Increment the address (just like getc and read(1))
+ * Increments the address (just like getc and read(1))
  * to make image loading work (recursive).
- *
- * PORT:    fill in getByte for each memspace in the system;
- *          call sys_error for invalid memspaces.
  *
  * @param   memspace memory space/type
  * @param   paddr ptr to address
  * @return  byte from memory.
  *          paddr - points to the next byte
  */
-uint8_t mem_getByte(PmMemSpace_t memspace, uint8_t **paddr);
+#define mem_getByte(memspace, paddr) plat_memGetByte((memspace), (paddr))
 
 /**
  * Return the 2-byte word at the given address in memspace.

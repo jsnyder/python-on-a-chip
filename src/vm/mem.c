@@ -43,11 +43,6 @@
 
 #include "pm.h"
 
-#ifdef TARGET_AVR
-#include <avr/pgmspace.h>
-#include <avr/eeprom.h>
-#endif /* AVR */
-
 
 /***************************************************************
  * Constants
@@ -73,48 +68,6 @@
  * Functions
  **************************************************************/
 
-uint8_t
-mem_getByte(PmMemSpace_t memspace, uint8_t **paddr)
-{
-    uint8_t b = 0;
-
-    switch (memspace)
-    {
-        case MEMSPACE_RAM:
-            b = **paddr;
-            *paddr += 1;
-            return b;
-
-        case MEMSPACE_FLASH:
-#ifdef TARGET_AVR
-            b = pgm_read_byte(*paddr);
-#elif defined(TARGET_DESKTOP) || defined(TARGET_ARM)
-            b = **paddr;
-#else
-#error Undefined TARGET
-#endif /* TARGET_AVR */
-            *paddr += 1;
-            return b;
-
-        case MEMSPACE_EEPROM:
-#ifdef TARGET_AVR
-            b = eeprom_read_byte(*paddr);
-            *paddr += 1;
-#endif /* TARGET_AVR */
-            return b;
-
-        case MEMSPACE_SEEPROM:
-        case MEMSPACE_OTHER0:
-        case MEMSPACE_OTHER1:
-        case MEMSPACE_OTHER2:
-        case MEMSPACE_OTHER3:
-        default:
-            return 0;
-    }
-}
-
-
-INLINE
 uint16_t
 mem_getWord(PmMemSpace_t memspace, uint8_t **paddr)
 {
@@ -125,7 +78,6 @@ mem_getWord(PmMemSpace_t memspace, uint8_t **paddr)
 }
 
 
-INLINE
 uint32_t
 mem_getInt(PmMemSpace_t memspace, uint8_t **paddr)
 {

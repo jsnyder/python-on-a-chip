@@ -25,6 +25,7 @@
  * Log
  * ---
  *
+ * 2007/01/31   #86: Move platform-specific code to the platform impl file
  * 2007/01/10   #75: Added time tick service for desktop (POSIX) and AVR. (P.Adelt)
  * 2006/12/26   #65: Create plat module with put and get routines
  */
@@ -33,8 +34,25 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 
 #include "../pm.h"
+
+
+/***************************************************************
+ * Configuration
+ **************************************************************/
+
+/**
+ * When defined, the AVR target configures Timer/Counter0 to generate an
+ * overflow interrupt to call pm_vmPeriodic().
+ * If you configure T/C0 yourself, disable this define and be sure to
+ * periodically call pm_vmPeriodic(usec)!
+ * Has no meaning on non-AVR.
+ */
+#define AVR_DEFAULT_TIMER_SOURCE
+
 
 /***************************************************************
  * Constants
@@ -103,6 +121,43 @@ ISR(TIMER0_OVF_vect)
     pm_vmPeriodic(PLAT_TIME_PER_TICK_USEC);
 }
 #endif
+
+
+/*
+ * Gets a byte from the address in the designated memory space
+ * Post-increments *paddr.
+ */
+uint8_t
+plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr)
+{
+    uint8_t b = 0;
+
+    switch (memspace)
+    {
+        case MEMSPACE_RAM:
+            b = **paddr;
+            *paddr += 1;
+            return b;
+
+        case MEMSPACE_FLASH:
+            b = pgm_read_byte(*paddr);
+            *paddr += 1;
+            return b;
+
+        case MEMSPACE_EEPROM:
+            b = eeprom_read_byte(*paddr);
+            *paddr += 1;
+            return b;
+
+        case MEMSPACE_SEEPROM:
+        case MEMSPACE_OTHER0:
+        case MEMSPACE_OTHER1:
+        case MEMSPACE_OTHER2:
+        case MEMSPACE_OTHER3:
+        default:
+            return 0;
+    }
+}
 
 
 /*

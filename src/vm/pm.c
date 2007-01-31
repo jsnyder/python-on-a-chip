@@ -32,9 +32,7 @@
  */
 
 #include "pm.h"
-#ifdef TARGET_AVR
-#include "avr/interrupt.h"
-#endif /* TARGET_AVR */
+
 
 /** Number of millisecond-ticks to pass before scheduler is run */
 #define PM_THREAD_TIMESLICE_MS  10

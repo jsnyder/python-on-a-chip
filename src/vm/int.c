@@ -39,6 +39,10 @@
 
 #include "pm.h"
 
+#if defined(HAVE_PRINT) && defined(TARGET_AVR)
+#include <avr/pgmspace.h>
+#endif
+
 
 /***************************************************************
  * Constants

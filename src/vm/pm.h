@@ -42,9 +42,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#ifdef TARGET_AVR
-#include <avr/pgmspace.h>
-#endif
+
 
 /***************************************************************
  * Configurables

@@ -42,6 +42,22 @@ PmReturn_t plat_init(void);
 
 
 /**
+ * Return the byte at the given address in memspace.
+ *
+ * Increment the address (just like getc and read(1))
+ * to make image loading work (recursive).
+ *
+ * PORT:    fill in getByte for each memspace in the system;
+ *          call sys_error for invalid memspaces.
+ *
+ * @param   memspace memory space/type
+ * @param   paddr ptr to address
+ * @return  byte from memory.
+ *          paddr - points to the next byte
+ */
+uint8_t plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr);
+
+/**
  * Receives one byte from the default connection,
  * usually UART0 on a target device or stdio on the desktop
  */

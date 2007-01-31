@@ -76,6 +76,7 @@ plat_init(void)
     return PM_RET_OK;
 }
 
+
 void
 plat_sigalrm_handler(int signal)
 {
@@ -83,6 +84,36 @@ plat_sigalrm_handler(int signal)
     retval = pm_vmPeriodic(1000);
     PM_PRINT_IF_ERROR(retval);
 }
+
+
+/*
+ * Gets a byte from the address in the designated memory space
+ * Post-increments *paddr.
+ */
+uint8_t
+plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr)
+{
+    uint8_t b = 0;
+
+    switch (memspace)
+    {
+        case MEMSPACE_RAM:
+        case MEMSPACE_FLASH:
+            b = **paddr;
+            *paddr += 1;
+            return b;
+
+        case MEMSPACE_EEPROM:
+        case MEMSPACE_SEEPROM:
+        case MEMSPACE_OTHER0:
+        case MEMSPACE_OTHER1:
+        case MEMSPACE_OTHER2:
+        case MEMSPACE_OTHER3:
+        default:
+            return 0;
+    }
+}
+
 
 /* Desktop target shall use stdio for I/O routines */
 PmReturn_t
