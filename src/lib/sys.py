@@ -77,4 +77,52 @@ def exit(val):
     """
     pass
 
+
+#
+# Returns a tuple containing the amout of heap available and the maximum
+#
+def heap():
+    """__NATIVE__
+    PmReturn_t retval;
+    pPmObj_t pavail;
+    pPmObj_t pmax;
+    pPmObj_t ptup;
+    uint16_t avail;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Allocate a tuple to store the return values */
+    retval = tuple_new(2, &ptup);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Get the maximum heap size */
+    retval = int_new(HEAP_SIZE, &pmax);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Allocate an int to hold the amount of heap available */
+    retval = int_new(0, &pavail);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Now that all objs are allocated, get the available heap */
+    retval = heap_getAvail(&avail);
+    PM_RETURN_IF_ERROR(retval);
+    ((pPmInt_t)pavail)->val = avail;
+
+    /* Put the two heap values in the tuple */
+    ((pPmTuple_t)ptup)->val[0] = pavail;
+    ((pPmTuple_t)ptup)->val[1] = pmax;
+
+    /* Return the tuple on the stack */
+    NATIVE_SET_TOS(ptup);
+
+    return retval;
+    """
+    pass
+
+
 # :mode=c:
