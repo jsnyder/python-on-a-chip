@@ -1,0 +1,105 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+======================
+The PyMite Heap Design
+======================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the design of the memory heap for the PyMite project.
+In doing so, it serves  as a design document for the PyMite developers.
+
+Overview
+--------
+
+PyMite shall use a statically declared block of RAM for the virtual machine's
+memory heap.  One API shall be provided to allocate chunks from the heap,
+one API shall be provided to return chunks to the heap and one API shall be
+provided to return the amount of memory remaining in the heap.  The remaining
+implementation of the heap shall be transparent to the user.
+
+Design
+------
+
+PyMite's use of a statically declared block of RAM as the source of the
+memory heap is to avoid using memory allocation functions such as ``malloc()``
+which vary from one embedded target library to another.
+
+Memory from the heap is divided into chunks.  A chunk has minimum and
+maximum size limits.  The minimum chunk size is equivalent to the size of
+the heap descriptor type.  Since the size of this type varies with the target
+device, there is not one set value for the minimum chunk size.  As an example,
+the minimum chunk size for an 8-bit Atmel AVR is 4 bytes.
+
+The maximum size for a chunk is limited by the number of the bits in the field
+in the object descriptor of the chunk that stores the chunk's size.  This field
+is 8-bits for all target devices.  So the theoretical maximum chunk size is
+255 bytes.  However, an implementation detail has affected the maximum.  On the
+32-bit targets, ARM7 and Desktop x86, memory chunks are required to have 4-byte
+boundaries.  So, the maximum size of a chunk is set to four bytes less than 256,
+or 252 bytes.  
+
+The maximum size of a chunk has impacted other parts of the VM.  For example,
+the length of String and Tuple objects are directly constrained by the maximum 
+chunk size.  The List and Dict object implementations used a segmented linked 
+list in their implementations to overcome the chunk size limit.
+
+The public API, ``heap_getChunk()``, shall be provided to allocate a chunk of
+memory from the heap.  This API will return an error code in its return value
+if a suitable chunk cannot be provided or some other error occurs.  If the
+return value indicates succes, a pointer to a chunk of memor is returned by
+reference.  This chunk shall have its size field set and its size shall the
+requested size or larger.  Similar to above, some 32-bit target devices require
+pointers be even multiples of four bytes.  So the implementation of
+``heap_getChunk()`` rounds up the requested chunk size to the next even multiple
+of four.  This results in some wasted memory, but increases the likelihood of
+a size match when memory chunks are recycled and offers the option to optimize
+the search for chunks in the heap's free list.
+
+This paragraph explains the memory allocation algorithm used by
+``heap_getChunk()``.  After the heap is initialized, all available memory is
+in one big block called the clean heap.  As long as there is sufficient memory
+in the clean heap for the requested size, the new chunk will be obtained from
+the clean heap.  If the clean heap is not large enough for the requested size,
+the free list is searched for a chunk of suitable size.  The first chunk that
+is equal to or greater than the requested size is used.  Chunks that are in the
+free list are never re-sized to fit a chunk request, nor are adjacent free
+chunks coalesced into a larger chunk.
+
+The public API, ``heap_freeChunk()``, shall be provided to return a chunk of
+memory to the heap.  This API will return an error code in its return value
+if an error occurs.  At this time, there are no ways a known error can occur.
+When chunks are returned to the heap, they are put in a linked list sorted
+from smallest to largest.  This list is called the free list and is used by
+``heap_getChunk()`` as explained the paragraph above.
+
+Garbage Collection
+------------------
+
+Garbage collection is the process of reclaiming memory chunks that are no longer
+needed by the virtual machine.  The design of PyMite's heap includes plans for
+garbage collection, but the implementation does not yet include this ability.
+At this time, the focus of the heap implementation is to create allocation and
+deallocation functions that work flawlessly.  Only after this is achieved can
+garbage collection be possible.
+
+Conclusion
+----------
+
+PyMite includes its own dynamic memory allocation system that is based on a
+static block of RAM called the heap.  The heap allocates and reclaims chunks
+of memory to and from the PyMite VM during runtime.  Memory chunks are
+constrained in size and can explicitly reclaimed when no longer needed.
+Garbage collection is a possible future enhancement to this heap design.
+
+
+.. :mode=rest:
