@@ -27,16 +27,18 @@
 # LOG
 # ---
 #
+# 2007/02/03    #89: Move plat module functions into sys module
+# 2006/12/26   *#65: Create plat module with put and get routines
+# 2007/02/03    #88: Create library function to return heap stats
 # 2006/08/31    #9: Fix BINARY_SUBSCR for case stringobj[intobj]
 # 2006/08/21    Adapt native libs to use the changed func calls
 # 2002/09/07    Created.
 #
 
 #### TODO
-#modules = None #set ptr to dict w/native func
-#platform = None #obtain from aux lib: platform.py
-#memfree, platform/device, stdout, type (type consts?), rand
-#ver = "0.1"            # XXX compile date & platform?
+# modules = None #set ptr to dict w/native func
+# platform string or device id, rand
+# ver = "0.1"            # XXX compile date & platform?
 # Example: sys.version = '2.4.1 (#1, Feb 26 2006, 16:26:36) \n[GCC 4.0.0 20041026 (Apple Computer, Inc. build 4061)]'
 
 #### CONSTS
@@ -73,6 +75,33 @@ def exit(val):
 
     /* Raise the SystemExit exception */
     PM_RAISE(retval, PM_RET_EX_EXIT);
+    return retval;
+    """
+    pass
+
+
+#
+# Get a byte from the platform's default I/O
+# Returns the byte in the LSB of the returned integer
+#
+def getb():
+    """__NATIVE__
+    uint8_t b;
+    pPmObj_t pb;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    retval = plat_getByte(&b);
+    PM_RETURN_IF_ERROR(retval);
+
+    retval = int_new((int32_t)b, &pb);
+    NATIVE_SET_TOS(pb);
     return retval;
     """
     pass
@@ -120,6 +149,39 @@ def heap():
     /* Return the tuple on the stack */
     NATIVE_SET_TOS(ptup);
 
+    return retval;
+    """
+    pass
+
+
+#
+# Sends the LSB of the integer out the platform's default I/O
+#
+def putb(b):
+    """__NATIVE__
+    uint8_t b;
+    pPmObj_t pb;
+    PmReturn_t retval;
+
+    pb = NATIVE_GET_LOCAL(0);
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* If arg is not an int, raise TypeError */
+    if (OBJ_GET_TYPE(*pb) != OBJ_TYPE_INT)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    b = ((pPmInt_t)pb)->val & 0xFF;
+    retval = plat_putByte(b);
+    NATIVE_SET_TOS(PM_NONE);
     return retval;
     """
     pass
