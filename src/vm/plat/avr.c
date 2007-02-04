@@ -206,16 +206,19 @@ plat_putByte(uint8_t b)
     return PM_RET_OK;
 }
 
-/* remember that 32bit-accesses are non-atomic on AVR */
-uint32_t
-plat_getMsTicks(void)
+
+/*
+ * This operation is made atomic by temporarily disabling
+ * the interrupts. The old state is restored afterwards.
+ */
+PmReturn_t
+plat_getMsTicks(uint32_t *r_ticks)
 {
-    uint32_t result;
     /* Critical section start */
     unsigned char _sreg = SREG;
     cli();
-    result = pm_timerMsTicks;
+    *r_ticks = pm_timerMsTicks;
     SREG = _sreg;
     /* Critical section end */
-    return result;
+    return PM_RET_OK;
 }

@@ -187,4 +187,42 @@ def putb(b):
     pass
 
 
+#
+# Returns the number of milliseconds since the PyMite VM was initialized
+#
+def time():
+    """__NATIVE__
+    uint32_t t;
+    pPmObj_t pt;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Get the system time (milliseconds since init) */
+    retval = plat_getMsTicks(&t);
+    PM_RETURN_IF_ERROR(retval);
+
+    /*
+     * Raise ValueError if there is an overflow
+     * (plat_getMsTicks is unsigned; int is signed)
+     */
+    if ((int32_t)t < 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* Return an int object with the time value */
+    retval = int_new((int32_t)t, &pt);
+    NATIVE_SET_TOS(pt);
+    return retval;
+    """
+    pass
+
+
 # :mode=c:

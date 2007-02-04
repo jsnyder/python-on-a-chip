@@ -152,9 +152,11 @@ plat_putByte(uint8_t b)
     return retval;
 }
 
-/* remember that 32bit-accesses are non-atomic on AVR */
-uint32_t
-plat_getMsTicks(void)
+
+PmReturn_t
+plat_getMsTicks(uint32_t *r_ticks)
 {
-    return pm_timerMsTicks;
+    *r_ticks = pm_timerMsTicks;
+    
+    return PM_RET_OK;
 }

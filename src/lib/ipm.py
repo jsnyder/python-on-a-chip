@@ -90,7 +90,7 @@ def _getImg():
 #
 # Runs the target device-side interactive session.
 #
-import plat
+import sys
 def ipm():
     while 1:
         # Wait for a code image, make a code object from it
@@ -98,7 +98,7 @@ def ipm():
         rv = eval(Co(_getImg()))
 
         # Send a byte to indicate completion of evaluation
-        plat.puts('\x04')
+        sys.putb(0x04)
 
 # Start the interactive session when this module is imported
 ipm()

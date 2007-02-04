@@ -78,7 +78,7 @@ class PipeConnection(Connection):
     def __init__(self, target=PMVM_EXE):
         self.open(target)
 
-        
+
     def open(self, target):
         self.child = subprocess.Popen(target,
                                       bufsize=-1,
@@ -155,7 +155,7 @@ class Interactive(cmd.Cmd):
         codeobj = compile(line, COMPILE_FN, COMPILE_MODE)
 
         # DEBUG: Uncomment the next line to print the statement's bytecodes
-        #dis.disco(codeobj) 
+        #dis.disco(codeobj)
 
         # Convert to a code image
         pic = pmImgCreator.PmImgCreator()
@@ -168,6 +168,10 @@ class Interactive(cmd.Cmd):
 
         # Otherwise send the image and print the reply
         else:
+
+            # DEBUG: Uncomment the next line to print the code image
+            # print "codeimg = ", repr(codeimg)
+
             try:
                 self.conn.write(codeimg)
             except Exception, e:

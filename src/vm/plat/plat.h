@@ -71,10 +71,8 @@ PmReturn_t plat_getByte(uint8_t *b);
 PmReturn_t plat_putByte(uint8_t b);
 
 /**
- * Get the number of timer ticks that have passed since system start.
- * On embedded targets, this operatoin is made atomic by temporarily disabling
- * the interrupts. The old state is restored afterwards.
+ * Gets the number of timer ticks that have passed since system start.
  */
-uint32_t plat_getMsTicks(void);
+PmReturn_t plat_getMsTicks(uint32_t *r_ticks);
 
 #endif /* PLAT_H_ */
