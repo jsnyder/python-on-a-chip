@@ -134,13 +134,9 @@ def heap():
     PM_RETURN_IF_ERROR(retval);
 
     /* Allocate an int to hold the amount of heap available */
-    retval = int_new(0, &pavail);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* Now that all objs are allocated, get the available heap */
     retval = heap_getAvail(&avail);
+    retval = int_new(avail - sizeof(PmInt_t), &pavail);
     PM_RETURN_IF_ERROR(retval);
-    ((pPmInt_t)pavail)->val = avail;
 
     /* Put the two heap values in the tuple */
     ((pPmTuple_t)ptup)->val[0] = pavail;
