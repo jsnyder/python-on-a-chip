@@ -64,20 +64,16 @@
  **************************************************************/
 
 PmReturn_t
-func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
+func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmFunc_t pfunc = C_NULL;
     uint8_t *pchunk;
     pPmObj_t pobj;
 
-    /* ensure pco pts to code obj or native obj */
-    if ((OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB) &&
-        (OBJ_GET_TYPE(*pco) != OBJ_TYPE_NOB))
-    {
-        PM_RAISE(retval, PM_RET_EX_SYS);
-        return retval;
-    }
+    C_ASSERT(OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB
+             || OBJ_GET_TYPE(*pco) != OBJ_TYPE_NOB);
+    C_ASSERT(OBJ_GET_TYPE(*pglobals) == OBJ_TYPE_DIC);
 
     /* allocate a func obj */
     retval = heap_getChunk(sizeof(PmFunc_t), &pchunk);
@@ -93,6 +89,9 @@ func_new(pPmObj_t pco, pPmObj_t *r_pfunc)
         retval = dict_new(&pobj);
         PM_RETURN_IF_ERROR(retval);
         pfunc->f_attrs = (pPmDict_t)pobj;
+
+        /* Store the given globals dict */
+        pfunc->f_globals = (pPmDict_t)pglobals;
     }
     else
     {

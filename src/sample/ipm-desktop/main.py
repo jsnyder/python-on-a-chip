@@ -21,5 +21,6 @@
 #
 
 # Uncomment the following two lines when #82 is fixed
-# import ipm
-# ipm.ipm()
+import ipm
+
+ipm.ipm()

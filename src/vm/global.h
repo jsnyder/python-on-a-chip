@@ -111,9 +111,6 @@ typedef struct PmVmGlobal_s
     /** Line number for when an error occurs */
     uint16_t errLineNum;
     
-    /** Interpreter global namespace */
-    pPmDict_t globals;
-    
     /** Thread list */
     pPmList_t threadList;
 

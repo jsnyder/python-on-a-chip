@@ -100,8 +100,4 @@ def ipm():
         # Send a byte to indicate completion of evaluation
         sys.putb(0x04)
 
-# Start the interactive session when this module is imported
-ipm()
-
-
 #:mode=c:

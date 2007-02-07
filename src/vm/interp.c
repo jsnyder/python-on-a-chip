@@ -94,11 +94,11 @@ interpret(const uint8_t returnOnNoThreads)
     int16_t t16 = 0;
     int8_t t8 = 0;
     uint8_t bc;
-    
+
     /* activate a thread the first time */
     retval = interp_reschedule();
     PM_RETURN_IF_ERROR(retval);
-    
+
     /* interpret loop */
     while(1)
     {
@@ -115,14 +115,14 @@ interpret(const uint8_t returnOnNoThreads)
             PM_BREAK_IF_ERROR(retval);
             continue;
         }
-        
+
         /* Time for switching threads? */
         if (gVmGlobal.reschedule)
         {
             retval = interp_reschedule();
             PM_BREAK_IF_ERROR(retval);
         }
-        
+
         /* get byte; the func post-incrs IP */
         bc = mem_getByte(MS, &IP);
         switch(bc)
@@ -397,7 +397,9 @@ interpret(const uint8_t returnOnNoThreads)
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
-                    t16 = ((pPmInt_t)pobj1)->val;
+
+                    C_ASSERT(((pPmInt_t)pobj1)->val <= 0x0000FFFF);
+                    t16 = (int16_t)((pPmInt_t)pobj1)->val;
                     retval = seq_getSubscript(pobj2, t16, &pobj3);
                 }
                 PM_BREAK_IF_ERROR(retval);
@@ -608,7 +610,7 @@ interpret(const uint8_t returnOnNoThreads)
 
             case PRINT_ITEM:
                 /* Print out topmost stack element */
-                pobj1 = PM_POP(); 
+                pobj1 = PM_POP();
                 retval = obj_print(pobj1, 0);
                 PM_BREAK_IF_ERROR(retval);
                 if (bc != PRINT_EXPR)
@@ -682,7 +684,7 @@ interpret(const uint8_t returnOnNoThreads)
                 FP = FP->fo_back;
                 /* push frame's return val */
                 /* except if the expiring frame was import-originated */
-                if (!(((pPmFrame_t)pobj1)->fo_isImport)) 
+                if (!(((pPmFrame_t)pobj1)->fo_isImport))
                 {
                     PM_PUSH(pobj2);
                 }
@@ -1111,15 +1113,12 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(retval);
                 /* module overwrites None on stack */
                 TOS = pobj2;
-                
+
                 /* XXX duplicate code with CALL_FUNCTION */
 
-                /* make frameObj from pCO */
+                /* Make frame object to interpret the module's root code */
                 retval = frame_new(pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
-                /* frame's globals is same as parent's */
-                ((pPmFrame_t)pobj3)->fo_globals =
-                        FP->fo_globals;
 
                 /* no arguments to pass */
 
@@ -1127,7 +1126,7 @@ interpret(const uint8_t returnOnNoThreads)
                 ((pPmFrame_t)pobj3)->fo_back = FP;
                 /* handle to have None popped on return */
                 ((pPmFrame_t)pobj3)->fo_isImport = 1;
-                
+
                 /* set new frame */
                 FP = (pPmFrame_t)pobj3;
 
@@ -1354,16 +1353,16 @@ interpret(const uint8_t returnOnNoThreads)
                 /* get the func */
                 pobj1 = STACK(t16);
 
+                C_ASSERT(OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN);
+                
                 /* if it's regular func (not native) */
                 if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
                     OBJ_TYPE_COB)
                 {
-                    /* make frameObj from pCO */
+                    /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
-                    /* frame's globals is same as parent's */
-                    ((pPmFrame_t)pobj2)->fo_globals =
-                            FP->fo_globals;
+
                     /* pass args to new frame */
                     while (--t16 >= 0)
                     {
@@ -1431,7 +1430,7 @@ interpret(const uint8_t returnOnNoThreads)
                         TOS = PM_NONE;
                         retval = PM_RET_OK;
                     }
-                    
+
                     /* Otherwise, return the result from the native function */
                     else
                     {
@@ -1446,7 +1445,13 @@ interpret(const uint8_t returnOnNoThreads)
                 t16 = GET_ARG();
                 /* load func from CO */
                 pobj1 = PM_POP();
-                retval = func_new(pobj1, &pobj2);
+
+                /*
+                 * The current frame's globals become the function object's
+                 * globals.  The current frame is the container object
+                 * of this new function object
+                 */
+                retval = func_new(pobj1, (pPmObj_t)FP->fo_globals, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
                 /* put any default args in a tuple */
                 if (t16 > 0)
@@ -1455,12 +1460,10 @@ interpret(const uint8_t returnOnNoThreads)
                     PM_BREAK_IF_ERROR(retval);
                     while (--t16 >= 0)
                     {
-                        ((pPmTuple_t)pobj3)->val[t16] =
-                                PM_POP();
+                        ((pPmTuple_t)pobj3)->val[t16] = PM_POP();
                     }
                     /* set func's default args */
-                    ((pPmFunc_t)pobj2)->f_defaultargs =
-                                ((pPmTuple_t)pobj3);
+                    ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
                 }
                 /* push func obj */
                 PM_PUSH(pobj2);
@@ -1493,13 +1496,13 @@ interpret(const uint8_t returnOnNoThreads)
             pm_printError(retval);
         }
 
-        list_remove((pPmObj_t)gVmGlobal.threadList, (pPmObj_t)gVmGlobal.pthread); 
+        list_remove((pPmObj_t)gVmGlobal.threadList, (pPmObj_t)gVmGlobal.pthread);
         gVmGlobal.pthread = C_NULL;
         retval = interp_reschedule();
         PM_BREAK_IF_ERROR(retval);
 
     } /* while */
-    
+
     return retval;
 }
 
@@ -1508,11 +1511,11 @@ interp_reschedule(void)
 {
     PmReturn_t retval = PM_RET_OK;
     static uint8_t threadIndex = 0;
-    
+
     if (gVmGlobal.threadList->length == 0) {
     gVmGlobal.pthread = C_NULL;
     } else {
-        threadIndex = (threadIndex+1) % (gVmGlobal.threadList->length); 
+        threadIndex = (threadIndex+1) % (gVmGlobal.threadList->length);
         retval = list_getItem((pPmObj_t)gVmGlobal.threadList, threadIndex, (pPmObj_t*)&gVmGlobal.pthread);
         PM_RETURN_IF_ERROR(retval);
     }
@@ -1526,25 +1529,15 @@ interp_addThread(pPmFunc_t pfunc)
     PmReturn_t retval;
     pPmObj_t pframe;
     pPmObj_t pthread;
-    
+
     /* create a frame for the func */
     retval = frame_new((pPmObj_t)pfunc, &pframe);
     PM_RETURN_IF_ERROR(retval);
 
-    /*
-     * set thread's globals dict to same as interpreter globals.
-     */
-    ((pPmFrame_t)pframe)->fo_globals = GP;
-    
-    /* As this is the module's function, locals are identical to
-     * globals.
-     */
-    ((pPmFrame_t)pframe)->fo_attrs = GP;
-    
     /* create a thread with this new frame */
     retval = thread_new(pframe, &pthread);
     PM_RETURN_IF_ERROR(retval);
-    
+
     /* add thread to end of list */
     return list_append((pPmObj_t)gVmGlobal.threadList, pthread);
 }

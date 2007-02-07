@@ -159,6 +159,12 @@ def eval(co, g, l):
         }
     }
 
+    /* If no args are given, use the caller's globals for the function's */
+    else
+    {
+        pg = (pPmObj_t)NATIVE_GET_PFRAME()->fo_globals;
+    }
+
     /* If 3rd arg exists, raise ValueError if it is not a Dict */
     if (NATIVE_GET_NUM_ARGS() >= 3)
     {
@@ -170,15 +176,15 @@ def eval(co, g, l):
         }
     }
 
-    /* Create module from code object; same as func_new(), but faster */
-    retval = mod_new(pco, &pfunc);
+    /* Create func from code object */
+    retval = func_new(pco, pg, &pfunc);
     PM_RETURN_IF_ERROR(retval);
 
     /* Create frame from module object; globals is set to null */
     retval = frame_new(pfunc, &pnewframe);
     PM_RETURN_IF_ERROR(retval);
 
-    /* TODO: pnewframe's attrs created in mod_new are aboute to become garbage */
+    /* TODO: Reclaim pnewframe's attrs dict created in frame_new */
     /*
      * By default use calling frame's attrs as local namespace.
      * This works for ipm because the interactive mode
@@ -193,12 +199,6 @@ def eval(co, g, l):
 
         /* If only globals is given, locals defaults to it */
         ((pPmFrame_t)pnewframe)->fo_attrs = (pPmDict_t)pg;
-    }
-
-    /* Else use the current global namespace */
-    else
-    {
-        ((pPmFrame_t)pnewframe)->fo_globals = NATIVE_GET_PFRAME()->fo_globals;
     }
 
     /* If 3rd arg exists, use it as the local namespace for the new func */

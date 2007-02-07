@@ -64,6 +64,8 @@ typedef struct PmFunc_s
     pPmCo_t     f_co;
     /** ptr to attribute dict */
     pPmDict_t   f_attrs;
+    /** ptr to globals dict */
+    pPmDict_t   f_globals;
     /** ptr to tuple holding default args */
     pPmTuple_t  f_defaultargs;
 } PmFunc_t, *pPmFunc_t;
@@ -82,9 +84,10 @@ typedef struct PmFunc_s
  * Allocate space for a Func obj and fill the fields.
  *
  * @param   pco ptr to code obj
+ * @param   pglobals ptr to globals dict (from containing func/module)
  * @return  ptr to new func obj
  */
-PmReturn_t func_new(pPmObj_t pco, pPmObj_t * r_pframe);
+PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
 
 /**
  * Create a new Class object from the methods dict, bases tuple,

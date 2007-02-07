@@ -88,6 +88,10 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
     /* alloc and init attrs dict */
     retval = dict_new(&pobj);
     ((pPmFunc_t)*pmod)->f_attrs = (pPmDict_t)pobj;
+
+    /* A module's globals is the same as its attrs */
+    ((pPmFunc_t)*pmod)->f_globals = (pPmDict_t)pobj;
+
     return retval;
 }
 

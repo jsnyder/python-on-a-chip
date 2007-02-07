@@ -107,9 +107,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pframe->fo_ip = pco->co_codeaddr;
     pframe->fo_line = 0;
     pframe->fo_blockstack = C_NULL;
-    /* init globals dict to NULL, interpreter will set it */
-    pframe->fo_globals = C_NULL;
-    /* frame's attrs points to func/mod/class's attrs dict */
+    /* Get globals and attrs from the function object */
+    pframe->fo_globals = ((pPmFunc_t)pfunc)->f_globals;
     pframe->fo_attrs = ((pPmFunc_t)pfunc)->f_attrs;
     /* empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);

@@ -118,9 +118,6 @@ global_init(void)
     /* clear ptrs */
     /*FP = C_NULL;*//* fp is local to interp, until thread struct is made */
     
-    /* create empty globals dict */
-    dict_new((pPmObj_t*)&(gVmGlobal.globals));
-    
     /* create empty threadList */
     list_new((pPmObj_t*)&(gVmGlobal.threadList));
 

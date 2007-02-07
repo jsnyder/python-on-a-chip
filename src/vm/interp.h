@@ -60,8 +60,6 @@
 #define SP              (FP->fo_sp)
 /** memspace where the frame's func's CO came from */
 #define MS              (FP->fo_memspace)
-/** pointer to the globals dict */
-#define GP              (gVmGlobal.globals)
 
 /** top of stack */
 #define TOS             (*(SP - 1))

@@ -72,7 +72,6 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     PmObjDesc_t od;
-    int32_t intval;
 
     /* get the object descriptor */
     od.od_type = (PmType_t)mem_getByte(memspace, paddr);
@@ -85,13 +84,9 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
             *r_pobj = PM_NONE;
             break;
 
-        /* if it's a simple type */
         case OBJ_TYPE_INT:
-            /* Read the integer value (little endian) */
-            intval = mem_getInt(memspace, paddr);
-
-            /* Create an integer object with the value */
-            retval = int_new(intval, r_pobj);
+            /* Read an integer and create an integer object with the value */
+            retval = int_new(mem_getInt(memspace, paddr), r_pobj);
             break;
 
         case OBJ_TYPE_STR:

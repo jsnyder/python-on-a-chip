@@ -40,6 +40,6 @@ int main(void)
     retval = pm_init(MEMSPACE_FLASH, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
-    retval = pm_run((uint8_t *)"ipm");
+    retval = pm_run((uint8_t *)"main");
     return (int)retval;
 }
