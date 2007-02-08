@@ -43,6 +43,5 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t009");
-    pm_reportResult(retval);
     return (int)retval;
 }

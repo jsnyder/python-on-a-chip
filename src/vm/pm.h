@@ -111,8 +111,8 @@
                                         return (retval)
 
 /** print an error message if argument is not PM_RET_OK */
-#define PM_PRINT_IF_ERROR(retval)   if ((retval) != PM_RET_OK) \
-                                        pm_printError(retval)
+#define PM_REPORT_IF_ERROR(retval)   if ((retval) != PM_RET_OK) \
+                                        plat_reportError(retval)
 
 #if __DEBUG__
 /** If the boolean expression fails, return the ASSERT error code */
@@ -247,21 +247,5 @@ PmReturn_t pm_run(uint8_t *modstr);
  * @return Return status
  */
 PmReturn_t pm_vmPeriodic(uint16_t usecsSinceLastCall);
-
-#ifdef TARGET_DESKTOP
-/**
- * Reports the return status to stdout and prints exception info if raised
- *
- * @param result        Return status from pm_run()
- */
-void pm_reportResult(PmReturn_t result);
-#endif /* TARGET_DESKTOP */
-
-/**
- * Prints exception information for result. Does nothing on non-desktop targets.
- * 
- * @param result        Return status to be displayed.
- */
-void pm_printError(PmReturn_t result);
 
 #endif /* __PM_H__ */

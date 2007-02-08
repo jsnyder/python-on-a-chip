@@ -115,7 +115,7 @@ plat_init(void)
 ISR(TIMER0_OVF_vect) 
 {
     /* TODO Find a clever way to handle bad return code, maybe use 
-     * PM_PRINT_IF_ERROR(retval) when that works on AVR inside an
+     * PM_REPORT_IF_ERROR(retval) when that works on AVR inside an
      * interrupt.
      */ 
     pm_vmPeriodic(PLAT_TIME_PER_TICK_USEC);
@@ -221,4 +221,11 @@ plat_getMsTicks(uint32_t *r_ticks)
     SREG = _sreg;
     /* Critical section end */
     return PM_RET_OK;
+}
+
+
+void 
+plat_reportError(PmReturn_t result)
+{
+    /* TBD */
 }

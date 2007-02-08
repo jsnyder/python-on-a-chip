@@ -69,7 +69,6 @@ int main(void)
         return PM_RET_EX_SYS;
     }
 
-    pm_reportResult(retval);
     return retval;
 }
 

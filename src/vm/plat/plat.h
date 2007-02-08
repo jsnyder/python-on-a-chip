@@ -70,9 +70,17 @@ PmReturn_t plat_getByte(uint8_t *b);
  */
 PmReturn_t plat_putByte(uint8_t b);
 
+
 /**
  * Gets the number of timer ticks that have passed since system start.
  */
 PmReturn_t plat_getMsTicks(uint32_t *r_ticks);
+
+
+/**
+ * Reports an exception or other error that caused the thread to quit
+ */
+void plat_reportError(PmReturn_t result);
+
 
 #endif /* PLAT_H_ */

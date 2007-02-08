@@ -30,8 +30,9 @@ sharedVar = 42
 
 def f1():
     global sharedVar
+    print "f1: sharedVar is ", sharedVar
     while sharedVar == 42:
-        print "f1: sharedVar is ", sharedVar
+        pass
     print "f1: sharedVar is ", sharedVar
 
     
@@ -44,5 +45,5 @@ def f2():
     print "f2: setting sharedVar to 99"
     sharedVar = 99
 
-sys.runInThread(f1)
 sys.runInThread(f2)
+sys.runInThread(f1)

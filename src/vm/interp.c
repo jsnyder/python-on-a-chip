@@ -1491,10 +1491,7 @@ interpret(const uint8_t returnOnNoThreads)
          * (return of the function). In any case, remove the
          * current thread and reschedule.
          */
-        if (retval != PM_RET_OK)
-        {
-            pm_printError(retval);
-        }
+        PM_REPORT_IF_ERROR(retval);
 
         list_remove((pPmObj_t)gVmGlobal.threadList, (pPmObj_t)gVmGlobal.pthread);
         gVmGlobal.pthread = C_NULL;

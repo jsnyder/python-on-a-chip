@@ -101,17 +101,6 @@ PmReturn_t pm_run(uint8_t *modstr)
     return retval;
 }
 
-void pm_printError(PmReturn_t result)
-{
-#ifdef TARGET_DESKTOP
-        printf("Error:     0x%02X\n", result);
-        printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
-#if __DEBUG__
-        printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
-        printf("  LineNum: %d\n", gVmGlobal.errLineNum);
-#endif
-#endif
-}
 
 /* Warning: Can be called in interrupt context! */
 PmReturn_t
@@ -122,11 +111,15 @@ pm_vmPeriodic(uint16_t usecsSinceLastCall)
      * less than 2^16-1000 so it will not overflow usecResidual.
      */
     static uint16_t usecResidual = 0;
+
     C_ASSERT(usecsSinceLastCall < 64536);
-    /* TODO Potential for optimization: Division is calculated twice. */
+
     usecResidual += usecsSinceLastCall;
-    pm_timerMsTicks += usecResidual/1000;
-    usecResidual %= 1000;
+    while (usecResidual >= 1000)
+    {
+        usecResidual -= 1000;
+        pm_timerMsTicks++;
+    }
 
     /* check if enough time has passed for a scheduler run */
     if ((pm_timerMsTicks - pm_lastRescheduleTimestamp)
@@ -137,18 +130,3 @@ pm_vmPeriodic(uint16_t usecsSinceLastCall)
     }
     return PM_RET_OK;
 }
-
-#ifdef TARGET_DESKTOP
-
-void pm_reportResult(PmReturn_t result)
-{
-    if (result == PM_RET_OK)
-    {
-        puts("Ok.");
-    }
-    else
-    {
-        pm_printError(result);
-    }
-}
-#endif /* TARGET_DESKTOP */

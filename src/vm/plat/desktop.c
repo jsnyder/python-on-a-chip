@@ -82,7 +82,7 @@ plat_sigalrm_handler(int signal)
 {
     PmReturn_t retval;
     retval = pm_vmPeriodic(1000);
-    PM_PRINT_IF_ERROR(retval);
+    PM_REPORT_IF_ERROR(retval);
 }
 
 
@@ -160,3 +160,14 @@ plat_getMsTicks(uint32_t *r_ticks)
     
     return PM_RET_OK;
 }
+
+
+void 
+plat_reportError(PmReturn_t result)
+{
+    printf("Error:     0x%02X\n", result);
+    printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
+    printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
+    printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+}
+

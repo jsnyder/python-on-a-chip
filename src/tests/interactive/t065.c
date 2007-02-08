@@ -45,6 +45,5 @@ int main(void)
     puts("EXAMPLE:\n\tType a letter: x\n\tEcho: xyz");
 
     retval = pm_run((uint8_t *)"t065");
-    pm_reportResult(retval);
     return (int)retval;
 }
