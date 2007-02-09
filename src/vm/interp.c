@@ -1354,7 +1354,7 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = STACK(t16);
 
                 C_ASSERT(OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN);
-                
+
                 /* if it's regular func (not native) */
                 if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
                     OBJ_TYPE_COB)
@@ -1493,8 +1493,18 @@ interpret(const uint8_t returnOnNoThreads)
          */
         PM_REPORT_IF_ERROR(retval);
 
-        list_remove((pPmObj_t)gVmGlobal.threadList, (pPmObj_t)gVmGlobal.pthread);
+        /* If this is the last thread, return the error code */
+        seq_getLength((pPmObj_t)gVmGlobal.threadList, &t16);
+        if ((t16 <= 1) && (retval != PM_RET_OK))
+        {
+            break;
+        }
+
+        retval = list_remove((pPmObj_t)gVmGlobal.threadList,
+                             (pPmObj_t)gVmGlobal.pthread);
         gVmGlobal.pthread = C_NULL;
+        PM_BREAK_IF_ERROR(retval);
+
         retval = interp_reschedule();
         PM_BREAK_IF_ERROR(retval);
 
@@ -1509,13 +1519,26 @@ interp_reschedule(void)
     PmReturn_t retval = PM_RET_OK;
     static uint8_t threadIndex = 0;
 
-    if (gVmGlobal.threadList->length == 0) {
-    gVmGlobal.pthread = C_NULL;
-    } else {
-        threadIndex = (threadIndex+1) % (gVmGlobal.threadList->length);
-        retval = list_getItem((pPmObj_t)gVmGlobal.threadList, threadIndex, (pPmObj_t*)&gVmGlobal.pthread);
+    /* If there are no threads in the runnable list, null the active thread */
+    if (gVmGlobal.threadList->length == 0)
+    {
+        gVmGlobal.pthread = C_NULL;
+    }
+
+    /* Otherwise, get the next thread in the list (round robin) */
+    else
+    {
+        if (++threadIndex >= gVmGlobal.threadList->length)
+        {
+            threadIndex = 0;
+        }
+        retval = list_getItem((pPmObj_t)gVmGlobal.threadList,
+                              threadIndex,
+                              (pPmObj_t*)&gVmGlobal.pthread);
         PM_RETURN_IF_ERROR(retval);
     }
+
+    /* Clear flag to indicate a reschedule has occurred */
     interp_setRescheduleFlag(0);
     return retval;
 }
