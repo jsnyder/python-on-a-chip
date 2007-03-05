@@ -1,0 +1,56 @@
+================================
+The MMB103 PyMite Sample Project
+================================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This is a sample project that demonstrates the use of PyMite on the
+`MegaMiniBoard 103`_ (MMB103).  The MMB103 has an 8-bit Atmel ATmega103
+processor with 128 KiB program memory and 4 KiB RAM as well as a motor driver
+and graphic LCD peripherals.
+
+.. _`MegaMiniBoard 103`: http://www.deanandara.com/mmb103.html
+
+Details
+-------
+
+This sample project wraps the MMB103's C library, ``libmmb103.a``.  The wrapper
+code is in the ``mmb.py`` module.  Inside ``mmb.py`` it is easy to see that
+each python function declares a native code block which calls a corresponding C
+function from the ``libmmb103.a`` archive.  For example, the python function
+``adcGet()`` calls the C function ``mmb_adcGet()``.  For the most part, the
+python functions take the same arguments as the corresponding C function,
+but the user will have to read through ``mmb.py`` to see what arguments each
+function accepts.
+
+The ``mmb.py`` module also declares a native code block at the top of the
+module.  This is called a header block and is used to include the header file
+for the C library.  Unless you are making your own wrapper module, you don't
+need to worry about this.
+
+The ``mmb.py`` module requires an initialization routine to be run before other
+functions.  So you'll see in ``sample.py`` that the ``main()`` function calls
+``mmb.init()`` at the top of the function.
+
+The ``sample.py`` module contains the ``main()`` function that is the primary
+program to run.  PyMite knows to run ``sample.py`` because it is told to do so
+in the C code in ``sample.c``.
+
+Building the Project
+--------------------
+
+Start with a clean PyMite tree.  Build the PyMite archive with ``TARGET=AVR``
+and then build this sample project.::
+
+    $ make TARGET=AVR
+    $ cd src/sample/mmb103
+    $ make
+
+This will result in the file ``src/sample/mmb103/sample.hex``.  Use your AVR
+programmer of choice to program that file into the ATmega103 target device.
+
+.. :mode=rest:
