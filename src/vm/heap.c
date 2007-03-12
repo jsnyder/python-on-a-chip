@@ -129,6 +129,8 @@ heap_init(void)
     pmHeap.cleanheapavail = HEAP_SIZE;
     pmHeap.avail = HEAP_SIZE;
 
+    string_cacheInit();
+
     return PM_RET_OK;
 }
 

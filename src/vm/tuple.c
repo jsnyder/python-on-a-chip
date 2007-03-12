@@ -99,6 +99,7 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
 
     /* this size tuple not yet supported */
     /* XXX for larger tuple, break into segments */
+    /* #99: Remove this restriction, let num items be determined by max chunk size */
     if (n > 100)
     {
         PM_RAISE(retval, PM_RET_EX_SYS);

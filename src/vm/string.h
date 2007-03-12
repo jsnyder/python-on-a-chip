@@ -180,4 +180,12 @@ PmReturn_t string_copy(pPmObj_t pstr, pPmObj_t *r_pstring);
 PmReturn_t string_print(pPmObj_t pstr, uint8_t marshall);
 #endif /* HAVE_STRING */
 
+/**
+ * Clears the string cache if one exists.
+ * Called by heap_init()
+ *
+ * @return Return status
+ */
+PmReturn_t string_cacheInit(void);
+
 #endif /* __STRING_H__ */

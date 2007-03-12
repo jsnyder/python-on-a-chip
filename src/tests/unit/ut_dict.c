@@ -179,6 +179,187 @@ ut_dict_getItem_000(CuTest *tc)
 }
 
 
+/* BEGIN unit tests ported from Snarf */
+
+char *test_str1 = "zzang1";
+char *test_str2 = "zzang2";
+char *test_str3 = "zzang3";
+char *test_strnew = "zzangnew";
+
+char *p_test_str1;
+char *p_test_str2;
+char *p_test_str3;
+char *p_test_strnew;
+
+pPmObj_t p_dict;
+pPmObj_t p_dict2;
+pPmObj_t p_tempobj;
+pPmObj_t p_tempobj2;
+pPmObj_t p_list;
+
+pPmInt_t p_firstkey;
+pPmInt_t p_secondkey;
+pPmInt_t p_thirdkey;
+pPmInt_t p_newkey;
+
+pPmObj_t p_firstval;
+pPmObj_t p_secondval;
+pPmObj_t p_thirdval;
+pPmObj_t p_newval;
+
+char sol;
+
+/**
+ * Unit Test ported from SNARF
+ * This tests if it correctly creates the dictionary object
+ * This also tests if dict_setItem correctly replaces the existing value
+ * if the new val has the same key as the exisiting one.
+ */
+void
+ut_dict_getItem_001(CuTest *tc)
+{
+    p_test_str1 = test_str1;
+    p_test_str2 = test_str2;
+    p_test_str3 = test_str3;
+    p_test_strnew = test_strnew;
+    PmReturn_t retval;
+    
+    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    
+    retval = string_new((uint8_t **)&test_str1, &p_firstval);
+    retval = string_new((uint8_t **)&test_str2, &p_secondval);
+    retval = string_new((uint8_t **)&test_str3, &p_thirdval);
+    retval = string_new((uint8_t **)&test_strnew, &p_newval);
+    
+    retval = int_new(1, (pPmObj_t *)&p_firstkey);
+    retval = int_new(2, (pPmObj_t *)&p_secondkey);
+    retval = int_new(3, (pPmObj_t *)&p_thirdkey);
+    retval = int_new(2, (pPmObj_t *)&p_newkey);
+    
+    dict_new(&p_dict);
+    
+    dict_setItem(p_dict, (pPmObj_t)p_firstkey, p_firstval);
+    dict_setItem(p_dict, (pPmObj_t)p_secondkey, p_secondval);
+    dict_setItem(p_dict, (pPmObj_t)p_thirdkey, p_thirdval);
+    dict_setItem(p_dict, (pPmObj_t)p_newkey, p_newval);
+    dict_setItem(p_dict, (pPmObj_t)p_secondkey, p_secondval);
+    
+    dict_getItem(p_dict, (pPmObj_t)p_firstkey, &p_tempobj);
+    CuAssertTrue(tc, obj_compare(p_tempobj, p_firstval) == C_SAME);
+    
+    dict_getItem(p_dict, (pPmObj_t)p_secondkey, &p_tempobj);
+    CuAssertTrue(tc, obj_compare(p_tempobj, p_secondval) == C_SAME);
+    
+    dict_getItem(p_dict, (pPmObj_t)p_thirdkey, &p_tempobj);
+    CuAssertTrue(tc, obj_compare(p_tempobj, p_thirdval) == C_SAME);
+}
+
+
+#if 0
+/**
+ * Unit Test ported from SNARF
+ * This tests if hasKey works correctly
+ */
+void
+ut_dict_hasKey_000(CuTest *tc)
+{
+  if (dict_hasKey(p_dict, (pPmObj_t)p_firstkey)==0) return 0;
+  if (dict_hasKey(p_dict, (pPmObj_t)p_secondkey)==0) return 0;
+  if (dict_hasKey(p_dict, (pPmObj_t)p_thirdkey)==0) return 0;
+}
+
+
+/* This tests if it returns the correct list of keys and vals */
+U8
+Dict_test2(void)
+{
+  dict_keys(p_dict, &p_list);
+
+  list_getItem(p_list, 0, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_firstkey)==0) return 0 ;
+
+  list_getItem(p_list, 1, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_secondkey)==0) return 0 ;
+
+  list_getItem(p_list, 2, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_thirdkey)==0) return 0 ;
+
+  //destroy_chunk(p_list); //destroys elements in p_list. Destroys contents the keys! bad
+
+  dict_vals(p_dict, &p_list);
+  list_getItem(p_list, 0, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_firstval)==0) return 0 ;
+
+  list_getItem(p_list, 1, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_secondval)==0) return 0 ;
+
+  list_getItem(p_list, 2, &p_tempobj);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_thirdval)==0) return 0 ;
+
+  //NO. Destroys contents. We want to reuse for other tests.
+  //destroy_chunk(p_list);
+  //destroy_chunk(p_tempobj);
+
+  return 1;
+}
+
+/* This tests if it pops correctly. */
+U8
+Dict_test3(void)
+{
+  dict_popItem(p_dict, &p_tempobj, &p_tempobj2);
+
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_firstkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2,(pPmObj_t) p_firstval)==0) return 0 ;
+
+  dict_getItemIndex(p_dict, 0, &p_tempobj, &p_tempobj2);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_secondkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2 ,(pPmObj_t) p_secondval)==0) return 0 ;
+
+  dict_getItemIndex(p_dict, 1, &p_tempobj, &p_tempobj2);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_thirdkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2,(pPmObj_t) p_thirdval)==0) return 0 ;
+
+  //NO.
+  //destroy_chunk(p_tempobj);
+  //destroy_chunk(p_tempobj2);
+
+  return 1;
+}
+
+/* This tests if it updates correctly.(combines 2 dicts into one)*/
+U8
+Dict_test4(void)
+{
+  dict_new(&p_dict2);
+  dict_setItem(p_dict2,(pPmObj_t) p_firstkey, p_firstval);
+  dict_update(&p_list, p_dict2, p_dict);
+
+  dict_getItemIndex(p_list, 0, &p_tempobj, &p_tempobj2);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_firstkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2,(pPmObj_t) p_firstval)==0) return 0 ;
+
+  dict_getItemIndex(p_list, 1, &p_tempobj, &p_tempobj2);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_secondkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2 ,(pPmObj_t) p_secondval)==0) return 0 ;
+
+  dict_getItemIndex(p_list, 2, &p_tempobj, &p_tempobj2);
+  if (object_isEqual(p_tempobj,(pPmObj_t) p_thirdkey)==0) return 0 ;
+  if (object_isEqual(p_tempobj2 ,(pPmObj_t) p_thirdval)==0) return 0 ;
+
+  //destroy_chunk(p_dict);
+  //destroy_chunk(p_dict2);
+  //destroy_chunk(p_list);
+  //destroy_chunk(p_tempobj);
+  //destroy_chunk(p_tempobj2);
+  //Should destroy all items created above, 2 dicts, one list. All have overlapping contents
+
+  return 1;
+}
+#endif
+/* END unit tests ported from Snarf */
+
+
 /** Make a suite from all tests in this file */
 CuSuite *getSuite_testDict(void)
 {
@@ -189,6 +370,8 @@ CuSuite *getSuite_testDict(void)
     SUITE_ADD_TEST(suite, ut_dict_setItem_001);
     SUITE_ADD_TEST(suite, ut_dict_clear_000);
     SUITE_ADD_TEST(suite, ut_dict_getItem_000);
+
+    SUITE_ADD_TEST(suite, ut_dict_getItem_001);
 
     return suite;
 }

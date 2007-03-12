@@ -230,6 +230,8 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmString_t pnew = C_NULL;
+    uint8_t *pnewchars;
+    uint8_t *pstrchars;
     uint8_t *pchunk;
 
     /* ensure string obj */
@@ -252,12 +254,12 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
     pnew->next = pstrcache;
     pstrcache = pnew;
 #endif
+    /* Copy the string's length field */
+    pnew->length = ((pPmString_t)pstr)->length;
     /* copy string contents (and null term) */
-    mem_copy(MEMSPACE_RAM,
-             (uint8_t **)&(pnew->val),
-             (uint8_t **)&(((pPmString_t)pstr)->val),
-             ((pPmString_t)pstr)->length + 1
-            );
+    pnewchars = pnew->val;
+    pstrchars = ((pPmString_t)pstr)->val;
+    mem_copy(MEMSPACE_RAM, &pnewchars, &pstrchars, pnew->length + 1);
     *r_pstring = (pPmObj_t)pnew;
     return retval;
 }
@@ -279,7 +281,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
+
     if (marshall)
     {
         retval = plat_putByte('\'');
@@ -295,7 +297,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
             retval = plat_putByte('\\');
             PM_RETURN_IF_ERROR(retval);
         }
-        
+
         /* If the marshalled char is not printable, print its hex escape code */
         if (marshall && (ch < 32 || ch >= 128))
         {
@@ -309,7 +311,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
             nibble = (ch & 0x0F) + '0';
             if (nibble > '9') nibble += ('a' - '0' - 10);
             plat_putByte(nibble);
-        } 
+        }
         else
         {
             /* simply output character */
@@ -325,6 +327,17 @@ string_print(pPmObj_t pstr, uint8_t marshall)
     return retval;
 }
 #endif /* HAVE_PRINT */
+
+
+PmReturn_t
+string_cacheInit(void)
+{
+#if USE_STRING_CACHE
+    pstrcache = C_NULL;
+#endif
+    return PM_RET_OK;
+}
+
 
 /***************************************************************
  * Test
