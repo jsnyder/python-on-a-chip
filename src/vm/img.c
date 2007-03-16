@@ -159,7 +159,7 @@ img_getName(PmMemSpace_t memspace,
             pPmObj_t *r_pname)
 {
     PmType_t type;
-    uint8_t b;
+    uint16_t len;
     PmReturn_t retval;
 
     /* XXX ensure it's a tuple */
@@ -172,8 +172,8 @@ img_getName(PmMemSpace_t memspace,
         /* skip type byte, assuming string */
         (*paddr)++;
         /* skip the length of the string */
-        b = mem_getByte(memspace, paddr);
-        (*paddr) += b;
+        len = mem_getWord(memspace, paddr);
+        (*paddr) += len;
     }
 
     /* ensure it's a string */

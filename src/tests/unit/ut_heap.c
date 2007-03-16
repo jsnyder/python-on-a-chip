@@ -33,6 +33,8 @@
 #include "CuTest.h"
 #include "pm.h"
 
+#define HEAP_MAX_CHUNK_SIZE 1020
+
 
 /**
  * Tests heap_init():
@@ -74,6 +76,27 @@ ut_heap_getChunk_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertPtrNotNull(tc, pchunk);
     CuAssertTrue(tc, OBJ_GET_SIZE(*pobj) == 8);
+}
+
+
+/**
+ * Tests heap_getChunk():
+ *      checks that MAX_CHUNK_SIZE can be allocated
+ */
+void
+ut_heap_getChunk_001(CuTest *tc)
+{
+    uint8_t *pchunk;
+    PmReturn_t retval;
+    pPmObj_t pobj;
+
+    retval = heap_init();
+    retval = heap_getChunk(HEAP_MAX_CHUNK_SIZE, &pchunk);
+    pobj = (pPmObj_t)pchunk;
+
+    CuAssertTrue(tc, retval == PM_RET_OK);
+    CuAssertPtrNotNull(tc, pchunk);
+    CuAssertTrue(tc, OBJ_GET_SIZE(*pobj) >= HEAP_MAX_CHUNK_SIZE);
 }
 
 
@@ -163,6 +186,7 @@ CuSuite *getSuite_testHeap(void)
 
     SUITE_ADD_TEST(suite, ut_heap_init_000);
     SUITE_ADD_TEST(suite, ut_heap_getChunk_000);
+    SUITE_ADD_TEST(suite, ut_heap_getChunk_001);
     SUITE_ADD_TEST(suite, ut_heap_getAvail_000);
     SUITE_ADD_TEST(suite, ut_heap_freeChunk_000);
     SUITE_ADD_TEST(suite, ut_heap_freeChunk_001);

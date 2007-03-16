@@ -94,11 +94,11 @@ PmReturn_t heap_init(void);
  * chunk's od.od_size.
  * Garbage will be collected if necessary.
  *
- * @param   size Size of the chunk in bytes.
+ * @param   requestedsize Requested size of the chunk in bytes.
  * @param   r_pchunk Addr of ptr to chunk (return).
  * @return  Return code
  */
-PmReturn_t heap_getChunk(uint8_t size, uint8_t **r_pchunk);
+PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
 
 /**
  * Place the chunk back in the heap.

@@ -62,13 +62,15 @@
 
 /**
  * The maximum size a chunk can be.
- * Must be less than 256 since uint8_t is used to keep its size.
- * Set to 252 so it is 4 less than 256.
- * This helps with alignment for targets that need aligned
- * pointers such as TARGET_DESKTOP and TARGET_ARM and it doesn't
- * harm other targets.
+ * The chunk size is limited by the od_size field in the object descriptor.
+ * Currently, that field is 8 bits.  Since the heap allocator already rounds
+ * requested chunk sizes up to the next multiple of four, the lower two bits
+ * are alway zero.  So, we can shift this adjusted size value to the right
+ * two places which allows larger effective sizes.
+ * The maximum size is now (2^10 - 1 == 1023), but it must be a multiple of
+ * four to maintain alignment on some 32-bit platforms, so it becomes 1020.
  */
-#define HEAP_MAX_CHUNK_SIZE 252
+#define HEAP_MAX_CHUNK_SIZE 1020
 
 /** The minimum size a chunk can be */
 #define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
@@ -149,7 +151,7 @@ heap_init(void)
  */
 static
 PmReturn_t
-heap_getChunkImpl(uint8_t size, uint8_t **r_pchunk)
+heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
     pPmHeapDesc_t pchunk1;
@@ -226,16 +228,21 @@ heap_getChunkImpl(uint8_t size, uint8_t **r_pchunk)
  * Obtains a chunk of at least the desired size.
  */
 PmReturn_t
-heap_getChunk(uint8_t size, uint8_t **r_pchunk)
+heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
+    uint16_t adjustedsize;
 
     /* Ensure size request is valid */
-    C_ASSERT(size < HEAP_MAX_CHUNK_SIZE);
-
-    if (size < HEAP_MIN_CHUNK_SIZE)
+    if (requestedsize > HEAP_MAX_CHUNK_SIZE)
     {
-        size = HEAP_MIN_CHUNK_SIZE;
+        PM_RAISE(retval, PM_RET_EX_MEM);
+        return retval;
+    }
+
+    if (requestedsize < HEAP_MIN_CHUNK_SIZE)
+    {
+        requestedsize = HEAP_MIN_CHUNK_SIZE;
     }
 
     /*
@@ -245,10 +252,10 @@ heap_getChunk(uint8_t size, uint8_t **r_pchunk)
      * have a like size.  This also creates discrete chunk sizes that may help
      * search for chunk sizes quickly (depending on the implementation).
      */
-    size = ((size + 3) & ~3);
+    adjustedsize = ((requestedsize + 3) & ~3);
 
     /* Attempt to get a chunk */
-    retval = heap_getChunkImpl(size, r_pchunk);
+    retval = heap_getChunkImpl(adjustedsize, r_pchunk);
 
     /* Ensure that the pointer is 4-byte aligned */
     C_ASSERT(((int)*r_pchunk & 3) == 0);

@@ -56,8 +56,13 @@
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
 #define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
 #define OBJ_SET_GCFREE(obj, free) ((obj).od.od_gcfree = (uint8_t)free)
-#define OBJ_GET_SIZE(obj) ((obj).od.od_size)
-#define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (size)
+/* 
+ * od_size bits are shifted because size is a scaled value 
+ * True size is always a multiple of 4, so the lower two bits are ignored
+ * and two more significant bits are gained.
+ */
+#define OBJ_GET_SIZE(obj) ((obj).od.od_size << 2)
+#define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (uint8_t)((size) >> 2)
 #define OBJ_GET_TYPE(obj) ((obj).od.od_type)
 #define OBJ_SET_TYPE(obj, type) (obj).od.od_type = (type)
 

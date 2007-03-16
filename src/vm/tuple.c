@@ -44,6 +44,10 @@
  * Constants
  **************************************************************/
 
+/* The follwing value should match that in pmImgCreator.py */
+#define MAX_TUPLE_LEN 253
+
+
 /***************************************************************
  * Macros
  **************************************************************/
@@ -97,10 +101,8 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
     PmReturn_t retval = PM_RET_OK;
     uint16_t size = 0;
 
-    /* this size tuple not yet supported */
-    /* XXX for larger tuple, break into segments */
-    /* #99: Remove this restriction, let num items be determined by max chunk size */
-    if (n > 100)
+    /* Raise a SystemError for a Tuple that is too large */
+    if (n > MAX_TUPLE_LEN)
     {
         PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
@@ -190,9 +192,9 @@ tuple_print(pPmObj_t ptup)
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
+
     plat_putByte('(');
-    
+
     for (index = 0; index < ((pPmTuple_t)ptup)->length; index++)
     {
         if (index != 0)

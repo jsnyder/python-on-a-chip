@@ -169,8 +169,10 @@ class Interactive(cmd.Cmd):
         # Otherwise send the image and print the reply
         else:
 
+            # DEBUG: Uncomment the next line to print the size of the code image
+            # print "DEBUG: len(codeimg) = ", len(codeimg)
             # DEBUG: Uncomment the next line to print the code image
-            # print "codeimg = ", repr(codeimg)
+            # print "DEBUG: codeimg = ", repr(codeimg)
 
             try:
                 self.conn.write(codeimg)

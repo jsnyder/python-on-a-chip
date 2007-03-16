@@ -36,10 +36,10 @@ def _getImg():
     """__NATIVE__
     PmReturn_t retval;
     uint8_t imgType;
-    uint8_t imgSize;
+    uint16_t imgSize;
     uint8_t *pchunk;
     pPmString_t pimg;
-    uint8_t i;
+    uint16_t i;
     uint8_t b;
 
     /* Get the image type */
@@ -53,9 +53,13 @@ def _getImg():
         return retval;
     }
 
-    /* Get the image size */
-    retval = plat_getByte(&imgSize);
+    /* Get the image size (little endien) */
+    retval = plat_getByte(&b);
     PM_RETURN_IF_ERROR(retval);
+    imgSize = b;
+    retval = plat_getByte(&b);
+    PM_RETURN_IF_ERROR(retval);
+    imgSize |= (b << 8);
 
     /* Get space for String obj */
     retval = heap_getChunk(sizeof(PmString_t) + imgSize, &pchunk);
@@ -69,7 +73,8 @@ def _getImg():
     /* Start the image with the bytes that have already been received */
     i = 0;
     pimg->val[i++] = imgType;
-    pimg->val[i++] = imgSize;
+    pimg->val[i++] = imgSize & 0xFF;
+    pimg->val[i++] = (imgSize >> 8) & 0xFF;
 
     /* Get the remaining bytes in the image */
     for(; i < imgSize; i++)

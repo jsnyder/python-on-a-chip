@@ -84,7 +84,7 @@ typedef struct PmString_s
     PmObjDesc_t od;
 
     /** length of string */
-    uint8_t length;
+    uint16_t length;
 
 #if USE_STRING_CACHE
     /** ptr to next string in cache */
@@ -114,7 +114,7 @@ typedef struct PmString_s
  * If n is zero, load from a String image.
  *      A string image has the following structure:
  *          -type:      S8 - OBJ_TYPE_STRING
- *          -length:    U8 - number of bytes in the string
+ *          -length:    U16 - number of bytes in the string
  *          -string:    U8[] - array of chars with null term
  *
  * If n is not zero, create from a C string.

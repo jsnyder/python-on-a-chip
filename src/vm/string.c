@@ -86,7 +86,7 @@ string_create(PmMemSpace_t memspace,
               pPmObj_t * r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
-    uint8_t len = 0;
+    uint16_t len = 0;
     pPmString_t pstr = C_NULL;
     uint8_t *pdst = C_NULL;
 #if USE_STRING_CACHE
@@ -107,7 +107,7 @@ string_create(PmMemSpace_t memspace,
     else
     {
         /* get length of string */
-        len = mem_getByte(memspace, paddr);
+        len = mem_getWord(memspace, paddr);
     }
 
     /* get space for String obj */
@@ -268,7 +268,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 PmReturn_t
 string_print(pPmObj_t pstr, uint8_t marshall)
 {
-    uint8_t i;
+    uint16_t i;
     uint8_t ch;
     uint8_t nibble;
     PmReturn_t retval = PM_RET_OK;

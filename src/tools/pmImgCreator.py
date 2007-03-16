@@ -129,10 +129,10 @@ CO_IMG_FIXEDPART_SIZE = 6
 NATIVE_IMG_SIZE = 4
 
 # Maximum number of objs in a tuple
-MAX_TUPLE_LEN = 127
+MAX_TUPLE_LEN = 253
 
 # Maximum number of chars in a string (XXX bytes vs UTF-8 chars?)
-MAX_STRING_LEN = 127
+MAX_STRING_LEN = 999
 
 # Maximum number of chars in a code img
 MAX_IMG_LEN = 32767
@@ -371,7 +371,7 @@ class PmImgCreator:
                 assert len(obj) <= MAX_STRING_LEN
                 # marker, string length, string itself
                 imgstr += _U8_to_str(OBJ_TYPE_STR) + \
-                          _U8_to_str(len(obj)) + obj
+                          self._U16_to_str(len(obj)) + obj
 
             # if its an integer
             elif objtype == types.IntType:
