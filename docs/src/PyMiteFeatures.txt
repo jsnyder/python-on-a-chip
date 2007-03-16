@@ -124,9 +124,9 @@ Sequences
 
 PyMite supports String, Tuple and List sequence types
 
-    - String (type str; max length 249 chars)
+    - String (type str; max length 999 chars)
       '', '1', "12", 'hello\n'
-    - Tuple (type tuple; max length 32767)
+    - Tuple (type tuple; max length 253)
       () (1,) (1,2) # parentheses are optional if len > 0
     - List (type list; max length 32767)
       [] [1] [1,2]
@@ -228,6 +228,7 @@ Function    Result
 =========== ================================================================
 abs(x)      The absolute value of the number `x`
 chr(i)      Returns one-character string whose ASCII code is integer i.
+eval(co)    Evaluates a given code object (created by Co()).
 globals()   Returns a dictionary containing the current global variables.
 id()        Returns a unique integer identifier for object.
 len(obj)    Returns the length (the number of items) of a sequence or

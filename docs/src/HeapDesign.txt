@@ -42,11 +42,12 @@ the minimum chunk size for an 8-bit Atmel AVR is 4 bytes.
 
 The maximum size for a chunk is limited by the number of the bits in the field
 in the object descriptor of the chunk that stores the chunk's size.  This field
-is 8-bits for all target devices.  So the theoretical maximum chunk size is
-255 bytes.  However, an implementation detail has affected the maximum.  On the
-32-bit targets, ARM7 and Desktop x86, memory chunks are required to have 4-byte
-boundaries.  So, the maximum size of a chunk is set to four bytes less than 256,
-or 252 bytes.  
+is 8-bits for all target devices.  So the maximum number of non-zero, unique 
+values is 255.  As of ticket #99 (Revision [195] mainlined 2007/03/16), this
+field is multiplied by 4 to get the actual chunk size.  This allows the VM to
+use larger chunks and also keeps the chunks aligned on 4-byte boundaries,
+which is important on some 32-bit platforms.  The maximum size of a chunk is 
+1020 bytes.
 
 The maximum size of a chunk has impacted other parts of the VM.  For example,
 the length of String and Tuple objects are directly constrained by the maximum 
