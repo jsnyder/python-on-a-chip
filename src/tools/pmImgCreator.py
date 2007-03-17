@@ -631,7 +631,7 @@ class PmImgCreator:
         """Writes an image file
         """
         fmtfxn = self.formatFromExt[self.imgtype]
-        f = open(self.outfn, 'w')
+        f = open(self.outfn, 'wb')
         f.write(fmtfxn())
         f.close()
 
@@ -640,7 +640,7 @@ class PmImgCreator:
         """
         if not self.nativeFilename:
             return
-        f = open(self.nativeFilename, 'w')
+        f = open(self.nativeFilename, 'wb')
         f.write(self.format_native_table())
         f.close()
 
