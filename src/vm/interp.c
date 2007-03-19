@@ -1180,12 +1180,6 @@ interpret(const uint8_t returnOnNoThreads)
                     PM_RAISE(retval, PM_RET_EX_INDX);
                     break;
                 }
-                /* dup a const int to allow it to incr (TRASH)*/
-                if (OBJ_IS_CONST(*pobj1))
-                {
-                    retval = int_dup(pobj1, &pobj1);
-                    PM_BREAK_IF_ERROR(retval);
-                }
 
                 /* if it's a tuple */
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
@@ -1199,8 +1193,9 @@ interpret(const uint8_t returnOnNoThreads)
                     }
 
                     /* get item, incr counter */
-                    pobj3 = ((pPmTuple_t)pobj2)->val[
-                                ((pPmInt_t)pobj1)->val++];
+                    pobj3 = ((pPmTuple_t)pobj2)->val[((pPmInt_t)pobj1)->val];
+                    retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* if it's a list */
@@ -1220,7 +1215,8 @@ interpret(const uint8_t returnOnNoThreads)
                                           &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     /* incr counter */
-                    ((pPmInt_t)pobj1)->val++;
+                    retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
+                    PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* XXX if it's a string */

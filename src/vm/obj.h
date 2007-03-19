@@ -50,8 +50,6 @@
  * Macros
  **************************************************************/
 
-#define OBJ_IS_CONST(obj) ((obj).od.od_const != (uint8_t)0)
-#define OBJ_SET_CONST(obj, const) (obj).od.od_const = (const)
 #define OBJ_GET_GCVAL(obj) ((obj).od.od_gcval)
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
 #define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
@@ -166,8 +164,8 @@ typedef struct PmObjDesc_s
     /** Garbage collection free flag */
     uint8_t od_gcfree:1;
 
-    /** constant pool object flag */
-    uint8_t od_const:1;
+    /** #100: Remove od_const bit from object descriptor */
+    uint8_t od_unused:1;
 
 } PmObjDesc_t, *pPmObjDesc_t;
 

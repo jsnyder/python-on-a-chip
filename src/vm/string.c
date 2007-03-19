@@ -247,7 +247,6 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
                           );
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmString_t)pchunk;
-    OBJ_SET_CONST(*pnew, 0);
     OBJ_SET_TYPE(*pnew, OBJ_TYPE_STR);
 #if USE_STRING_CACHE
     /* insert new string obj into cache */

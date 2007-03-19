@@ -169,7 +169,6 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         /* Set the chunk's descriptor bits */
         pchunk1 = (pPmHeapDesc_t)*r_pchunk;
         OBJ_SET_SIZE(*pchunk1, size);
-        OBJ_SET_CONST(*pchunk1, 0);
 
         /* Move the cleanheap remnant to the freelist if it is small enough */
         if (pmHeap.cleanheapavail <= HEAP_MAX_CHUNK_SIZE)

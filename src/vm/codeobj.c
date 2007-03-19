@@ -69,7 +69,6 @@ PmReturn_t
 co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
 {
     PmReturn_t retval = PM_RET_OK;
-    int8_t i;
     pPmObj_t pobj;
     pPmCo_t pco = C_NULL;
     uint8_t *pchunk;
@@ -99,13 +98,6 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pco)
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco->co_consts = (pPmTuple_t)pobj;
-
-    /* set the od_const flag for all consts */
-    for (i = 0; i < pco->co_consts->length; i++)
-    {
-        pobj = pco->co_consts->val[i];
-        OBJ_SET_CONST(*pobj, C_TRUE);
-    }
 
     /* start of bcode always follows consts */
     pco->co_codeaddr = *paddr;
