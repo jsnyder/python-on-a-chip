@@ -194,7 +194,7 @@ int_print(pPmObj_t pint)
      */
     bytesWritten = sprintf((void*)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
     #endif /* !TARGET_AVR */
-    
+
 
     /* Sanity check */
     C_ASSERT(bytesWritten != 0);
@@ -207,7 +207,54 @@ int_print(pPmObj_t pint)
     }
     return PM_RET_OK;
 }
+
+
+PmReturn_t
+int_printHexByte(uint8_t b)
+{
+    uint8_t nibble;
+    PmReturn_t retval;
+
+    nibble = (b >> 4) + '0';
+    if (nibble > '9') nibble += ('a' - '0' - 10);
+    retval = plat_putByte(nibble);
+    PM_RETURN_IF_ERROR(retval);
+
+    nibble = (b & 0x0F) + '0';
+    if (nibble > '9') nibble += ('a' - '0' - 10);
+    retval = plat_putByte(nibble);
+    return retval;
+}
+
+
+PmReturn_t
+_int_printHex(int32_t n)
+{
+    PmReturn_t retval;
+
+    /* Print the hex value, most significant byte first */
+    retval = int_printHexByte((n >> 24) & (uint8_t)0xFF);
+    PM_RETURN_IF_ERROR(retval);
+    retval = int_printHexByte((n >> 16) & (uint8_t)0xFF);
+    PM_RETURN_IF_ERROR(retval);
+    retval = int_printHexByte((n >> 8) & (uint8_t)0xFF);
+    PM_RETURN_IF_ERROR(retval);
+    retval = int_printHexByte(n & (uint8_t)0xFF);
+
+    return retval;
+}
+
+
+PmReturn_t
+int_printHex(pPmObj_t pint)
+{
+    C_ASSERT(OBJ_GET_TYPE(*pint) == OBJ_TYPE_INT);
+
+    /* Print the integer object */
+    return _int_printHex(((pPmInt_t)pint)->val);
+}
 #endif /* HAVE_PRINT */
+
 
 /***************************************************************
  * Test

@@ -331,6 +331,48 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_TUP:
             retval = tuple_print(pobj);
             break;
+
+        case OBJ_TYPE_COB:
+        case OBJ_TYPE_MOD:
+        case OBJ_TYPE_CLO:
+        case OBJ_TYPE_FXN:
+        case OBJ_TYPE_CLI:
+        case OBJ_TYPE_CIM:
+        case OBJ_TYPE_NIM:
+        case OBJ_TYPE_NOB:
+        case OBJ_TYPE_EXN:
+        case OBJ_TYPE_SQI:
+        case OBJ_TYPE_THR:
+            if (marshallString)
+            {
+                retval = plat_putByte('\''); PM_RETURN_IF_ERROR(retval);
+            }
+            plat_putByte('<'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('o'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('b'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('j'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('t'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('y'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('p'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('e'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('0'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('x'); PM_RETURN_IF_ERROR(retval);
+            int_printHexByte(OBJ_GET_TYPE(*pobj)); PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('@'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('0'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('x'); PM_RETURN_IF_ERROR(retval);
+            _int_printHex((int32_t)pobj); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('>'); PM_RETURN_IF_ERROR(retval);
+            if (marshallString)
+            {
+                plat_putByte('\''); PM_RETURN_IF_ERROR(retval);
+            }
+            break;
+
         default:
             /* Otherwise raise a TypeError */
             PM_RAISE(retval, PM_RET_EX_TYPE);

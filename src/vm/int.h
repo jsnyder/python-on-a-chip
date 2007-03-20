@@ -125,11 +125,32 @@ PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint);
 /**
  * Sends out an integer object in decimal notation with MSB first.
  * The number is preceded with a "-" when necessary.
- * 
+ *
  * @param pObj Ptr to int object
  * @return Return status
  */
 PmReturn_t int_print(pPmObj_t pint);
+
+/**
+ * Prints the byte in ascii-coded hexadecimal out the platform output
+ *
+ * @param b Byte to print
+ */
+PmReturn_t int_printHexByte(uint8_t b);
+
+/**
+ * Prints the integer in ascii-coded hexadecimal out the platform output
+ *
+ * @param n Integer to print
+ */
+PmReturn_t _int_printHex(int32_t n);
+
+/**
+ * Prints the Int object in ascii-coded hexadecimal out the platform output
+ *
+ * @param pint Pointer to Int object
+ */
+PmReturn_t int_printHex(pPmObj_t pint);
 #endif /* HAVE_PRINT */
 
 #endif /* __INT_H__ */

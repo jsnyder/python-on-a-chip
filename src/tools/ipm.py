@@ -99,7 +99,8 @@ class PipeConnection(Connection):
         while c != REPLY_TERMINATOR:
             c = self.child.stdout.read(1)
             if c == '':
-                print "DEBUG: child returncode = %s\n" % hex(self.child.poll())
+                # DEBUG: uncomment the next line to print the child's return val
+                #print "DEBUG: child returncode = %s\n" % hex(self.child.poll())
                 break
             chars.append(c)
         msg = "".join(chars)
