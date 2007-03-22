@@ -58,7 +58,6 @@ ut_list_new_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertPtrNotNull(tc, pobj);
     CuAssertTrue(tc, OBJ_GET_TYPE(*pobj) == OBJ_TYPE_LST);
-    CuAssertTrue(tc, !OBJ_IS_CONST(*pobj));
     CuAssertTrue(tc, ((pPmDict_t)pobj)->length == 0);
 }
 
