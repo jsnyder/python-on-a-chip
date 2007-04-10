@@ -4,8 +4,7 @@
 
 # Configure the contents of pmstdlib by editing this list
 PMSTDLIB_SOURCES = ../lib/__bi.py \
-                   ../lib/sys.py \
-                   ../lib/ipm.py
+                   ../lib/sys.py
 
 TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x1000
@@ -20,9 +19,16 @@ SOURCES = $(wildcard *.c) $(SOURCE_IMG) $(SOURCE_NAT)
 OBJECTS = $(SOURCES:.c=.o)
 PRODUCT_VM := libpmvm.a
 
+#
+# If GDB debugging is wanted
+#
 ifeq ($(DEBUG),true)
 	DEFS += -g -ggdb -D__DEBUG__=1
 endif
+
+#
+# Target-specific definitions
+#
 ifeq ($(TARGET), DESKTOP)
 	CFLAGS += -ansi
 	SOURCES += plat/desktop.c
@@ -37,6 +43,7 @@ ifeq ($(TARGET), AVR)
 	CFLAGS += -mmcu=$(TARGET_MCU) 
 	DEFS += -DTARGET_MCU=$(TARGET_MCU) -DF_CPU=$(F_CPU) -DUART_BAUD=$(UART_BAUD)
 	SOURCES += plat/avr.c
+	PMSTDLIB_SOURCES += ../lib/avr.py
 else
 ifeq ($(TARGET), ARM)
 	TARGET_MCU ?= arm7tdmi
@@ -47,6 +54,14 @@ ifeq ($(TARGET), ARM)
 endif
 endif
 endif
+
+#
+# If Interactive PyMite (ipm) is wanted
+#
+ifeq ($(IPM),true)
+	PMSTDLIB_SOURCES += ../lib/ipm.py
+endif
+
 
 .PHONY: all size clean
 

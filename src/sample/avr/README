@@ -1,0 +1,51 @@
+======================
+The AVR Sample Project
+======================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This is a sample project that demonstrates the use of PyMite on the
+`AVR family`_ of microcontrollers.  Any AVR with at least 64 KiB of
+program memory and 4 KiB of RAM can run PyMite.
+
+.. _`AVR family`: http://www.atmel.com/products/AVR/
+
+Details
+-------
+
+This sample project demonstrates a simple use case of PyMite on a
+microcontroller.  The file ``sample.c`` is used to initialize PyMite
+and indicate the name of the module it should run.  In this case, it
+will run the module ``sample.py``
+
+In the module ``sample.py``, we see that the program imports the ``avr`` module,
+which is provided by PyMite.  An initialization function sets the port A data
+direction register so that port A pins are all outputs.  A delay routine is
+hardcoded to delay for one second.  We also see that the ``main()`` function
+sets alternate pins high and low by writing value 0xAA to port A.
+
+
+Building the Project
+--------------------
+
+Start with a clean PyMite tree.  Edit the ``src/sample/avr/Makefile`` near
+line 42 to set the type of AVR you are using and near line 43 to set the
+frequency of your AVR's main clock.  The default values are::
+
+    MCU = atmega103
+    F_CPU = 4000000UL
+
+Then build the PyMite archive with ``TARGET=AVR`` and this sample project.::
+
+    $ make TARGET=AVR
+    $ cd src/sample/avr
+    $ make
+
+This will result in the file ``src/sample/avr/sample.hex``.  Use your AVR
+programmer of choice to program that file onto your target AVR device.
+
+.. :mode=rest:

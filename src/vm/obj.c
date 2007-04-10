@@ -365,7 +365,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
             plat_putByte('0'); PM_RETURN_IF_ERROR(retval);
             plat_putByte('x'); PM_RETURN_IF_ERROR(retval);
-            _int_printHex((int32_t)pobj); PM_RETURN_IF_ERROR(retval);
+            _int_printHex((int)pobj); PM_RETURN_IF_ERROR(retval);
             plat_putByte('>'); PM_RETURN_IF_ERROR(retval);
             if (marshallString)
             {
