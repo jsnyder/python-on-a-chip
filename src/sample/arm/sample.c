@@ -44,7 +44,7 @@ main(void)
 
 
     /* Init PyMite */
-    retval = pm_init(MEMSPACE_FLASH, usrlib_img);
+    retval = pm_init(MEMSPACE_PROG, usrlib_img);
     AT91F_PIO_SetOutput(AT91C_BASE_PIOA, LED_MASK);
     AT91F_PIO_ClearOutput(AT91C_BASE_PIOA, 0x02);
     PM_RETURN_IF_ERROR(retval);

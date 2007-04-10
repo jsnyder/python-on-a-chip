@@ -61,7 +61,7 @@ The following C program will do exactly that::
     {
         PmReturn_t retval;
 
-        retval = pm_init(MEMSPACE_FLASH, usrlib_img);
+        retval = pm_init(MEMSPACE_PROG, usrlib_img);
         PM_RETURN_IF_ERROR(retval);
 
         retval = pm_run((uint8_t *)"trivial");
@@ -70,7 +70,7 @@ The following C program will do exactly that::
 
 Since not all Python programmers are familiar with C, I will explain the program
 above line by line.  The ``include`` statement brings many PyMite definitions
-such as ``pm_init()``, ``pm_run()``, and ``MEMSPACE_FLASH`` into the namespace
+such as ``pm_init()``, ``pm_run()``, and ``MEMSPACE_PROG`` into the namespace
 of this file.  The ``extern`` line tells the compiler that the variable
 ``usrlib_img[]`` is defined in another file.  Next the ``main()`` function
 means this program will run as the primary executable on the target.

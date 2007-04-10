@@ -98,7 +98,7 @@ plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr)
     switch (memspace)
     {
         case MEMSPACE_RAM:
-        case MEMSPACE_FLASH:
+        case MEMSPACE_PROG:
             b = **paddr;
             *paddr += 1;
             return b;

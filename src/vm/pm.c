@@ -62,7 +62,7 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 
     /* Load std image info */
     pimg = (uint8_t *)&stdlib_img;
-    retval = img_findInMem(MEMSPACE_FLASH, &pimg);
+    retval = img_findInMem(MEMSPACE_PROG, &pimg);
     PM_RETURN_IF_ERROR(retval);
 
     /* Load usr image info if given */

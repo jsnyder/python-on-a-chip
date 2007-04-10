@@ -37,7 +37,7 @@ int main(void)
 {
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_FLASH, usrlib_img);
+    retval = pm_init(MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t049");

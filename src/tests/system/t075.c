@@ -43,7 +43,7 @@ int main(void)
     uint8_t *pmodstrA = (uint8_t*)"t075a";
     uint8_t *pmodstrB = (uint8_t*)"t075b";
 
-    retval = pm_init(MEMSPACE_FLASH, usrlib_img);
+    retval = pm_init(MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     /* Import modules from global struct */

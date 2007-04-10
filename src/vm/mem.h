@@ -53,13 +53,11 @@
  * Memory Space enum.
  *
  * Defines the different addressable areas of the system.
- * If the number of memspaces changes,
- * you must modify NUM_MEMSPACES to match.
  */
 typedef enum PmMemSpace_e
 {
     MEMSPACE_RAM = 0,
-    MEMSPACE_FLASH,
+    MEMSPACE_PROG,
     MEMSPACE_EEPROM,
     MEMSPACE_SEEPROM,
     MEMSPACE_OTHER0,

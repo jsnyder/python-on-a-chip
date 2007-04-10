@@ -139,7 +139,7 @@ plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr)
             *paddr += 1;
             return b;
 
-        case MEMSPACE_FLASH:
+        case MEMSPACE_PROG:
             b = pgm_read_byte(*paddr);
             *paddr += 1;
             return b;

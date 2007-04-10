@@ -47,7 +47,7 @@ int main(void)
 
     /* Read in the stdlib modules */
     pimg = (uint8_t *)&stdlib_img;
-    retval = img_findInMem(MEMSPACE_FLASH, &pimg);
+    retval = img_findInMem(MEMSPACE_PROG, &pimg);
     PM_RETURN_IF_ERROR(retval);
 
     /* The module image list terminator must be a null */
@@ -59,7 +59,7 @@ int main(void)
 
     /* Read in the usrlib modules */
     pimg = (uint8_t *)&usrlib_img;
-    retval = img_findInMem(MEMSPACE_FLASH, &pimg);
+    retval = img_findInMem(MEMSPACE_PROG, &pimg);
     PM_RETURN_IF_ERROR(retval);
 
     /* The module image list terminator must be a null */

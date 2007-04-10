@@ -82,7 +82,7 @@ ut_interp_interpret_000(CuTest *tc)
     pm_init(MEMSPACE_RAM, C_NULL);
 
     /* Check the return value of the load function */
-    retval = obj_loadFromImg(MEMSPACE_FLASH, &pimg, &pcodeobject);
+    retval = obj_loadFromImg(MEMSPACE_PROG, &pimg, &pcodeobject);
     CuAssertTrue(tc, retval == PM_RET_OK);
     retval = mod_new(pcodeobject, &pmodule);
     CuAssertTrue(tc, retval == PM_RET_OK);

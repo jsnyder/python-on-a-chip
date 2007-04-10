@@ -82,7 +82,7 @@ ut_func_new_000(CuTest *tc)
     uint16_t size;
     
     pm_init(MEMSPACE_RAM, C_NULL);
-    retval = obj_loadFromImg(MEMSPACE_FLASH, &pimg, &pcodeobject);
+    retval = obj_loadFromImg(MEMSPACE_PROG, &pimg, &pcodeobject);
     retval = dict_new(&pglobals);
     
     /* Check the return value of the function */

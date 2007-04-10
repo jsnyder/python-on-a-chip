@@ -117,12 +117,12 @@ ut_co_loadFromImg_000(CuTest *tc)
     pm_init(MEMSPACE_RAM, C_NULL);
 
     /* Check the return value of the load function */
-    retval = obj_loadFromImg(MEMSPACE_FLASH, &pimg, &pcodeobject);
+    retval = obj_loadFromImg(MEMSPACE_PROG, &pimg, &pcodeobject);
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Size occurs one byte after the type */
     paddr++;
-    size = mem_getWord(MEMSPACE_FLASH, &paddr);
+    size = mem_getWord(MEMSPACE_PROG, &paddr);
     
     /* Check that pimg now points to one byte past the end of the image */
     CuAssertTrue(tc, pimg == (test_code_image0 + size));
