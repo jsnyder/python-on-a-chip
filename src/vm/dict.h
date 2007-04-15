@@ -135,6 +135,15 @@ PmReturn_t dict_setItem(pPmObj_t pdict,
 PmReturn_t dict_print(pPmObj_t pdict);
 #endif /* HAVE_PRINT */
 
+/**
+ * Updates the destination dict with the key,value pairs from the source dict
+ *
+ * @param   pdestdict ptr to destination dict in which key,val pairs will go
+ * @param   psourcedict ptr to source dict which has all key,val pairs to copy
+ * @return  Return status
+ */
+PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
+
 #if 0
 /* TBD */
 pPmObj_t  dict_copy(pPmObj_t pdict);
@@ -143,7 +152,6 @@ pPmObj_t  dict_items(pPmObj_t pdict); /* list of (keys,vals) */
 pPmObj_t  dict_keys(pPmObj_t pdict);
 pPmObj_t  dict_popItem(pPmObj_t pdict);
 void      dict_setDefault(pPmObj_t pdict, /*HERE*/);
-void      dict_update(pPmObj_t pdict, pPmObj_t pdictb);
 pPmObj_t  dict_values(pPmObj_t pdict);
 #endif
 

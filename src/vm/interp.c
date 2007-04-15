@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/04/14   #102: Implement the remaining IMPORT_ bytecodes
  * 2007/01/29   #80: Fix DUP_TOPX bytecode
  * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: Changed IMPORT_NAME, printing (P.Adelt)
@@ -693,6 +694,17 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case IMPORT_STAR:
+                /* #102: Implement the remaining IMPORT_ bytecodes */
+                /* Expect a module on the top of the stack */
+                C_ASSERT(OBJ_GET_TYPE(*TOS) == OBJ_TYPE_MOD);
+                pobj1 = PM_POP();
+
+                /* Update FP's attrs with those of the module on the stack */
+                retval = dict_update((pPmObj_t)FP->fo_attrs,
+                                     (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs);
+                PM_BREAK_IF_ERROR(retval);
+                continue;
+
             case EXEC_STMT:
                 /* SystemError, unknown opcode */
                 PM_RAISE(retval, PM_RET_EX_SYS);
@@ -1133,9 +1145,24 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case IMPORT_FROM:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
+                /* #102: Implement the remaining IMPORT_ bytecodes */
+                /* Expect the module on the top of the stack */
+                C_ASSERT(OBJ_GET_TYPE(*TOS) == OBJ_TYPE_MOD);
+                pobj1 = TOS;
+
+                /* Get the name of the object to import */
+                t16 = GET_ARG();
+                pobj2 = FP->fo_func->f_co->co_names->val[t16];
+
+                /* Get the object from the module's attributes */
+                retval = dict_getItem((pPmObj_t)((pPmFunc_t)pobj1)->f_attrs,
+                                      pobj2,
+                                      &pobj3);
+                PM_BREAK_IF_ERROR(retval);
+
+                /* Push the object onto the top of the stack */
+                PM_PUSH(pobj3);
+                continue;
 
             case JUMP_FORWARD:
                 t16 = GET_ARG();

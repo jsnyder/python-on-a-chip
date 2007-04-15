@@ -217,9 +217,9 @@ dict_print(pPmObj_t pdict)
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
+
     plat_putByte('{');
-    
+
     keys = ((pPmDict_t)pdict)->d_keys;
     vals = ((pPmDict_t)pdict)->d_vals;
 
@@ -246,6 +246,49 @@ dict_print(pPmObj_t pdict)
     return plat_putByte('}');
 }
 #endif /* HAVE_PRINT */
+
+PmReturn_t
+dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
+{
+    PmReturn_t retval = PM_RET_OK;
+    int16_t i;
+    pPmObj_t pkey;
+    pPmObj_t pval;
+
+    C_ASSERT(pdestdict != C_NULL);
+    C_ASSERT(psourcedict != C_NULL);
+
+    /* If it's not a dict, raise TypeError */
+    if (OBJ_GET_TYPE(*pdestdict) != OBJ_TYPE_DIC)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* If it's not a dict, raise TypeError */
+    if (OBJ_GET_TYPE(*psourcedict) != OBJ_TYPE_DIC)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Iterate over the add-on dict */
+    for (i = 0; i < ((pPmDict_t)psourcedict)->length; i++)
+    {
+        /* Get the key,val from the add-on dict */
+        retval = seglist_getItem(((pPmDict_t)psourcedict)->d_keys, i, &pkey);
+        PM_RETURN_IF_ERROR(retval);
+        retval = seglist_getItem(((pPmDict_t)psourcedict)->d_vals, i, &pval);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Set the key,val to the destination dict */
+        retval = dict_setItem(pdestdict, pkey, pval);
+        PM_RETURN_IF_ERROR(retval);
+    }
+
+    return retval;
+}
+
 
 /***************************************************************
  * Test
