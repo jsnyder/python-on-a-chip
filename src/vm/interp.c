@@ -1039,22 +1039,24 @@ interpret(const uint8_t returnOnNoThreads)
 
                     switch (t16)
                     {
+                        /* *INDENT-OFF* */
                         case COMP_LT: t8 = (a <  b); break;
                         case COMP_LE: t8 = (a <= b); break;
                         case COMP_EQ: t8 = (a == b); break;
                         case COMP_NE: t8 = (a != b); break;
                         case COMP_GT: t8 = (a >  b); break;
                         case COMP_GE: t8 = (a >= b); break;
-                        case COMP_IN: /* fallthrough */
+                        case COMP_IS: t8 = (pobj1 == pobj2); break;
+                        case COMP_IS_NOT: t8 = (pobj1 != pobj2); break;
+                        case COMP_IN:
                         case COMP_NOT_IN:
                             PM_RAISE(retval, PM_RET_EX_TYPE);
                             break;
-                        case COMP_IS: t8 = (pobj1 == pobj2); break;
-                        case COMP_IS_NOT: t8 = (pobj1 != pobj2); break;
-                        /* Other compares are not yet supported */
                         default:
+                            /* Other compares are not yet supported */
                             PM_RAISE(retval, PM_RET_EX_SYS);
                             break;
+                        /* *INDENT-ON* */
                     }
                     PM_BREAK_IF_ERROR(retval);
                     pobj3 = (t8) ? PM_TRUE : PM_FALSE;
@@ -1505,8 +1507,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* SystemError, unknown opcode */
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
-
-        } /* switch (interpret) */
+        }
 
         /*
          * If execution reaches this point, it is because
@@ -1530,8 +1531,7 @@ interpret(const uint8_t returnOnNoThreads)
 
         retval = interp_reschedule();
         PM_BREAK_IF_ERROR(retval);
-
-    } /* while */
+    }
 
     return retval;
 }
