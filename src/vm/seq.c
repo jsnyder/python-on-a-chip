@@ -205,8 +205,7 @@ seqiter_getNext(pPmObj_t pobj, pPmObj_t *r_pitem)
 
     /* Get the item at the current index */
     retval = seq_getSubscript(((pPmSeqIter_t)pobj)->si_sequence,
-                              ((pPmSeqIter_t)pobj)->si_index,
-                              r_pitem);
+                              ((pPmSeqIter_t)pobj)->si_index, r_pitem);
 
     /* Increment the index */
     ((pPmSeqIter_t)pobj)->si_index++;

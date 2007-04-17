@@ -35,9 +35,9 @@
 /***************************************************************
  * Includes
  **************************************************************/
- 
- #include "thread.h"
- 
+
+#include "thread.h"
+
 /***************************************************************
  * Constants
  **************************************************************/
@@ -276,7 +276,7 @@ typedef enum PmBcode_e
     CALL_FUNCTION_KW,
     CALL_FUNCTION_VAR_KW,
     EXTENDED_ARG,
-    
+
     UNUSED_90, UNUSED_91, UNUSED_92, UNUSED_93,
     UNUSED_94, UNUSED_95, UNUSED_96, UNUSED_97,
     UNUSED_98, UNUSED_99, UNUSED_9A, UNUSED_9B,

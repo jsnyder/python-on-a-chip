@@ -72,7 +72,8 @@ typedef struct Segment_s
     pPmObj_t s_val[SEGLIST_OBJS_PER_SEG];
     /** ptr to next segment */
     struct Segment_s *next;
-} Segment_t, *pSegment_t;
+} Segment_t,
+ *pSegment_t;
 
 
 /** Seglist - linked list of segments with current index info */
@@ -86,7 +87,8 @@ typedef struct Seglist_s
     pSegment_t sl_lastseg;
     /** index of (one past) last obj in last segment */
     int16_t sl_length;
-} Seglist_t, *pSeglist_t;
+} Seglist_t,
+ *pSeglist_t;
 
 
 /***************************************************************
@@ -133,8 +135,7 @@ PmReturn_t seglist_clear(pSeglist_t pseglist);
  *          was found.  PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_findEqual(pSeglist_t pseglist,
-                             pPmObj_t pobj,
-                             int16_t *r_index);
+                             pPmObj_t pobj, int16_t *r_index);
 
 
 /**
@@ -149,8 +150,7 @@ PmReturn_t seglist_findEqual(pSeglist_t pseglist,
  *          PM_RET_ERR otherwise.
  */
 PmReturn_t seglist_getItem(pSeglist_t pseglist,
-                           int16_t index,
-                           pPmObj_t *r_pobj);
+                           int16_t index, pPmObj_t *r_pobj);
 
 
 /**
@@ -177,8 +177,7 @@ PmReturn_t seglist_new(pSeglist_t *r_pseglist);
  *              Any error condition comes from heap_getChunk.
  */
 PmReturn_t seglist_insertItem(pSeglist_t pseglist,
-                              pPmObj_t pobj,
-                              int16_t index);
+                              pPmObj_t pobj, int16_t index);
 
 /**
  * Put the item in the designated slot and segment.
@@ -191,9 +190,7 @@ PmReturn_t seglist_insertItem(pSeglist_t pseglist,
  * @return  Return status; PM_RET_OK if object is set.
  *              PM_RET_ERR otherwise.
  */
-PmReturn_t seglist_setItem(pSeglist_t pseglist,
-                           pPmObj_t pobj,
-                           int16_t index);
+PmReturn_t seglist_setItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index);
 
 /**
  * Remove the item at the given index.
@@ -202,7 +199,6 @@ PmReturn_t seglist_setItem(pSeglist_t pseglist,
  * @param   index Index into seglist of where to put object.
  * @return  Return status
  */
-PmReturn_t seglist_removeItem(pSeglist_t pseglist,
-                              uint16_t index);
+PmReturn_t seglist_removeItem(pSeglist_t pseglist, uint16_t index);
 
 #endif /* __SEGLIST_H__ */

@@ -77,19 +77,29 @@ sli_memcpy(unsigned char *to, const unsigned char *from, unsigned int n)
     if (n > 0)
     {
         switch (n & 0x7)
-                            do {
-            case 0:             *to++ = *from++;
-            case 7:             *to++ = *from++;
-            case 6:             *to++ = *from++;
-            case 5:             *to++ = *from++;
-            case 4:             *to++ = *from++;
-            case 3:             *to++ = *from++;
-            case 2:             *to++ = *from++;
-            case 1:             *to++ = *from++;
-                            } while ((n -= 8) > 0);
+            do
+            {
+            case 0:
+                *to++ = *from++;
+            case 7:
+                *to++ = *from++;
+            case 6:
+                *to++ = *from++;
+            case 5:
+                *to++ = *from++;
+            case 4:
+                *to++ = *from++;
+            case 3:
+                *to++ = *from++;
+            case 2:
+                *to++ = *from++;
+            case 1:
+                *to++ = *from++;
+            }
+            while ((n -= 8) > 0);
     }
 #else
-    for ( ; n > 0; n--)
+    for (; n > 0; n--)
     {
         *to = *from;
         from++;
@@ -104,6 +114,7 @@ void
 sli_memset(unsigned char *dest, const char val, unsigned int n)
 {
     unsigned int i;
+
     for (i = 0; i < n; i++)
     {
         *dest = (unsigned char)val;
@@ -115,8 +126,9 @@ sli_memset(unsigned char *dest, const char val, unsigned int n)
 int
 sli_strlen(char const *s)
 {
-    char const * si = s;
-    while(*s++);
+    char const *si = s;
+
+    while (*s++);
     return (unsigned int)s - (unsigned int)si;
 }
 

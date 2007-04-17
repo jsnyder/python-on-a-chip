@@ -18,6 +18,7 @@ SOURCE_NAT := pmstdlib_nat.c
 SOURCES = $(wildcard *.c) $(SOURCE_IMG) $(SOURCE_NAT)
 OBJECTS = $(SOURCES:.c=.o)
 PRODUCT_VM := libpmvm.a
+INDENT := $(call pathsearch,indent)
 
 #
 # If GDB debugging is wanted
@@ -63,7 +64,7 @@ ifeq ($(IPM),true)
 endif
 
 
-.PHONY: all size clean
+.PHONY: all size indent clean
 
 # Default action is to build the archive from object files
 all : $(SOURCE_IMG) $(SOURCE_NAT) $(PRODUCT_VM)
@@ -78,6 +79,10 @@ $(SOURCE_IMG) $(SOURCE_NAT) : $(PMSTDLIB_SOURCES)
 # Lists the size of the obejcts in the archive
 size : $(PRODUCT_VM)
 	@$(SIZE) $(PRODUCT_VM)
+
+# Runs GNU indent on the source files
+indent :
+	$(if $(INDENT), $(INDENT) *.c *.h)
 
 # Remove files made by default make
 clean :

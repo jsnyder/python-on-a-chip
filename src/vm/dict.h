@@ -56,14 +56,15 @@
 typedef struct PmDict_s
 {
     /** object descriptor */
-    PmObjDesc_t     od;
+    PmObjDesc_t od;
     /** number of key,value pairs in the dict */
     int16_t length;
     /** ptr to seglist containing keys */
-    pSeglist_t      d_keys;
+    pSeglist_t d_keys;
     /** ptr to seglist containing values */
-    pSeglist_t      d_vals;
-} PmDict_t, *pPmDict_t;
+    pSeglist_t d_vals;
+} PmDict_t,
+ *pPmDict_t;
 
 
 /***************************************************************
@@ -93,9 +94,7 @@ PmReturn_t dict_clear(pPmObj_t pdict);
  * @param   r_pobj Return; addr of ptr to obj
  * @return  Return status
  */
-PmReturn_t dict_getItem(pPmObj_t pdict,
-                        pPmObj_t pkey,
-                        pPmObj_t * r_pobj);
+PmReturn_t dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj);
 
 
 /**
@@ -105,7 +104,7 @@ PmReturn_t dict_getItem(pPmObj_t pdict,
  * @param   r_pdict Return; Addr of ptr to dict
  * @return  Return status
  */
-PmReturn_t dict_new(pPmObj_t * r_pdict);
+PmReturn_t dict_new(pPmObj_t *r_pdict);
 
 
 /**
@@ -121,9 +120,7 @@ PmReturn_t dict_new(pPmObj_t * r_pdict);
  * @param   pval ptr to val obj
  * @return  Return status
  */
-PmReturn_t dict_setItem(pPmObj_t pdict,
-                        pPmObj_t pkey,
-                        pPmObj_t pval);
+PmReturn_t dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval);
 
 #ifdef HAVE_PRINT
 /**
@@ -146,13 +143,13 @@ PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
 
 #if 0
 /* TBD */
-pPmObj_t  dict_copy(pPmObj_t pdict);
-U8        dict_hasKey(pPmObj_t pdict, pPmObj_t pkey);
-pPmObj_t  dict_items(pPmObj_t pdict); /* list of (keys,vals) */
-pPmObj_t  dict_keys(pPmObj_t pdict);
-pPmObj_t  dict_popItem(pPmObj_t pdict);
-void      dict_setDefault(pPmObj_t pdict, /*HERE*/);
-pPmObj_t  dict_values(pPmObj_t pdict);
+pPmObj_t dict_copy(pPmObj_t pdict);
+U8 dict_hasKey(pPmObj_t pdict, pPmObj_t pkey);
+pPmObj_t dict_items(pPmObj_t pdict);    /* list of (keys,vals) */
+pPmObj_t dict_keys(pPmObj_t pdict);
+pPmObj_t dict_popItem(pPmObj_t pdict);
+void dict_setDefault(pPmObj_t pdict, /*HERE*/);
+pPmObj_t dict_values(pPmObj_t pdict);
 #endif
 
 #endif /* __DICT_H__ */

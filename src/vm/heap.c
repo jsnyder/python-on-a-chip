@@ -100,7 +100,8 @@ typedef struct PmHeap_s
 
     /** Global declaration of heap. */
     uint8_t base[HEAP_SIZE];
-} PmHeap_t, *pPmHeap_t;
+} PmHeap_t,
+ *pPmHeap_t;
 
 
 /***************************************************************
@@ -149,8 +150,7 @@ heap_init(void)
  * @param r_pchunk Return ptr to chunk
  * @return Return status
  */
-static
-PmReturn_t
+static PmReturn_t
 heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
 {
     PmReturn_t retval;
@@ -196,10 +196,11 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         pchunk2 = pmHeap.pfreelist->next;
         if (pchunk2 != C_NULL)
         {
-            while ((pchunk2->next != C_NULL) && (OBJ_GET_SIZE(*pchunk2) < size))
+            while ((pchunk2->next != C_NULL)
+                   && (OBJ_GET_SIZE(*pchunk2) < size))
             {
-                 pchunk1 = pchunk2;
-                 pchunk2 = pchunk2->next;
+                pchunk1 = pchunk2;
+                pchunk2 = pchunk2->next;
             }
         }
 
@@ -264,8 +265,7 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
 
 
 /* Inserts a chunk into the free list.  Caller must adjust heap state vars */
-static
-PmReturn_t
+static PmReturn_t
 heap_insert(pPmObj_t ptr)
 {
     uint8_t size = OBJ_GET_SIZE(*ptr);

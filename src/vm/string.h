@@ -88,8 +88,8 @@ typedef struct PmString_s
 
 #if USE_STRING_CACHE
     /** ptr to next string in cache */
-    struct PmString_s * next;
-#endif /* USE_STRING_CACHE */
+    struct PmString_s *next;
+#endif                          /* USE_STRING_CACHE */
 
     /**
      * Null-term char array
@@ -98,7 +98,8 @@ typedef struct PmString_s
      * "sizeof(PmString_t) + len" and there will be room for the null-term
      */
     uint8_t val[1];
-} PmString_t, *pPmString_t;
+} PmString_t,
+ *pPmString_t;
 
 
 /***************************************************************
@@ -136,9 +137,7 @@ typedef struct PmString_s
  * @return  Return status
  */
 PmReturn_t string_create(PmMemSpace_t memspace,
-                          uint8_t **paddr,
-                          uint8_t isimg,
-                          pPmObj_t *r_pstring);
+                         uint8_t **paddr, uint8_t isimg, pPmObj_t *r_pstring);
 
 /**
  * Create a new String object from a single character.

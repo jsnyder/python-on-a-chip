@@ -66,7 +66,7 @@
  **************************************************************/
 
 PmReturn_t
-dict_new(pPmObj_t * r_pdict)
+dict_new(pPmObj_t *r_pdict)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmDict_t pdict = C_NULL;
@@ -164,7 +164,7 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
 
 
 PmReturn_t
-dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t * r_pobj)
+dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t indx = 0;
@@ -206,7 +206,8 @@ dict_print(pPmObj_t pdict)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t index;
-    pSeglist_t keys, vals;
+    pSeglist_t keys,
+      vals;
     pPmObj_t pobj1;
 
     C_ASSERT(pdict != C_NULL);

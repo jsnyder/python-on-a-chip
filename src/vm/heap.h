@@ -65,8 +65,9 @@ typedef struct PmHeapDesc_s
     /** object descriptor (only the size field is relevant */
     PmObjDesc_t od;
     /** ptr to next chunk */
-    struct PmHeapDesc_s * next;
-} PmHeapDesc_t, *pPmHeapDesc_t;
+    struct PmHeapDesc_s *next;
+} PmHeapDesc_t,
+ *pPmHeapDesc_t;
 
 
 /***************************************************************

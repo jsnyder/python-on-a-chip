@@ -61,14 +61,15 @@ typedef struct PmFunc_s
     /** object descriptor */
     PmObjDesc_t od;
     /** ptr to code obj */
-    pPmCo_t     f_co;
+    pPmCo_t f_co;
     /** ptr to attribute dict */
-    pPmDict_t   f_attrs;
+    pPmDict_t f_attrs;
     /** ptr to globals dict */
-    pPmDict_t   f_globals;
+    pPmDict_t f_globals;
     /** ptr to tuple holding default args */
-    pPmTuple_t  f_defaultargs;
-} PmFunc_t, *pPmFunc_t;
+    pPmTuple_t f_defaultargs;
+} PmFunc_t,
+ *pPmFunc_t;
 
 
 /***************************************************************
@@ -100,9 +101,7 @@ PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
  * @return  ptr to new class obj.
  */
 PmReturn_t class_new(pPmObj_t pmeths,
-                     pPmObj_t pbases,
-                     pPmObj_t pname,
-                     pPmObj_t * r_pclass);
+                     pPmObj_t pbases, pPmObj_t pname, pPmObj_t *r_pclass);
 
 
 #endif /* __TEMPLATE_H__ */

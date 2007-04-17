@@ -152,7 +152,7 @@ seglist_findEqual(pSeglist_t pseglist, pPmObj_t pobj, int16_t *r_index)
     segindex = *r_index % SEGLIST_OBJS_PER_SEG;
 
     /* Search the remaining segments */
-    for ( ; pseg != C_NULL; pseg = pseg->next)
+    for (; pseg != C_NULL; pseg = pseg->next)
     {
         while (segindex < SEGLIST_OBJS_PER_SEG)
         {
@@ -227,8 +227,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
         pseg = (pSegment_t)pchunk;
         OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
         sli_memset((unsigned char *)pseg->s_val,
-                   0,
-                   SEGLIST_OBJS_PER_SEG * sizeof(pPmObj_t));
+                   0, SEGLIST_OBJS_PER_SEG * sizeof(pPmObj_t));
         pseg->next = C_NULL;
 
         /* If this is the first seg, set as root */
@@ -327,7 +326,8 @@ PmReturn_t
 seglist_removeItem(pSeglist_t pseglist, uint16_t index)
 {
     pSegment_t pseg;
-    int16_t i,k;
+    int16_t i,
+      k;
 
     C_ASSERT(index < pseglist->sl_length);
 
@@ -339,17 +339,17 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         pseg = pseg->next;
         C_ASSERT(pseg != C_NULL);
     }
-    
+
     /* pseg now points to the correct segment of the item to be removed, so
      * start ripple copying all following items up to the last
      * in the last segment
      */
-     
-    for (i = index; i < ((pseglist->sl_length)-1); i++)
+
+    for (i = index; i < ((pseglist->sl_length) - 1); i++)
     {
         k = i % SEGLIST_OBJS_PER_SEG;
         /* copy element i+1 to slot i */
-        if ((k+1) == SEGLIST_OBJS_PER_SEG)
+        if ((k + 1) == SEGLIST_OBJS_PER_SEG)
         {
             /* source is first item in next segment */
             pseg->s_val[i % SEGLIST_OBJS_PER_SEG] = (pseg->next)->s_val[0];
@@ -358,10 +358,10 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         else
         {
             /* source and target are in the same segment */
-            pseg->s_val[k] = pseg->s_val[k+1];
-        } 
+            pseg->s_val[k] = pseg->s_val[k + 1];
+        }
     }
-    
+
     pseglist->sl_length -= 1;
 
     /* remove the last segment if it was emptied */
@@ -369,7 +369,8 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
     {
         pseg = pseglist->sl_rootseg;
         /* find the segment before the last */
-        for (i = 0; i < ((pseglist->sl_length-1) / SEGLIST_OBJS_PER_SEG); i++)
+        for (i = 0; i < ((pseglist->sl_length - 1) / SEGLIST_OBJS_PER_SEG);
+             i++)
         {
             pseg = pseg->next;
             C_ASSERT(pseg != C_NULL);
@@ -384,7 +385,9 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
 #endif
             pseglist->sl_lastseg = C_NULL;
             pseglist->sl_rootseg = C_NULL;
-        } else {
+        }
+        else
+        {
             /* at least one segment remains */
             pseglist->sl_lastseg = pseg;
             pseg->next = C_NULL;
@@ -395,7 +398,7 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         /* zero out the now unused slot */
         pseg->s_val[pseglist->sl_length % SEGLIST_OBJS_PER_SEG] = C_NULL;
     }
-    
+
     return PM_RET_OK;
 }
 

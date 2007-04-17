@@ -81,14 +81,13 @@ static pPmString_t pstrcache = C_NULL;
  */
 PmReturn_t
 string_create(PmMemSpace_t memspace,
-              uint8_t ** paddr,
-              uint8_t isimg,
-              pPmObj_t * r_pstring)
+              uint8_t **paddr, uint8_t isimg, pPmObj_t *r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     uint16_t len = 0;
     pPmString_t pstr = C_NULL;
     uint8_t *pdst = C_NULL;
+
 #if USE_STRING_CACHE
     pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
@@ -122,7 +121,7 @@ string_create(PmMemSpace_t memspace,
     pdst = (uint8_t *)&(pstr->val);
     mem_copy(memspace, &pdst, paddr, len);
     /* zero-pad end of string */
-    for ( ; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(*pstr); pdst++)
+    for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(*pstr); pdst++)
     {
         *pdst = 0;
     }
@@ -132,8 +131,7 @@ string_create(PmMemSpace_t memspace,
 
     /* check for twin string in cache */
     for (pcacheentry = pstrcache;
-         pcacheentry != C_NULL;
-         pcacheentry = pcacheentry->next)
+         pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
     {
         /* if string already exists */
         if (string_compare(pcacheentry, pstr) == C_SAME)
@@ -162,6 +160,7 @@ string_newFromChar(uint8_t c, pPmObj_t *r_pstring)
 {
     PmReturn_t retval;
     pPmString_t pstr;
+
 #if USE_STRING_CACHE
     pPmString_t pcacheentry = C_NULL;
 #endif /* USE_STRING_CACHE */
@@ -183,8 +182,7 @@ string_newFromChar(uint8_t c, pPmObj_t *r_pstring)
 
     /* check for twin string in cache */
     for (pcacheentry = pstrcache;
-         pcacheentry != C_NULL;
-         pcacheentry = pcacheentry->next)
+         pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
     {
         /* if string already exists */
         if (string_compare(pcacheentry, pstr) == C_SAME)
@@ -220,13 +218,12 @@ string_compare(pPmString_t pstr1, pPmString_t pstr2)
     /* Compare the strings' contents */
     return sli_strncmp((const unsigned char *)&(pstr1->val),
                        (const unsigned char *)&(pstr2->val),
-                       pstr1->length
-                      ) == 0 ? C_SAME : C_DIFFER;
+                       pstr1->length) == 0 ? C_SAME : C_DIFFER;
 }
 
 
 PmReturn_t
-string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
+string_copy(pPmObj_t pstr, pPmObj_t *r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmString_t pnew = C_NULL;
@@ -243,8 +240,7 @@ string_copy(pPmObj_t pstr, pPmObj_t * r_pstring)
 
     /* allocate string obj */
     retval = heap_getChunk(sizeof(PmString_t) + ((pPmString_t)pstr)->length,
-                           &pchunk
-                          );
+                           &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmString_t)pchunk;
     OBJ_SET_TYPE(*pnew, OBJ_TYPE_STR);
@@ -287,7 +283,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
         PM_RETURN_IF_ERROR(retval);
     }
 
-    for (i = 0; i<(((pPmString_t)pstr)->length); i++)
+    for (i = 0; i < (((pPmString_t)pstr)->length); i++)
     {
         ch = ((pPmString_t)pstr)->val[i];
         if (ch == '\\')
@@ -304,11 +300,13 @@ string_print(pPmObj_t pstr, uint8_t marshall)
             plat_putByte('x');
 
             nibble = (ch >> 4) + '0';
-            if (nibble > '9') nibble += ('a' - '0' - 10);
+            if (nibble > '9')
+                nibble += ('a' - '0' - 10);
             plat_putByte(nibble);
 
             nibble = (ch & 0x0F) + '0';
-            if (nibble > '9') nibble += ('a' - '0' - 10);
+            if (nibble > '9')
+                nibble += ('a' - '0' - 10);
             plat_putByte(nibble);
         }
         else

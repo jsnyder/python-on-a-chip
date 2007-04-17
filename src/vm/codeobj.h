@@ -74,7 +74,7 @@
 typedef struct PmCo_s
 {
     /** object descriptor */
-    PmObjDesc_t  od;
+    PmObjDesc_t od;
     /** memory space selector */
     PmMemSpace_t co_memspace:8;
     /** address in memspace of code image */
@@ -85,7 +85,8 @@ typedef struct PmCo_s
     pPmTuple_t co_consts;
     /** address in memspace of bytecode (or native function) */
     uint8_t *co_codeaddr;
-} PmCo_t, *pPmCo_t;
+} PmCo_t,
+ *pPmCo_t;
 
 /**
  * Native Code Object
@@ -104,7 +105,8 @@ typedef struct PmNo_s
     int8_t no_argcount;
     /** index into native function table */
     int16_t no_funcindx;
-} PmNo_t, *pPmNo_t;
+} PmNo_t,
+ *pPmNo_t;
 
 
 /***************************************************************
@@ -156,9 +158,7 @@ typedef struct PmNo_s
  * @return  Return status
  */
 PmReturn_t
-co_loadFromImg(PmMemSpace_t memspace,
-               uint8_t **paddr,
-               pPmObj_t * r_pco);
+co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco);
 
 /**
  * Create a Native code object by loading a native image.
@@ -189,8 +189,7 @@ co_loadFromImg(PmMemSpace_t memspace,
  *          past end of code img
  */
 PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
-                          uint8_t **paddr,
-                          pPmObj_t *r_pno);
+                          uint8_t **paddr, pPmObj_t *r_pno);
 
 
 #endif /* __CODEOBJ_H__ */

@@ -41,10 +41,12 @@ extern unsigned char stdlib_img[];
 
 /* Stores the timer millisecond-ticks since system start */
 volatile uint32_t pm_timerMsTicks = 0;
+
 /* Stores tick timestamp of last scheduler run */
 volatile uint32_t pm_lastRescheduleTimestamp = 0;
 
-PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
+PmReturn_t
+pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
     PmReturn_t retval;
     uint8_t *pimg;
@@ -76,7 +78,8 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 }
 
 
-PmReturn_t pm_run(uint8_t *modstr)
+PmReturn_t
+pm_run(uint8_t *modstr)
 {
     PmReturn_t retval;
     pPmObj_t pmod;

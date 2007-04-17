@@ -39,4 +39,4 @@
  */
 #define HAVE_PRINT
 
-#endif /*FEATURES_H_*/
+#endif /*FEATURES_H_ */

@@ -68,7 +68,7 @@
  **************************************************************/
 
 PmReturn_t
-obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
+obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     PmObjDesc_t od;
@@ -78,7 +78,7 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
 
     switch (od.od_type)
     {
-        /* if it's the None object, return global None */
+            /* if it's the None object, return global None */
         case OBJ_TYPE_NON:
             /* make sure *paddr gets incremented */
             *r_pobj = PM_NONE;
@@ -97,17 +97,17 @@ obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t * r_pobj)
             retval = tuple_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-        /* if it's a native code img, load into a code obj */
+            /* if it's a native code img, load into a code obj */
         case OBJ_TYPE_NIM:
             retval = no_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-        /* if it's a code img, load into a code obj */
+            /* if it's a code img, load into a code obj */
         case OBJ_TYPE_CIM:
             retval = co_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-        /* All other types should not be in an img obj */
+            /* All other types should not be in an img obj */
         default:
             PM_RAISE(retval, PM_RET_EX_SYS);
             break;
@@ -125,34 +125,34 @@ obj_isFalse(pPmObj_t pobj)
     /* return true if it's None */
     switch (OBJ_GET_TYPE(*pobj))
     {
-        /* None evaluates to false */
+            /* None evaluates to false */
         case OBJ_TYPE_NON:
             return C_FALSE;
 
-        /* Only the integer zero is false */
+            /* Only the integer zero is false */
         case OBJ_TYPE_INT:
             return ((pPmInt_t)pobj)->val == 0;
 
-        /* An empty string is false */
+            /* An empty string is false */
         case OBJ_TYPE_STR:
             return ((pPmString_t)pobj)->length == 0;
 
-        /* An empty tuple is false */
+            /* An empty tuple is false */
         case OBJ_TYPE_TUP:
             return ((pPmTuple_t)pobj)->length == 0;
 
-        /* An empty list is false */
+            /* An empty list is false */
         case OBJ_TYPE_LST:
             return ((pPmList_t)pobj)->length == 0;
 
-        /* An empty dict is false */
+            /* An empty dict is false */
         case OBJ_TYPE_DIC:
             return ((pPmDict_t)pobj)->length == 0;
 
-        /*
-         * The following types are always not false:
-         * CodeObj, Function, Module, Class, ClassInstance.
-         */
+            /*
+             * The following types are always not false:
+             * CodeObj, Function, Module, Class, ClassInstance.
+             */
         default:
             return C_FALSE;
     }
@@ -168,11 +168,11 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
     int16_t i;
     uint8_t c;
 
-    switch(OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(*pobj))
     {
         case OBJ_TYPE_TUP:
             /* Iterate over tuple to find item */
-            for (i=0; i<((pPmTuple_t)pobj)->length; i++)
+            for (i = 0; i < ((pPmTuple_t)pobj)->length; i++)
             {
                 PM_RETURN_IF_ERROR(tuple_getItem(pobj, i, &ptestItem));
 
@@ -208,7 +208,7 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
 
             /* Iterate over string to find char */
             c = ((pPmString_t)pitem)->val[0];
-            for (i=0; i<((pPmString_t)pobj)->length; i++)
+            for (i = 0; i < ((pPmString_t)pobj)->length; i++)
             {
                 if (c == ((pPmString_t)pobj)->val[i])
                 {
@@ -220,7 +220,7 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
 
         case OBJ_TYPE_LST:
             /* Iterate over list to find item */
-            for (i=0; i<((pPmList_t)pobj)->length; i++)
+            for (i = 0; i < ((pPmList_t)pobj)->length; i++)
             {
                 PM_RETURN_IF_ERROR(list_getItem(pobj, i, &ptestItem));
 
@@ -277,7 +277,7 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
             return ((pPmInt_t)pobj1)->val ==
-                   ((pPmInt_t)pobj2)->val ? C_SAME : C_DIFFER;
+                ((pPmInt_t)pobj2)->val ? C_SAME : C_DIFFER;
 
         case OBJ_TYPE_STR:
             return string_compare((pPmString_t)pobj1, (pPmString_t)pobj2);
@@ -345,31 +345,53 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_THR:
             if (marshallString)
             {
-                retval = plat_putByte('\''); PM_RETURN_IF_ERROR(retval);
+                retval = plat_putByte('\'');
+                PM_RETURN_IF_ERROR(retval);
             }
-            plat_putByte('<'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('o'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('b'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('j'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('t'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('y'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('p'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('e'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('0'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('x'); PM_RETURN_IF_ERROR(retval);
-            int_printHexByte(OBJ_GET_TYPE(*pobj)); PM_RETURN_IF_ERROR(retval);
-            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('@'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte(' '); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('0'); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('x'); PM_RETURN_IF_ERROR(retval);
-            _int_printHex((int)pobj); PM_RETURN_IF_ERROR(retval);
-            plat_putByte('>'); PM_RETURN_IF_ERROR(retval);
+            plat_putByte('<');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('o');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('b');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('j');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' ');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('t');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('y');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('p');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('e');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' ');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('0');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('x');
+            PM_RETURN_IF_ERROR(retval);
+            int_printHexByte(OBJ_GET_TYPE(*pobj));
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' ');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('@');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte(' ');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('0');
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('x');
+            PM_RETURN_IF_ERROR(retval);
+            _int_printHex((int)pobj);
+            PM_RETURN_IF_ERROR(retval);
+            plat_putByte('>');
+            PM_RETURN_IF_ERROR(retval);
             if (marshallString)
             {
-                plat_putByte('\''); PM_RETURN_IF_ERROR(retval);
+                plat_putByte('\'');
+                PM_RETURN_IF_ERROR(retval);
             }
             break;
 

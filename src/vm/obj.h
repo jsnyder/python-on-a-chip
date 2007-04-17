@@ -156,7 +156,7 @@ typedef struct PmObjDesc_s
     uint8_t od_size;
 
     /** object type */
-    PmType_t    od_type:5;
+    PmType_t od_type:5;
 
     /** garbage collection mark value */
     uint8_t od_gcval:1;
@@ -167,7 +167,8 @@ typedef struct PmObjDesc_s
     /** #100: Remove od_const bit from object descriptor */
     uint8_t od_unused:1;
 
-} PmObjDesc_t, *pPmObjDesc_t;
+} PmObjDesc_t,
+ *pPmObjDesc_t;
 
 
 /**
@@ -180,7 +181,8 @@ typedef struct PmObj_s
     /** object descriptor */
     PmObjDesc_t od;
     /** obj value ;get rid (None doesn't need it) */
-} PmObj_t, *pPmObj_t;
+} PmObj_t,
+ *pPmObj_t;
 
 
 /***************************************************************
@@ -222,8 +224,7 @@ typedef struct PmObj_s
  * @return  Return status
  */
 PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
-                           uint8_t **paddr,
-                           pPmObj_t * r_pobj);
+                           uint8_t **paddr, pPmObj_t *r_pobj);
 
 /**
  * Finds the boolean value of the given object.

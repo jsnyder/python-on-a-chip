@@ -112,10 +112,10 @@ global_init(void)
     gVmGlobal.pimglist = C_NULL;
 
     /* clear ptrs */
-    /*FP = C_NULL;*//* fp is local to interp, until thread struct is made */
-    
+    /*FP = C_NULL; *//* fp is local to interp, until thread struct is made */
+
     /* create empty threadList */
-    list_new((pPmObj_t*)&(gVmGlobal.threadList));
+    list_new((pPmObj_t *)&(gVmGlobal.threadList));
 
     return retval;
 }
@@ -125,7 +125,7 @@ global_setBuiltins(pPmFunc_t pmod)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    
+
     if (PM_PBUILTINS == C_NULL)
     {
         /* need to load builtins first */

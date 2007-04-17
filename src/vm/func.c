@@ -112,9 +112,7 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
  */
 PmReturn_t
 class_new(pPmObj_t pmeths,
-          pPmObj_t pbases,
-          pPmObj_t pname,
-          pPmObj_t * r_pclass)
+          pPmObj_t pbases, pPmObj_t pname, pPmObj_t *r_pclass)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
@@ -141,15 +139,13 @@ class_new(pPmObj_t pmeths,
     retval = string_new(&btstr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem((pPmObj_t)((pPmFunc_t)*r_pclass)->f_attrs,
-                          pkey,
-                          (pPmObj_t)pbases);
+                          pkey, (pPmObj_t)pbases);
     PM_RETURN_IF_ERROR(retval);
     /* store the name of the class in the __nm slot */
     retval = string_new(&nmstr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem((pPmObj_t)((pPmFunc_t)*r_pclass)->f_attrs,
-                          pkey,
-                          (pPmObj_t)pname);
+                          pkey, (pPmObj_t)pname);
     return retval;
 }
 

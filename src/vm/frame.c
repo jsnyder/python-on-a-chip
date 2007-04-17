@@ -91,8 +91,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     stacksz = mem_getByte(pco->co_memspace, &paddr);
     /* now paddr points to CI_NLOCALS_FIELD */
     nlocals = mem_getByte(pco->co_memspace, &paddr);
-    fsize = sizeof(PmFrame_t) + (stacksz + nlocals) *
-            sizeof(pPmObj_t);
+    fsize = sizeof(PmFrame_t) + (stacksz + nlocals) * sizeof(pPmObj_t);
     /* allocate a frame */
     retval = heap_getChunk(fsize, &pchunk);
     PM_RETURN_IF_ERROR(retval);

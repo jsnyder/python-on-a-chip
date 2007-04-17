@@ -57,6 +57,9 @@ html : docs/src/*.txt
 	$(MKDIR) docs/html
 	$(MAKE) -C docs/src
 
+indent :
+	$(MAKE) -C src/vm indent
+
 TAGS :
 	$(TAGS) -R *
 	$(CSCOPE) -b -c -R

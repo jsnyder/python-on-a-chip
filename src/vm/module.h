@@ -65,7 +65,7 @@
  * @param   return parameter; ptr to new module obj
  * @return  return status
  */
-PmReturn_t mod_new(pPmObj_t pco, pPmObj_t * pmod);
+PmReturn_t mod_new(pPmObj_t pco, pPmObj_t *pmod);
 
 /**
  * Import a module of the given name.
@@ -77,6 +77,6 @@ PmReturn_t mod_new(pPmObj_t pco, pPmObj_t * pmod);
  * @param   return parameter; ptr to imported module
  * @return  return status
  */
-PmReturn_t mod_import(pPmObj_t pstr, pPmObj_t * pmod);
+PmReturn_t mod_import(pPmObj_t pstr, pPmObj_t *pmod);
 
 #endif /* __MODULE_H__ */

@@ -74,6 +74,7 @@ mem_getWord(PmMemSpace_t memspace, uint8_t **paddr)
     /* PyMite is little endian; get lo byte first */
     uint8_t blo = mem_getByte(memspace, paddr);
     uint8_t bhi = mem_getByte(memspace, paddr);
+
     return (uint16_t)(blo | (bhi << 8));
 }
 
@@ -84,15 +85,14 @@ mem_getInt(PmMemSpace_t memspace, uint8_t **paddr)
     /* PyMite is little endian; get low word first */
     uint16_t wlo = mem_getWord(memspace, paddr);
     uint32_t whi = mem_getWord(memspace, paddr);
+
     return (uint32_t)(wlo | (whi << 16));
 }
 
 
 void
 mem_copy(PmMemSpace_t memspace,
-         uint8_t **pdest,
-         uint8_t **psrc,
-         uint16_t count)
+         uint8_t **pdest, uint8_t **psrc, uint16_t count)
 {
 
     /* copy memory from RAM */
@@ -109,7 +109,7 @@ mem_copy(PmMemSpace_t memspace,
     {
         uint8_t b;
 
-        for ( ; count > 0; count--)
+        for (; count > 0; count--)
         {
             b = mem_getByte(memspace, psrc);
             **pdest = b;
@@ -124,7 +124,8 @@ uint16_t
 mem_getNumUtf8Bytes(PmMemSpace_t memspace, uint8_t **psrc)
 {
     uint8_t *pbase = *psrc;
-    while(mem_getByte(memspace, psrc) != 0);
+
+    while (mem_getByte(memspace, psrc) != 0);
     return *psrc - pbase - 1;
 }
 

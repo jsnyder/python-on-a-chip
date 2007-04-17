@@ -192,9 +192,7 @@ list_copy(pPmObj_t pobj, pPmObj_t *r_pobj)
 
 
 PmReturn_t
-list_replicate(pPmObj_t psrclist,
-               int16_t n,
-               pPmObj_t *r_pnewlist)
+list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
 {
     PmReturn_t retval = PM_RET_OK;
     int8_t i = 0;
@@ -237,7 +235,7 @@ PmReturn_t
 list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj)
 {
     PmReturn_t retval;
-    
+
     /* If it's not a list, raise TypeError */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
@@ -258,7 +256,7 @@ list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj)
         return retval;
     }
 
-    /* Set the item */    
+    /* Set the item */
     retval = seglist_setItem(((pPmList_t)plist)->val, pobj, index);
     return retval;
 }
@@ -278,7 +276,7 @@ list_remove(pPmObj_t plist, pPmObj_t item)
 
     retval = list_index(plist, item, &index);
     PM_RETURN_IF_ERROR(retval);
-    
+
     retval = seglist_removeItem(((pPmList_t)plist)->val, index);
     ((pPmList_t)plist)->length--;
     return retval;
@@ -286,22 +284,22 @@ list_remove(pPmObj_t plist, pPmObj_t item)
 }
 
 PmReturn_t
-list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t* r_index)
+list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
 {
     PmReturn_t retval = PM_RET_OK;
     pSeglist_t pseglist;
     pPmObj_t pobj;
     uint16_t index;
-    
+
     /* If it's not a list, raise TypeError */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
+
     pseglist = ((pPmList_t)plist)->val;
-    
+
     for (index = 0; index < pseglist->sl_length; index++)
     {
         retval = seglist_getItem(pseglist, index, &pobj);
@@ -333,9 +331,9 @@ list_print(pPmObj_t plist)
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
+
     plat_putByte('[');
-    
+
     vals = ((pPmList_t)plist)->val;
 
     /* if dict is empty, raise KeyError */

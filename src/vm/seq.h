@@ -42,7 +42,7 @@
 typedef struct PmSeqIter_s
 {
     /** Object descriptor */
-    PmObjDesc_t  od;
+    PmObjDesc_t od;
 
     /** Sequence object */
     pPmObj_t si_sequence;
@@ -50,7 +50,8 @@ typedef struct PmSeqIter_s
     /** Index value */
     int16_t si_index;
 
-} PmSeqIter_t, *pPmSeqIter_t;
+} PmSeqIter_t,
+ *pPmSeqIter_t;
 
 
 /***************************************************************

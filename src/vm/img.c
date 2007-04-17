@@ -154,9 +154,7 @@ img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
 
 PmReturn_t
 img_getName(PmMemSpace_t memspace,
-            uint8_t **paddr,
-            uint8_t n,
-            pPmObj_t *r_pname)
+            uint8_t **paddr, uint8_t n, pPmObj_t *r_pname)
 {
     PmType_t type;
     uint16_t len;
@@ -167,7 +165,7 @@ img_getName(PmMemSpace_t memspace,
     *paddr += 2;
 
     /* scan to last name */
-    for ( ; n > 0; n--)
+    for (; n > 0; n--)
     {
         /* skip type byte, assuming string */
         (*paddr)++;

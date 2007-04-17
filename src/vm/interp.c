@@ -76,8 +76,8 @@
  * Prototypes
  **************************************************************/
 
-extern PmReturn_t (* std_nat_fxn_table[])(pPmFrame_t *, signed char);
-extern PmReturn_t (* usr_nat_fxn_table[])(pPmFrame_t *, signed char);
+extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *, signed char);
+extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *, signed char);
 PmReturn_t nat___bi_pow(pPmFrame_t *pframe, signed char numargs);
 
 
@@ -101,7 +101,7 @@ interpret(const uint8_t returnOnNoThreads)
     PM_RETURN_IF_ERROR(retval);
 
     /* interpret loop */
-    while(1)
+    while (1)
     {
         if (gVmGlobal.pthread == C_NULL)
         {
@@ -126,7 +126,7 @@ interpret(const uint8_t returnOnNoThreads)
 
         /* get byte; the func post-incrs IP */
         bc = mem_getByte(MS, &IP);
-        switch(bc)
+        switch (bc)
         {
             case STOP_CODE:
                 /* SystemError, unknown opcode */
@@ -139,13 +139,13 @@ interpret(const uint8_t returnOnNoThreads)
 
             case ROT_TWO:
                 pobj1 = TOS;
-                TOS  = TOS1;
+                TOS = TOS1;
                 TOS1 = pobj1;
                 continue;
 
             case ROT_THREE:
                 pobj1 = TOS;
-                TOS  = TOS1;
+                TOS = TOS1;
                 TOS1 = TOS2;
                 TOS2 = pobj1;
                 continue;
@@ -157,7 +157,7 @@ interpret(const uint8_t returnOnNoThreads)
 
             case ROT_FOUR:
                 pobj1 = TOS;
-                TOS  = TOS1;
+                TOS = TOS1;
                 TOS1 = TOS2;
                 TOS2 = TOS3;
                 TOS3 = pobj1;
@@ -250,15 +250,14 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val *
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
                 }
 
                 /* If it's a list replication operation */
-                else if ((OBJ_GET_TYPE(*TOS)  == OBJ_TYPE_INT)
+                else if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
                          && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_LST))
                 {
                     /* int number of times to duplicate */
@@ -305,8 +304,7 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = PM_POP();
                 pobj2 = PM_POP();
                 retval = int_new(((pPmInt_t)pobj2)->val /
-                                 ((pPmInt_t)pobj1)->val,
-                                 &pobj3);
+                                 ((pPmInt_t)pobj1)->val, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj3);
                 continue;
@@ -332,8 +330,7 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = PM_POP();
                 pobj2 = PM_POP();
                 retval = int_new(((pPmInt_t)pobj2)->val %
-                                 ((pPmInt_t)pobj1)->val,
-                                 &pobj3);
+                                 ((pPmInt_t)pobj1)->val, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj3);
                 continue;
@@ -347,8 +344,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val +
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -367,8 +363,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val -
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -513,8 +508,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val <<
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -533,8 +527,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val >>
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -553,8 +546,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val &
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -573,8 +565,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val ^
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -593,8 +584,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = PM_POP();
                     pobj2 = PM_POP();
                     retval = int_new(((pPmInt_t)pobj2)->val |
-                                     ((pPmInt_t)pobj1)->val,
-                                     &pobj3);
+                                     ((pPmInt_t)pobj1)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     PM_PUSH(pobj3);
                     continue;
@@ -633,33 +623,32 @@ interpret(const uint8_t returnOnNoThreads)
 #endif /* HAVE_PRINT */
 
             case BREAK_LOOP:
+            {
+                pPmBlock_t pb1 = FP->fo_blockstack;
+
+                /* ensure there's a block */
+                C_ASSERT(pb1 != C_NULL);
+
+                /* delete blocks until first loop block */
+                while ((pb1->b_type != B_LOOP) && (pb1->next != C_NULL))
                 {
-                    pPmBlock_t pb1 = FP->fo_blockstack;
-
-                    /* ensure there's a block */
-                    C_ASSERT(pb1 != C_NULL);
-
-                    /* delete blocks until first loop block */
-                    while ((pb1->b_type != B_LOOP)
-                           && (pb1->next != C_NULL))
-                    {
-                        pobj2 = (pPmObj_t)pb1;
-                        pb1 = pb1->next;
-                        retval = heap_freeChunk(pobj2);
-                        PM_BREAK_IF_ERROR(retval);
-                    }
-                    /* Test again outside while loop */
-                    PM_BREAK_IF_ERROR(retval);
-
-                    /* restore SP */
-                    SP = pb1->b_sp;
-                    /* goto handler */
-                    IP = pb1->b_handler;
-                    /* pop and delete this block */
-                    FP->fo_blockstack = pb1->next;
-                    retval = heap_freeChunk((pPmObj_t)pb1);
+                    pobj2 = (pPmObj_t)pb1;
+                    pb1 = pb1->next;
+                    retval = heap_freeChunk(pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
+                /* Test again outside while loop */
+                PM_BREAK_IF_ERROR(retval);
+
+                /* restore SP */
+                SP = pb1->b_sp;
+                /* goto handler */
+                IP = pb1->b_handler;
+                /* pop and delete this block */
+                FP->fo_blockstack = pb1->next;
+                retval = heap_freeChunk((pPmObj_t)pb1);
+                PM_BREAK_IF_ERROR(retval);
+            }
                 continue;
 
             case LOAD_LOCALS:
@@ -711,21 +700,22 @@ interpret(const uint8_t returnOnNoThreads)
                 break;
 
             case POP_BLOCK:
-                {
-                    /* get ptr to top block */
-                    pPmBlock_t pb = FP->fo_blockstack;
-                    /* If there's no block, raise SystemError */
-                    C_ASSERT(pb != C_NULL);
+            {
+                /* get ptr to top block */
+                pPmBlock_t pb = FP->fo_blockstack;
 
-                    /* pop block */
-                    FP->fo_blockstack = pb->next;
-                    /* set stack to previous level */
-                    SP = pb->b_sp;
-                    /* delete block */
-                    PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
-                    continue;
+                /* If there's no block, raise SystemError */
+                C_ASSERT(pb != C_NULL);
 
-                }
+                /* pop block */
+                FP->fo_blockstack = pb->next;
+                /* set stack to previous level */
+                SP = pb->b_sp;
+                /* delete block */
+                PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
+                continue;
+
+            }
 
             case END_FINALLY:
             case BUILD_CLASS:
@@ -747,9 +737,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in current frame's attrs dict */
-                retval = dict_setItem((pPmObj_t)FP->fo_attrs,
-                                      pobj2,
-                                      pobj1);
+                retval = dict_setItem((pPmObj_t)FP->fo_attrs, pobj2, pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
@@ -783,7 +771,7 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Push sequence's objs onto stack */
-                for (; --t16 >= 0; )
+                for (; --t16 >= 0;)
                 {
                     retval = seq_getSubscript(pobj1, t16, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
@@ -824,8 +812,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN)
                     || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
-                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->
-                                    f_attrs;
+                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
                 }
                 else if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLO)
                          || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLI)
@@ -865,9 +852,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
                 /* set key=val in global dict */
-                retval = dict_setItem((pPmObj_t)FP->fo_globals,
-                                      pobj2,
-                                      pobj1);
+                retval = dict_setItem((pPmObj_t)FP->fo_globals, pobj2, pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
@@ -920,16 +905,12 @@ interpret(const uint8_t returnOnNoThreads)
                 /* get name from names tuple */
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
                 /* get value from frame's attrs dict */
-                retval = dict_getItem((pPmObj_t)FP->fo_attrs,
-                                     pobj1,
-                                     &pobj2);
+                retval = dict_getItem((pPmObj_t)FP->fo_attrs, pobj1, &pobj2);
                 if (retval == PM_RET_EX_KEY)
                 {
                     /* get val from globals */
-                    retval = dict_getItem(
-                                (pPmObj_t)FP->fo_globals,
-                                pobj1,
-                                &pobj2);
+                    retval = dict_getItem((pPmObj_t)FP->fo_globals,
+                                          pobj1, &pobj2);
                     if (retval == PM_RET_EX_KEY)
                     {
                         /* get val from builtins */
@@ -995,8 +976,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN) ||
                     (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
-                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->
-                                    f_attrs;
+                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
                 }
                 else if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLO)
                          || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_CLI)
@@ -1068,7 +1048,7 @@ interpret(const uint8_t returnOnNoThreads)
                     retval = PM_RET_OK;
                     switch (t16)
                     {
-                        /* Handle equality comparisons for non-intger types */
+                            /* Handle equality comparisons for non-intger types */
                         case COMP_EQ:
                         case COMP_NE:
                             pobj3 = PM_FALSE;
@@ -1084,7 +1064,7 @@ interpret(const uint8_t returnOnNoThreads)
                             }
                             break;
 
-                        /* Handle membership comparisons */
+                            /* Handle membership comparisons */
                         case COMP_IN:
                         case COMP_NOT_IN:
                             pobj3 = PM_FALSE;
@@ -1106,7 +1086,7 @@ interpret(const uint8_t returnOnNoThreads)
                             }
                             break;
 
-                        /* Other comparisons are not implemented */
+                            /* Other comparisons are not implemented */
                         default:
                             PM_RAISE(retval, PM_RET_EX_SYS);
                             break;
@@ -1158,8 +1138,7 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Get the object from the module's attributes */
                 retval = dict_getItem((pPmObj_t)((pPmFunc_t)pobj1)->f_attrs,
-                                      pobj2,
-                                      &pobj3);
+                                      pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Push the object onto the top of the stack */
@@ -1214,8 +1193,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
                 {
                     /* if tup is exhausted, incr IP by delta */
-                    if (((pPmInt_t)pobj1)->val >=
-                        ((pPmTuple_t)pobj2)->length)
+                    if (((pPmInt_t)pobj1)->val >= ((pPmTuple_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
@@ -1231,8 +1209,7 @@ interpret(const uint8_t returnOnNoThreads)
                 else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
                     /* if list is exhausted, incr IP by delta */
-                    if (((pPmInt_t)pobj1)->val >=
-                        ((pPmList_t)pobj2)->length)
+                    if (((pPmInt_t)pobj1)->val >= ((pPmList_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
@@ -1269,8 +1246,7 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
                 /* try globals first */
                 retval = dict_getItem((pPmObj_t)FP->fo_globals,
-                                      pobj1,
-                                      &pobj2);
+                                      pobj1, &pobj2);
                 /* if that didn't work, try builtins */
                 if (retval == PM_RET_EX_KEY)
                 {
@@ -1358,8 +1334,7 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Get the exception's code attr */
                 retval = dict_getItem((pPmObj_t)((pPmClass_t)pobj1)->cl_attrs,
-                                      PM_CODE_STR,
-                                      &pobj2);
+                                      PM_CODE_STR, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Raise exception by breaking with retval set to code */
@@ -1381,8 +1356,7 @@ interpret(const uint8_t returnOnNoThreads)
                 C_ASSERT(OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN);
 
                 /* if it's regular func (not native) */
-                if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
-                    OBJ_TYPE_COB)
+                if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
                 {
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
@@ -1396,8 +1370,7 @@ interpret(const uint8_t returnOnNoThreads)
                          * args are pushed left to right,
                          * so pop right to left.
                          */
-                        ((pPmFrame_t)pobj2)->fo_locals[t16] =
-                                PM_POP();
+                        ((pPmFrame_t)pobj2)->fo_locals[t16] = PM_POP();
                     }
                     /* pop func obj */
                     pobj3 = PM_POP();
@@ -1424,8 +1397,7 @@ interpret(const uint8_t returnOnNoThreads)
                     /* pop args from stack */
                     while (--t16 >= 0)
                     {
-                        gVmGlobal.nativeframe.nf_locals[t16] =
-                                PM_POP();
+                        gVmGlobal.nativeframe.nf_locals[t16] = PM_POP();
                     }
                     /* get native function index */
                     pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
@@ -1438,12 +1410,12 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Positive index is a stdlib func */
                     if (t16 >= 0)
                     {
-                        retval = std_nat_fxn_table[t16](&FP, t8);
+                        retval = std_nat_fxn_table[t16] (&FP, t8);
                     }
                     /* Negative index is a usrlib func */
                     else
                     {
-                        retval = usr_nat_fxn_table[-t16](&FP, t8);
+                        retval = usr_nat_fxn_table[-t16] (&FP, t8);
                     }
                     /*
                      * RETURN FROM NATIVE FXN
@@ -1556,8 +1528,7 @@ interp_reschedule(void)
             threadIndex = 0;
         }
         retval = list_getItem((pPmObj_t)gVmGlobal.threadList,
-                              threadIndex,
-                              (pPmObj_t*)&gVmGlobal.pthread);
+                              threadIndex, (pPmObj_t *)&gVmGlobal.pthread);
         PM_RETURN_IF_ERROR(retval);
     }
 

@@ -94,7 +94,8 @@ typedef struct PmBlock_s
     PmBlockType_t b_type:8;
     /** next block in stack */
     struct PmBlock_s *next;
-} PmBlock_t, *pPmBlock_t;
+} PmBlock_t,
+ *pPmBlock_t;
 
 
 /**
@@ -134,7 +135,8 @@ typedef struct PmFrame_s
     uint8_t fo_isImport:1;
     /** array of local vars and stack (space appended at alloc) */
     pPmObj_t fo_locals[0];
-} PmFrame_t, *pPmFrame_t;
+} PmFrame_t,
+ *pPmFrame_t;
 
 /**
  * Native Frame
@@ -154,12 +156,13 @@ typedef struct PmNativeFrame_s
     /** ptr to previous frame obj */
     struct PmFrame_s *nf_back;
     /** ptr to fxn obj */
-    pPmFunc_t       nf_func;
+    pPmFunc_t nf_func;
     /** single stack slot */
-    pPmObj_t        nf_stack;
+    pPmObj_t nf_stack;
     /** local vars */
-    pPmObj_t        nf_locals[NATIVE_NUM_LOCALS];
-} PmNativeFrame_t, *pPmNativeFrame_t;
+    pPmObj_t nf_locals[NATIVE_NUM_LOCALS];
+} PmNativeFrame_t,
+ *pPmNativeFrame_t;
 
 
 /***************************************************************
@@ -179,7 +182,7 @@ typedef struct PmNativeFrame_s
  * @param   r_pobj Return value; the new frame.
  * @return  Return status.
  */
-PmReturn_t frame_new(pPmObj_t pfunc, pPmObj_t * r_pobj);
+PmReturn_t frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj);
 
 /**
  * TODO

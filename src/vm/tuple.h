@@ -67,8 +67,9 @@ typedef struct PmTuple_s
      */
     int16_t length;
     /** array of ptrs to objs */
-    pPmObj_t    val[0];
-} PmTuple_t, *pPmTuple_t;
+    pPmObj_t val[0];
+} PmTuple_t,
+ *pPmTuple_t;
 
 
 /***************************************************************
@@ -99,8 +100,7 @@ typedef struct PmTuple_s
  *          past end of last obj in tuple.
  */
 PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
-                             uint8_t **paddr,
-                             pPmObj_t *r_ptuple);
+                             uint8_t **paddr, pPmObj_t *r_ptuple);
 
 /**
  * Allocate space for a new Tuple.

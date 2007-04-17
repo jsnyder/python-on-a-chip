@@ -110,17 +110,18 @@ typedef struct PmVmGlobal_s
 
     /** Line number for when an error occurs */
     uint16_t errLineNum;
-    
+
     /** Thread list */
     pPmList_t threadList;
 
     /** Ptr to current thread */
     pPmThread_t pthread;
-    
+
     /** flag to trigger rescheduling */
     uint8_t reschedule:1;
-    
-} PmVmGlobal_t, *pPmVmGlobal_t;
+
+} PmVmGlobal_t,
+ *pPmVmGlobal_t;
 
 
 /***************************************************************

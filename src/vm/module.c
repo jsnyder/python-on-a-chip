@@ -65,7 +65,7 @@
  **************************************************************/
 
 PmReturn_t
-mod_new(pPmObj_t pco, pPmObj_t * pmod)
+mod_new(pPmObj_t pco, pPmObj_t *pmod)
 {
     PmReturn_t retval;
     uint8_t *pchunk;
@@ -97,7 +97,7 @@ mod_new(pPmObj_t pco, pPmObj_t * pmod)
 
 
 PmReturn_t
-mod_import(pPmObj_t pstr, pPmObj_t * pmod)
+mod_import(pPmObj_t pstr, pPmObj_t *pmod)
 {
     pPmImgInfo_t pii = C_NULL;
     uint8_t *imgaddr = C_NULL;

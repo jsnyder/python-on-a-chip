@@ -143,9 +143,8 @@ int sli_strlen(char const *s);
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int sli_strncmp(const unsigned char *s1, 
-                const unsigned char *s2, 
-                unsigned int n);
+int sli_strncmp(const unsigned char *s1,
+                const unsigned char *s2, unsigned int n);
 
 /*
 int     sli_memcmp(const void *, const void *, unsigned int);

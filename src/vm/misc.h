@@ -60,7 +60,8 @@ typedef struct PmClass_s
 
     /** Attributes dict */
     pPmDict_t cl_attrs;
-} PmClass_t, *pPmClass_t;
+} PmClass_t,
+ *pPmClass_t;
 
 
 /***************************************************************

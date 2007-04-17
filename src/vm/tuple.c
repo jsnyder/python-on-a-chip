@@ -87,8 +87,8 @@ tuple_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_ptuple)
     {
         retval = obj_loadFromImg(memspace,
                                  paddr,
-                                 (pPmObj_t *)&(((pPmTuple_t)*r_ptuple)->val[i])
-                                );
+                                 (pPmObj_t *)&(((pPmTuple_t)*r_ptuple)->
+                                               val[i]));
         PM_RETURN_IF_ERROR(retval);
     }
     return PM_RET_OK;
@@ -126,7 +126,7 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
 
 
 PmReturn_t
-tuple_copy(pPmObj_t ptup, pPmObj_t * r_ptuple)
+tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmTuple_t pnew = C_NULL;

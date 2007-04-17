@@ -62,7 +62,8 @@ typedef struct PmList_s
     int16_t length;
     /** ptr to linked list of nodes */
     pSeglist_t val;
-} PmList_t, *pPmList_t;
+} PmList_t,
+ *pPmList_t;
 
 
 /***************************************************************
@@ -95,9 +96,7 @@ PmReturn_t list_new(pPmObj_t *r_pobj);
  * @param   r_pobj Return; ptr to return obj
  * @return  Return status
  */
-PmReturn_t list_getItem(pPmObj_t plist,
-                        int16_t index,
-                        pPmObj_t *r_pobj);
+PmReturn_t list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj);
 
 /**
  * Set the item in the list at the index.
@@ -119,7 +118,7 @@ PmReturn_t list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj);
  * @param   r_pobj Return; Addr of ptr to return obj
  * @return  Return status
  */
-PmReturn_t list_copy(pPmObj_t pobj, pPmObj_t * r_pobj);
+PmReturn_t list_copy(pPmObj_t pobj, pPmObj_t *r_pobj);
 
 /**
  * Append the given obj to the end of the given list.
@@ -144,9 +143,7 @@ PmReturn_t list_append(pPmObj_t plist, pPmObj_t pobj);
  * @param   r_pnewlist Return; new list with its contents set.
  * @return  Return status
  */
-PmReturn_t list_replicate(pPmObj_t psrclist,
-                          int16_t n,
-                          pPmObj_t * r_pnewlist);
+PmReturn_t list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist);
 
 /**
  * Insert the object into the list at the desired index.
@@ -156,9 +153,7 @@ PmReturn_t list_replicate(pPmObj_t psrclist,
  * @param   index Index of where to insert obj
  * @return  Return status
  */
-PmReturn_t list_insert(pPmObj_t plist,
-                       int16_t index,
-                       pPmObj_t pobj);
+PmReturn_t list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 
 /**
  * Remove a given object from the list.
@@ -167,8 +162,7 @@ PmReturn_t list_insert(pPmObj_t plist,
  * @param   item Ptr to object to be removed
  * @return  Return status
  */
-PmReturn_t list_remove(pPmObj_t plist,
-                       pPmObj_t item);
+PmReturn_t list_remove(pPmObj_t plist, pPmObj_t item);
 
 /**
  * Find the first index of the item that matches pitem.
@@ -179,9 +173,7 @@ PmReturn_t list_remove(pPmObj_t plist,
  * @param   r_index Addr of the variable for index
  * @return  Return status
  */
-PmReturn_t list_index(pPmObj_t plist,
-                      pPmObj_t pitem,
-                      uint16_t* r_index);
+PmReturn_t list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index);
 
 #ifdef HAVE_PRINT
 /**
@@ -195,11 +187,11 @@ PmReturn_t list_print(pPmObj_t pobj);
 
 /* XXX TODO - redo these using pobj / return status */
 #if 0
-S8              list_count(pPmObj_t plist);
-void            list_extend(pPmObj_t plista, PmObj_t plistb);
-pPmObj_t        list_pop(pPmObj_t plist);
-void            list_reverse(pPmObj_t plist)
-void            list_sort(pPmObj_t plist)
+S8 list_count(pPmObj_t plist);
+void list_extend(pPmObj_t plista, PmObj_t plistb);
+pPmObj_t list_pop(pPmObj_t plist);
+void
+list_reverse(pPmObj_t plist)
+     void list_sort(pPmObj_t plist)
 #endif
-
-#endif /* __LIST_H__ */
+#endif                          /* __LIST_H__ */

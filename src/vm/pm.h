@@ -151,31 +151,31 @@
 typedef enum PmReturn_e
 {
     /* general status return values */
-    PM_RET_OK         = 0,      /**< everything is ok */
-    PM_RET_NO         = 0xFF,   /**< general "no result" */
-    PM_RET_ERR        = 0xFE,   /**< general failure */
-    PM_RET_STUB       = 0xFD,   /**< return val for stub fxn */
+    PM_RET_OK = 0,              /**< everything is ok */
+    PM_RET_NO = 0xFF,           /**< general "no result" */
+    PM_RET_ERR = 0xFE,          /**< general failure */
+    PM_RET_STUB = 0xFD,         /**< return val for stub fxn */
     PM_RET_ASSERT_FAIL = 0xFC,  /**< assertion failure */
     PM_RET_FRAME_SWITCH = 0xFD, /**< frame pointer was modified */
 
     /* return vals that indicate an exception occured */
-    PM_RET_EX         = 0xE0,   /**< general exception */
-    PM_RET_EX_EXIT    = 0xE1,   /**< system exit */
-    PM_RET_EX_IO      = 0xE2,   /**< Input/output error */
-    PM_RET_EX_ZDIV    = 0xE3,   /**< zero division error */
-    PM_RET_EX_ASSRT   = 0xE4,   /**< assertion error */
-    PM_RET_EX_ATTR    = 0xE5,   /**< attribute error */
-    PM_RET_EX_IMPRT   = 0xE6,   /**< import error */
-    PM_RET_EX_INDX    = 0xE7,   /**< index error */
-    PM_RET_EX_KEY     = 0xE8,   /**< key error */
-    PM_RET_EX_MEM     = 0xE9,   /**< memory error */
-    PM_RET_EX_NAME    = 0xEA,   /**< name error */
-    PM_RET_EX_SYNTAX  = 0xEB,   /**< syntax error */
-    PM_RET_EX_SYS     = 0xEC,   /**< system error */
-    PM_RET_EX_TYPE    = 0xED,   /**< type error */
-    PM_RET_EX_VAL     = 0xEE,   /**< value error */
-    PM_RET_EX_STOP    = 0xEF,   /**< stop iteration */
-    PM_RET_EX_WARN    = 0xF0,   /**< warning */
+    PM_RET_EX = 0xE0,           /**< general exception */
+    PM_RET_EX_EXIT = 0xE1,      /**< system exit */
+    PM_RET_EX_IO = 0xE2,        /**< Input/output error */
+    PM_RET_EX_ZDIV = 0xE3,      /**< zero division error */
+    PM_RET_EX_ASSRT = 0xE4,     /**< assertion error */
+    PM_RET_EX_ATTR = 0xE5,      /**< attribute error */
+    PM_RET_EX_IMPRT = 0xE6,     /**< import error */
+    PM_RET_EX_INDX = 0xE7,      /**< index error */
+    PM_RET_EX_KEY = 0xE8,       /**< key error */
+    PM_RET_EX_MEM = 0xE9,       /**< memory error */
+    PM_RET_EX_NAME = 0xEA,      /**< name error */
+    PM_RET_EX_SYNTAX = 0xEB,    /**< syntax error */
+    PM_RET_EX_SYS = 0xEC,       /**< system error */
+    PM_RET_EX_TYPE = 0xED,      /**< type error */
+    PM_RET_EX_VAL = 0xEE,       /**< value error */
+    PM_RET_EX_STOP = 0xEF,      /**< stop iteration */
+    PM_RET_EX_WARN = 0xF0,      /**< warning */
 } PmReturn_t;
 
 

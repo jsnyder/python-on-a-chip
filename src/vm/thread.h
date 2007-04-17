@@ -34,16 +34,16 @@
 /***************************************************************
  * Includes
  **************************************************************/
- 
-#include "interp.h"  
+
+#include "interp.h"
 
 /***************************************************************
  * Constants
  **************************************************************/
- 
- /** Frequency in Hz to switch threads */ 
- #define THREAD_RESCHEDULE_FREQUENCY    10
- 
+
+ /** Frequency in Hz to switch threads */
+#define THREAD_RESCHEDULE_FREQUENCY    10
+
 /***************************************************************
  * Macros
  **************************************************************/
@@ -69,7 +69,7 @@ typedef enum PmInterpCtrl_e
     INTERP_CTRL_EXIT = 0,   /**< Normal execution exit */
     INTERP_CTRL_CONT = 1,   /**< Continue interpreting */
     INTERP_CTRL_RESCHED = 2 /**< Reschedule threads */
-    /* all positive values indicate "continue interpreting" */
+        /* all positive values indicate "continue interpreting" */
 } PmInterpCtrl_t, *pPmInterpCtrl_t;
 
 /**
@@ -92,7 +92,8 @@ typedef struct PmThread_s
      * A negative value signals an error exit.
      */
     PmInterpCtrl_t interpctrl;
-} PmThread_t, *pPmThread_t;
+} PmThread_t,
+ *pPmThread_t;
 
 
 /***************************************************************
@@ -112,4 +113,4 @@ typedef struct PmThread_s
  */
 PmReturn_t thread_new(pPmObj_t pframe, pPmObj_t *r_pobj);
 
-#endif /*THREAD_H_*/
+#endif /*THREAD_H_ */

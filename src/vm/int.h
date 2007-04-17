@@ -57,7 +57,8 @@ typedef struct PmInt_s
     PmObjDesc_t od;
     /** integer value */
     int32_t val;
-} PmInt_t, *pPmInt_t;
+} PmInt_t,
+ *pPmInt_t;
 
 
 /***************************************************************
@@ -78,7 +79,7 @@ typedef struct PmInt_s
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
-PmReturn_t int_dup(pPmObj_t pint, pPmObj_t * r_pint);
+PmReturn_t int_dup(pPmObj_t pint, pPmObj_t *r_pint);
 
 /**
  * Create a new Integer object
@@ -87,7 +88,7 @@ PmReturn_t int_dup(pPmObj_t pint, pPmObj_t * r_pint);
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
-PmReturn_t int_new(int32_t val, pPmObj_t * r_pint);
+PmReturn_t int_new(int32_t val, pPmObj_t *r_pint);
 
 /**
  * Implement the UNARY_POSITIVE bcode.
@@ -97,7 +98,7 @@ PmReturn_t int_new(int32_t val, pPmObj_t * r_pint);
  * @param   pobj Pointer to target object
  * @param   r_pint Return by ref, ptr to int
  */
-PmReturn_t int_positive(pPmObj_t, pPmObj_t * r_pint);
+PmReturn_t int_positive(pPmObj_t, pPmObj_t *r_pint);
 
 /**
  * Implement the UNARY_NEGATIVE bcode.
@@ -109,7 +110,7 @@ PmReturn_t int_positive(pPmObj_t, pPmObj_t * r_pint);
  * @param   r_pint Return by ref, ptr to int
  * @return  Return status
  */
-PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t * r_pint);
+PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t *r_pint);
 
 /**
  * Implement the UNARY_INVERT bcode.
@@ -119,7 +120,7 @@ PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t * r_pint);
  *
  * @param   pobj Pointer to target object
  */
-PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint);
+PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t *r_pint);
 
 #ifdef HAVE_PRINT
 /**

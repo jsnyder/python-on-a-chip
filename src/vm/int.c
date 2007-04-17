@@ -69,7 +69,7 @@
  **************************************************************/
 
 PmReturn_t
-int_dup(pPmObj_t pint, pPmObj_t * r_pint)
+int_dup(pPmObj_t pint, pPmObj_t *r_pint)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -118,7 +118,7 @@ int_new(int32_t n, pPmObj_t *r_pint)
 
 
 PmReturn_t
-int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
+int_positive(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
@@ -135,7 +135,7 @@ int_positive(pPmObj_t pobj, pPmObj_t * r_pint)
 
 
 PmReturn_t
-int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
+int_negative(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
@@ -152,7 +152,7 @@ int_negative(pPmObj_t pobj, pPmObj_t * r_pint)
 
 
 PmReturn_t
-int_bitInvert(pPmObj_t pobj, pPmObj_t * r_pint)
+int_bitInvert(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
@@ -172,8 +172,9 @@ PmReturn_t
 int_print(pPmObj_t pint)
 {
     /* 2^31-1 has 10 decimal digits, plus sign and zero byte */
-    uint8_t tBuffer[10+1+1];
-    uint8_t bytesWritten, k;
+    uint8_t tBuffer[10 + 1 + 1];
+    uint8_t bytesWritten,
+      k;
     PmReturn_t retval = PM_RET_OK;
 
     C_ASSERT(pint != C_NULL);
@@ -185,22 +186,23 @@ int_print(pPmObj_t pint)
         return retval;
     }
 
-    #ifdef TARGET_AVR
-    bytesWritten = snprintf_P((uint8_t*)&tBuffer, sizeof(tBuffer),
-        PSTR("%li"), ((pPmInt_t)pint)->val);
-    #else
+#ifdef TARGET_AVR
+    bytesWritten = snprintf_P((uint8_t *)&tBuffer, sizeof(tBuffer),
+                              PSTR("%li"), ((pPmInt_t)pint)->val);
+#else
     /* This does not use snprintf because glibc's snprintf is only
      * included for compiles without strict-ansi.
      */
-    bytesWritten = sprintf((void*)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
-    #endif /* !TARGET_AVR */
+    bytesWritten =
+        sprintf((void *)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
+#endif /* !TARGET_AVR */
 
 
     /* Sanity check */
     C_ASSERT(bytesWritten != 0);
     C_ASSERT(bytesWritten < sizeof(tBuffer));
 
-    for (k=0; k<bytesWritten; k++)
+    for (k = 0; k < bytesWritten; k++)
     {
         retval = plat_putByte(tBuffer[k]);
         PM_RETURN_IF_ERROR(retval);
@@ -216,12 +218,14 @@ int_printHexByte(uint8_t b)
     PmReturn_t retval;
 
     nibble = (b >> 4) + '0';
-    if (nibble > '9') nibble += ('a' - '0' - 10);
+    if (nibble > '9')
+        nibble += ('a' - '0' - 10);
     retval = plat_putByte(nibble);
     PM_RETURN_IF_ERROR(retval);
 
     nibble = (b & 0x0F) + '0';
-    if (nibble > '9') nibble += ('a' - '0' - 10);
+    if (nibble > '9')
+        nibble += ('a' - '0' - 10);
     retval = plat_putByte(nibble);
     return retval;
 }

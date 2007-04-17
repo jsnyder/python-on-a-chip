@@ -128,9 +128,7 @@ INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t **paddr);
  * @see     sli_memcpy
  */
 void mem_copy(PmMemSpace_t memspace,
-              uint8_t **pdest,
-              uint8_t **psrc,
-              uint16_t count);
+              uint8_t **pdest, uint8_t **psrc, uint16_t count);
 
 /**
  * Return the number of bytes in the UTF-8 string
