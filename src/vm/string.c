@@ -94,7 +94,7 @@ string_create(PmMemSpace_t memspace,
     uint8_t *pchunk;
 
     /* if not loading from image */
-    if (isimg == 0)
+    if (isimg == (uint8_t)0)
     {
         /* get length of string */
         len = mem_getNumUtf8Bytes(memspace, paddr);
@@ -294,19 +294,19 @@ string_print(pPmObj_t pstr, uint8_t marshall)
         }
 
         /* If the marshalled char is not printable, print its hex escape code */
-        if (marshall && (ch < 32 || ch >= 128))
+        if (marshall && (ch < (uint8_t)32 || ch >= (uint8_t)128))
         {
             plat_putByte('\\');
             plat_putByte('x');
 
-            nibble = (ch >> 4) + '0';
+            nibble = (ch >> (uint8_t)4) + '0';
             if (nibble > '9')
-                nibble += ('a' - '0' - 10);
+                nibble += ('a' - '0' - (uint8_t)10);
             plat_putByte(nibble);
 
-            nibble = (ch & 0x0F) + '0';
+            nibble = (ch & (uint8_t)0x0F) + '0';
             if (nibble > '9')
-                nibble += ('a' - '0' - 10);
+                nibble += ('a' - '0' - (uint8_t)10);
             plat_putByte(nibble);
         }
         else

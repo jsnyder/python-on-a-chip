@@ -202,7 +202,7 @@ int_print(pPmObj_t pint)
     C_ASSERT(bytesWritten != 0);
     C_ASSERT(bytesWritten < sizeof(tBuffer));
 
-    for (k = 0; k < bytesWritten; k++)
+    for (k = (uint8_t)0; k < bytesWritten; k++)
     {
         retval = plat_putByte(tBuffer[k]);
         PM_RETURN_IF_ERROR(retval);
@@ -223,9 +223,9 @@ int_printHexByte(uint8_t b)
     retval = plat_putByte(nibble);
     PM_RETURN_IF_ERROR(retval);
 
-    nibble = (b & 0x0F) + '0';
+    nibble = (b & (uint8_t)0x0F) + '0';
     if (nibble > '9')
-        nibble += ('a' - '0' - 10);
+        nibble += ('a' - '0' - (uint8_t)10);
     retval = plat_putByte(nibble);
     return retval;
 }
@@ -237,11 +237,11 @@ _int_printHex(int32_t n)
     PmReturn_t retval;
 
     /* Print the hex value, most significant byte first */
-    retval = int_printHexByte((n >> 24) & (uint8_t)0xFF);
+    retval = int_printHexByte((n >> (uint8_t)24) & (uint8_t)0xFF);
     PM_RETURN_IF_ERROR(retval);
-    retval = int_printHexByte((n >> 16) & (uint8_t)0xFF);
+    retval = int_printHexByte((n >> (uint8_t)16) & (uint8_t)0xFF);
     PM_RETURN_IF_ERROR(retval);
-    retval = int_printHexByte((n >> 8) & (uint8_t)0xFF);
+    retval = int_printHexByte((n >> (uint8_t)8) & (uint8_t)0xFF);
     PM_RETURN_IF_ERROR(retval);
     retval = int_printHexByte(n & (uint8_t)0xFF);
 

@@ -69,8 +69,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t fsize = 0;
-    int8_t stacksz = 0;
-    int8_t nlocals = 0;
+    int8_t stacksz = (int8_t)0;
+    int8_t nlocals = (int8_t)0;
     pPmCo_t pco = C_NULL;
     pPmFrame_t pframe = C_NULL;
     uint8_t *paddr = C_NULL;

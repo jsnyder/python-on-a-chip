@@ -122,7 +122,7 @@ img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
             return retval;
         }
         /* get index of last obj in tuple */
-        n = mem_getByte(memspace, paddr) - 1;
+        n = mem_getByte(memspace, paddr) - (uint8_t)1;
         /* point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
         /* load name at index */

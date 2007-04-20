@@ -72,8 +72,8 @@ PmReturn_t
 tuple_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
-    uint8_t i = 0;
-    uint8_t n = 0;
+    uint8_t i = (uint8_t)0;
+    uint8_t n = (uint8_t)0;
 
     /* get num objs in tuple */
     n = mem_getByte(memspace, paddr);
@@ -83,7 +83,7 @@ tuple_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_ptuple)
     PM_RETURN_IF_ERROR(retval);
 
     /* load the next n objs into tuple */
-    for (i = 0; i < n; i++)
+    for (i = (uint8_t)0; i < n; i++)
     {
         retval = obj_loadFromImg(memspace,
                                  paddr,

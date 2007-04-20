@@ -26,7 +26,7 @@
  * List and Dict data types.
  * The segmented list is used in preference to the linked list
  * in order to reduce the memory overhead.
- * 
+ *
  * Unused slots in the segments are expected to contain C_NULL.
  *
  * List implementation:
@@ -142,7 +142,7 @@ seglist_findEqual(pSeglist_t pseglist, pPmObj_t pobj, int16_t *r_index)
 
     /* Walk out to the starting segment */
     pseg = pseglist->sl_rootseg;
-    for (i = (*r_index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
+    for (i = (*r_index / SEGLIST_OBJS_PER_SEG); i > (int8_t)0; i--)
     {
         C_ASSERT(pseg != C_NULL);
         pseg = pseg->next;
@@ -212,7 +212,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
     pSegment_t pseg = C_NULL;
     pPmObj_t pobj1 = C_NULL;
     pPmObj_t pobj2 = C_NULL;
-    int8_t indx = 0;
+    int8_t indx = (int8_t)0;
     int16_t i = 0;
     uint8_t *pchunk;
 
@@ -276,7 +276,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
         {
             pseg = pseg->next;
             C_ASSERT(pseg != C_NULL);
-            indx = 0;
+            indx = (int8_t)0;
         }
     }
     pseglist->sl_length++;

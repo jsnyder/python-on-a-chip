@@ -195,9 +195,9 @@ PmReturn_t
 list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
 {
     PmReturn_t retval = PM_RET_OK;
-    int8_t i = 0;
-    int8_t j = 0;
-    int8_t length = 0;
+    int16_t i = 0;
+    int16_t j = 0;
+    int16_t length = 0;
     pPmObj_t pitem = C_NULL;
 
     C_ASSERT(psrclist != C_NULL);

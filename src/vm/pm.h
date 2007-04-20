@@ -74,10 +74,10 @@
 #define C_TRUE          (!C_FALSE)
 
 /** Comparison result is that items are the same */
-#define C_SAME 0
+#define C_SAME (int8_t)0
 
 /** Comparison result is that items differ */
-#define C_DIFFER -1
+#define C_DIFFER (int8_t)-1
 
 /** PORT inline for C code */
 #define INLINE          __inline__

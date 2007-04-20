@@ -128,7 +128,7 @@ pm_vmPeriodic(uint16_t usecsSinceLastCall)
     if ((pm_timerMsTicks - pm_lastRescheduleTimestamp)
         >= PM_THREAD_TIMESLICE_MS)
     {
-        interp_setRescheduleFlag(1);
+        interp_setRescheduleFlag((uint8_t)1);
         pm_lastRescheduleTimestamp = pm_timerMsTicks;
     }
     return PM_RET_OK;

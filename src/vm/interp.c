@@ -602,7 +602,7 @@ interpret(const uint8_t returnOnNoThreads)
             case PRINT_ITEM:
                 /* Print out topmost stack element */
                 pobj1 = PM_POP();
-                retval = obj_print(pobj1, 0);
+                retval = obj_print(pobj1, (uint8_t)0);
                 PM_BREAK_IF_ERROR(retval);
                 if (bc != PRINT_EXPR)
                 {
@@ -1020,14 +1020,14 @@ interpret(const uint8_t returnOnNoThreads)
                     switch (t16)
                     {
                         /* *INDENT-OFF* */
-                        case COMP_LT: t8 = (a <  b); break;
-                        case COMP_LE: t8 = (a <= b); break;
-                        case COMP_EQ: t8 = (a == b); break;
-                        case COMP_NE: t8 = (a != b); break;
-                        case COMP_GT: t8 = (a >  b); break;
-                        case COMP_GE: t8 = (a >= b); break;
-                        case COMP_IS: t8 = (pobj1 == pobj2); break;
-                        case COMP_IS_NOT: t8 = (pobj1 != pobj2); break;
+                        case COMP_LT: t8 = (int8_t)(a <  b); break;
+                        case COMP_LE: t8 = (int8_t)(a <= b); break;
+                        case COMP_EQ: t8 = (int8_t)(a == b); break;
+                        case COMP_NE: t8 = (int8_t)(a != b); break;
+                        case COMP_GT: t8 = (int8_t)(a >  b); break;
+                        case COMP_GE: t8 = (int8_t)(a >= b); break;
+                        case COMP_IS: t8 = (int8_t)(pobj1 == pobj2); break;
+                        case COMP_IS_NOT: t8 = (int8_t)(pobj1 != pobj2); break;
                         case COMP_IN:
                         case COMP_NOT_IN:
                             PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -1119,7 +1119,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* keep ref to current frame */
                 ((pPmFrame_t)pobj3)->fo_back = FP;
                 /* handle to have None popped on return */
-                ((pPmFrame_t)pobj3)->fo_isImport = 1;
+                ((pPmFrame_t)pobj3)->fo_isImport = (uint8_t)1;
 
                 /* set new frame */
                 FP = (pPmFrame_t)pobj3;
@@ -1525,7 +1525,7 @@ interp_reschedule(void)
     {
         if (++threadIndex >= gVmGlobal.threadList->length)
         {
-            threadIndex = 0;
+            threadIndex = (uint8_t)0;
         }
         retval = list_getItem((pPmObj_t)gVmGlobal.threadList,
                               threadIndex, (pPmObj_t *)&gVmGlobal.pthread);
