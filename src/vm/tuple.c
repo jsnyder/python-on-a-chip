@@ -69,7 +69,8 @@
  **************************************************************/
 
 PmReturn_t
-tuple_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_ptuple)
+tuple_loadFromImg(PmMemSpace_t memspace,
+                  uint8_t const **paddr, pPmObj_t *r_ptuple)
 {
     PmReturn_t retval = PM_RET_OK;
     uint8_t i = (uint8_t)0;
@@ -132,7 +133,7 @@ tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple)
     pPmTuple_t pnew = C_NULL;
     uint8_t *pchunk;
     uint8_t *pdest;
-    uint8_t *psrc;
+    uint8_t const *psrc;
 
     /* ensure type */
     if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
@@ -147,7 +148,7 @@ tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple)
     pnew = (pPmTuple_t)pchunk;
 
     pdest = (uint8_t *)pnew;
-    psrc = (uint8_t *)ptup;
+    psrc = (uint8_t const *)ptup;
     mem_copy(MEMSPACE_RAM, &pdest, &psrc, OBJ_GET_SIZE(*ptup));
     *r_ptuple = (pPmObj_t)pnew;
     return PM_RET_OK;

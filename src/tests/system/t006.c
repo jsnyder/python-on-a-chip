@@ -38,7 +38,7 @@ extern unsigned char usrlib_img[];
 
 int main(void)
 {
-    uint8_t *pimg;
+    uint8_t const *pimg;
     PmReturn_t retval = PM_RET_OK;
 
     heap_init();

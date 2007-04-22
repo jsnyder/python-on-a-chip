@@ -100,7 +100,7 @@ PmReturn_t
 mod_import(pPmObj_t pstr, pPmObj_t *pmod)
 {
     pPmImgInfo_t pii = C_NULL;
-    uint8_t *imgaddr = C_NULL;
+    uint8_t const *imgaddr = C_NULL;
     pPmCo_t pco = C_NULL;
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj;

@@ -47,7 +47,7 @@
  * Constants
  **************************************************************/
 
-uint8_t *global_bistr = (uint8_t *)"__bi";
+uint8_t const *global_bistr = (uint8_t const *)"__bi";
 
 /***************************************************************
  * Macros
@@ -102,7 +102,7 @@ global_init(void)
     OBJ_SET_SIZE(gVmGlobal.none, sizeof(PmObj_t));
 
     /* Init "code" string obj */
-    retval = string_new((uint8_t **)&codestr, &pobj);
+    retval = string_new((uint8_t const **)&codestr, &pobj);
     gVmGlobal.pcodeStr = (pPmString_t)pobj;
 
     /* init empty builtins */
@@ -143,7 +143,7 @@ global_loadBuiltins(void)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    uint8_t *nonestr = (uint8_t *)"None";
+    uint8_t const *nonestr = (uint8_t const *)"None";
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
 

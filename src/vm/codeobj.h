@@ -78,13 +78,13 @@ typedef struct PmCo_s
     /** memory space selector */
     PmMemSpace_t co_memspace:8;
     /** address in memspace of code image */
-    uint8_t *co_codeimgaddr;
+    uint8_t const *co_codeimgaddr;
     /** address in RAM of names tuple */
     pPmTuple_t co_names;
     /** address in RAM of constants tuple */
     pPmTuple_t co_consts;
     /** address in memspace of bytecode (or native function) */
-    uint8_t *co_codeaddr;
+    uint8_t const *co_codeaddr;
 } PmCo_t,
  *pPmCo_t;
 
@@ -158,7 +158,7 @@ typedef struct PmNo_s
  * @return  Return status
  */
 PmReturn_t
-co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco);
+co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco);
 
 /**
  * Create a Native code object by loading a native image.
@@ -189,7 +189,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco);
  *          past end of code img
  */
 PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
-                          uint8_t **paddr, pPmObj_t *r_pno);
+                          uint8_t const **paddr, pPmObj_t *r_pno);
 
 
 #endif /* __CODEOBJ_H__ */

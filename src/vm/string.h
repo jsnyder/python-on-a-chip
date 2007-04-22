@@ -61,7 +61,7 @@
             string_create((ms), (paddr), (uint8_t)1, (r_pstring))
 
 /**
- * create string from UTF-8 string in RAM
+ * Create String object from character array in RAM
  *
  * @param s address in RAM of source string
  * @param r_pstring Return arg; addr of ptr to string
@@ -111,12 +111,12 @@ typedef struct PmString_s
  **************************************************************/
 
 /**
- * Create a new String obj.
+ * Creates a new String obj.
  * If n is zero, load from a String image.
  *      A string image has the following structure:
- *          -type:      S8 - OBJ_TYPE_STRING
- *          -length:    U16 - number of bytes in the string
- *          -string:    U8[] - array of chars with null term
+ *          -type:      int8 - OBJ_TYPE_STRING
+ *          -length:    uint16 - number of bytes in the string
+ *          -val:       uint8[] - array of chars with null term
  *
  * If n is not zero, create from a C string.
  * Return ptr to String obj.
@@ -130,14 +130,14 @@ typedef struct PmString_s
  * or string_new().
  *
  * @param   memspace memory space where *paddr points
- * @param   paddr ptr to ptr to null term UTF-8 string or image.
+ * @param   paddr ptr to ptr to null term character array or image.
  * @param   isimg if 0, create from C string;
  *          else load from image.
  * @param   Return arg; ptr to String obj
  * @return  Return status
  */
-PmReturn_t string_create(PmMemSpace_t memspace,
-                         uint8_t **paddr, uint8_t isimg, pPmObj_t *r_pstring);
+PmReturn_t string_create(PmMemSpace_t memspace, uint8_t const **paddr,
+                         uint8_t isimg, pPmObj_t *r_pstring);
 
 /**
  * Create a new String object from a single character.
@@ -146,7 +146,7 @@ PmReturn_t string_create(PmMemSpace_t memspace,
  * @param   r_psting Return arg; ptr to String obj
  * @return  Return status
  */
-PmReturn_t string_newFromChar(uint8_t c, pPmObj_t *r_pstring);
+PmReturn_t string_newFromChar(uint8_t const c, pPmObj_t *r_pstring);
 
 /**
  * Compare two String objects for equality.
@@ -157,20 +157,11 @@ PmReturn_t string_newFromChar(uint8_t c, pPmObj_t *r_pstring);
  */
 int8_t string_compare(pPmString_t, pPmString_t);
 
-/**
- * Create a copy of the given string obj.
- *
- * @param   pstr Ptr to source string.
- * @param   Return arg; Ptr to the new string obj.
- * @return  Return status
- */
-PmReturn_t string_copy(pPmObj_t pstr, pPmObj_t *r_pstring);
-
 #ifdef HAVE_PRINT
 /**
  * Sends out a string object bytewise. Escaping and framing is configurable
  * via marshall.
- * 
+ *
  * @param pobj Ptr to string object
  * @param marshall If 0, print out string as is. Otherwise escape unprintable
  *                 characters and surround string with single quotes.

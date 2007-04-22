@@ -225,10 +225,10 @@ ut_dict_getItem_001(CuTest *tc)
     
     retval = pm_init(MEMSPACE_RAM, C_NULL);
     
-    retval = string_new((uint8_t **)&test_str1, &p_firstval);
-    retval = string_new((uint8_t **)&test_str2, &p_secondval);
-    retval = string_new((uint8_t **)&test_str3, &p_thirdval);
-    retval = string_new((uint8_t **)&test_strnew, &p_newval);
+    retval = string_new((uint8_t const **)&test_str1, &p_firstval);
+    retval = string_new((uint8_t const **)&test_str2, &p_secondval);
+    retval = string_new((uint8_t const **)&test_str3, &p_thirdval);
+    retval = string_new((uint8_t const **)&test_strnew, &p_newval);
     
     retval = int_new(1, (pPmObj_t *)&p_firstkey);
     retval = int_new(2, (pPmObj_t *)&p_secondkey);

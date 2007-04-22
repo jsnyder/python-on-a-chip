@@ -68,7 +68,8 @@
  **************************************************************/
 
 PmReturn_t
-obj_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pobj)
+obj_loadFromImg(PmMemSpace_t memspace,
+                uint8_t const **paddr, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     PmObjDesc_t od;

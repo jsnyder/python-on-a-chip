@@ -99,7 +99,7 @@ typedef enum PmMemSpace_e
  * @return  word from memory.
  *          addr - points one byte past the word
  */
-INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t **paddr);
+INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
  * Return the 4-byte int at the given address in memspace.
@@ -112,7 +112,7 @@ INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t **paddr);
  * @return  int from memory.
  *          addr - points one byte past the word
  */
-INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t **paddr);
+INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
  * Copy count number of bytes
@@ -128,18 +128,17 @@ INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t **paddr);
  * @see     sli_memcpy
  */
 void mem_copy(PmMemSpace_t memspace,
-              uint8_t **pdest, uint8_t **psrc, uint16_t count);
+              uint8_t **pdest, uint8_t const **psrc, uint16_t count);
 
 /**
- * Return the number of bytes in the UTF-8 string
- * pointed to by the contents of psrc.
- * Afterward, the contents of psrc will point one byte past
- * the null terminator of the string.
+ * Returns the number of bytes in the C string pointed to by pstr.
+ * Does not modify pstr
  *
  * @param   memspace memory space/type of source
  * @param   psrc  ptr to source address
- * @return  Number of bytes in UTF-8 string.
+ * @return  Number of bytes in the string.
  */
-uint16_t mem_getNumUtf8Bytes(PmMemSpace_t memspace, uint8_t **psrc);
+uint16_t mem_getStringLength(PmMemSpace_t memspace,
+                             uint8_t const * const pstr);
 
 #endif /* __MEM_H__ */

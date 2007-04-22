@@ -116,8 +116,8 @@ class_new(pPmObj_t pmeths,
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
-    uint8_t *btstr = (uint8_t *)"__bt";
-    uint8_t *nmstr = (uint8_t *)"__nm";
+    uint8_t const *btstr = (uint8_t const *)"__bt";
+    uint8_t const *nmstr = (uint8_t const *)"__nm";
 
     /* ensure types */
     if ((OBJ_GET_TYPE(*pmeths) != OBJ_TYPE_DIC) ||

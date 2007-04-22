@@ -22,6 +22,13 @@
 #
 
 #
+# Test len()
+#
+assert len("") == 0
+assert len("\x00") == 1
+assert len("\x00\x00\x00\x00") == 4
+
+#
 # Test ord()
 #
 c = ord("t")
@@ -30,7 +37,7 @@ assert c == 116
 c = ord("\xff")
 assert c == 0xff
 
-c = ord("\0")
+c = ord("\x00")
 assert c == 0
 
 
@@ -38,7 +45,7 @@ assert c == 0
 # Test chr()
 #
 n = chr(0)
-assert n == "\0"
+assert n == "\x00"
 
 n = chr(255)
 assert n == "\xff"

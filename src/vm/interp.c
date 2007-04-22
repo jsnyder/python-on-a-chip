@@ -411,12 +411,11 @@ interpret(const uint8_t returnOnNoThreads)
                 /* get sequence */
                 pobj1 = PM_POP();
 
-                /* XXX if there's an seq_copy(), use here */
                 /* if it's a string */
                 if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_STR)
                 {
-                    retval = string_copy(pobj1, &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
+                    /* Just copy the pointer, since Strings are immutable */
+                    pobj2 = pobj1;
                 }
 
                 /* if it's a tuple */

@@ -234,14 +234,14 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
  * @param modstr        Name of module to run
  * @return Return status
  */
-PmReturn_t pm_run(uint8_t *modstr);
+PmReturn_t pm_run(uint8_t const *modstr);
 
 /**
  * Needs to be called periodically by a platform specific means.
  * For the desktop target, it is periodically called using a signal.
  * For embedded targets, it needs to be called periodically. It should
  * be called from a timer interrupt.
- * 
+ *
  * @param usecsSinceLastCall Microseconds (not less than those) that passed
  *                           since last call. This must be <64535.
  * @return Return status

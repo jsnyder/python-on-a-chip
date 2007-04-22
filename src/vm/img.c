@@ -89,10 +89,10 @@
  * without filling memory.
  */
 PmReturn_t
-img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
+img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr)
 {
     PmReturn_t retval = PM_RET_ERR;
-    uint8_t *imgtop = 0;
+    uint8_t const *imgtop = (uint8_t const *)C_NULL;
     PmType_t type = 0;
     int16_t size = 0;
     uint8_t n = 0;
@@ -154,7 +154,7 @@ img_findInMem(PmMemSpace_t memspace, uint8_t **paddr)
 
 PmReturn_t
 img_getName(PmMemSpace_t memspace,
-            uint8_t **paddr, uint8_t n, pPmObj_t *r_pname)
+            uint8_t const **paddr, uint8_t n, pPmObj_t *r_pname)
 {
     PmType_t type;
     uint16_t len;

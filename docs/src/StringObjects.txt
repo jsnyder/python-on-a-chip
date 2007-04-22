@@ -1,0 +1,104 @@
+.. Copyright 2007 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+=====================
+PyMite String Objects
+=====================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the String object as used in the PyMite virtual machine
+(VM).  In doing so, it serves as a design document for the PyMite developer
+and a reference for the PyMite user.
+
+Overview
+--------
+
+PyMite shall define the C data type ``PmString_t`` as the general type for
+the String object used by the VM.  String objects are used routinely throughout
+the VM and character strings are often passed between the VM and native code in
+both directions.  The design of the String object is important both inside and
+outside the VM.
+
+Background
+----------
+
+The author has a history with the J2ME_ VM, inside which strings did not have
+null terminators.  The author ported J2ME to a number of platforms whose string
+routines required null terminators.  For these platforms, the solution was to
+copy the contents of the VM string to a buffer and append a null character.
+This solution slowed the resulting system and added to its memory requirements.
+
+.. _J2ME: http://en.wikipedia.org/wiki/J2ME
+
+Object Details
+--------------
+
+The ``PmString_t`` data type shall represent a PyMite String object and shall
+contain an object descriptor, an unsigned  16-bit integer to represent the
+string's length and a variable number of bytes to contain the contents of the
+string itself.  The bytes that make up the string shall have at least one null
+character '\\0' (0x00) following the last intended character.  Python String
+objects may intentionally contain any number of null characters, so in the
+byte representation of the String object, a null character does not always
+imply the end of the character array.
+
+String objects are of dynamic length.  A string's maximum length is limited by
+the heap implementation.  As of this writing (2007/04), the maximum heap chunk
+size is 1020 bytes.  Up to eight bytes are used by the ``PmString_t`` on 32-bit
+systems.  Subtract a null terminator and PyMite strings can be a maximum of 1011
+characters.  However, when using Interactive PyMite (ipm), a string is packaged
+inside a code object and that code object must fit within the maximum chunk
+size.  So the effective string length in ipm is smaller than 1011.
+
+In the ``PmString_t`` data type, a character array field is declared.  Since
+C type declarations must be of constant size and an array of zero characters is
+not allowed by some compilers, this field is declared as an array of one
+character.  This has a nice side effect that when creating a String object,
+the length of the string is added to the size of the ``PmString_t`` struct.
+The "extra" byte in the resulting size holds the null terminator.
+
+In Python, String objects are used to represent names.  Object linking is not
+necessary in Python because name lookup is used to access external modules,
+global variables and other objects.  This means that there are often two
+instances of every String object: one in the provider object and one in
+the user object.  A String object caching mechanism is implemented as a compile
+time option.  The String object cache shall conserve heap memory by having all
+instances of an identical String object refer to one common String object.
+
+PyMite used to declare support for international character sets using UTF-8
+character strings.  This is no longer true.  PyMite only supports 8-bit ASCII
+characters.
+
+Design Decisions
+----------------
+
+Inside the VM, string objects are used very often as are the numerical length
+of those strings.  I chose to use a field to store the string's length as an
+optimization so that the string's length does not need to be measured every time
+the length is needed.  However, I do not intend for the string's length to be
+used to determine where the character array ends.
+
+The String object shall have a null character at the end of the array
+of characters.  This is done so that PyMite string objects are compatible with
+general C string libraries and can avoid the troubles explained above in
+Background_.  Note that Python String objects can contain null characters
+anywhere within the string and this may cause C string libraries to not work
+properly on those String objects.
+
+The choice to add a String object cache was easy.  Without it, PyMite exhausts
+a 4 KiB heap during system start-up before any user code is executed.
+
+PyMite dropped the goal of supporting UTF-8 characters because there was never
+a demand for UTF-8 support from a user and the complication of UTF-8 support
+does not justify its exestince.
+
+.. :mode=rest:

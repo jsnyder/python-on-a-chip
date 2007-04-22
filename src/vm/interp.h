@@ -337,7 +337,7 @@ PmReturn_t interp_reschedule(void);
 /**
  * Creates a thread object and adds it to the queue of threads to be
  * executed while interpret() is running.
- * 
+ *
  * The given obj may be a function, module, or class.
  * Creates a frame for the given function.
  *

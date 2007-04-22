@@ -49,7 +49,7 @@ PmReturn_t
 pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
     PmReturn_t retval;
-    uint8_t *pimg;
+    uint8_t const *pimg;
 
     /* Initialize the hardware platform */
     retval = plat_init();
@@ -79,12 +79,12 @@ pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 
 
 PmReturn_t
-pm_run(uint8_t *modstr)
+pm_run(uint8_t const *modstr)
 {
     PmReturn_t retval;
     pPmObj_t pmod;
     pPmObj_t pstring;
-    uint8_t *pmodstr = modstr;
+    uint8_t const *pmodstr = modstr;
 
     /* Import module from global struct */
     retval = string_new(&pmodstr, &pstring);

@@ -63,7 +63,7 @@ def main():
 main()
 
  */
-uint8_t test_code_image0[] =
+uint8_t const test_code_image0[] =
 {
     0x0A, 0xFB, 0x00, 0x00, 0x01, 0x00, 0x04, 0x02, 
     0x03, 0x04, 0x00, 0x6D, 0x61, 0x69, 0x6E, 0x03, 
@@ -109,8 +109,8 @@ void
 ut_co_loadFromImg_000(CuTest *tc)
 {
     PmReturn_t retval;
-    uint8_t *paddr = test_code_image0;
-    uint8_t *pimg = test_code_image0;
+    uint8_t const *paddr = test_code_image0;
+    uint8_t const *pimg = test_code_image0;
     pPmObj_t pcodeobject;
     uint16_t size;
     

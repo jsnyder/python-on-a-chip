@@ -100,7 +100,7 @@ typedef struct PmTuple_s
  *          past end of last obj in tuple.
  */
 PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
-                             uint8_t **paddr, pPmObj_t *r_ptuple);
+                             uint8_t const **paddr, pPmObj_t *r_ptuple);
 
 /**
  * Allocate space for a new Tuple.
@@ -137,7 +137,7 @@ PmReturn_t tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj);
 #ifdef HAVE_PRINT
 /**
  * Print out a tuple. Uses obj_print() to print elements.
- * 
+ *
  * @param pobj Object to print.
  * @return Return status
  */

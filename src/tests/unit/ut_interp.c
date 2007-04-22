@@ -74,7 +74,7 @@ void
 ut_interp_interpret_000(CuTest *tc)
 {
     PmReturn_t retval;
-    uint8_t *pimg = test_code_image0;
+    uint8_t const *pimg = test_code_image0;
     pPmObj_t pcodeobject;
     pPmObj_t pmodule;
     uint16_t size;

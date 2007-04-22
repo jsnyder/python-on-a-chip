@@ -45,7 +45,7 @@ ut_string_new_000(CuTest *tc)
     pPmObj_t pstring;
     uint16_t length;
     uint8_t cstring[] = "forty-two";
-    uint8_t *pcstring = cstring;
+    uint8_t const *pcstring = cstring;
     PmReturn_t retval;
 
     pm_init(MEMSPACE_RAM, C_NULL);
@@ -79,29 +79,6 @@ ut_string_newFromChar_000(CuTest *tc)
 }
 
 
-/**
- * Tests string_copy():
- *      retval is OK
- *      string and its copy are the same
- */
-void
-ut_string_copy_000(CuTest *tc)
-{
-    pPmObj_t pstring;
-    pPmObj_t pstringcopy;
-    uint8_t cchar = 'Z';
-    PmReturn_t retval;
-
-    pm_init(MEMSPACE_RAM, C_NULL);
-
-    /* Check the return value is Ok */
-    retval = string_newFromChar(cchar, &pstring);
-    retval = string_copy(pstring, &pstringcopy);
-    CuAssertTrue(tc, retval == PM_RET_OK);
-    CuAssertTrue(tc, obj_compare(pstring, pstringcopy) == C_SAME);
-}
-
-
 /** Make a suite from all tests in this file */
 CuSuite *getSuite_testStringObj(void)
 {
@@ -109,7 +86,6 @@ CuSuite *getSuite_testStringObj(void)
 
     SUITE_ADD_TEST(suite, ut_string_new_000);
     SUITE_ADD_TEST(suite, ut_string_newFromChar_000);
-    SUITE_ADD_TEST(suite, ut_string_copy_000);
 
     return suite;
 }

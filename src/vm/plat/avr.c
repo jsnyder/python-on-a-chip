@@ -128,7 +128,7 @@ ISR(TIMER0_OVF_vect)
  * Post-increments *paddr.
  */
 uint8_t
-plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr)
+plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
 {
     uint8_t b = 0;
 

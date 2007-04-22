@@ -54,8 +54,8 @@
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
 #define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
 #define OBJ_SET_GCFREE(obj, free) ((obj).od.od_gcfree = (uint8_t)free)
-/* 
- * od_size bits are shifted because size is a scaled value 
+/*
+ * od_size bits are shifted because size is a scaled value
  * True size is always a multiple of 4, so the lower two bits are ignored
  * and two more significant bits are gained.
  */
@@ -224,7 +224,7 @@ typedef struct PmObj_s
  * @return  Return status
  */
 PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
-                           uint8_t **paddr, pPmObj_t *r_pobj);
+                           uint8_t const **paddr, pPmObj_t *r_pobj);
 
 /**
  * Finds the boolean value of the given object.
@@ -253,7 +253,7 @@ int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
 
 /**
  * Print an object, thereby using objects helpers.
- * 
+ *
  * @param   pobj Ptr to object for printing.
  * @param   marshallString Only has influence on the way strings are printed.
  *                         If 0, just output the string bytewise. Otherwise,

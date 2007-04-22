@@ -27,6 +27,7 @@
  * Log
  * ---
  *
+ * 2007/04/21   #46: Finalize design of string objects
  * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/10   #75: Printing support (P.Adelt)
  * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
@@ -81,7 +82,7 @@ static pPmString_t pstrcache = C_NULL;
  */
 PmReturn_t
 string_create(PmMemSpace_t memspace,
-              uint8_t **paddr, uint8_t isimg, pPmObj_t *r_pstring)
+              uint8_t const **paddr, uint8_t isimg, pPmObj_t *r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     uint16_t len = 0;
@@ -97,9 +98,7 @@ string_create(PmMemSpace_t memspace,
     if (isimg == (uint8_t)0)
     {
         /* get length of string */
-        len = mem_getNumUtf8Bytes(memspace, paddr);
-        /* backup ptr to beginning of string */
-        *paddr -= len + 1;
+        len = mem_getStringLength(memspace, *paddr);
     }
 
     /* if loading from an img */
@@ -156,52 +155,24 @@ string_create(PmMemSpace_t memspace,
 
 
 PmReturn_t
-string_newFromChar(uint8_t c, pPmObj_t *r_pstring)
+string_newFromChar(uint8_t const c, pPmObj_t *r_pstring)
 {
     PmReturn_t retval;
-    pPmString_t pstr;
+    uint8_t cstr[2];
+    uint8_t const *pcstr;
 
-#if USE_STRING_CACHE
-    pPmString_t pcacheentry = C_NULL;
-#endif /* USE_STRING_CACHE */
-    uint8_t *pchunk;
+    cstr[0] = c;
+    cstr[1] = '\0';
+    pcstr = cstr;
 
-    /* Get space for String obj */
-    retval = heap_getChunk(sizeof(PmString_t) + 1, &pchunk);
-    PM_RETURN_IF_ERROR(retval);
-    pstr = (pPmString_t)pchunk;
+    retval = string_new(&pcstr, r_pstring);
 
-    /* Fill the string obj */
-    OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
-    pstr->length = 1;
-    pstr->val[0] = c;
-    pstr->val[1] = '\0';
-
-#if USE_STRING_CACHE
-    /* XXX uses linear search... could improve */
-
-    /* check for twin string in cache */
-    for (pcacheentry = pstrcache;
-         pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
+    /* If c was a null character, force the length to 1 */
+    if (c == '\0')
     {
-        /* if string already exists */
-        if (string_compare(pcacheentry, pstr) == C_SAME)
-        {
-            /* free the string */
-            retval = heap_freeChunk((pPmObj_t)pstr);
-            /* return ptr to old */
-            *r_pstring = (pPmObj_t)pcacheentry;
-            return retval;
-        }
+        ((pPmString_t)*r_pstring)->length = 1;
     }
 
-    /* insert string obj into cache */
-    pstr->next = pstrcache;
-    pstrcache = pstr;
-
-#endif /* USE_STRING_CACHE */
-
-    *r_pstring = (pPmObj_t)pstr;
     return retval;
 }
 
@@ -221,43 +192,6 @@ string_compare(pPmString_t pstr1, pPmString_t pstr2)
                        pstr1->length) == 0 ? C_SAME : C_DIFFER;
 }
 
-
-PmReturn_t
-string_copy(pPmObj_t pstr, pPmObj_t *r_pstring)
-{
-    PmReturn_t retval = PM_RET_OK;
-    pPmString_t pnew = C_NULL;
-    uint8_t *pnewchars;
-    uint8_t *pstrchars;
-    uint8_t *pchunk;
-
-    /* ensure string obj */
-    if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* allocate string obj */
-    retval = heap_getChunk(sizeof(PmString_t) + ((pPmString_t)pstr)->length,
-                           &pchunk);
-    PM_RETURN_IF_ERROR(retval);
-    pnew = (pPmString_t)pchunk;
-    OBJ_SET_TYPE(*pnew, OBJ_TYPE_STR);
-#if USE_STRING_CACHE
-    /* insert new string obj into cache */
-    pnew->next = pstrcache;
-    pstrcache = pnew;
-#endif
-    /* Copy the string's length field */
-    pnew->length = ((pPmString_t)pstr)->length;
-    /* copy string contents (and null term) */
-    pnewchars = pnew->val;
-    pstrchars = ((pPmString_t)pstr)->val;
-    mem_copy(MEMSPACE_RAM, &pnewchars, &pstrchars, pnew->length + 1);
-    *r_pstring = (pPmObj_t)pnew;
-    return retval;
-}
 
 #ifdef HAVE_PRINT
 PmReturn_t

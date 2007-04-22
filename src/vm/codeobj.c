@@ -66,7 +66,7 @@
  **************************************************************/
 
 PmReturn_t
-co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco)
+co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj;
@@ -74,7 +74,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco)
     uint8_t *pchunk;
 
     /* store ptr to top of code img (less type byte) */
-    uint8_t *pci = *paddr - 1;
+    uint8_t const *pci = *paddr - 1;
 
     /* get size of code img */
     uint16_t size = mem_getWord(memspace, paddr);
@@ -112,7 +112,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pco)
 
 
 PmReturn_t
-no_loadFromImg(PmMemSpace_t memspace, uint8_t **paddr, pPmObj_t *r_pno)
+no_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pno)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmNo_t pno = C_NULL;

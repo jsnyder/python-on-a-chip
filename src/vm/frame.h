@@ -41,8 +41,8 @@
  * Constants
  **************************************************************/
 
-/** 
- * the maximum number of local variables 
+/**
+ * the maximum number of local variables
  * a native function can have.
  * This defines the length of the locals array
  * in the native frame struct.
@@ -89,7 +89,7 @@ typedef struct PmBlock_s
     /** ptr to backup stack ptr */
     pPmObj_t *b_sp;
     /** handler fxn obj */
-    uint8_t *b_handler;
+    uint8_t const *b_handler;
     /** block type */
     PmBlockType_t b_type:8;
     /** next block in stack */
@@ -120,7 +120,7 @@ typedef struct PmFrame_s
     /** mem space where func's CO comes from */
     PmMemSpace_t fo_memspace:8;
     /** instrxn ptr (pts into memspace) */
-    uint8_t *fo_ip;
+    uint8_t const *fo_ip;
     /** current source line num */
     uint16_t fo_line;
     /** linked list of blocks */

@@ -112,7 +112,7 @@ def chr(n):
     }
 
     /* Create char string from  integer value */
-    retval = string_newFromChar((uint8_t)n, &ps);
+    retval = string_newFromChar((uint8_t const)n, &ps);
     NATIVE_SET_TOS(ps);
     return retval;
     """
@@ -658,7 +658,7 @@ def Co(i):
     PmReturn_t retval;
     pPmObj_t pimg;
     pPmObj_t pco;
-    uint8_t *imgaddr;
+    uint8_t const *imgaddr;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)

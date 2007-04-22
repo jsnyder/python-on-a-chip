@@ -55,7 +55,7 @@ PmReturn_t plat_init(void);
  * @return  byte from memory.
  *          paddr - points to the next byte
  */
-uint8_t plat_memGetByte(PmMemSpace_t memspace, uint8_t **paddr);
+uint8_t plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
  * Receives one byte from the default connection,

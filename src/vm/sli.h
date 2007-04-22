@@ -46,7 +46,7 @@
  * Constants
  **************************************************************/
 
-/** 
+/**
  * If the compiler has string.h, set HAVE_STRING to 1;
  * otherwise, leave it 0 and the sli functions will be used.
  */
