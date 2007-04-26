@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x10
+
 /**
  * Segmented list data type and operations
  *
@@ -64,10 +65,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
  * Macros
  **************************************************************/
 
@@ -78,18 +75,6 @@
  */
 #define SEGLIST_CLEAR_SEGMENTS 1
 
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /***************************************************************
  * Functions
@@ -109,7 +94,7 @@ seglist_clear(pSeglist_t pseglist)
     pSegment_t pseg2 = C_NULL;
 
 #if SEGLIST_CLEAR_SEGMENTS
-    /* deallocate all linked segments */
+    /* Deallocate all linked segments */
     pseg1 = ((pSeglist_t)pseglist)->sl_rootseg;
     while (pseg1 != C_NULL)
     {
@@ -119,7 +104,7 @@ seglist_clear(pSeglist_t pseglist)
     }
 #endif
 
-    /* clear seglist fields */
+    /* Clear seglist fields */
     ((pSeglist_t)pseglist)->sl_rootseg = C_NULL;
     ((pSeglist_t)pseglist)->sl_lastseg = C_NULL;
     ((pSeglist_t)pseglist)->sl_length = 0;
@@ -322,6 +307,7 @@ seglist_setItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
     return PM_RET_OK;
 }
 
+
 PmReturn_t
 seglist_removeItem(pSeglist_t pseglist, uint16_t index)
 {
@@ -340,7 +326,8 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         C_ASSERT(pseg != C_NULL);
     }
 
-    /* pseg now points to the correct segment of the item to be removed, so
+    /*
+     * pseg now points to the correct segment of the item to be removed, so
      * start ripple copying all following items up to the last
      * in the last segment
      */
@@ -348,27 +335,29 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
     for (i = index; i < ((pseglist->sl_length) - 1); i++)
     {
         k = i % SEGLIST_OBJS_PER_SEG;
-        /* copy element i+1 to slot i */
+
+        /* Copy element i+1 to slot i */
         if ((k + 1) == SEGLIST_OBJS_PER_SEG)
         {
-            /* source is first item in next segment */
+            /* Source is first item in next segment */
             pseg->s_val[i % SEGLIST_OBJS_PER_SEG] = (pseg->next)->s_val[0];
             pseg = pseg->next;
         }
         else
         {
-            /* source and target are in the same segment */
+            /* Source and target are in the same segment */
             pseg->s_val[k] = pseg->s_val[k + 1];
         }
     }
 
     pseglist->sl_length -= 1;
 
-    /* remove the last segment if it was emptied */
+    /* Remove the last segment if it was emptied */
     if (pseglist->sl_length % SEGLIST_OBJS_PER_SEG == 0)
     {
         pseg = pseglist->sl_rootseg;
-        /* find the segment before the last */
+
+        /* Find the segment before the last */
         for (i = 0; i < ((pseglist->sl_length - 1) / SEGLIST_OBJS_PER_SEG);
              i++)
         {
@@ -377,7 +366,8 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         }
         if (pseg->next == C_NULL)
         {
-            /* seglist is now completely empty and the last segment can be
+            /*
+             * Seglist is now completely empty and the last segment can be
              * recycled.
              */
 #if SEGLIST_CLEAR_SEGMENTS
@@ -388,25 +378,16 @@ seglist_removeItem(pSeglist_t pseglist, uint16_t index)
         }
         else
         {
-            /* at least one segment remains */
+            /* At least one segment remains */
             pseglist->sl_lastseg = pseg;
             pseg->next = C_NULL;
         }
     }
     else
     {
-        /* zero out the now unused slot */
+        /* Zero out the now unused slot */
         pseg->s_val[pseglist->sl_length % SEGLIST_OBJS_PER_SEG] = C_NULL;
     }
 
     return PM_RET_OK;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

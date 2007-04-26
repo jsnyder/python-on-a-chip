@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x11
+
 /**
  * Standard Library Interface
  *
@@ -46,22 +47,6 @@
 
 
 /***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -70,7 +55,7 @@ sli_memcpy(unsigned char *to, const unsigned char *from, unsigned int n)
 {
     unsigned char *tobak;
 
-    /* store init value of to */
+    /* Store init value of to */
     tobak = to;
 
 #if USE_DUFFS_DEVICE
@@ -136,14 +121,14 @@ sli_strlen(char const *s)
 int
 sli_strcmp(const char *s1, const char *s2)
 {
-    /* while not at either strings' end and they're same */
+    /* While not at either strings' end and they're same */
     while ((*s1 != C_NULL) && (*s2 != C_NULL) && (*s1 == *s2))
     {
         s1++;
         s2++;
     }
 
-    /* return string difference */
+    /* Return string difference */
     return *s1 - *s2;
 }
 
@@ -158,10 +143,10 @@ sli_strncmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
         return 0;
     }
 
-    /* scan n bytes in string */
+    /* Scan n bytes in string */
     for (i = 0; i < n; i++)
     {
-        /* if bytes differ, return difference */
+        /* If bytes differ, return difference */
         if (s1[i] != s2[i])
         {
             return s1[i] - s2[i];
@@ -169,12 +154,3 @@ sli_strncmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
     }
     return 0;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

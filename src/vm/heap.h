@@ -19,6 +19,7 @@
 
 #ifndef __HEAP_H__
 #define __HEAP_H__
+
 /**
  * VM Heap
  *
@@ -35,13 +36,6 @@
  * 2002/04/30   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
 
 /***************************************************************
  * Macros
@@ -62,26 +56,21 @@
 
 typedef struct PmHeapDesc_s
 {
-    /** object descriptor (only the size field is relevant */
+    /** Object descriptor (only the size field is relevant */
     PmObjDesc_t od;
-    /** ptr to next chunk */
+
+    /** Ptr to next chunk */
     struct PmHeapDesc_s *next;
 } PmHeapDesc_t,
  *pPmHeapDesc_t;
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Initialize the heap for use.
- *
- * Set the heap as one big chunk.
+ * Initializes the heap for use.
  *
  * @return  nothing.
  */
@@ -91,9 +80,7 @@ PmReturn_t heap_init(void);
  * Returns a free chunk from the heap.
  *
  * The chunk will be at least the requested size.
- * The actual size can be found in the return
- * chunk's od.od_size.
- * Garbage will be collected if necessary.
+ * The actual size can be found in the return chunk's od.od_size.
  *
  * @param   requestedsize Requested size of the chunk in bytes.
  * @param   r_pchunk Addr of ptr to chunk (return).
@@ -102,7 +89,7 @@ PmReturn_t heap_init(void);
 PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
 
 /**
- * Place the chunk back in the heap.
+ * Places the chunk back in the heap.
  *
  * @param   ptr Pointer to object to free.
  */

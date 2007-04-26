@@ -19,6 +19,7 @@
 
 #ifndef __OBJ_H__
 #define __OBJ_H__
+
 /**
  * Object Type
  *
@@ -27,6 +28,8 @@
  * Log
  * ---
  *
+ * 2007/03/16   #99: Design a way for ipm to be able to receive images larger
+ *              than HEAP_MAX_CHUNK_SIZE
  * 2007/01/17   #76: Print will differentiate on strings and print tuples
  * 2007/01/09   #75: OBJ_TYPE_THR for thread objects (P.Adelt)
  * 2007/01/09   #75: Printing support (P.Adelt)
@@ -38,13 +41,6 @@
  * 2002/05/04   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
 
 /***************************************************************
  * Macros
@@ -54,8 +50,9 @@
 #define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
 #define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
 #define OBJ_SET_GCFREE(obj, free) ((obj).od.od_gcfree = (uint8_t)free)
+
 /*
- * od_size bits are shifted because size is a scaled value
+ * #99: od_size bits are shifted because size is a scaled value
  * True size is always a multiple of 4, so the lower two bits are ignored
  * and two more significant bits are gained.
  */
@@ -63,6 +60,7 @@
 #define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (uint8_t)((size) >> 2)
 #define OBJ_GET_TYPE(obj) ((obj).od.od_type)
 #define OBJ_SET_TYPE(obj, type) (obj).od.od_type = (type)
+
 
 /***************************************************************
  * Types
@@ -81,53 +79,76 @@
 typedef enum PmType_e
 {
     OBJ_TYPE_HASHABLE_MIN = 0x00,
+
     /** None */
     OBJ_TYPE_NON = 0x00,
+
     /** Signed integer */
     OBJ_TYPE_INT = 0x01,
+
     /** Floating point 32b */
     OBJ_TYPE_FLT = 0x02,
+
     /** String */
     OBJ_TYPE_STR = 0x03,
+
     /** Tuple (immutable sequence) */
     OBJ_TYPE_TUP = 0x04,
+
     /** Code obj */
     OBJ_TYPE_COB = 0x05,
+
     /** Module obj */
     OBJ_TYPE_MOD = 0x06,
+
     /** Class obj */
     OBJ_TYPE_CLO = 0x07,
+
     /** Function obj (callable) */
     OBJ_TYPE_FXN = 0x08,
+
     /** Class instance */
     OBJ_TYPE_CLI = 0x09,
+
     /** Code image in static memory */
     OBJ_TYPE_CIM = 0x0A,
+
     /** Native function image */
     OBJ_TYPE_NIM = 0x0B,
+
     /** Native function object */
     OBJ_TYPE_NOB = 0x0C,
+
     /** Exception object */
     OBJ_TYPE_EXN = 0x0E,
-    OBJ_TYPE_HASHABLE_MAX = 0x0E,
 
     /* All types after this are not hashable */
+    OBJ_TYPE_HASHABLE_MAX = 0x0E,
+
     /** List (mutable sequence) */
     OBJ_TYPE_LST = 0x10,
+
     /** Dictionary (hash table) */
     OBJ_TYPE_DIC = 0x11,
 
-    /* All types after this are not accessable to the programmer */
+    /* All types after this are not accessible to the user */
+    OBJ_TYPE_ACCESSIBLE_MAX = 0x11,
+
     /** Frame type */
     OBJ_TYPE_FRM = 0x12,
+
     /** Block type (for,while,try,etc) */
     OBJ_TYPE_BLK = 0x13,
+
     /** Segment (within a seglist) */
     OBJ_TYPE_SEG = 0x14,
+
     /** Seglist */
     OBJ_TYPE_SGL = 0x15,
+
     /** Sequence iterator */
     OBJ_TYPE_SQI = 0x16,
+
     /** Thread */
     OBJ_TYPE_THR = 0x17,
 } PmType_t, *pPmType_t;
@@ -148,17 +169,17 @@ typedef enum PmType_e
 typedef struct PmObjDesc_s
 {
     /**
-     * object size in bytes
+     * Object size in bytes
      * This is used to get/return heap space,
      * so it must be accurate for the object
      * containing this descriptor.
      */
     uint8_t od_size;
 
-    /** object type */
+    /** Object type */
     PmType_t od_type:5;
 
-    /** garbage collection mark value */
+    /** Garbage collection mark value */
     uint8_t od_gcval:1;
 
     /** Garbage collection free flag */
@@ -166,10 +187,8 @@ typedef struct PmObjDesc_s
 
     /** #100: Remove od_const bit from object descriptor */
     uint8_t od_unused:1;
-
 } PmObjDesc_t,
  *pPmObjDesc_t;
-
 
 /**
  * Object
@@ -178,16 +197,11 @@ typedef struct PmObjDesc_s
  */
 typedef struct PmObj_s
 {
-    /** object descriptor */
+    /** Object descriptor */
     PmObjDesc_t od;
-    /** obj value ;get rid (None doesn't need it) */
 } PmObj_t,
  *pPmObj_t;
 
-
-/***************************************************************
- * Globals
- **************************************************************/
 
 /***************************************************************
  * Prototypes

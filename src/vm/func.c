@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x04
+
 /**
  * Function Object Type
  *
@@ -40,26 +41,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -75,15 +56,16 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
              || OBJ_GET_TYPE(*pco) != OBJ_TYPE_NOB);
     C_ASSERT(OBJ_GET_TYPE(*pglobals) == OBJ_TYPE_DIC);
 
-    /* allocate a func obj */
+    /* Allocate a func obj */
     retval = heap_getChunk(sizeof(PmFunc_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pfunc = (pPmFunc_t)pchunk;
 
-    /* init func */
+    /* Init func */
     OBJ_SET_TYPE(*pfunc, OBJ_TYPE_FXN);
     pfunc->f_co = (pPmCo_t)pco;
-    /* create attrs dict for regular func (not native) */
+
+    /* Create attrs dict for regular func (not native) */
     if (OBJ_GET_TYPE(*pco) == OBJ_TYPE_COB)
     {
         retval = dict_new(&pobj);
@@ -97,12 +79,14 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
     {
         pfunc->f_attrs = C_NULL;
     }
-    /* clear default args (will be set later, if at all) */
+
+    /* Clear default args (will be set later, if at all) */
     pfunc->f_defaultargs = C_NULL;
 
     *r_pfunc = (pPmObj_t)pfunc;
     return PM_RET_OK;
 }
+
 
 /*
  * This function requires that all parameters have their
@@ -119,7 +103,7 @@ class_new(pPmObj_t pmeths,
     uint8_t const *btstr = (uint8_t const *)"__bt";
     uint8_t const *nmstr = (uint8_t const *)"__nm";
 
-    /* ensure types */
+    /* Ensure types */
     if ((OBJ_GET_TYPE(*pmeths) != OBJ_TYPE_DIC) ||
         (OBJ_GET_TYPE(*pbases) != OBJ_TYPE_TUP) ||
         (OBJ_GET_TYPE(*pname) != OBJ_TYPE_STR))
@@ -128,32 +112,26 @@ class_new(pPmObj_t pmeths,
         return retval;
     }
 
-    /* allocate a class obj */
+    /* Allocate a class obj */
     retval = heap_getChunk(sizeof(PmFunc_t), (uint8_t **)r_pclass);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(**r_pclass, OBJ_TYPE_CLO);
-    /* class has no access to its CO */
+
+    /* Class has no access to its CO */
     ((pPmFunc_t)*r_pclass)->f_co = C_NULL;
     ((pPmFunc_t)*r_pclass)->f_attrs = (pPmDict_t)pmeths;
-    /* store base tuple in __bt slot */
+
+    /* Store base tuple in __bt slot */
     retval = string_new(&btstr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem((pPmObj_t)((pPmFunc_t)*r_pclass)->f_attrs,
                           pkey, (pPmObj_t)pbases);
     PM_RETURN_IF_ERROR(retval);
-    /* store the name of the class in the __nm slot */
+
+    /* Store the name of the class in the __nm slot */
     retval = string_new(&nmstr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem((pPmObj_t)((pPmFunc_t)*r_pclass)->f_attrs,
                           pkey, (pPmObj_t)pname);
     return retval;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

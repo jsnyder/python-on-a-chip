@@ -19,6 +19,7 @@
 
 #ifndef __MODULE_H__
 #define __MODULE_H__
+
 /**
  * Module Object Type
  *
@@ -29,32 +30,13 @@
  * 2002/05/04   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
 
 /***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Create a Module Obj for the given Code Obj.
+ * Creates a Module Obj for the given Code Obj.
  *
  * Use a func struct to represent the Module obj because
  * the module's construction code must execute later,
@@ -68,8 +50,8 @@
 PmReturn_t mod_new(pPmObj_t pco, pPmObj_t *pmod);
 
 /**
- * Import a module of the given name.
- * Search for an image with a matching name.
+ * Imports a module of the given name.
+ * Searches for an image with a matching name.
  * A code obj is created for the code image.
  * A module obj is created for the code obj.
  *

@@ -19,6 +19,7 @@
 
 #ifndef __IMG_H__
 #define __IMG_H__
+
 /**
  * Image header
  *
@@ -34,18 +35,6 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
  * Types
  **************************************************************/
 
@@ -59,28 +48,27 @@
  */
 typedef struct PmImgInfo_s
 {
-    /** the image's name as a String obj */
+    /** The image's name as a String obj */
     pPmString_t ii_name;
-    /** the memory space in which the image is located */
+    
+    /** The memory space in which the image is located */
     PmMemSpace_t ii_memspace:8;
-    /** the starting address of the image */
+    
+    /** The starting address of the image */
     uint8_t const *ii_addr;
-    /** ptr to next image ID struct */
+    
+    /** Ptr to next image ID struct */
     struct PmImgInfo_s *next;
 } PmImgInfo_t,
  *pPmImgInfo_t;
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Scan code images in memory.
+ * Scans code images in memory.
  *
  * Find consecutive code images in the given memory space
  * starting at the given address.  Store (name, address)
@@ -93,7 +81,7 @@ typedef struct PmImgInfo_s
 PmReturn_t img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
- * Load a string obj from the names tuple at the given index.
+ * Loads a string obj from the names tuple at the given index.
  *
  * @param   memspace Memory space to use.
  * @param   paddr Ptr to address of names tuple image.
@@ -104,5 +92,4 @@ PmReturn_t img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr);
 PmReturn_t img_getName(PmMemSpace_t memspace,
                        uint8_t const **paddr, uint8_t n, pPmObj_t *r_pname);
 
-
-#endif /* __TEMPLATE_H__ */
+#endif /* __IMG_H__ */

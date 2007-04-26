@@ -19,6 +19,7 @@
 
 #ifndef __DICT_H__
 #define __DICT_H__
+
 /**
  * Dict Object Type
  *
@@ -30,17 +31,6 @@
  * 2002/04/30   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /***************************************************************
  * Types
@@ -68,10 +58,6 @@ typedef struct PmDict_s
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
@@ -85,9 +71,8 @@ typedef struct PmDict_s
  */
 PmReturn_t dict_clear(pPmObj_t pdict);
 
-
 /**
- * Get the value in the dict using the given key.
+ * Gets the value in the dict using the given key.
  *
  * @param   pdict ptr to dict to search
  * @param   pkey ptr to key obj
@@ -96,9 +81,8 @@ PmReturn_t dict_clear(pPmObj_t pdict);
  */
 PmReturn_t dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj);
 
-
 /**
- * Allocate space for a new Dict.
+ * Allocates space for a new Dict.
  * Return a pointer to the dict by reference.
  *
  * @param   r_pdict Return; Addr of ptr to dict
@@ -106,9 +90,8 @@ PmReturn_t dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj);
  */
 PmReturn_t dict_new(pPmObj_t *r_pdict);
 
-
 /**
- * Set a value in the dict using the given key.
+ * Sets a value in the dict using the given key.
  *
  * If the dict already contains a matching key, the value is
  * replaced; otherwise the new key,val pair is inserted
@@ -124,8 +107,8 @@ PmReturn_t dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval);
 
 #ifdef HAVE_PRINT
 /**
- * Print out a dict. Uses obj_print() to print elements.
- * 
+ * Prints out a dict. Uses obj_print() to print elements.
+ *
  * @param pobj Object to print.
  * @return Return status
  */
@@ -140,16 +123,5 @@ PmReturn_t dict_print(pPmObj_t pdict);
  * @return  Return status
  */
 PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
-
-#if 0
-/* TBD */
-pPmObj_t dict_copy(pPmObj_t pdict);
-U8 dict_hasKey(pPmObj_t pdict, pPmObj_t pkey);
-pPmObj_t dict_items(pPmObj_t pdict);    /* list of (keys,vals) */
-pPmObj_t dict_keys(pPmObj_t pdict);
-pPmObj_t dict_popItem(pPmObj_t pdict);
-void dict_setDefault(pPmObj_t pdict, /*HERE*/);
-pPmObj_t dict_values(pPmObj_t pdict);
-#endif
 
 #endif /* __DICT_H__ */

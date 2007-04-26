@@ -19,6 +19,7 @@
 
 #ifndef __LIST_H__
 #define __LIST_H__
+
 /**
  * List Object Type
  *
@@ -33,49 +34,34 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
  * Types
  **************************************************************/
 
 /**
  * List obj
  *
- * Mutable ordered sequence of objects.
- * Contains ptr to linked list of nodes.
+ * Mutable ordered sequence of objects.  Contains ptr to linked list of nodes.
  */
 typedef struct PmList_s
 {
-    /** object descriptor */
+    /** Object descriptor */
     PmObjDesc_t od;
-    /** list length; number of objs linked */
+
+    /** List length; number of objs linked */
     int16_t length;
-    /** ptr to linked list of nodes */
+
+    /** Ptr to linked list of nodes */
     pSeglist_t val;
 } PmList_t,
  *pPmList_t;
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Allocate a new List object.
+ * Allocates a new List object.
  *
  * If there is not enough memory to allocate the List,
  * the return status will indicate an OutOfMemoryError
@@ -89,7 +75,7 @@ typedef struct PmList_s
 PmReturn_t list_new(pPmObj_t *r_pobj);
 
 /**
- * Get the object in the list at the index.
+ * Gets the object in the list at the index.
  *
  * @param   pobj Ptr to list obj
  * @param   index Index into list
@@ -99,7 +85,7 @@ PmReturn_t list_new(pPmObj_t *r_pobj);
 PmReturn_t list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj);
 
 /**
- * Set the item in the list at the index.
+ * Sets the item in the list at the index.
  *
  * @param   pobj1 Ptr to list
  * @param   index Index int
@@ -109,7 +95,7 @@ PmReturn_t list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj);
 PmReturn_t list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 
 /**
- * Make a copy of the given list.
+ * Makes a copy of the given list.
  *
  * Allocate the necessary memory for root and nodes.
  * Duplicate ptrs to objs.
@@ -121,7 +107,7 @@ PmReturn_t list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 PmReturn_t list_copy(pPmObj_t pobj, pPmObj_t *r_pobj);
 
 /**
- * Append the given obj to the end of the given list.
+ * Appends the given obj to the end of the given list.
  *
  * Allocate the memory for the node.
  * Do not copy obj, just reuse ptr.
@@ -133,7 +119,7 @@ PmReturn_t list_copy(pPmObj_t pobj, pPmObj_t *r_pobj);
 PmReturn_t list_append(pPmObj_t plist, pPmObj_t pobj);
 
 /**
- * Create a new list with the contents of psrclist
+ * Creates a new list with the contents of psrclist
  * copied pint number of times.
  * This implements the python code "[0,...] * N"
  * where the list can be any list and N is an integer.
@@ -146,7 +132,7 @@ PmReturn_t list_append(pPmObj_t plist, pPmObj_t pobj);
 PmReturn_t list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist);
 
 /**
- * Insert the object into the list at the desired index.
+ * Inserts the object into the list at the desired index.
  *
  * @param   plist Ptr to list obj
  * @param   pobj Ptr to obj to insert
@@ -156,8 +142,8 @@ PmReturn_t list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist);
 PmReturn_t list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 
 /**
- * Remove a given object from the list.
- * 
+ * Removes a given object from the list.
+ *
  * @param   plist Ptr to list obj
  * @param   item Ptr to object to be removed
  * @return  Return status
@@ -165,9 +151,9 @@ PmReturn_t list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj);
 PmReturn_t list_remove(pPmObj_t plist, pPmObj_t item);
 
 /**
- * Find the first index of the item that matches pitem.
+ * Finds the first index of the item that matches pitem.
  * Returns an ValueError Exception if the item is not found.
- * 
+ *
  * @param   plist Ptr to list obj
  * @param   item Ptr to object to be removed
  * @param   r_index Addr of the variable for index
@@ -177,21 +163,13 @@ PmReturn_t list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index);
 
 #ifdef HAVE_PRINT
 /**
- * Print out a list. Uses obj_print() to print elements.
- * 
+ * Prints out a list. Uses obj_print() to print elements.
+ *
  * @param pobj Object to print.
  * @return Return status
  */
 PmReturn_t list_print(pPmObj_t pobj);
+
 #endif /* HAVE_PRINT */
 
-/* XXX TODO - redo these using pobj / return status */
-#if 0
-S8 list_count(pPmObj_t plist);
-void list_extend(pPmObj_t plista, PmObj_t plistb);
-pPmObj_t list_pop(pPmObj_t plist);
-void
-list_reverse(pPmObj_t plist)
-     void list_sort(pPmObj_t plist)
-#endif
-#endif                          /* __LIST_H__ */
+#endif /* __LIST_H__ */

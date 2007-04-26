@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x08
+
 /**
  * Integer Object Type
  *
@@ -45,26 +46,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -73,11 +54,11 @@ int_dup(pPmObj_t pint, pPmObj_t *r_pint)
 {
     PmReturn_t retval = PM_RET_OK;
 
-    /* allocate new int */
+    /* Allocate new int */
     retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pint);
     PM_RETURN_IF_ERROR(retval);
 
-    /* copy value */
+    /* Copy value */
     OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = ((pPmInt_t)pint)->val;
     return retval;
@@ -89,7 +70,7 @@ int_new(int32_t n, pPmObj_t *r_pint)
 {
     PmReturn_t retval = PM_RET_OK;
 
-    /* if n is 0,1,-1, return global int */
+    /* If n is 0,1,-1, return static int objects from global struct */
     if (n == 0)
     {
         *r_pint = PM_ZERO;
@@ -106,9 +87,7 @@ int_new(int32_t n, pPmObj_t *r_pint)
         return PM_RET_OK;
     }
 
-    /* XXX search for int in pool? */
-
-    /* else create and return new int obj */
+    /* Else create and return new int obj */
     retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pint);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
@@ -122,14 +101,14 @@ int_positive(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
-    /* ensure it's an int */
+    /* Raise TypeError if obj is not an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* create new int obj */
+    /* Create new int obj */
     return int_new(((pPmInt_t)pobj)->val, r_pint);
 }
 
@@ -139,14 +118,14 @@ int_negative(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
-    /* ensure it's an int */
+    /* Raise TypeError if obj is not an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* create new int obj */
+    /* Create new int obj */
     return int_new(-((pPmInt_t)pobj)->val, r_pint);
 }
 
@@ -156,14 +135,14 @@ int_bitInvert(pPmObj_t pobj, pPmObj_t *r_pint)
 {
     PmReturn_t retval;
 
-    /* ensure it's an int */
+    /* Raise TypeError if obj is not an int */
     if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* create new int obj */
+    /* Create new int obj */
     return int_new(~((pPmInt_t)pobj)->val, r_pint);
 }
 
@@ -173,13 +152,13 @@ int_print(pPmObj_t pint)
 {
     /* 2^31-1 has 10 decimal digits, plus sign and zero byte */
     uint8_t tBuffer[10 + 1 + 1];
-    uint8_t bytesWritten,
-      k;
+    uint8_t bytesWritten;
+    uint8_t k;
     PmReturn_t retval = PM_RET_OK;
 
     C_ASSERT(pint != C_NULL);
 
-    /* ensure string obj */
+    /* Raise TypeError if obj is not an int */
     if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -258,12 +237,3 @@ int_printHex(pPmObj_t pint)
     return _int_printHex(((pPmInt_t)pint)->val);
 }
 #endif /* HAVE_PRINT */
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

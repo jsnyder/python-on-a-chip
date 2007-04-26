@@ -19,6 +19,7 @@
 
 #ifndef __FUNC_H__
 #define __FUNC_H__
+
 /**
  * Function Object Type
  *
@@ -30,18 +31,6 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
  * Types
  **************************************************************/
 
@@ -49,39 +38,37 @@
  * Function obj
  *
  * A function is like an instance of a code obj.
- * Contains ptr to its code obj and
- * has its own attributes dict.
+ * Contains ptr to its code obj and has its own attributes dict.
  *
- * The first (__main__) module that is executed
- * has a function obj created for it to execute
- * the bytecode which builds the module.
+ * The first (__main__) module that is executed has a function obj
+ * created for it to execute the bytecode which builds the module.
  */
 typedef struct PmFunc_s
 {
-    /** object descriptor */
+    /** Object descriptor */
     PmObjDesc_t od;
-    /** ptr to code obj */
+
+    /** Ptr to code obj */
     pPmCo_t f_co;
-    /** ptr to attribute dict */
+
+    /** Ptr to attribute dict */
     pPmDict_t f_attrs;
-    /** ptr to globals dict */
+
+    /** Ptr to globals dict */
     pPmDict_t f_globals;
-    /** ptr to tuple holding default args */
+
+    /** Ptr to tuple holding default args */
     pPmTuple_t f_defaultargs;
 } PmFunc_t,
  *pPmFunc_t;
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Create a Function Obj for the given Code Obj.
+ * Creates a Function Obj for the given Code Obj.
  * Allocate space for a Func obj and fill the fields.
  *
  * @param   pco ptr to code obj
@@ -91,7 +78,7 @@ typedef struct PmFunc_s
 PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
 
 /**
- * Create a new Class object from the methods dict, bases tuple,
+ * Creates a new Class object from the methods dict, bases tuple,
  * and name string.
  *
  * @param   pmeths ptr to methods dict.
@@ -103,5 +90,4 @@ PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
 PmReturn_t class_new(pPmObj_t pmeths,
                      pPmObj_t pbases, pPmObj_t pname, pPmObj_t *r_pclass);
 
-
-#endif /* __TEMPLATE_H__ */
+#endif /* __FUNC_H__ */

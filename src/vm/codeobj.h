@@ -19,6 +19,7 @@
 
 #ifndef __CODEOBJ_H__
 #define __CODEOBJ_H__
+
 /**
  * CodeObj Type
  *
@@ -35,14 +36,10 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
  * Constants
  **************************************************************/
 
-/** code image field offset consts */
+/** Code image field offset consts */
 #define CI_TYPE_FIELD       0
 #define CI_SIZE_FIELD       1
 #define CI_ARGCOUNT_FIELD   3
@@ -50,13 +47,9 @@
 #define CI_NLOCALS_FIELD    5
 #define CI_NAMES_FIELD      6
 
-/** native code image size */
+/** Native code image size */
 #define NATIVE_IMAGE_SIZE   4
 
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /***************************************************************
  * Types
@@ -65,10 +58,8 @@
 /**
  * Code Object
  *
- * An extended object that holds only
- * the most frequently used parts
- * of the static code image.
- * Other parts can be obtained by
+ * An extended object that holds only the most frequently used parts
+ * of the static code image.  Other parts can be obtained by
  * inspecting the code image itself.
  */
 typedef struct PmCo_s
@@ -91,10 +82,8 @@ typedef struct PmCo_s
 /**
  * Native Code Object
  *
- * An extended object that holds only
- * the most frequently used parts
- * of the static native image.
- * Other parts can be obtained by
+ * An extended object that holds only the most frequently used parts
+ * of the static native image.  Other parts can be obtained by
  * inspecting the native image itself.
  */
 typedef struct PmNo_s
@@ -110,15 +99,11 @@ typedef struct PmNo_s
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Create a CodeObj by loading info from a code image in memory.
+ * Creates a CodeObj by loading info from a code image in memory.
  *
  * An image is a static representation of a Python object.
  * The process of converting an object to and from an image
@@ -161,7 +146,7 @@ PmReturn_t
 co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco);
 
 /**
- * Create a Native code object by loading a native image.
+ * Creates a Native code object by loading a native image.
  *
  * An image is a static representation of a Python object.
  * A native image is much smaller than a regular image
@@ -190,6 +175,5 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco);
  */
 PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
                           uint8_t const **paddr, pPmObj_t *r_pno);
-
 
 #endif /* __CODEOBJ_H__ */

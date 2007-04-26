@@ -19,6 +19,7 @@
 
 #ifndef __PM_H__
 #define __PM_H__
+
 /**
  * PyMite Header
  *
@@ -55,23 +56,21 @@
  * It helps locate a defect when used in conjunction with a fileID
  * and line number.
  */
-#define PM_RELEASE  4
+#define PM_RELEASE 4
 
 
 /***************************************************************
  * Constants
  **************************************************************/
 
-/* System global defs */
-
 /** null for C code */
-#define C_NULL          0
+#define C_NULL 0
 
 /** false for C code */
-#define C_FALSE         0
+#define C_FALSE 0
 
 /** true for C code */
-#define C_TRUE          (!C_FALSE)
+#define C_TRUE (!C_FALSE)
 
 /** Comparison result is that items are the same */
 #define C_SAME (int8_t)0
@@ -80,7 +79,7 @@
 #define C_DIFFER (int8_t)-1
 
 /** PORT inline for C code */
-#define INLINE          __inline__
+#define INLINE __inline__
 
 
 /***************************************************************
@@ -133,9 +132,6 @@
 #define C_ASSERT(boolexpr)
 #endif
 
-/***************************************************************
- * Enums
- **************************************************************/
 
 /***************************************************************
  * Types
@@ -151,36 +147,36 @@
 typedef enum PmReturn_e
 {
     /* general status return values */
-    PM_RET_OK = 0,              /**< everything is ok */
-    PM_RET_NO = 0xFF,           /**< general "no result" */
-    PM_RET_ERR = 0xFE,          /**< general failure */
-    PM_RET_STUB = 0xFD,         /**< return val for stub fxn */
-    PM_RET_ASSERT_FAIL = 0xFC,  /**< assertion failure */
-    PM_RET_FRAME_SWITCH = 0xFD, /**< frame pointer was modified */
+    PM_RET_OK = 0,              /**< Everything is ok */
+    PM_RET_NO = 0xFF,           /**< General "no result" */
+    PM_RET_ERR = 0xFE,          /**< General failure */
+    PM_RET_STUB = 0xFD,         /**< Return val for stub fxn */
+    PM_RET_ASSERT_FAIL = 0xFC,  /**< Assertion failure */
+    PM_RET_FRAME_SWITCH = 0xFD, /**< Frame pointer was modified */
 
     /* return vals that indicate an exception occured */
-    PM_RET_EX = 0xE0,           /**< general exception */
-    PM_RET_EX_EXIT = 0xE1,      /**< system exit */
+    PM_RET_EX = 0xE0,           /**< General exception */
+    PM_RET_EX_EXIT = 0xE1,      /**< System exit */
     PM_RET_EX_IO = 0xE2,        /**< Input/output error */
-    PM_RET_EX_ZDIV = 0xE3,      /**< zero division error */
-    PM_RET_EX_ASSRT = 0xE4,     /**< assertion error */
-    PM_RET_EX_ATTR = 0xE5,      /**< attribute error */
-    PM_RET_EX_IMPRT = 0xE6,     /**< import error */
-    PM_RET_EX_INDX = 0xE7,      /**< index error */
-    PM_RET_EX_KEY = 0xE8,       /**< key error */
-    PM_RET_EX_MEM = 0xE9,       /**< memory error */
-    PM_RET_EX_NAME = 0xEA,      /**< name error */
-    PM_RET_EX_SYNTAX = 0xEB,    /**< syntax error */
-    PM_RET_EX_SYS = 0xEC,       /**< system error */
-    PM_RET_EX_TYPE = 0xED,      /**< type error */
-    PM_RET_EX_VAL = 0xEE,       /**< value error */
-    PM_RET_EX_STOP = 0xEF,      /**< stop iteration */
-    PM_RET_EX_WARN = 0xF0,      /**< warning */
+    PM_RET_EX_ZDIV = 0xE3,      /**< Zero division error */
+    PM_RET_EX_ASSRT = 0xE4,     /**< Assertion error */
+    PM_RET_EX_ATTR = 0xE5,      /**< Attribute error */
+    PM_RET_EX_IMPRT = 0xE6,     /**< Import error */
+    PM_RET_EX_INDX = 0xE7,      /**< Index error */
+    PM_RET_EX_KEY = 0xE8,       /**< Key error */
+    PM_RET_EX_MEM = 0xE9,       /**< Memory error */
+    PM_RET_EX_NAME = 0xEA,      /**< Name error */
+    PM_RET_EX_SYNTAX = 0xEB,    /**< Syntax error */
+    PM_RET_EX_SYS = 0xEC,       /**< System error */
+    PM_RET_EX_TYPE = 0xED,      /**< Type error */
+    PM_RET_EX_VAL = 0xEE,       /**< Value error */
+    PM_RET_EX_STOP = 0xEF,      /**< Stop iteration */
+    PM_RET_EX_WARN = 0xF0,      /**< Warning */
 } PmReturn_t;
 
 
 /***************************************************************
- * Global Declarations
+ * Globals
  **************************************************************/
 
 extern volatile uint32_t pm_timerMsTicks;
@@ -214,7 +210,7 @@ extern volatile uint32_t pm_timerMsTicks;
 
 
 /***************************************************************
- * Function Protos
+ * Prototypes
  **************************************************************/
 
 /**
@@ -237,7 +233,7 @@ PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
 PmReturn_t pm_run(uint8_t const *modstr);
 
 /**
- * Needs to be called periodically by a platform specific means.
+ * Needs to be called periodically by the host program.
  * For the desktop target, it is periodically called using a signal.
  * For embedded targets, it needs to be called periodically. It should
  * be called from a timer interrupt.

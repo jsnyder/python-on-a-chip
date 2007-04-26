@@ -80,7 +80,7 @@
  * implemented in sli.c
  */
 
-/* XXX not just string.h, but stdio.h */
+/* TODO #106: not just string.h, but stdio.h */
 #if HAVE_STRING_H
 #include <string.h>
 #define sli_memcmp(p, q, n)     memcmp((p), (q), (n))
@@ -98,7 +98,7 @@
  * @param   to the destination address.
  * @param   from the source address.
  * @param   n the number of bytes to copy.
- * @return  The initial value of "to" (XXX what else?).
+ * @return  The initial pointer value of the destination
  * @see     mem_copy
  */
 void *sli_memcpy(unsigned char *, const unsigned char *, unsigned int);

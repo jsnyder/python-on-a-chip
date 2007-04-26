@@ -377,7 +377,8 @@ def map(f, s):
             return retval;
     }
 
-    /* XXX: Do a dummy map, fill func with Nones */
+    /* TODO #113: Fix the implementation of __bi.map */
+    /* Do a dummy map, fill func with Nones */
     retval = list_new(&pr);
     PM_RETURN_IF_ERROR(retval);
 

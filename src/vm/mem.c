@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x0D
+
 /**
  * VM Memory
  *
@@ -45,33 +46,13 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
 uint16_t
 mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr)
 {
-    /* PyMite is little endian; get lo byte first */
+    /* PyMite is little endian; get low byte first */
     uint8_t blo = mem_getByte(memspace, paddr);
     uint8_t bhi = mem_getByte(memspace, paddr);
 
@@ -94,8 +75,7 @@ void
 mem_copy(PmMemSpace_t memspace,
          uint8_t **pdest, uint8_t const **psrc, uint16_t count)
 {
-
-    /* copy memory from RAM */
+    /* Copy memory from RAM */
     if (memspace == MEMSPACE_RAM)
     {
         sli_memcpy(*pdest, *psrc, count);
@@ -104,7 +84,7 @@ mem_copy(PmMemSpace_t memspace,
         return;
     }
 
-    /* copy memory from non-RAM to RAM */
+    /* Copy memory from non-RAM to RAM */
     else
     {
         uint8_t b;
@@ -125,21 +105,14 @@ mem_getStringLength(PmMemSpace_t memspace, uint8_t const * const pstr)
 {
     uint8_t const *psrc;
 
+    /* If source is in RAM, use a possibly optimized strlen */
     if (memspace == MEMSPACE_RAM)
     {
         return sli_strlen((char const *)pstr);
     }
 
+    /* Otherwise calculate string length */
     psrc = pstr;
     while (mem_getByte(memspace, &psrc) != (uint8_t)0);
     return psrc - pstr - 1;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

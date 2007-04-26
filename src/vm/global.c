@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x05
+
 /**
  * VM Globals
  *
@@ -49,13 +50,6 @@
 
 uint8_t const *global_bistr = (uint8_t const *)"__bi";
 
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /***************************************************************
  * Globals
@@ -76,28 +70,28 @@ global_init(void)
     uint8_t *codestr = (uint8_t *)"code";
     pPmObj_t pobj;
 
-    /* clear the global struct */
+    /* Clear the global struct */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
 
-    /* set the PyMite release num (for debug and post mortem) */
+    /* Set the PyMite release num (for debug and post mortem) */
     gVmGlobal.errVmRelease = PM_RELEASE;
 
-    /* init zero */
+    /* Init zero */
     OBJ_SET_TYPE(gVmGlobal.zero, OBJ_TYPE_INT);
     OBJ_SET_SIZE(gVmGlobal.zero, sizeof(PmInt_t));
     gVmGlobal.zero.val = (int32_t)0;
 
-    /* init one */
+    /* Init one */
     OBJ_SET_TYPE(gVmGlobal.one, OBJ_TYPE_INT);
     OBJ_SET_SIZE(gVmGlobal.one, sizeof(PmInt_t));
     gVmGlobal.one.val = (int32_t)1;
 
-    /* init negone */
+    /* Init negone */
     OBJ_SET_TYPE(gVmGlobal.negone, OBJ_TYPE_INT);
     OBJ_SET_SIZE(gVmGlobal.negone, sizeof(PmInt_t));
     gVmGlobal.negone.val = (int32_t)-1;
 
-    /* init None */
+    /* Init None */
     OBJ_SET_TYPE(gVmGlobal.none, OBJ_TYPE_NON);
     OBJ_SET_SIZE(gVmGlobal.none, sizeof(PmObj_t));
 
@@ -105,16 +99,16 @@ global_init(void)
     retval = string_new((uint8_t const **)&codestr, &pobj);
     gVmGlobal.pcodeStr = (pPmString_t)pobj;
 
-    /* init empty builtins */
+    /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;
 
-    /* empty img info list */
+    /* Empty img info list */
     gVmGlobal.pimglist = C_NULL;
 
-    /* clear ptrs */
+    /* Clear ptrs */
     /*FP = C_NULL; *//* fp is local to interp, until thread struct is made */
 
-    /* create empty threadList */
+    /* Create empty threadList */
     list_new((pPmObj_t *)&(gVmGlobal.threadList));
 
     return retval;
@@ -128,12 +122,14 @@ global_setBuiltins(pPmFunc_t pmod)
 
     if (PM_PBUILTINS == C_NULL)
     {
-        /* need to load builtins first */
+        /* Need to load builtins first */
         global_loadBuiltins();
     }
-    /* put builtins module in the module's attrs dict */
+
+    /* Put builtins module in the module's attrs dict */
     retval = string_new(&global_bistr, &pkey);
     PM_RETURN_IF_ERROR(retval);
+
     return dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
 }
 
@@ -147,28 +143,28 @@ global_loadBuiltins(void)
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
 
-    /* import the builtins */
+    /* Import the builtins */
     retval = string_new(&global_bistr, &pstr);
     PM_RETURN_IF_ERROR(retval);
     retval = mod_import(pstr, &pbimod);
     PM_RETURN_IF_ERROR(retval);
 
-    /* must interpret builtins' root code to set the attrs */
+    /* Must interpret builtins' root code to set the attrs */
     C_ASSERT(gVmGlobal.threadList->length == 0);
     interp_addThread((pPmFunc_t)pbimod);
     retval = interpret(INTERP_RETURN_ON_NO_THREADS);
     PM_RETURN_IF_ERROR(retval);
 
-    /* builtins points to the builtins module's attrs dict */
+    /* Builtins points to the builtins module's attrs dict */
     gVmGlobal.builtins = ((pPmFunc_t)pbimod)->f_attrs;
 
-    /* set None manually */
+    /* Set None manually */
     retval = string_new(&nonestr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem(PM_PBUILTINS, pkey, PM_NONE);
     PM_RETURN_IF_ERROR(retval);
 
-    /* deallocate builtins module */
+    /* Deallocate builtins module */
     retval = heap_freeChunk((pPmObj_t)pbimod);
 
     return retval;

@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x13
+
 /**
  * Tuple Object Type
  *
@@ -49,22 +50,6 @@
 
 
 /***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -76,14 +61,14 @@ tuple_loadFromImg(PmMemSpace_t memspace,
     uint8_t i = (uint8_t)0;
     uint8_t n = (uint8_t)0;
 
-    /* get num objs in tuple */
+    /* Get num objs in tuple */
     n = mem_getByte(memspace, paddr);
 
-    /* create empty tuple */
+    /* Create empty tuple */
     retval = tuple_new(n, r_ptuple);
     PM_RETURN_IF_ERROR(retval);
 
-    /* load the next n objs into tuple */
+    /* Load the next n objs into tuple */
     for (i = (uint8_t)0; i < n; i++)
     {
         retval = obj_loadFromImg(memspace,
@@ -109,19 +94,18 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
         return retval;
     }
 
-    /* calc size of struct to hold tuple */
+    /* Calc size of struct to hold tuple */
     size = sizeof(PmTuple_t) + (n * sizeof(pPmObj_t));
 
-    /* allocate a tuple */
+    /* Allocate a tuple */
     retval = heap_getChunk(size, (uint8_t **)r_ptuple);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(**r_ptuple, OBJ_TYPE_TUP);
-    /* set the number of objs in the tuple */
+
+    /* Set the number of objs in the tuple */
     ((pPmTuple_t)*r_ptuple)->length = n;
-    /*
-     * no need to null the ptrs
-     * because tuple is filled this
-     */
+
+    /* No need to null the ptrs because they are set by the caller */
     return retval;
 }
 
@@ -135,14 +119,14 @@ tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple)
     uint8_t *pdest;
     uint8_t const *psrc;
 
-    /* ensure type */
+    /* Raise TypeError if object is not a Tuple */
     if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
     {
         PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
-    /* duplicate src tuple */
+    /* Duplicate src tuple */
     retval = heap_getChunk(OBJ_GET_SIZE(*ptup), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmTuple_t)pchunk;
@@ -178,6 +162,7 @@ tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj)
     return retval;
 }
 
+
 #ifdef HAVE_PRINT
 PmReturn_t
 tuple_print(pPmObj_t ptup)
@@ -187,7 +172,7 @@ tuple_print(pPmObj_t ptup)
 
     C_ASSERT(ptup != C_NULL);
 
-    /* if it's not a tuple, raise TypeError */
+    /* If it's not a tuple, raise TypeError */
     if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -210,11 +195,3 @@ tuple_print(pPmObj_t ptup)
     return plat_putByte(')');
 }
 #endif /* HAVE_PRINT */
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

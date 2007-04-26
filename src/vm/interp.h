@@ -19,6 +19,7 @@
 
 #ifndef __INTERP_H__
 #define __INTERP_H__
+
 /**
  * VM Interpreter
  *
@@ -32,11 +33,13 @@
  * 2002/05/04   First.
  */
 
+
 /***************************************************************
  * Includes
  **************************************************************/
 
 #include "thread.h"
+
 
 /***************************************************************
  * Constants
@@ -44,6 +47,7 @@
 
 #define INTERP_LOOP_FOREVER          0
 #define INTERP_RETURN_ON_NO_THREADS  1
+
 
 /***************************************************************
  * Macros
@@ -309,15 +313,11 @@ typedef enum PmBcode_e
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Interpret the available threads. Does not return.
+ * Interprets the available threads. Does not return.
  *
  * @param returnOnNoThreads Loop forever if 0, exit with status if no more
  *                          threads left.
@@ -347,7 +347,8 @@ PmReturn_t interp_reschedule(void);
 PmReturn_t interp_addThread(pPmFunc_t pfunc);
 
 /**
- * Set reschedule flag.
+ * Sets the  reschedule flag.
+ *
  * @param boolean Reschedule on next occasion if boolean is true; clear
  *                the flag otherwise.
  */

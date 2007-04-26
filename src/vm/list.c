@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x0B
+
 /**
  * List Object Type
  *
@@ -43,26 +44,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -74,18 +55,18 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
     C_ASSERT(plist != C_NULL);
     C_ASSERT(pobj != C_NULL);
 
-    /* if plist is not a list, raise a TypeError exception */
+    /* If plist is not a list, raise a TypeError exception */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* append object to list */
+    /* Append object to list */
     retval = seglist_appendItem(((pPmList_t)plist)->val, pobj);
     PM_RETURN_IF_ERROR(retval);
 
-    /* incr list length */
+    /* Increment list length */
     ((pPmList_t)plist)->length++;
 
     return retval;
@@ -117,7 +98,7 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
         return retval;
     }
 
-    /* get item from seglist */
+    /* Get item from seglist */
     retval = seglist_getItem(((pPmList_t)plist)->val, index, r_pobj);
     return retval;
 }
@@ -158,7 +139,7 @@ list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj)
     retval = seglist_insertItem(((pPmList_t)plist)->val, pobj, index);
     PM_RETURN_IF_ERROR(retval);
 
-    /* Increment the length of this list */
+    /* Increment list length */
     ((pPmList_t)plist)->length++;
     return retval;
 }
@@ -170,15 +151,16 @@ list_new(pPmObj_t *r_pobj)
     PmReturn_t retval = PM_RET_OK;
     pPmList_t plist = C_NULL;
 
-    /* allocate a list */
+    /* Allocate a list */
     retval = heap_getChunk(sizeof(PmList_t), (uint8_t **)r_pobj);
     PM_RETURN_IF_ERROR(retval);
 
-    /* set list type, empty the contents */
+    /* Set list type, empty the contents */
     plist = (pPmList_t)*r_pobj;
     OBJ_SET_TYPE(*plist, OBJ_TYPE_LST);
     plist->length = 0;
-    /* create empty seglist */
+
+    /* Create empty seglist */
     retval = seglist_new(&plist->val);
     return retval;
 }
@@ -211,14 +193,14 @@ list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
     }
     length = ((pPmList_t)psrclist)->length;
 
-    /* allocate new list */
+    /* Allocate new list */
     retval = list_new(r_pnewlist);
     PM_RETURN_IF_ERROR(retval);
 
-    /* copy srclist the designated number of times */
+    /* Copy srclist the designated number of times */
     for (i = n; i > 0; i--)
     {
-        /* iterate over the length of srclist */
+        /* Iterate over the length of srclist */
         for (j = 0; j < length; j++)
         {
             retval = list_getItem(psrclist, j, &pitem);
@@ -261,6 +243,7 @@ list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj)
     return retval;
 }
 
+
 PmReturn_t
 list_remove(pPmObj_t plist, pPmObj_t item)
 {
@@ -274,14 +257,17 @@ list_remove(pPmObj_t plist, pPmObj_t item)
         return retval;
     }
 
+    /* Locate the item to remove */
     retval = list_index(plist, item, &index);
     PM_RETURN_IF_ERROR(retval);
 
+    /* Remove the item and decrement the list length */
     retval = seglist_removeItem(((pPmList_t)plist)->val, index);
     ((pPmList_t)plist)->length--;
     return retval;
 
 }
+
 
 PmReturn_t
 list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
@@ -300,10 +286,13 @@ list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
 
     pseglist = ((pPmList_t)plist)->val;
 
+    /* Iterate over the list's contents */
     for (index = 0; index < pseglist->sl_length; index++)
     {
         retval = seglist_getItem(pseglist, index, &pobj);
         PM_RETURN_IF_ERROR(retval);
+
+        /* If the list item matches the given item, return the index */
         if (obj_compare(pobj, pitem) == C_SAME)
         {
             *r_index = index;
@@ -313,6 +302,7 @@ list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
 
     return PM_RET_EX_VAL;
 }
+
 
 #ifdef HAVE_PRINT
 PmReturn_t
@@ -325,7 +315,7 @@ list_print(pPmObj_t plist)
 
     C_ASSERT(plist != C_NULL);
 
-    /* if it's not a list, raise TypeError */
+    /* If it's not a list, raise TypeError */
     if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -336,7 +326,7 @@ list_print(pPmObj_t plist)
 
     vals = ((pPmList_t)plist)->val;
 
-    /* if dict is empty, raise KeyError */
+    /* Iterate over the list's contents */
     for (index = 0; index < ((pPmList_t)plist)->length; index++)
     {
         if (index != 0)
@@ -344,6 +334,8 @@ list_print(pPmObj_t plist)
             plat_putByte(',');
             plat_putByte(' ');
         }
+
+        /* Print each item */
         retval = seglist_getItem(vals, index, &pobj1);
         PM_RETURN_IF_ERROR(retval);
         retval = obj_print(pobj1, 1);
@@ -353,12 +345,3 @@ list_print(pPmObj_t plist)
     return plat_putByte(']');
 }
 #endif /* HAVE_PRINT */
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

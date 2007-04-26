@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x0F
+
 /**
  * Object Type
  *
@@ -44,26 +45,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -74,14 +55,13 @@ obj_loadFromImg(PmMemSpace_t memspace,
     PmReturn_t retval = PM_RET_OK;
     PmObjDesc_t od;
 
-    /* get the object descriptor */
+    /* Get the object descriptor */
     od.od_type = (PmType_t)mem_getByte(memspace, paddr);
 
     switch (od.od_type)
     {
-            /* if it's the None object, return global None */
         case OBJ_TYPE_NON:
-            /* make sure *paddr gets incremented */
+            /* If it's the None object, return global None */
             *r_pobj = PM_NONE;
             break;
 
@@ -98,18 +78,18 @@ obj_loadFromImg(PmMemSpace_t memspace,
             retval = tuple_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-            /* if it's a native code img, load into a code obj */
         case OBJ_TYPE_NIM:
+            /* If it's a native code img, load into a code obj */
             retval = no_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-            /* if it's a code img, load into a code obj */
         case OBJ_TYPE_CIM:
+            /* If it's a code img, load into a code obj */
             retval = co_loadFromImg(memspace, paddr, r_pobj);
             break;
 
-            /* All other types should not be in an img obj */
         default:
+            /* All other types should not be in an img obj */
             PM_RAISE(retval, PM_RET_EX_SYS);
             break;
     }
@@ -123,38 +103,37 @@ obj_isFalse(pPmObj_t pobj)
 {
     C_ASSERT(pobj != C_NULL);
 
-    /* return true if it's None */
     switch (OBJ_GET_TYPE(*pobj))
     {
-            /* None evaluates to false */
         case OBJ_TYPE_NON:
+            /* None evaluates to false */
             return C_FALSE;
 
-            /* Only the integer zero is false */
         case OBJ_TYPE_INT:
+            /* Only the integer zero is false */
             return ((pPmInt_t)pobj)->val == 0;
 
-            /* An empty string is false */
         case OBJ_TYPE_STR:
+            /* An empty string is false */
             return ((pPmString_t)pobj)->length == 0;
 
-            /* An empty tuple is false */
         case OBJ_TYPE_TUP:
+            /* An empty tuple is false */
             return ((pPmTuple_t)pobj)->length == 0;
 
-            /* An empty list is false */
         case OBJ_TYPE_LST:
+            /* An empty list is false */
             return ((pPmList_t)pobj)->length == 0;
 
-            /* An empty dict is false */
         case OBJ_TYPE_DIC:
+            /* An empty dict is false */
             return ((pPmDict_t)pobj)->length == 0;
 
+        default:
             /*
              * The following types are always not false:
              * CodeObj, Function, Module, Class, ClassInstance.
              */
-        default:
             return C_FALSE;
     }
 }
@@ -200,7 +179,7 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
                 break;
             }
 
-            /* Raise a ValueError exception if the string is more than 1 char */
+            /* Raise a ValueError if the string is more than 1 char */
             else if (((pPmString_t)pitem)->length != 1)
             {
                 retval = PM_RET_EX_VAL;
@@ -257,19 +236,19 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     C_ASSERT(pobj1 != C_NULL);
     C_ASSERT(pobj2 != C_NULL);
 
-    /* check if pointers are same */
+    /* Check if pointers are same */
     if (pobj1 == pobj2)
     {
         return C_SAME;
     }
 
-    /* if types are different, objs must differ */
+    /* If types are different, objs must differ */
     if (OBJ_GET_TYPE(*pobj1) != OBJ_GET_TYPE(*pobj2))
     {
         return C_DIFFER;
     }
 
-    /* else handle types individually */
+    /* Otherwise handle types individually */
     switch (OBJ_GET_TYPE(*pobj1))
     {
         case OBJ_TYPE_NON:
@@ -289,11 +268,11 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 
         case OBJ_TYPE_DIC:
         default:
-            /* XXX fix these */
+            /* #17: PyMite does not support Dict comparisons (yet) */
             return C_DIFFER;
     }
 
-    /* all other types would need same pointer to be true */
+    /* All other types would need same pointer to be true */
     return C_DIFFER;
 }
 
@@ -404,12 +383,3 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
     return retval;
 }
 #endif /* HAVE_PRINT */
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

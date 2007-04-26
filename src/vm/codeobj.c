@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x01
+
 /**
  * CodeObj Type
  *
@@ -42,26 +43,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -73,37 +54,37 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pPmCo_t pco = C_NULL;
     uint8_t *pchunk;
 
-    /* store ptr to top of code img (less type byte) */
+    /* Store ptr to top of code img (less type byte) */
     uint8_t const *pci = *paddr - 1;
 
-    /* get size of code img */
+    /* Get size of code img */
     uint16_t size = mem_getWord(memspace, paddr);
 
-    /* allocate a code obj */
+    /* Allocate a code obj */
     retval = heap_getChunk(sizeof(PmCo_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pco = (pPmCo_t)pchunk;
 
-    /* fill in the CO struct */
+    /* Fill in the CO struct */
     OBJ_SET_TYPE(*pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
 
-    /* load names (tuple obj) */
+    /* Load names (tuple obj) */
     *paddr = pci + CI_NAMES_FIELD;
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco->co_names = (pPmTuple_t)pobj;
 
-    /* load consts (tuple obj) assume it follows names */
+    /* Load consts (tuple obj) assume it follows names */
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco->co_consts = (pPmTuple_t)pobj;
 
-    /* start of bcode always follows consts */
+    /* Start of bcode always follows consts */
     pco->co_codeaddr = *paddr;
 
-    /* set addr to point one past end of img */
+    /* Set addr to point one past end of img */
     *paddr = pci + size;
 
     *r_pco = (pPmObj_t)pco;
@@ -118,15 +99,16 @@ no_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pno)
     pPmNo_t pno = C_NULL;
     uint8_t *pchunk;
 
-    /* allocate a code obj */
+    /* Allocate a code obj */
     retval = heap_getChunk(sizeof(PmNo_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pno = (pPmNo_t)pchunk;
 
-    /* fill in the NO struct */
+    /* Fill in the NO struct */
     OBJ_SET_TYPE(*pno, OBJ_TYPE_NOB);
     pno->no_argcount = mem_getByte(memspace, paddr);
-    /* get index into native fxn table */
+
+    /* Get index into native fxn table */
     pno->no_funcindx = (int16_t)mem_getWord(memspace, paddr);
 
     *r_pno = (pPmObj_t)pno;

@@ -19,6 +19,7 @@
 
 #ifndef __MEM_H__
 #define __MEM_H__
+
 /**
  * VM Memory
  *
@@ -33,17 +34,6 @@
  * 2002/04/21   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /***************************************************************
  * Types
@@ -68,10 +58,6 @@ typedef enum PmMemSpace_e
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
@@ -89,7 +75,7 @@ typedef enum PmMemSpace_e
 #define mem_getByte(memspace, paddr) plat_memGetByte((memspace), (paddr))
 
 /**
- * Return the 2-byte word at the given address in memspace.
+ * Returns the 2-byte word at the given address in memspace.
  *
  * Word obtained in LITTLE ENDIAN order (per Python convention).
  * afterward, addr points one byte past the word.
@@ -102,7 +88,7 @@ typedef enum PmMemSpace_e
 INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
- * Return the 4-byte int at the given address in memspace.
+ * Returns the 4-byte int at the given address in memspace.
  *
  * Int obtained in LITTLE ENDIAN order (per Python convention).
  * afterward, addr points one byte past the int.
@@ -115,9 +101,8 @@ INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
 INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
- * Copy count number of bytes
- * from src in memspace to dest in RAM.
- * Leave dest and src pointing one byte past end of the data.
+ * Copies count number of bytes from src in memspace to dest in RAM.
+ * Leaves dest and src pointing one byte past end of the data.
  *
  * @param   memspace memory space/type of source
  * @param   pdest ptr to destination address

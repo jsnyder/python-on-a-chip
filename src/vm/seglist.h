@@ -19,6 +19,7 @@
 
 #ifndef __SEGLIST_H__
 #define __SEGLIST_H__
+
 /**
  * Segmented List data structure
  *
@@ -44,20 +45,12 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
  * Constants
  **************************************************************/
 
 /** Defines the length of the object array in a segment */
 #define SEGLIST_OBJS_PER_SEG 8
 
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /***************************************************************
  * Types
@@ -92,15 +85,11 @@ typedef struct Seglist_s
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Put the new object at the end of the list.
+ * Puts the new object at the end of the list.
  * This is intended for the List type where
  * the List index matches the order of the Seglist index.
  * Make room if necessary by adding new segments.
@@ -111,16 +100,12 @@ typedef struct Seglist_s
  */
 PmReturn_t seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);
 
-
 /**
- * Clear the the seglist by unlinking the root segment.
- * OPTION:  if SEGLIST_CLEAR_SEGMENTS is 1,
- *          deallocate each segment (could let GC get it)
+ * Clears the the seglist by unlinking the root segment.
  *
  * @param pseglist Ptr to seglist to empty
  */
 PmReturn_t seglist_clear(pSeglist_t pseglist);
-
 
 /**
  * Finds the first obj equal to pobj in the seglist.
@@ -137,9 +122,8 @@ PmReturn_t seglist_clear(pSeglist_t pseglist);
 PmReturn_t seglist_findEqual(pSeglist_t pseglist,
                              pPmObj_t pobj, int16_t *r_index);
 
-
 /**
- * Get the item in the seglist at the given coordinates.
+ * Gets the item in the seglist at the given coordinates.
  * The segment number and the index within the segment
  * are the coordinates of the object to get.
  *
@@ -152,9 +136,8 @@ PmReturn_t seglist_findEqual(pSeglist_t pseglist,
 PmReturn_t seglist_getItem(pSeglist_t pseglist,
                            int16_t index, pPmObj_t *r_pobj);
 
-
 /**
- * Allocate a new empty seglist
+ * Allocates a new empty seglist
  *
  * @param   r_pseglist return; Address of ptr to new seglist
  * @return  Return status
@@ -163,8 +146,7 @@ PmReturn_t seglist_new(pSeglist_t *r_pseglist);
 
 
 /**
- * Put the item in the next available slot in the first
- * available segment.
+ * Puts the item in the next available slot in the first available segment.
  * This is intended for the Dict type where
  * the Seglist index is insignificant.
  * Pushing an object assures it will be found early
@@ -180,7 +162,7 @@ PmReturn_t seglist_insertItem(pSeglist_t pseglist,
                               pPmObj_t pobj, int16_t index);
 
 /**
- * Put the item in the designated slot and segment.
+ * Puts the item in the designated slot and segment.
  * This is intended to be used after seglist_findEqual()
  * returns the proper indeces.
  *
@@ -193,7 +175,7 @@ PmReturn_t seglist_insertItem(pSeglist_t pseglist,
 PmReturn_t seglist_setItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index);
 
 /**
- * Remove the item at the given index.
+ * Removes the item at the given index.
  *
  * @param   pseglist Ptr to seglist in which object is removed.
  * @param   index Index into seglist of where to put object.

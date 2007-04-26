@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x15
+
 /**
  * PyMite User API
  *
@@ -109,7 +110,8 @@ pm_run(uint8_t const *modstr)
 PmReturn_t
 pm_vmPeriodic(uint16_t usecsSinceLastCall)
 {
-    /* Add the full milliseconds to pm_timerMsTicks and store additional
+    /*
+     * Add the full milliseconds to pm_timerMsTicks and store additional
      * microseconds for the next run. Thus, usecsSinceLastCall must be
      * less than 2^16-1000 so it will not overflow usecResidual.
      */
@@ -124,7 +126,7 @@ pm_vmPeriodic(uint16_t usecsSinceLastCall)
         pm_timerMsTicks++;
     }
 
-    /* check if enough time has passed for a scheduler run */
+    /* Check if enough time has passed for a scheduler run */
     if ((pm_timerMsTicks - pm_lastRescheduleTimestamp)
         >= PM_THREAD_TIMESLICE_MS)
     {

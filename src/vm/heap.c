@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x06
+
 /**
  * VM Heap
  *
@@ -77,10 +78,6 @@
 
 
 /***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
  * Types
  **************************************************************/
 
@@ -111,10 +108,6 @@ typedef struct PmHeap_s
 /** The PyMite heap */
 static PmHeap_t pmHeap;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /***************************************************************
  * Functions
@@ -173,7 +166,10 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         /* Move the cleanheap remnant to the freelist if it is small enough */
         if (pmHeap.cleanheapavail <= HEAP_MAX_CHUNK_SIZE)
         {
-            /* TODO */
+            /*
+             * TODO: this is optional since cleanheap will be whittled away
+             * to a size the prevents the containing "if" to never be true
+             */
         }
 
         return PM_RET_OK;

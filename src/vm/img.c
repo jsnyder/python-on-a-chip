@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x07
+
 /**
  * Image routines
  *
@@ -41,31 +42,11 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
 /*
- * An image identified by its first byte, the type OBJ_TYPE_CIM.
+ * An image is identified by its first byte, the type OBJ_TYPE_CIM.
  * If the given address does not point to a byte with the
  * same value as OBJ_TYPE_CIM, the starting address is bogus
  * and the function returns.
@@ -84,9 +65,8 @@
  * no longer identifies a code image, or some other error
  * occurs.
  *
- * XXX Images with same module name will be blindly inserted
- * into list.  Need to support calling import twice on an obj
- * without filling memory.
+ * WARNING: Images with the same module name will be blindly inserted
+ * into the image list, but only the first image found will be used.
  */
 PmReturn_t
 img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr)
@@ -100,52 +80,60 @@ img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr)
     pPmObj_t pnamestr = C_NULL;
     uint8_t *pchunk;
 
-    /* addr is top of img */
+    /* Addr is top of img */
     imgtop = *paddr;
-    /* get img's type byte */
+
+    /* Get img's type byte */
     type = (PmType_t)mem_getByte(memspace, paddr);
 
-    /* get all sequential images */
+    /* Get all sequential images */
     while (type == OBJ_TYPE_CIM)
     {
-        /* use size field to calc addr of next potential img */
+        /* Use size field to calc addr of next potential img */
         size = mem_getWord(memspace, paddr);
 
-        /* get name of img */
-        /* point to names tuple */
+        /* Get name of img */
+        /* Point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
-        /* ensure it's a tuple */
+
+        /* Ensure it's a tuple */
         type = mem_getByte(memspace, paddr);
         if (type != OBJ_TYPE_TUP)
         {
             PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
         }
-        /* get index of last obj in tuple */
+
+        /* Get index of last obj in tuple */
         n = mem_getByte(memspace, paddr) - (uint8_t)1;
-        /* point to names tuple */
+
+        /* Point to names tuple */
         *paddr = imgtop + CI_NAMES_FIELD;
-        /* load name at index */
+
+        /* Load name at index */
         retval = img_getName(memspace, paddr, n, &pnamestr);
         PM_RETURN_IF_ERROR(retval);
 
-        /* alloc and fill imginfo struct */
+        /* Alloc and fill imginfo struct */
         retval = heap_getChunk(sizeof(PmImgInfo_t), &pchunk);
         PM_RETURN_IF_ERROR(retval);
         pii = (pPmImgInfo_t)pchunk;
         pii->ii_name = (pPmString_t)pnamestr;
         pii->ii_memspace = memspace;
         pii->ii_addr = imgtop;
-        /* push struct into img stack */
+
+        /* Push struct into img stack */
         pii->next = gVmGlobal.pimglist;
         gVmGlobal.pimglist = pii;
 
-        /* setup for next iteration */
-        /* calc next imgtop */
+        /* Setup for next iteration */
+        /* Calc next imgtop */
         imgtop += size;
-        /* point to next potential img */
+
+        /* Point to next potential img */
         *paddr = imgtop;
-        /* check if next is img */
+
+        /* Check if another img follows this one */
         type = mem_getByte(memspace, paddr);
     }
     return retval;
@@ -158,32 +146,33 @@ img_getName(PmMemSpace_t memspace,
 {
     PmType_t type;
     uint16_t len;
-    PmReturn_t retval;
 
-    /* XXX ensure it's a tuple */
-    /* skip past type and size bytes */
-    *paddr += 2;
+    /* Ensure it's a tuple */
+    type = mem_getByte(memspace, paddr);
+    C_ASSERT(type == OBJ_TYPE_TUP);
+    
+    /* Skip past length byte */
+    *paddr += 1;
 
-    /* scan to last name */
+    /* Scan to last name */
     for (; n > 0; n--)
     {
-        /* skip type byte, assuming string */
-        (*paddr)++;
-        /* skip the length of the string */
+        /* Ensure obj is a string */
+        type = mem_getByte(memspace, paddr);
+        C_ASSERT(type == OBJ_TYPE_STR);
+        
+        /* Skip the length of the string */
         len = mem_getWord(memspace, paddr);
         (*paddr) += len;
     }
 
-    /* ensure it's a string */
+    /* Ensure it's a string */
     type = mem_getByte(memspace, paddr);
-    if (type != OBJ_TYPE_STR)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
+    C_ASSERT(type == OBJ_TYPE_STR);
 
-    /* backtrack paddr to point to top of string img */
+    /* Backtrack paddr to point to top of string img */
     (*paddr)--;
-    /* return name string obj */
+    
+    /* Return name string obj */
     return obj_loadFromImg(memspace, paddr, r_pname);
 }

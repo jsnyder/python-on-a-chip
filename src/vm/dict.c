@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x02
+
 /**
  * Dict Object Type
  *
@@ -42,26 +43,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -71,11 +52,11 @@ dict_new(pPmObj_t *r_pdict)
     PmReturn_t retval = PM_RET_OK;
     pPmDict_t pdict = C_NULL;
 
-    /* allocate a dict */
+    /* Allocate a dict */
     retval = heap_getChunk(sizeof(PmDict_t), (uint8_t **)r_pdict);
     PM_RETURN_IF_ERROR(retval);
 
-    /* init dict fields */
+    /* Init dict fields */
     pdict = (pPmDict_t)*r_pdict;
     OBJ_SET_TYPE(*pdict, OBJ_TYPE_DIC);
     pdict->length = 0;
@@ -136,8 +117,7 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         return retval;
     }
 
-    /* XXX if key is not hashable, raise TypeError */
-    /* XXX if key's hash hasn't been calculated */
+    /* TODO #112: If key is not hashable, raise TypeError */
 
     /* check for matching key */
     retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
@@ -289,12 +269,3 @@ dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
 
     return retval;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

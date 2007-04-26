@@ -19,6 +19,7 @@
 
 #ifndef __STRING_H__
 #define __STRING_H__
+
 /**
  * String Object Type
  *
@@ -36,10 +37,6 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
  * Constants
  **************************************************************/
 
@@ -52,7 +49,7 @@
  **************************************************************/
 
 /**
- * load string from image
+ * Load string from image
  *
  * @param ms memoryspace paddr points to
  * @param paddr address in memoryspace of source string
@@ -61,7 +58,7 @@
             string_create((ms), (paddr), (uint8_t)1, (r_pstring))
 
 /**
- * Create String object from character array in RAM
+ * Creates String object from character array in RAM
  *
  * @param s address in RAM of source string
  * @param r_pstring Return arg; addr of ptr to string
@@ -80,14 +77,14 @@
  */
 typedef struct PmString_s
 {
-    /** object descriptor */
+    /** Object descriptor */
     PmObjDesc_t od;
 
-    /** length of string */
+    /** Length of string */
     uint16_t length;
 
 #if USE_STRING_CACHE
-    /** ptr to next string in cache */
+    /** Ptr to next string in cache */
     struct PmString_s *next;
 #endif                          /* USE_STRING_CACHE */
 
@@ -101,10 +98,6 @@ typedef struct PmString_s
 } PmString_t,
  *pPmString_t;
 
-
-/***************************************************************
- * Globals
- **************************************************************/
 
 /***************************************************************
  * Prototypes
@@ -140,7 +133,7 @@ PmReturn_t string_create(PmMemSpace_t memspace, uint8_t const **paddr,
                          uint8_t isimg, pPmObj_t *r_pstring);
 
 /**
- * Create a new String object from a single character.
+ * Creates a new String object from a single character.
  *
  * @param   c the character to become the string
  * @param   r_psting Return arg; ptr to String obj
@@ -149,7 +142,7 @@ PmReturn_t string_create(PmMemSpace_t memspace, uint8_t const **paddr,
 PmReturn_t string_newFromChar(uint8_t const c, pPmObj_t *r_pstring);
 
 /**
- * Compare two String objects for equality.
+ * Compares two String objects for equality.
  *
  * @param   pstr1 Ptr to first string
  * @param   pstr2 Ptr to second string

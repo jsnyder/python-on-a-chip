@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x12
+
 /**
  * String Object Type
  *
@@ -46,18 +47,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
  * Globals
  **************************************************************/
 
@@ -66,9 +55,6 @@
 static pPmString_t pstrcache = C_NULL;
 #endif /* USE_STRING_CACHE */
 
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /***************************************************************
  * Functions
@@ -94,56 +80,57 @@ string_create(PmMemSpace_t memspace,
 #endif /* USE_STRING_CACHE */
     uint8_t *pchunk;
 
-    /* if not loading from image */
+    /* If not loading from image */
     if (isimg == (uint8_t)0)
     {
-        /* get length of string */
+        /* Get length of string */
         len = mem_getStringLength(memspace, *paddr);
     }
 
-    /* if loading from an img */
+    /* If loading from an img */
     else
     {
-        /* get length of string */
+        /* Get length of string */
         len = mem_getWord(memspace, paddr);
     }
 
-    /* get space for String obj */
+    /* Get space for String obj */
     retval = heap_getChunk(sizeof(PmString_t) + len, &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pstr = (pPmString_t)pchunk;
 
-    /* fill the string obj */
+    /* Fill the string obj */
     OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
     pstr->length = len;
-    /* copy C-string into String obj */
+
+    /* Copy C-string into String obj */
     pdst = (uint8_t *)&(pstr->val);
     mem_copy(memspace, &pdst, paddr, len);
-    /* zero-pad end of string */
+
+    /* Zero-pad end of string */
     for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(*pstr); pdst++)
     {
         *pdst = 0;
     }
 
 #if USE_STRING_CACHE
-    /* XXX uses linear search... could improve */
-
-    /* check for twin string in cache */
+    /* Check for twin string in cache */
     for (pcacheentry = pstrcache;
          pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
     {
-        /* if string already exists */
+        /* If string already exists */
         if (string_compare(pcacheentry, pstr) == C_SAME)
         {
-            /* free the string */
+            /* Free the string */
             retval = heap_freeChunk((pPmObj_t)pstr);
-            /* return ptr to old */
+
+            /* Return ptr to old */
             *r_pstring = (pPmObj_t)pcacheentry;
             return retval;
         }
     }
 
-    /* insert string obj into cache */
+    /* Insert string obj into cache */
     pstr->next = pstrcache;
     pstrcache = pstr;
 
@@ -204,7 +191,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
 
     C_ASSERT(pstr != C_NULL);
 
-    /* ensure string obj */
+    /* Ensure string obj */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -245,7 +232,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
         }
         else
         {
-            /* simply output character */
+            /* Simply output character */
             retval = plat_putByte(ch);
             PM_RETURN_IF_ERROR(retval);
         }
@@ -268,12 +255,3 @@ string_cacheInit(void)
 #endif
     return PM_RET_OK;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

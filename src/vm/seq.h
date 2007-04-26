@@ -19,6 +19,7 @@
 
 #ifndef __SEQ_H__
 #define __SEQ_H__
+
 /**
  * Sequence Header
  *
@@ -49,7 +50,6 @@ typedef struct PmSeqIter_s
 
     /** Index value */
     int16_t si_index;
-
 } PmSeqIter_t,
  *pPmSeqIter_t;
 
@@ -104,6 +104,5 @@ PmReturn_t seqiter_getNext(pPmObj_t pobj, pPmObj_t *r_pitem);
  * @return  Return status.
  */
 PmReturn_t seqiter_new(pPmObj_t pobj, pPmObj_t *r_pobj);
-
 
 #endif /* __SEQ_H__ */

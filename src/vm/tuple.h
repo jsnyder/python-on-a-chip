@@ -19,6 +19,7 @@
 
 #ifndef __TUPLE_H__
 #define __TUPLE_H__
+
 /**
  * Tuple Object Type
  *
@@ -34,54 +35,39 @@
  */
 
 /***************************************************************
- * Includes
- **************************************************************/
-
-/***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
  * Types
  **************************************************************/
 
 /**
  * Tuple obj
  *
- * Immutable ordered sequence.
- * Contains array of ptrs to objs.
+ * Immutable ordered sequence.  Contains array of ptrs to objs.
  */
 typedef struct PmTuple_s
 {
-    /** object descriptor */
+    /** Object descriptor */
     PmObjDesc_t od;
+
     /**
-     * length of tuple
+     * Length of tuple
      * I don't expect a tuple to ever exceed 255 elements,
-     * but if I set this type to S8, a 0-element tuple
+     * but if I set this type to int8_t, a 0-element tuple
      * is too small to be allocated.
      */
     int16_t length;
-    /** array of ptrs to objs */
+
+    /** Array of ptrs to objs */
     pPmObj_t val[0];
 } PmTuple_t,
  *pPmTuple_t;
 
 
 /***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
 /**
- * Create a Tuple by loading a tuple image from memory.
+ * Creates a Tuple by loading a tuple image from memory.
  *
  * Obtain space for tuple from the heap.
  * Load all objs within the tuple img.
@@ -103,8 +89,7 @@ PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
                              uint8_t const **paddr, pPmObj_t *r_ptuple);
 
 /**
- * Allocate space for a new Tuple.
- * Return a pointer to the tuple.
+ * Allocates space for a new Tuple.  Returns a pointer to the tuple.
  *
  * @param   n the number of elements the tuple will contain
  * @param   r_ptuple Return by ref, ptr to new tuple
@@ -113,7 +98,7 @@ PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
 PmReturn_t tuple_new(uint16_t n, pPmObj_t *r_ptuple);
 
 /**
- * Create a copy of the tuple.
+ * Creates a copy of the tuple.
  *
  * Must allocate the necessary memory.
  * Duplicate ptrs to objs.
@@ -125,7 +110,7 @@ PmReturn_t tuple_new(uint16_t n, pPmObj_t *r_ptuple);
 PmReturn_t tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple);
 
 /**
- * Get the object in the tuple at the index.
+ * Gets the object in the tuple at the index.
  *
  * @param   pobj Ptr to tuple obj
  * @param   index Index into tuple
@@ -136,7 +121,7 @@ PmReturn_t tuple_getItem(pPmObj_t ptup, int16_t index, pPmObj_t *r_pobj);
 
 #ifdef HAVE_PRINT
 /**
- * Print out a tuple. Uses obj_print() to print elements.
+ * Prints out a tuple. Uses obj_print() to print elements.
  *
  * @param pobj Object to print.
  * @return Return status

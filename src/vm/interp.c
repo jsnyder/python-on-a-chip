@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x09
+
 /**
  * VM Interpreter
  *
@@ -53,24 +54,12 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
  * Macros
  **************************************************************/
 
 /** if retval is not OK, break from the interpreter */
 #define PM_BREAK_IF_ERROR(retval) if((retval) != PM_RET_OK)break
 
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
 
 /***************************************************************
  * Prototypes
@@ -96,43 +85,41 @@ interpret(const uint8_t returnOnNoThreads)
     int8_t t8 = 0;
     uint8_t bc;
 
-    /* activate a thread the first time */
+    /* Activate a thread the first time */
     retval = interp_reschedule();
     PM_RETURN_IF_ERROR(retval);
 
-    /* interpret loop */
+    /* Interpret loop */
     while (1)
     {
         if (gVmGlobal.pthread == C_NULL)
         {
             if (returnOnNoThreads)
             {
-                /* user chose to return on no threads left */
+                /* User chose to return on no threads left */
                 return retval;
             }
-            /* without a frame there is nothing to execute, so reschedule
-             * (possibly activating a recently added thread). */
+
+            /*
+             * Without a frame there is nothing to execute, so reschedule
+             * (possibly activating a recently added thread).
+             */
             retval = interp_reschedule();
             PM_BREAK_IF_ERROR(retval);
             continue;
         }
 
-        /* Time for switching threads? */
+        /* Reschedule threads if flag is true?*/
         if (gVmGlobal.reschedule)
         {
             retval = interp_reschedule();
             PM_BREAK_IF_ERROR(retval);
         }
 
-        /* get byte; the func post-incrs IP */
+        /* Get byte; the func post-incrs IP */
         bc = mem_getByte(MS, &IP);
         switch (bc)
         {
-            case STOP_CODE:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case POP_TOP:
                 pobj1 = PM_POP();
                 continue;
@@ -161,19 +148,20 @@ interpret(const uint8_t returnOnNoThreads)
                 TOS1 = TOS2;
                 TOS2 = TOS3;
                 TOS3 = pobj1;
-                /* Fallthrough */
+                continue;
 
             case NOP:
                 continue;
 
             case UNARY_POSITIVE:
-                /* TypeError if TOS is not an int */
+                /* Raise TypeError if TOS is not an int */
                 if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
-                /* when TOS is an int, this is a no-op */
+
+                /* When TOS is an int, this is a no-op */
                 continue;
 
             case UNARY_NEGATIVE:
@@ -195,19 +183,15 @@ interpret(const uint8_t returnOnNoThreads)
                 }
                 continue;
 
-            case UNARY_CONVERT:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case UNARY_INVERT:
-                /* TypeError if it's not an int */
+                /* Raise TypeError if it's not an int */
                 if (OBJ_GET_TYPE(*TOS) != OBJ_TYPE_INT)
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
-                /* else perform bit-wise complement */
+
+                /* Otherwise perform bit-wise complement */
                 pobj1 = PM_POP();
                 retval = int_bitInvert(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
@@ -260,7 +244,7 @@ interpret(const uint8_t returnOnNoThreads)
                 else if ((OBJ_GET_TYPE(*TOS) == OBJ_TYPE_INT)
                          && (OBJ_GET_TYPE(*TOS1) == OBJ_TYPE_LST))
                 {
-                    /* int number of times to duplicate */
+                    /* Int number of times to duplicate */
                     pobj1 = PM_POP();
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
@@ -269,7 +253,7 @@ interpret(const uint8_t returnOnNoThreads)
                     }
                     t16 = (int16_t)((pPmInt_t)pobj1)->val;
 
-                    /* list that is copied */
+                    /* List that is copied */
                     pobj2 = PM_POP();
                     retval = list_replicate(pobj2, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
@@ -376,9 +360,10 @@ interpret(const uint8_t returnOnNoThreads)
             case BINARY_SUBSCR:
                 /* Implements TOS = TOS1[TOS]. */
 
-                /* get index */
+                /* Get index */
                 pobj1 = PM_POP();
-                /* get sequence */
+
+                /* Get sequence */
                 pobj2 = PM_POP();
 
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
@@ -394,8 +379,10 @@ interpret(const uint8_t returnOnNoThreads)
                         break;
                     }
 
+                    /* Ensure the index doesn't overflow */
                     C_ASSERT(((pPmInt_t)pobj1)->val <= 0x0000FFFF);
                     t16 = (int16_t)((pPmInt_t)pobj1)->val;
+
                     retval = seq_getSubscript(pobj2, t16, &pobj3);
                 }
                 PM_BREAK_IF_ERROR(retval);
@@ -403,29 +390,26 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case SLICE_0:
-                /*
-                 * Implements TOS = TOS[:],
-                 * push a copy of the sequence
-                 */
+                /* Implements TOS = TOS[:], push a copy of the sequence */
 
-                /* get sequence */
+                /* Get sequence */
                 pobj1 = PM_POP();
 
-                /* if it's a string */
+                /* If it's a string */
                 if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_STR)
                 {
                     /* Just copy the pointer, since Strings are immutable */
                     pobj2 = pobj1;
                 }
 
-                /* if it's a tuple */
+                /* If it's a tuple */
                 else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
                 {
                     retval = tuple_copy(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
-                /* if it's a list */
+                /* If it's a list */
                 else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
                 {
                     retval = list_copy(pobj1, &pobj2);
@@ -442,37 +426,22 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_PUSH(pobj2);
                 continue;
 
-            case SLICE_1:
-            case SLICE_2:
-            case SLICE_3:
-            case STORE_SLICE_0:
-            case STORE_SLICE_1:
-            case STORE_SLICE_2:
-            case STORE_SLICE_3:
-            case DELETE_SLICE_0:
-            case DELETE_SLICE_1:
-            case DELETE_SLICE_2:
-            case DELETE_SLICE_3:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case STORE_SUBSCR:
-                /* implements TOS1[TOS] = TOS2 */
+                /* Implements TOS1[TOS] = TOS2 */
                 pobj1 = PM_POP();
                 pobj2 = PM_POP();
                 pobj3 = PM_POP();
 
-                /* if it's a list */
+                /* If it's a list */
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
-                    /* ensure subscr is an int */
+                    /* Ensure subscr is an int */
                     if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
-                    /* set the list item */
+                    /* Set the list item */
                     retval = list_setItem(pobj2,
                                           (int16_t)(((pPmInt_t)pobj1)->val),
                                           pobj3);
@@ -480,10 +449,10 @@ interpret(const uint8_t returnOnNoThreads)
                     continue;
                 }
 
-                /* if it's a dict */
+                /* If it's a dict */
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_DIC)
                 {
-                    /* set the dict item */
+                    /* Set the dict item */
                     retval = dict_setItem(pobj2, pobj1, pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     continue;
@@ -491,11 +460,6 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* TypeError for all else */
                 PM_RAISE(retval, PM_RET_EX_TYPE);
-                break;
-
-            case DELETE_SUBSCR:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
 
             case BINARY_LSHIFT:
@@ -607,28 +571,22 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     continue;
                 }
-                /* If bytecode is PRINT_EXPR, fallthrough to print a newline */
+                /* If PRINT_EXPR, Fallthrough to print a newline */
 
             case PRINT_NEWLINE:
                 retval = plat_putByte('\n');
                 PM_BREAK_IF_ERROR(retval);
                 continue;
-
-            case PRINT_ITEM_TO:
-            case PRINT_NEWLINE_TO:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
 #endif /* HAVE_PRINT */
 
             case BREAK_LOOP:
             {
                 pPmBlock_t pb1 = FP->fo_blockstack;
 
-                /* ensure there's a block */
+                /* Ensure there's a block */
                 C_ASSERT(pb1 != C_NULL);
 
-                /* delete blocks until first loop block */
+                /* Delete blocks until first loop block */
                 while ((pb1->b_type != B_LOOP) && (pb1->next != C_NULL))
                 {
                     pobj2 = (pPmObj_t)pb1;
@@ -636,14 +594,17 @@ interpret(const uint8_t returnOnNoThreads)
                     retval = heap_freeChunk(pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
+
                 /* Test again outside while loop */
                 PM_BREAK_IF_ERROR(retval);
 
-                /* restore SP */
+                /* Restore SP */
                 SP = pb1->b_sp;
-                /* goto handler */
+
+                /* Goto handler */
                 IP = pb1->b_handler;
-                /* pop and delete this block */
+
+                /* Pop and delete this block */
                 FP->fo_blockstack = pb1->next;
                 retval = heap_freeChunk((pPmObj_t)pb1);
                 PM_BREAK_IF_ERROR(retval);
@@ -651,33 +612,40 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case LOAD_LOCALS:
-                /* pushes local attrs dict of current frame */
-                /* XXX does not copy fo_locals to attrs */
+                /* Pushes local attrs dict of current frame */
+                /* WARNING: does not copy fo_locals to attrs */
                 PM_PUSH((pPmObj_t)FP->fo_attrs);
                 continue;
 
             case RETURN_VALUE:
-                /* XXX error check: stack should be empty */
-                /* get expiring frame's TOS */
+                /* TODO #109: Check that stack should have only 1 item */
+                /* Get expiring frame's TOS */
                 pobj2 = PM_POP();
-                /* keep ref of expiring frame */
+
+                /* Keep ref of expiring frame */
                 pobj1 = (pPmObj_t)FP;
-                /* if no previous frame, quit thread */
+
+                /* If no previous frame, quit thread */
                 if (FP->fo_back == C_NULL)
                 {
                     gVmGlobal.pthread->interpctrl = INTERP_CTRL_EXIT;
                     retval = PM_RET_OK;
                     break;
                 }
-                /* else return to previous frame */
+
+                /* Otherwise return to previous frame */
                 FP = FP->fo_back;
-                /* push frame's return val */
-                /* except if the expiring frame was import-originated */
+
+                /*
+                 * Push frame's return val, except if the expiring frame
+                 * was due to an import statement
+                 */
                 if (!(((pPmFrame_t)pobj1)->fo_isImport))
                 {
                     PM_PUSH(pobj2);
                 }
-                /* deallocate expired frame */
+
+                /* Deallocate expired frame */
                 PM_BREAK_IF_ERROR(heap_freeChunk(pobj1));
                 continue;
 
@@ -693,35 +661,25 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
-            case EXEC_STMT:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case POP_BLOCK:
             {
-                /* get ptr to top block */
+                /* Get ptr to top block */
                 pPmBlock_t pb = FP->fo_blockstack;
 
                 /* If there's no block, raise SystemError */
                 C_ASSERT(pb != C_NULL);
 
-                /* pop block */
+                /* Pop block */
                 FP->fo_blockstack = pb->next;
-                /* set stack to previous level */
+
+                /* Set stack to previous level */
                 SP = pb->b_sp;
-                /* delete block */
+
+                /* Delete block */
                 PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
                 continue;
 
             }
-
-            case END_FINALLY:
-            case BUILD_CLASS:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
 
             /***************************************************
              * All bytecodes after 90 (0x5A) have a 2-byte arg
@@ -729,24 +687,22 @@ interpret(const uint8_t returnOnNoThreads)
              **************************************************/
 
             case STORE_NAME:
-                /* get name index */
+                /* Get name index */
                 t16 = GET_ARG();
-                /* get value */
+
+                /* Get value */
                 pobj1 = PM_POP();
-                /* get key */
+
+                /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
-                /* set key=val in current frame's attrs dict */
+
+                /* Set key=val in current frame's attrs dict */
                 retval = dict_setItem((pPmObj_t)FP->fo_attrs, pobj2, pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
-            case DELETE_NAME:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case UNPACK_SEQUENCE:
-                /* get ptr to sequence */
+                /* Get ptr to sequence */
                 pobj1 = PM_POP();
 
                 /*
@@ -803,11 +759,13 @@ interpret(const uint8_t returnOnNoThreads)
 
             case STORE_ATTR:
                 /* TOS.name = TOS1 */
-                /* get names index */
+                /* Get names index */
                 t16 = GET_ARG();
-                /* get obj */
+
+                /* Get obj */
                 pobj1 = PM_POP();
-                /* get attrs dict from obj */
+
+                /* Get attrs dict from obj */
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN)
                     || (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
@@ -819,46 +777,43 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj2 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
+
                 /* Other types result in an AttributeError */
                 else
                 {
                     PM_RAISE(retval, PM_RET_EX_ATTR);
                     break;
                 }
-                /* if attrs is not a dict, raise SystemError */
+
+                /* If attrs is not a dict, raise SystemError */
                 if (OBJ_GET_TYPE(*pobj2) != OBJ_TYPE_DIC)
                 {
                     PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
-                /* get name/key obj */
+
+                /* Get name/key obj */
                 pobj3 = FP->fo_func->f_co->co_names->val[t16];
-                /* set key=val in obj's dict */
+
+                /* Set key=val in obj's dict */
                 retval = dict_setItem(pobj2, pobj3, PM_POP());
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
-            case DELETE_ATTR:
-                /* SystemError, unimplemented opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case STORE_GLOBAL:
-                /* get name index */
+                /* Get name index */
                 t16 = GET_ARG();
-                /* get value */
+
+                /* Get value */
                 pobj1 = PM_POP();
-                /* get key */
+
+                /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
-                /* set key=val in global dict */
+
+                /* Set key=val in global dict */
                 retval = dict_setItem((pPmObj_t)FP->fo_globals, pobj2, pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
-
-            case DELETE_GLOBAL:
-                /* SystemError, unimplemented opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
 
             case DUP_TOPX:
                 t16 = GET_ARG();
@@ -892,31 +847,34 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case LOAD_CONST:
-                /* get const's index in CO */
+                /* Get const's index in CO */
                 t16 = GET_ARG();
-                /* push const on stack */
+
+                /* Push const on stack */
                 PM_PUSH(FP->fo_func->f_co->co_consts->val[t16]);
                 continue;
 
             case LOAD_NAME:
-                /* get name index */
+                /* Get name index */
                 t16 = GET_ARG();
-                /* get name from names tuple */
+
+                /* Get name from names tuple */
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
-                /* get value from frame's attrs dict */
+
+                /* Get value from frame's attrs dict */
                 retval = dict_getItem((pPmObj_t)FP->fo_attrs, pobj1, &pobj2);
                 if (retval == PM_RET_EX_KEY)
                 {
-                    /* get val from globals */
+                    /* Get val from globals */
                     retval = dict_getItem((pPmObj_t)FP->fo_globals,
                                           pobj1, &pobj2);
                     if (retval == PM_RET_EX_KEY)
                     {
-                        /* get val from builtins */
+                        /* Get val from builtins */
                         retval = dict_getItem(PM_PBUILTINS, pobj1, &pobj2);
                         if (retval == PM_RET_EX_KEY)
                         {
-                            /* name not defined, raise NameError */
+                            /* Name not defined, raise NameError */
                             PM_RAISE(retval, PM_RET_EX_NAME);
                             break;
                         }
@@ -927,12 +885,12 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case BUILD_TUPLE:
-                /* get num items */
+                /* Get num items */
                 t16 = GET_ARG();
                 retval = tuple_new(t16, &pobj1);
                 PM_BREAK_IF_ERROR(retval);
 
-                /* fill tuple with ptrs to objs */
+                /* Fill tuple with ptrs to objs */
                 for (; --t16 >= 0;)
                 {
                     ((pPmTuple_t)pobj1)->val[t16] = PM_POP();
@@ -946,9 +904,10 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(retval);
                 for (; --t16 >= 0;)
                 {
-                    /* get obj */
+                    /* Get obj */
                     pobj2 = PM_POP();
-                    /* insert obj into list */
+
+                    /* Insert obj into list */
                     retval = list_insert(pobj1, 0, pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
@@ -969,9 +928,11 @@ interpret(const uint8_t returnOnNoThreads)
 
             case LOAD_ATTR:
                 t16 = GET_ARG();
-                /* get obj that has the attrs */
+
+                /* Get obj that has the attrs */
                 pobj1 = PM_POP();
-                /* get attrs dict from obj */
+
+                /* Get attrs dict from obj */
                 if ((OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN) ||
                     (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_MOD))
                 {
@@ -983,21 +944,25 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
                 }
+
                 /* Other types result in an AttributeError */
                 else
                 {
                     PM_RAISE(retval, PM_RET_EX_ATTR);
                     break;
                 }
-                /* if attrs is not a dict, raise SystemError */
+
+                /* If attrs is not a dict, raise SystemError */
                 if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_DIC)
                 {
                     PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
-                /* get name */
+
+                /* Get name */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
-                /* push attr with given name onto stack */
+
+                /* Push attr with given name onto stack */
                 retval = dict_getItem(pobj1, pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj3);
@@ -1026,11 +991,12 @@ interpret(const uint8_t returnOnNoThreads)
                         case COMP_GT: t8 = (int8_t)(a >  b); break;
                         case COMP_GE: t8 = (int8_t)(a >= b); break;
                         case COMP_IS: t8 = (int8_t)(pobj1 == pobj2); break;
-                        case COMP_IS_NOT: t8 = (int8_t)(pobj1 != pobj2); break;
+                        case COMP_IS_NOT: t8 = (int8_t)(pobj1 != pobj2);break;
                         case COMP_IN:
                         case COMP_NOT_IN:
                             PM_RAISE(retval, PM_RET_EX_TYPE);
                             break;
+
                         default:
                             /* Other compares are not yet supported */
                             PM_RAISE(retval, PM_RET_EX_SYS);
@@ -1047,9 +1013,9 @@ interpret(const uint8_t returnOnNoThreads)
                     retval = PM_RET_OK;
                     switch (t16)
                     {
-                            /* Handle equality comparisons for non-intger types */
                         case COMP_EQ:
                         case COMP_NE:
+                            /* Handle equality for non-int types */
                             pobj3 = PM_FALSE;
                             t8 = obj_compare(pobj1, pobj2);
                             if (((t8 == C_SAME) && (t16 == COMP_EQ))
@@ -1063,9 +1029,9 @@ interpret(const uint8_t returnOnNoThreads)
                             }
                             break;
 
-                            /* Handle membership comparisons */
                         case COMP_IN:
                         case COMP_NOT_IN:
+                            /* Handle membership comparisons */
                             pobj3 = PM_FALSE;
                             retval = obj_isIn(pobj1, pobj2);
                             if (retval == PM_RET_OK)
@@ -1085,8 +1051,8 @@ interpret(const uint8_t returnOnNoThreads)
                             }
                             break;
 
-                            /* Other comparisons are not implemented */
                         default:
+                            /* Other comparisons are not implemented */
                             PM_RAISE(retval, PM_RET_EX_SYS);
                             break;
                     }
@@ -1096,33 +1062,35 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case IMPORT_NAME:
-                /* get name index */
+                /* Get name index */
                 t16 = GET_ARG();
-                /* get name String obj */
+
+                /* Get name String obj */
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
-                /* XXX check if module is already loaded */
-                /* load module from image */
+
+                /* TODO #110: Prevent importing previously-loaded module */
+                /* Load module from image */
                 retval = mod_import(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
-                /* module overwrites None on stack */
+
+                /* Module overwrites None on stack */
                 TOS = pobj2;
 
-                /* XXX duplicate code with CALL_FUNCTION */
-
+                /* Code after here is a duplicate of CALL_FUNCTION */
                 /* Make frame object to interpret the module's root code */
                 retval = frame_new(pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
 
-                /* no arguments to pass */
+                /* No arguments to pass */
 
-                /* keep ref to current frame */
+                /* Keep ref to current frame */
                 ((pPmFrame_t)pobj3)->fo_back = FP;
-                /* handle to have None popped on return */
+
+                /* Handle to have None popped on return */
                 ((pPmFrame_t)pobj3)->fo_isImport = (uint8_t)1;
 
-                /* set new frame */
+                /* Set new frame */
                 FP = (pPmFrame_t)pobj3;
-
                 continue;
 
             case IMPORT_FROM:
@@ -1169,62 +1137,65 @@ interpret(const uint8_t returnOnNoThreads)
             case CONTINUE_LOOP:
                 /* Get target offset (bytes) */
                 t16 = GET_ARG();
-                /* jump to base_ip + arg */
+
+                /* Jump to base_ip + arg */
                 IP = FP->fo_func->f_co->co_codeaddr + t16;
                 continue;
 
             case FOR_LOOP:
-                /* get skip bytes */
+                /* WARNING #111: Old bytecodes shall be removed in r 06 */
+                /* Get skip bytes */
                 t16 = GET_ARG();
-                /* get current index */
+
+                /* Get current index */
                 pobj1 = PM_POP();
-                /* get the sequence */
+
+                /* Get the sequence */
                 pobj2 = PM_POP();
 
-                /* ensure index is an int */
+                /* Ensure index is an int */
                 if (OBJ_GET_TYPE(*pobj1) != OBJ_TYPE_INT)
                 {
                     PM_RAISE(retval, PM_RET_EX_INDX);
                     break;
                 }
 
-                /* if it's a tuple */
+                /* If it's a tuple */
                 if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_TUP)
                 {
-                    /* if tup is exhausted, incr IP by delta */
+                    /* If tup is exhausted, incr IP by delta */
                     if (((pPmInt_t)pobj1)->val >= ((pPmTuple_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
                     }
 
-                    /* get item, incr counter */
+                    /* Get item, incr counter */
                     pobj3 = ((pPmTuple_t)pobj2)->val[((pPmInt_t)pobj1)->val];
                     retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
-                /* if it's a list */
+                /* If it's a list */
                 else if (OBJ_GET_TYPE(*pobj2) == OBJ_TYPE_LST)
                 {
-                    /* if list is exhausted, incr IP by delta */
+                    /* If list is exhausted, incr IP by delta */
                     if (((pPmInt_t)pobj1)->val >= ((pPmList_t)pobj2)->length)
                     {
                         IP += t16;
                         continue;
                     }
 
-                    /* get item */
+                    /* Get item */
                     retval = list_getItem(pobj2,
                                           (int16_t)(((pPmInt_t)pobj1)->val),
                                           &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    /* incr counter */
+
+                    /* Incr counter */
                     retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
                     PM_BREAK_IF_ERROR(retval);
                 }
-
-                /* XXX if it's a string */
 
                 /* TypeError: loop over non-sequence */
                 else
@@ -1233,24 +1204,27 @@ interpret(const uint8_t returnOnNoThreads)
                     break;
                 }
 
-                /* push tup, counter and item */
+                /* Push tup, counter and item */
                 PM_PUSH(pobj2);
                 PM_PUSH(pobj1);
                 PM_PUSH(pobj3);
                 continue;
 
             case LOAD_GLOBAL:
-                /* get name */
+                /* Get name */
                 t16 = GET_ARG();
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
-                /* try globals first */
+
+                /* Try globals first */
                 retval = dict_getItem((pPmObj_t)FP->fo_globals,
                                       pobj1, &pobj2);
-                /* if that didn't work, try builtins */
+
+                /* If that didn't work, try builtins */
                 if (retval == PM_RET_EX_KEY)
                 {
                     retval = dict_getItem(PM_PBUILTINS, pobj1, &pobj2);
-                    /* no such global, raise NameError */
+
+                    /* No such global, raise NameError */
                     if (retval == PM_RET_EX_KEY)
                     {
                         PM_RAISE(retval, PM_RET_EX_NAME);
@@ -1265,29 +1239,27 @@ interpret(const uint8_t returnOnNoThreads)
             {
                 uint8_t *pchunk;
 
-                /* get block span (bytes) */
+                /* Get block span (bytes) */
                 t16 = GET_ARG();
-                /* create block */
+
+                /* Create block */
                 retval = heap_getChunk(sizeof(PmBlock_t), &pchunk);
                 PM_BREAK_IF_ERROR(retval);
                 pobj1 = (pPmObj_t)pchunk;
                 OBJ_SET_TYPE(*pobj1, OBJ_TYPE_BLK);
-                /* store current stack pointer */
+
+                /* Store current stack pointer */
                 ((pPmBlock_t)pobj1)->b_sp = SP;
-                /* default handler is to exit block/loop */
+
+                /* Default handler is to exit block/loop */
                 ((pPmBlock_t)pobj1)->b_handler = IP + t16;
                 ((pPmBlock_t)pobj1)->b_type = B_LOOP;
-                /* insert block into blockstack */
+
+                /* Insert block into blockstack */
                 ((pPmBlock_t)pobj1)->next = FP->fo_blockstack;
                 FP->fo_blockstack = (pPmBlock_t)pobj1;
                 continue;
             }
-
-            case SETUP_EXCEPT:
-            case SETUP_FINALLY:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
 
             case LOAD_FAST:
                 t16 = GET_ARG();
@@ -1299,12 +1271,8 @@ interpret(const uint8_t returnOnNoThreads)
                 FP->fo_locals[t16] = PM_POP();
                 continue;
 
-            case DELETE_FAST:
-                /* SystemError, unknown opcode */
-                PM_RAISE(retval, PM_RET_EX_SYS);
-                break;
-
             case SET_LINENO:
+                /* WARNING #111: Old bytecodes shall be removed in r 06 */
                 FP->fo_line = GET_ARG();
                 continue;
 
@@ -1341,76 +1309,81 @@ interpret(const uint8_t returnOnNoThreads)
                 break;
 
             case CALL_FUNCTION:
-                /* get num args */
+                /* Get num args */
                 t16 = GET_ARG();
-                /* ensure no keyword args */
+
+                /* Ensure no keyword args */
                 if ((t16 & (uint16_t)0xFF00) != 0)
                 {
                     PM_RAISE(retval, PM_RET_EX_SYS);
                     break;
                 }
-                /* get the func */
+
+                /* Get the func */
                 pobj1 = STACK(t16);
 
                 C_ASSERT(OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_FXN);
 
-                /* if it's regular func (not native) */
+                /* If it's regular func (not native) */
                 if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
                 {
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
 
-                    /* pass args to new frame */
+                    /* Pass args to new frame */
                     while (--t16 >= 0)
                     {
                         /*
-                         * pop args from stack.
-                         * args are pushed left to right,
-                         * so pop right to left.
+                         * Pop args from stack right to left,
+                         * since args are pushed left to right,
                          */
                         ((pPmFrame_t)pobj2)->fo_locals[t16] = PM_POP();
                     }
-                    /* pop func obj */
+
+                    /* Pop func obj */
                     pobj3 = PM_POP();
-                    /* keep ref to current frame */
+
+                    /* Keep ref to current frame */
                     ((pPmFrame_t)pobj2)->fo_back = FP;
-                    /* set new frame */
+
+                    /* Set new frame */
                     FP = (pPmFrame_t)pobj2;
                 }
 
-                /* if it's native func */
+                /* If it's native func */
                 else if (OBJ_GET_TYPE(*((pPmFunc_t)pobj1)->f_co) ==
                          OBJ_TYPE_NOB)
                 {
-                    /* ensure num args fits in native frame */
+                    /* Ensure num args fits in native frame */
                     if (t16 > NATIVE_NUM_LOCALS)
                     {
                         PM_RAISE(retval, PM_RET_EX_SYS);
                         break;
                     }
 
-                    /* keep numargs */
+                    /* Keep numargs */
                     t8 = (int8_t)t16;
 
-                    /* pop args from stack */
+                    /* Pop args from stack */
                     while (--t16 >= 0)
                     {
                         gVmGlobal.nativeframe.nf_locals[t16] = PM_POP();
                     }
-                    /* get native function index */
+
+                    /* Get native function index */
                     pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
                     t16 = ((pPmNo_t)pobj2)->no_funcindx;
 
                     /*
-                     * CALL NATIVE FXN
-                     * pass caller's frame and numargs
+                     * CALL NATIVE FXN: pass caller's frame and numargs
                      */
                     /* Positive index is a stdlib func */
                     if (t16 >= 0)
                     {
                         retval = std_nat_fxn_table[t16] (&FP, t8);
                     }
+
                     /* Negative index is a usrlib func */
                     else
                     {
@@ -1437,9 +1410,10 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case MAKE_FUNCTION:
-                /* get num default args to fxn */
+                /* Get num default args to fxn */
                 t16 = GET_ARG();
-                /* load func from CO */
+
+                /* Load func from CO */
                 pobj1 = PM_POP();
 
                 /*
@@ -1449,7 +1423,8 @@ interpret(const uint8_t returnOnNoThreads)
                  */
                 retval = func_new(pobj1, (pPmObj_t)FP->fo_globals, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
-                /* put any default args in a tuple */
+
+                /* Put any default args in a tuple */
                 if (t16 > 0)
                 {
                     retval = tuple_new(t16, &pobj3);
@@ -1458,24 +1433,17 @@ interpret(const uint8_t returnOnNoThreads)
                     {
                         ((pPmTuple_t)pobj3)->val[t16] = PM_POP();
                     }
-                    /* set func's default args */
+                    
+                    /* Set func's default args */
                     ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
                 }
-                /* push func obj */
+                
+                /* Push func obj */
                 PM_PUSH(pobj2);
                 continue;
 
-            case BUILD_SLICE:
-            case MAKE_CLOSURE:
-            case LOAD_CLOSURE:
-            case LOAD_DEREF:
-            case STORE_DEREF:
-            case CALL_FUNCTION_VAR:
-            case CALL_FUNCTION_KW:
-            case CALL_FUNCTION_VAR_KW:
-            case EXTENDED_ARG:
             default:
-                /* SystemError, unknown opcode */
+                /* SystemError, unknown or unimplemented opcode */
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
         }
@@ -1489,8 +1457,7 @@ interpret(const uint8_t returnOnNoThreads)
         PM_REPORT_IF_ERROR(retval);
 
         /* If this is the last thread, return the error code */
-        seq_getLength((pPmObj_t)gVmGlobal.threadList, &t16);
-        if ((t16 <= 1) && (retval != PM_RET_OK))
+        if ((gVmGlobal.threadList->length <= 1) && (retval != PM_RET_OK))
         {
             break;
         }
@@ -1511,7 +1478,7 @@ PmReturn_t
 interp_reschedule(void)
 {
     PmReturn_t retval = PM_RET_OK;
-    static uint8_t threadIndex = 0;
+    static uint8_t threadIndex = (uint8_t)0;
 
     /* If there are no threads in the runnable list, null the active thread */
     if (gVmGlobal.threadList->length == 0)
@@ -1543,15 +1510,15 @@ interp_addThread(pPmFunc_t pfunc)
     pPmObj_t pframe;
     pPmObj_t pthread;
 
-    /* create a frame for the func */
+    /* Create a frame for the func */
     retval = frame_new((pPmObj_t)pfunc, &pframe);
     PM_RETURN_IF_ERROR(retval);
 
-    /* create a thread with this new frame */
+    /* Create a thread with this new frame */
     retval = thread_new(pframe, &pthread);
     PM_RETURN_IF_ERROR(retval);
 
-    /* add thread to end of list */
+    /* Add thread to end of list */
     return list_append((pPmObj_t)gVmGlobal.threadList, pthread);
 }
 
@@ -1560,12 +1527,3 @@ interp_setRescheduleFlag(uint8_t boolean)
 {
     gVmGlobal.reschedule = boolean;
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/

@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x0E
+
 /**
  * Module Object Type
  *
@@ -41,26 +42,6 @@
 
 
 /***************************************************************
- * Constants
- **************************************************************/
-
-/***************************************************************
- * Macros
- **************************************************************/
-
-/***************************************************************
- * Types
- **************************************************************/
-
-/***************************************************************
- * Globals
- **************************************************************/
-
-/***************************************************************
- * Prototypes
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -71,21 +52,21 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     uint8_t *pchunk;
     pPmObj_t pobj;
 
-    /* if it's not a code obj, raise TypeError */
+    /* If it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* alloc and init func obj */
+    /* Alloc and init func obj */
     retval = heap_getChunk(sizeof(PmFunc_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     *pmod = (pPmObj_t)pchunk;
     OBJ_SET_TYPE(**pmod, OBJ_TYPE_MOD);
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
-    /* alloc and init attrs dict */
+    /* Alloc and init attrs dict */
     retval = dict_new(&pobj);
     ((pPmFunc_t)*pmod)->f_attrs = (pPmDict_t)pobj;
 
@@ -105,45 +86,37 @@ mod_import(pPmObj_t pstr, pPmObj_t *pmod)
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj;
 
-    /* if it's not a string obj, raise SyntaxError */
+    /* If it's not a string obj, raise SyntaxError */
     if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_SYNTAX);
         return retval;
     }
 
-    /* iterate through the global img list */
+    /* Iterate through the global img list */
     pii = gVmGlobal.pimglist;
-    /* while not at end of list and string doesn't match */
+
+    /* Scan until end of list or string matches */
     while ((pii != C_NULL)
            && (string_compare((pPmString_t)pstr, pii->ii_name) == C_DIFFER))
     {
         pii = pii->next;
     }
 
-    /* if img was not found, raise ImportError */
+    /* If img was not found, raise ImportError */
     if (pii == C_NULL)
     {
         PM_RAISE(retval, PM_RET_EX_IMPRT);
         return retval;
     }
 
-    /* make copy of addr */
+    /* Make copy of addr so image list pointer isn't modified */
     imgaddr = pii->ii_addr;
 
-    /* load img into code obj */
+    /* Load img into code obj */
     retval = obj_loadFromImg(pii->ii_memspace, &imgaddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco = (pPmCo_t)pobj;
 
     return mod_new((pPmObj_t)pco, pmod);
 }
-
-
-/***************************************************************
- * Test
- **************************************************************/
-
-/***************************************************************
- * Main
- **************************************************************/
