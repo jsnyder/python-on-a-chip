@@ -117,8 +117,14 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         return retval;
     }
 
-    /* TODO #112: If key is not hashable, raise TypeError */
-
+    /* #112: Force Dict keys to be of hashable type */
+    /* If key is not hashable, raise TypeError */
+    if (OBJ_GET_TYPE(*pkey) > OBJ_TYPE_HASHABLE_MAX)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+    
     /* check for matching key */
     retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
 
