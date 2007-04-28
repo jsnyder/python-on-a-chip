@@ -331,66 +331,17 @@ def locals():
 
 
 def map(f, s):
-    """__NATIVE__
-    PmReturn_t retval;
-    pPmObj_t pf = C_NULL;
-    pPmObj_t ps = C_NULL;
-    pPmObj_t pr = C_NULL;
-    int8_t length = 0;
-    int8_t i = 0;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 2)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* Get args */
-    pf = NATIVE_GET_LOCAL(0);
-    ps = NATIVE_GET_LOCAL(1);
-
-    /* If args are wrong type, raise TypeError */
-    if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* Get the sequence length based on type */
-    switch (OBJ_GET_TYPE(*ps))
-    {
-        case OBJ_TYPE_TUP:
-            length = ((pPmTuple_t)ps)->length;
-            break;
-
-        case OBJ_TYPE_LST:
-            length = ((pPmList_t)ps)->length;
-            break;
-
-        case OBJ_TYPE_STR:
-            length = ((pPmString_t)ps)->length;
-            break;
-
-        default:
-            PM_RAISE(retval, PM_RET_EX_TYPE);
-            return retval;
-    }
-
-    /* TODO #113: Fix the implementation of __bi.map */
-    /* Do a dummy map, fill func with Nones */
-    retval = list_new(&pr);
-    PM_RETURN_IF_ERROR(retval);
-
-    for (i = 0; i < length; i++)
-    {
-        retval = list_append(pr, PM_NONE);
-        PM_RETURN_IF_ERROR(retval);
-    }
-
-    return retval;
-    """
-    pass
+    # Do this as a workaround since list.append() doesn't work
+    r = [None,] * len(s)
+    
+    # Call function f once with each argument in sequence s
+    i = 0
+    for a in s:
+        r[i] = f(a)
+        i += 1
+        
+    # Return list of results
+    return r
 
 
 def ord(s):
