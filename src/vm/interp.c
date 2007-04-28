@@ -67,7 +67,6 @@
 
 extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *, signed char);
 extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *, signed char);
-PmReturn_t nat___bi_pow(pPmFrame_t *pframe, signed char numargs);
 
 
 /***************************************************************
@@ -200,17 +199,16 @@ interpret(const uint8_t returnOnNoThreads)
 
             case BINARY_POWER:
             case INPLACE_POWER:
-                /* Put args in native frame */
-                gVmGlobal.nativeframe.nf_locals[1] = PM_POP();
-                gVmGlobal.nativeframe.nf_locals[0] = TOS;
+                /* Pop args right to left */
+                pobj2 = PM_POP();
+                pobj1 = TOS;
 
-                /* CALL NATIVE FXN */
-                retval = nat___bi_pow(&FP, 2);
-                /* RETURN FROM NATIVE FXN */
-
-                /* Put result on stack */
-                TOS = gVmGlobal.nativeframe.nf_stack;
+                /* Calculate integer power */
+                retval = int_pow(pobj1, pobj2, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
+
+                /* Set return value */
+                TOS = pobj3;
                 continue;
 
             case GET_ITER:
@@ -1433,11 +1431,11 @@ interpret(const uint8_t returnOnNoThreads)
                     {
                         ((pPmTuple_t)pobj3)->val[t16] = PM_POP();
                     }
-                    
+
                     /* Set func's default args */
                     ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
                 }
-                
+
                 /* Push func obj */
                 PM_PUSH(pobj2);
                 continue;

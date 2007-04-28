@@ -44,7 +44,7 @@ typedef struct PmInt_s
 {
     /** Object descriptor */
     PmObjDesc_t od;
-    
+
     /** Integer value */
     int32_t val;
 } PmInt_t,
@@ -137,5 +137,15 @@ PmReturn_t _int_printHex(int32_t n);
  */
 PmReturn_t int_printHex(pPmObj_t pint);
 #endif /* HAVE_PRINT */
+
+/**
+ * Returns by reference an integer that is x raised to the power of y.
+ *
+ * @param x The integer base
+ * @param y The integer exponent
+ * @param r_pn The return value of x ** y
+ * @return Return status
+ */
+PmReturn_t int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn);
 
 #endif /* __INT_H__ */

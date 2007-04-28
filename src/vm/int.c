@@ -237,3 +237,42 @@ int_printHex(pPmObj_t pint)
     return _int_printHex(((pPmInt_t)pint)->val);
 }
 #endif /* HAVE_PRINT */
+
+
+PmReturn_t
+int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn)
+{
+    int32_t x;
+    int32_t y;
+    int32_t n;
+    PmReturn_t retval;
+
+    /* Raise TypeError if args aren't ints */
+    if ((OBJ_GET_TYPE(*px) != OBJ_TYPE_INT)
+        || (OBJ_GET_TYPE(*py) != OBJ_TYPE_INT))
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    x = ((pPmInt_t)px)->val;
+    y = ((pPmInt_t)py)->val;
+
+    /* Raise Value error if exponent is negative */
+    if (y < 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
+        return retval;
+    }
+
+    /* Calculate x raised to y */
+    n = 1;
+    while (y > 0)
+    {
+        n = n * x;
+        y--;
+    }
+    retval = int_new(n, r_pn);
+
+    return retval;
+}
