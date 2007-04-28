@@ -119,6 +119,9 @@ typedef enum PmType_e
     /** Native function object */
     OBJ_TYPE_NOB = 0x0C,
 
+    /** Thread */
+    OBJ_TYPE_THR = 0x0D,
+
     /** Exception object */
     OBJ_TYPE_EXN = 0x0E,
 
@@ -148,9 +151,6 @@ typedef enum PmType_e
 
     /** Sequence iterator */
     OBJ_TYPE_SQI = 0x16,
-
-    /** Thread */
-    OBJ_TYPE_THR = 0x17,
 } PmType_t, *pPmType_t;
 
 
