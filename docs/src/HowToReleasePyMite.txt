@@ -47,8 +47,10 @@ in the prescribed order:
         - ``make html``
         - ``make TAGS``
         - ``make check``
-        - ``make clean; make TARGET=ARM; cd src/sample/arm; make; cd ../../..``
-        - ``make clean; make TARGET=AVR; cd src/sample/avr; make; cd ../../..``
+        - ``make clean; make TARGET=AT91SAM7S``
+        - ``cd src/sample/at91sam7s; make``
+        - ``cd ../../..; make clean; make TARGET=AVR``
+        - ``cd src/sample/avr; make; cd ../../..``
         - Record the size of the AVR sample app in the ticket
 
     - Verify that a sample app runs on an AVR device; this can be done in
@@ -58,12 +60,12 @@ in the prescribed order:
         - Build and run a known good app in Atmel's AvrStudio simulator
         - Run a known good app on an AVR simulator
 
-    - Verify that a sample app runs on an ARM device; this can be done in
+    - Verify that a sample app runs on an AT91SAM7 device; this can be done in
       one of the following ways:
 
-        - Download and run a known good app on an actual ARM device
-        
-            - ``make clean; make TARGET=ARM; cd src/sample/arm; make``
+        - Download and run a known good app on an actual AT91SAM7 device
+
+            - ``make clean; make TARGET=AT91SAM7; cd src/sample/at91sam7; make``
             - Connect the AT91SAM7S-EK to the computer via a USB cable
             - Apply a jumper to JP28 for 5 seconds to clear flash; remove the
               jumper
@@ -83,9 +85,11 @@ in the prescribed order:
                 Series: AT91SAM7Sxx
                 Page Size: 128 bytes
                 Lock Regions: 16
+
                 sam7> unlock_regions
                 unlocking region 0: done
                 unlocking region 1: done
+
                 sam7> flash sample.bin
                 sam7> boot_from_flash
                 sam7> <ctrl+c>

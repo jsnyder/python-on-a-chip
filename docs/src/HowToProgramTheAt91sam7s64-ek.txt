@@ -1,0 +1,102 @@
+.. Copyright 2007 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+=======================================
+How to Program the Atmel AT91SAM7S64-EK
+=======================================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes how to connect a host computer to the Atmel
+AT91SAM7S64-EK evaluation board in order to program the device's memory.
+In doing so, it serves as a technical guide to the developer and user.
+
+Overview
+--------
+
+One of PyMite's supported targets is the ARM7 core and the Atmel AT91SAM7
+family in particular.  The author supports this target because he has a
+AT91SAM7S64-EK evaluation board.  This document describes how to load a
+PyMite program onto this target.
+
+
+Requirements
+------------
+
+The developer needs a host computer with a USB port and a recent copy of
+Subversion_ SCM.
+
+The developer shall download the sam7utils_ open source software::
+    
+    svn co https://oss.tekno.us/svn/sam7utils/trunk sam7utils
+
+The developer shall build same7utils for his host computer::
+
+    cd sam7utils
+    ./configure
+    make
+    sudo make install
+
+.. _sam7utils: http://oss.tekno.us/sam7utils/
+.. _Subversion: http://subversion.tigris.org/
+
+
+Preparing the Device
+--------------------
+
+The AT91SAM7S64-EK needs to have its program memory erased and its bootloader
+restored before a new program can be flashed.
+
+To erase the AT91SAM7S64's program memory:
+
+    - Connect the AT91SAM7S-EK to the computer via a USB cable
+    - Apply a jumper to JP28 for 5 seconds to clear flash; remove the jumper
+
+To restore the bootloader (SAM-BA):
+
+    - Apply a jumper to JP5 for 30 seconds to restore SAM-BA; remove
+      the jumper
+    - Disconnect, pause and reconnect the AT91SAM7S-EK's USB cable
+      to reset the connection
+
+Loading the PyMite Program
+--------------------------
+
+The sam7utils are used to load the PyMite sample program onto the
+AT91SAM7S64-EK.  Run the following commands at a command prompt::
+
+    % sam7
+    found boot agent
+    Chip Version: 0
+    Embedded Processor: ARM7TDMI
+    NVRAM Region 1 Size: 64 K
+    NVRAM Region 2 Size: 0 K
+    SRAM Size: 16 K
+    Series: AT91SAM7Sxx
+    Page Size: 128 bytes
+    Lock Regions: 16
+
+    sam7> unlock_regions
+    unlocking region 0: done
+    unlocking region 1: done
+
+    sam7> flash sample.bin
+    sam7> boot_from_flash
+    sam7> <ctrl+c>
+
+Troubleshooting
+---------------
+
+If ``sam7`` is run and it reports, "can not find boot agent",
+then retry the steps in `Preparing the Device`_ with longer jumper application
+times.
+
+.. :mode=rest:

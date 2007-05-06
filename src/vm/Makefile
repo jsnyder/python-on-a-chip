@@ -46,12 +46,13 @@ ifeq ($(TARGET), AVR)
 	SOURCES += plat/avr.c
 	PMSTDLIB_SOURCES += ../lib/avr.py
 else
-ifeq ($(TARGET), ARM)
+ifeq ($(TARGET), AT91SAM7)
 	TARGET_MCU ?= arm7tdmi
 	AR = arm-elf-ar
 	CC = arm-elf-gcc
 	SIZE = arm-elf-size
 	CFLAGS += -mcpu=$(TARGET_MCU) -mthumb -mthumb-interwork -DTARGET_MCU=$(TARGET_MCU)
+	SOURCES += plat/at91sam7.c
 endif
 endif
 endif

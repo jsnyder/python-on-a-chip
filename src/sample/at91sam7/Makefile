@@ -108,8 +108,8 @@ OPT = s
 # Debugging format.
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
-#DEBUG = stabs
-DEBUG = dwarf-2
+DEBUG = stabs
+#DEBUG = dwarf-2
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.

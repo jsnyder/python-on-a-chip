@@ -19,6 +19,7 @@
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x51
+
 /**
  * PyMite platform-specific routines for AVR target
  *
@@ -68,10 +69,6 @@
 #endif /* AVR_DEFAULT_TIMER_SOURCE */
   
 /***************************************************************
- * Defines
- **************************************************************/
-
-/***************************************************************
  * Functions
  **************************************************************/
 
@@ -92,20 +89,20 @@ plat_init(void)
     UCR = _BV(TXEN) | _BV(RXEN);
     /* PORT END */
     
-    #ifdef AVR_DEFAULT_TIMER_SOURCE
+#ifdef AVR_DEFAULT_TIMER_SOURCE
     /* PORT BEGIN: Configure a timer that fits your needs. */
     /* Use T/C0 in synchronous mode, aim for a tick rate of
      * several hundred Hz */
-    #if (TARGET_MCU == atmega103) || (TARGET_MCU == atmega128)
+#if (TARGET_MCU == atmega103) || (TARGET_MCU == atmega128)
     /* set T/C0 to use synchronous clock */
     ASSR &= ~(1<<AS0);
     /* set prescaler to /8 */
     TCCR0 &= ~0x07;
     TCCR0 |= (1<<CS01);
-    #else
-    #error No timer configuration is implemented for this AVR.
-    #endif 
-    #endif /* AVR_DEFAULT_TIMER_SOURCE */
+#else
+#error No timer configuration is implemented for this AVR.
+#endif 
+#endif /* AVR_DEFAULT_TIMER_SOURCE */
     /* PORT END */
 
     return PM_RET_OK;
@@ -227,5 +224,5 @@ plat_getMsTicks(uint32_t *r_ticks)
 void 
 plat_reportError(PmReturn_t result)
 {
-    /* TBD */
+    /* TODO #97: Implement plat_reportError for AVR */
 }

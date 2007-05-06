@@ -104,13 +104,14 @@ is a list of the build options and their possible values.
 ``HEAP_SIZE``:
     Specifies the desired size of the PyMite heap in bytes.
     Possible values can be any positive integer.  To avoid errors, the size
-    should be less than the size of physical memory and (for ARM targets)
+    should be less than the size of physical memory and (for 32-bit targets)
     an integer multiple of 4.  The default value depends on the ``TARGET``.
     See the Makefile for details.  Example: ``make HEAP_SIZE=0x1000``
 
 ``TARGET``:
-    Specifies the intended build target.  Possible values: ``ARM``, ``AVR``,
-    ``DESKTOP``.  The default is ``DESKTOP``.  Example: ``make TARGET=AVR``
+    Specifies the intended build target.  Possible values: ``AT91SAM7S``,
+    ``AVR``, ``DESKTOP``.  The default is ``DESKTOP``.
+    Example: ``make TARGET=AVR``
 
 ``TARGET_MCU``:
     Specifies the precise chip to compile for when ``TARGET`` is something
