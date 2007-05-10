@@ -100,20 +100,37 @@ in the prescribed order:
 
     - Check-in the branch and review
     - Mainline the branch
-    - Tag the mainline: ``svn cp https://svn.pymite.python-hosting.com/trunk
-      https://svn.pymite.python-hosting.com/tags/pymite-RR``
+    - Tag the mainline::
+
+        % svn cp https://svn.pymite.python-hosting.com/trunk https://svn.pymite.python-hosting.com/tags/pymite-RR
+
     - Make the distribution file:
 
         - Get a fresh `export` of the tag so no ``.svn`` artifacts are present;
-          the directory should be named ``pymite-RR``:
-          ``svn export https://svn.pymite.python-hosting.com/tags/pymite-RR pymite-RR``
+          the directory should be named ``pymite-RR``::
+
+            % svn export https://svn.pymite.python-hosting.com/tags/pymite-RR pymite-RR
+
         - Run ``make dist PYMITE_RELEASE=RR`` where `RR` is the release number
-        - Tar and gzip the directory so it is named ``pymite-RR.tgz``
+        - Tar and gzip the directory so it is named ``pymite-RR.tgz``::
 
-    - Attach the distribution file to the wiki front page
-    - Announce the release on the `wiki`_ front page and the `PyMite maillist`_.
+            % tar -c pymite-RR/ > pymite-RR.tar
+            % gzip pymite-RR.tar
 
-.. _`wiki`: http://pymite.python-hosting.com/
+    - Upload the tar file to a public file server and link to it from the
+      PyMite wiki front page.  Get the MD5 hash so people can check the
+      authenticity::
+
+        % md5 pymite-RR.tar.gz
+
+    - Announce the release on:
+
+        - The `PyMite wiki`_ front page
+        - The `PyMite maillist`_
+        - `comp.lang.python.announce`_
+
+.. _`PyMite wiki`: http://pymite.python-hosting.com/
 .. _`PyMite maillist`: pymite@googlegroups.com
+.. _`comp.lang.python.announce`: http://groups.google.com/group/comp.lang.python.announce/post
 
 .. :mode=rest:
