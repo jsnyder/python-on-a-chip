@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
 # Copyright 2002 Dean Hall

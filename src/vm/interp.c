@@ -616,9 +616,19 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case RETURN_VALUE:
-                /* TODO #109: Check that stack should have only 1 item */
                 /* Get expiring frame's TOS */
                 pobj2 = PM_POP();
+
+#if __DEBUG__
+                /* #109: Check that stack should now be empty */
+                /* Get the number of local variables for this code obj */
+                uint8_t const *paddr = FP->fo_func->f_co->co_codeimgaddr
+                                       + CI_STACKSIZE_FIELD + 1;
+                t8 = mem_getByte(FP->fo_func->f_co->co_memspace, &paddr);
+
+                /* SP should point to one past the end of the locals */
+                C_ASSERT(SP == &(FP->fo_locals[t8]));
+#endif
 
                 /* Keep ref of expiring frame */
                 pobj1 = (pPmObj_t)FP;
@@ -1066,12 +1076,19 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get name String obj */
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
 
+                /* Pop unused None object */
+                pobj3 = PM_POP();
+
+                /* Ensure "level" is -1; no support for relative import yet */
+                pobj3 = TOS;
+                C_ASSERT(obj_compare(pobj3, PM_NEGONE) == C_SAME);
+
                 /* TODO #110: Prevent importing previously-loaded module */
                 /* Load module from image */
                 retval = mod_import(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
-                /* Module overwrites None on stack */
+                /* Put Module on top of stack */
                 TOS = pobj2;
 
                 /* Code after here is a duplicate of CALL_FUNCTION */
@@ -1369,6 +1386,9 @@ interpret(const uint8_t returnOnNoThreads)
                         gVmGlobal.nativeframe.nf_locals[t16] = PM_POP();
                     }
 
+                    /* Pop the function object */
+                    PM_POP();
+
                     /* Get native function index */
                     pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
                     t16 = ((pPmNo_t)pobj2)->no_funcindx;
@@ -1391,17 +1411,16 @@ interpret(const uint8_t returnOnNoThreads)
                      * RETURN FROM NATIVE FXN
                      */
 
-                    /* If the frame pointer was switched, proceed with it */
+                    /* If the frame pointer was switched, do nothing to TOS */
                     if (retval == PM_RET_FRAME_SWITCH)
                     {
-                        TOS = PM_NONE;
                         retval = PM_RET_OK;
                     }
 
                     /* Otherwise, return the result from the native function */
                     else
                     {
-                        TOS = gVmGlobal.nativeframe.nf_stack;
+                        PM_PUSH(gVmGlobal.nativeframe.nf_stack);
                     }
                     PM_BREAK_IF_ERROR(retval);
                 }
