@@ -47,8 +47,8 @@ in the prescribed order:
         - ``make html``
         - ``make TAGS``
         - ``make check``
-        - ``make clean; make TARGET=AT91SAM7S``
-        - ``cd src/sample/at91sam7s; make``
+        - ``make clean; make TARGET=AT91SAM7``
+        - ``cd src/sample/at91sam7; make``
         - ``cd ../../..; make clean; make TARGET=AVR``
         - ``cd src/sample/avr; make; cd ../../..``
         - Record the size of the AVR sample app in the ticket

@@ -5,7 +5,7 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   04
+:Release:   05
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
@@ -15,7 +15,7 @@ Purpose
 PyMite is a flyweight Python interpreter written from scratch to execute
 on 8-bit and larger microcontrollers with resources as limited as 64 KiB
 of program memory (flash) and 4 KiB of RAM. PyMite supports a subset of
-the Python syntax and can execute a subset of the Python bytecodes.
+the Python 2.5 syntax and can execute a subset of the Python 2.5 bytecodes.
 PyMite can also be compiled, tested and executed on a desktop computer.
 
 License
@@ -63,11 +63,11 @@ system tests on the desktop:
 
 To build for AVR targets like the ATmega103 (refer to the Makefile for others):
 
-    1. In the project root, run ``make clean; make check TARGET=AVR``
-       to make an executable for ``src/tests/t003.*``
+    1. In the project root, run ``make clean; make TARGET=AVR``
+    2. In ``src/sample/avr`` run ``make`` to build a sample program for the AVR.
 
 The development system should have installed the GNU Compiler
-Collection version 3.4 or later and Python 2.4 or later.
+Collection version 3.4 or later and Python 2.5 or later.
 The author also uses avr-gcc to target Atmel AVR microcontrollers.
 
 PyMite is developed on Mac OS X and should also compile on
@@ -76,7 +76,7 @@ deeply embedded, it does not rely on many libraries.
 When compiling for the AVR, it will need avr-libc.
 
 PyMite builds as an archive.  The user should then build his
-own main() function following examples in ``src/samples/`` and link in
+own main() function following examples in ``src/sample/`` and link to
 ``libpmvm.a`` and the appropriate PyMite native libraries.
 
 Discussion
@@ -96,15 +96,67 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
+    - Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues and
+      fixes.
     - Josh Lifton: Used PyMite in PhD work, donated many code fixes and tests.
-    - Philipp Adelt: Enhancements to pmImgCreator.py, issues and fixes.
     - www.webfaction.com: for providing quality, free project hosting on
       www.python-hosting.com
 
 Release Notes
 -------------
 
-This is PyMite release 04
+This is PyMite release 05
+
+* Release 05, 2007/05/10
+
+    - #116: Created Release 05 package
+    - #109: Created check to ensure stack is empty after RETURN_VALUE pops last 
+      item
+    - #114: Created platform file for Atmel's ARM7
+    - #112: Forced Dict keys to be of hashable type
+    - #105: Moved OBJ_TYPE_THR to some value before OBJ_TYPE_HASHABLE_MAX
+    - #108: Cleaned up *_POWER bytecodes
+    - #113: Fixed the implementation of builtin map()
+    - #68:  Cleaned up code to meet standards
+    - #102: Implemented the remaining IMPORT_ bytecodes
+    - #46:  Finalized design of string objects
+    - #69:  Fixed bitwise operators to prevent automatic promotion
+    - #32:  Used GNU indent for code formatting
+    - #64:  Renamed MEMSPACE_FLASH to MEMSPACE_PROGMEM
+    - #85:  Created new avr sample project
+    - #100: Removed od_const bit from object descriptor
+    - #103: Implemented obj_print() for other object types
+    - #98:  Fixed writing image file for win32 target
+    - #99:  Designed a way for ipm to be able to receive images larger than 
+      HEAP_MAX_CHUNK_SIZE
+    - #90:  Created new lib function to return system time
+    - #63:  Created mmb sample project
+    - #91:  Fixed vm so that error codes are returned by the main() function
+    - #93:  Changed ifdef from TARGET_DESKTOP to a debug-oriented definition 
+      where it is appropriate
+    - #70:  Fixed incorrect exception for chr('a')
+    - #96:  Created library function to spawn a new thread
+    - #82:  Fixed namespace issue
+    - #95:  Fixed sys.heap() so it doesn't overwrite the static const 0 integer 
+      obj
+    - #94:  Fixed integer loading from image so it re-uses static ints (-1,0,1).
+    - #89:  Moved plat module functions into sys module
+    - #88:  Created library function to return heap stats
+    - #84:  Fixed bus error when using ipm
+    - #87:  Redesigned the heap
+    - #86:  Moved as much platform-specific code to the platform implementation 
+      file
+    - #83:  Updated documentation to reflect new size requirement
+    - #74:  Added to pmImgCreator a filter to catch constants of unsupported 
+      types
+    - #65:  Created plat module with put and get routines
+    - #71:  Added support for builtin function eval()
+    - #80:  Fixed DUP_TOPX bytecode
+    - #81:  Implemented list_setItem()
+    - #67:  Created interactive interface
+    - #78:  Fixed import module yields None
+    - #76:  Printed always escapes special characters and puts quotes around it
+    - #75:  Supported multiple (green) threads inside PyMite
 
 * Release 04, 2006/12/14
 
