@@ -66,7 +66,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pco = (pPmCo_t)pchunk;
 
     /* Fill in the CO struct */
-    OBJ_SET_TYPE(*pco, OBJ_TYPE_COB);
+    OBJ_SET_TYPE(pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
 
@@ -105,7 +105,7 @@ no_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pno)
     pno = (pPmNo_t)pchunk;
 
     /* Fill in the NO struct */
-    OBJ_SET_TYPE(*pno, OBJ_TYPE_NOB);
+    OBJ_SET_TYPE(pno, OBJ_TYPE_NOB);
     pno->no_argcount = mem_getByte(memspace, paddr);
 
     /* Get index into native fxn table */

@@ -169,7 +169,7 @@ def putb(b):
     }
 
     /* If arg is not an int, raise TypeError */
-    if (OBJ_GET_TYPE(*pb) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pb) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -200,7 +200,7 @@ def runInThread(f):
 
     /* If arg is not a function, raise TypeError */
     pf = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pf) != OBJ_TYPE_FXN)
+    if (OBJ_GET_TYPE(pf) != OBJ_TYPE_FXN)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

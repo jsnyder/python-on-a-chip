@@ -53,12 +53,14 @@ obj_loadFromImg(PmMemSpace_t memspace,
                 uint8_t const **paddr, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
-    PmObjDesc_t od;
+    PmObj_t obj;
+    
 
     /* Get the object descriptor */
-    od.od_type = (PmType_t)mem_getByte(memspace, paddr);
+    obj.od= (PmObjDesc_t)0x0000;
+    OBJ_SET_TYPE(&obj, mem_getByte(memspace, paddr));
 
-    switch (od.od_type)
+    switch (OBJ_GET_TYPE(&obj))
     {
         case OBJ_TYPE_NON:
             /* If it's the None object, return global None */
@@ -103,7 +105,7 @@ obj_isFalse(pPmObj_t pobj)
 {
     C_ASSERT(pobj != C_NULL);
 
-    switch (OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_NON:
             /* None evaluates to false */
@@ -148,7 +150,7 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
     int16_t i;
     uint8_t c;
 
-    switch (OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_TUP:
             /* Iterate over tuple to find item */
@@ -166,7 +168,7 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
 
         case OBJ_TYPE_STR:
             /* Raise a TypeError if item is not a string */
-            if ((OBJ_GET_TYPE(*pitem) != OBJ_TYPE_STR))
+            if ((OBJ_GET_TYPE(pitem) != OBJ_TYPE_STR))
             {
                 retval = PM_RET_EX_TYPE;
                 break;
@@ -243,13 +245,13 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     }
 
     /* If types are different, objs must differ */
-    if (OBJ_GET_TYPE(*pobj1) != OBJ_GET_TYPE(*pobj2))
+    if (OBJ_GET_TYPE(pobj1) != OBJ_GET_TYPE(pobj2))
     {
         return C_DIFFER;
     }
 
     /* Otherwise handle types individually */
-    switch (OBJ_GET_TYPE(*pobj1))
+    switch (OBJ_GET_TYPE(pobj1))
     {
         case OBJ_TYPE_NON:
             return C_SAME;
@@ -285,7 +287,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
 
     C_ASSERT(pobj != C_NULL);
 
-    switch (OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_NON:
             if (marshallString)
@@ -352,7 +354,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             PM_RETURN_IF_ERROR(retval);
             plat_putByte('x');
             PM_RETURN_IF_ERROR(retval);
-            int_printHexByte(OBJ_GET_TYPE(*pobj));
+            int_printHexByte(OBJ_GET_TYPE(pobj));
             PM_RETURN_IF_ERROR(retval);
             plat_putByte(' ');
             PM_RETURN_IF_ERROR(retval);

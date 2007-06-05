@@ -210,7 +210,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
         retval = heap_getChunk(sizeof(Segment_t), &pchunk);
         PM_RETURN_IF_ERROR(retval);
         pseg = (pSegment_t)pchunk;
-        OBJ_SET_TYPE(*pseg, OBJ_TYPE_SEG);
+        OBJ_SET_TYPE(pseg, OBJ_TYPE_SEG);
         sli_memset((unsigned char *)pseg->s_val,
                    0, SEGLIST_OBJS_PER_SEG * sizeof(pPmObj_t));
         pseg->next = C_NULL;
@@ -277,7 +277,7 @@ seglist_new(pSeglist_t *r_pseglist)
     retval = heap_getChunk(sizeof(Seglist_t), (uint8_t **)r_pseglist);
     PM_RETURN_IF_ERROR(retval);
 
-    OBJ_SET_TYPE(**r_pseglist, OBJ_TYPE_SGL);
+    OBJ_SET_TYPE(*r_pseglist, OBJ_TYPE_SGL);
     (*r_pseglist)->sl_rootseg = C_NULL;
     (*r_pseglist)->sl_lastseg = C_NULL;
     (*r_pseglist)->sl_length = 0;

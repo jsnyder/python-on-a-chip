@@ -58,7 +58,7 @@ dict_new(pPmObj_t *r_pdict)
 
     /* Init dict fields */
     pdict = (pPmDict_t)*r_pdict;
-    OBJ_SET_TYPE(*pdict, OBJ_TYPE_DIC);
+    OBJ_SET_TYPE(pdict, OBJ_TYPE_DIC);
     pdict->length = 0;
     retval = seglist_new(&pdict->d_keys);
     PM_RETURN_IF_ERROR(retval);
@@ -75,7 +75,7 @@ dict_clear(pPmObj_t pdict)
     C_ASSERT(pdict != C_NULL);
 
     /* Raise TypeError if arg is not a dict */
-    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -111,7 +111,7 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
     C_ASSERT(pval != C_NULL);
 
     /* if it's not a dict, raise TypeError */
-    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -119,7 +119,7 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
 
     /* #112: Force Dict keys to be of hashable type */
     /* If key is not hashable, raise TypeError */
-    if (OBJ_GET_TYPE(*pkey) > OBJ_TYPE_HASHABLE_MAX)
+    if (OBJ_GET_TYPE(pkey) > OBJ_TYPE_HASHABLE_MAX)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -158,7 +158,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj)
     C_ASSERT(pdict != C_NULL);
 
     /* if it's not a dict, raise TypeError */
-    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -199,7 +199,7 @@ dict_print(pPmObj_t pdict)
     C_ASSERT(pdict != C_NULL);
 
     /* if it's not a dict, raise TypeError */
-    if (OBJ_GET_TYPE(*pdict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -246,14 +246,14 @@ dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
     C_ASSERT(psourcedict != C_NULL);
 
     /* If it's not a dict, raise TypeError */
-    if (OBJ_GET_TYPE(*pdestdict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(pdestdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
     /* If it's not a dict, raise TypeError */
-    if (OBJ_GET_TYPE(*psourcedict) != OBJ_TYPE_DIC)
+    if (OBJ_GET_TYPE(psourcedict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

@@ -62,7 +62,7 @@ def adcGet(c):
 
     /* Get arg, throw type exception if it's not an int */
     pc = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pc) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -96,7 +96,7 @@ def adcGetBMA(c):
 
     /* Get arg, throw type exception if it's not an int */
     pc = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pc) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -132,8 +132,8 @@ def beep(f, ms):
     /* Get the args, throw exception if needed */
     pf = NATIVE_GET_LOCAL(0);
     pms = NATIVE_GET_LOCAL(1);
-    if ((OBJ_GET_TYPE(*pf) != OBJ_TYPE_INT) ||
-        (OBJ_GET_TYPE(*pms) != OBJ_TYPE_INT))
+    if ((OBJ_GET_TYPE(pf) != OBJ_TYPE_INT) ||
+        (OBJ_GET_TYPE(pms) != OBJ_TYPE_INT))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -170,7 +170,7 @@ def digGet(c):
 
     /* Get the arg, throw exception if needed */
     pc = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pc) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -225,7 +225,7 @@ def dipGet(c):
 
     /* Get the arg, throw type exception if needed */
     pc = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pc) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pc) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -327,7 +327,7 @@ def lcdPrintStr(ps):
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(ps) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -363,7 +363,7 @@ def lcdSetLine(n):
 
     /* Get the arg, throw type exception if needed */
     pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -417,7 +417,7 @@ def pwmA(s):
 
     /* Get the arg, throw exception if needed */
     ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(ps) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -451,7 +451,7 @@ def pwmB(s):
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(ps) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -508,13 +508,13 @@ def sciPutByte(c):
     pc = NATIVE_GET_LOCAL(0);
 
     /* if arg is a string, write 0th char */
-    if (OBJ_GET_TYPE(*pc) == OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(pc) == OBJ_TYPE_STR)
     {
         c = (U8)(((pPmString_t)pc)->val[0]);
         mmb_sciPutByte(c);
     }
     /* if arg is an int, write LSB */
-    else if (OBJ_GET_TYPE(*pc) == OBJ_TYPE_INT)
+    else if (OBJ_GET_TYPE(pc) == OBJ_TYPE_INT)
     {
         c = (U8)(((pPmInt_t)pc)->val & 0xFF);
         mmb_sciPutByte(c);
@@ -549,7 +549,7 @@ def sciPutStr(s):
 
     /* Get the arg, throw type exception if needed */
     ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(ps) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -582,7 +582,7 @@ def sleepms(ms):
 
     /* Get the arg, throw type exception if needed */
     pms = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pms) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pms) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

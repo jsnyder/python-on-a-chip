@@ -12,86 +12,279 @@ The PyMite Heap Design
 :Author:    Dean Hall
 :Id:        $Id$
 
+
 Purpose
 -------
 
 This document describes the design of the memory heap for the PyMite project.
-In doing so, it serves  as a design document for the PyMite developers.
+In doing so, it serves as a design document for the PyMite developers.
+
 
 Overview
 --------
 
-PyMite shall use a statically declared block of RAM for the virtual machine's
-memory heap.  One API shall be provided to allocate chunks from the heap,
-one API shall be provided to return chunks to the heap and one API shall be
-provided to return the amount of memory remaining in the heap.  The remaining
-implementation of the heap shall be transparent to the user.
+PyMite shall use a contiguous block of RAM for the virtual machine's
+memory heap.  All of PyMite's dynamic memory comes from the heap.  An API
+shall be provided to allocate and free chunks and perform other operations
+with the heap.  The heap's internal implementation shall be transparent
+to the user.  A mark-sweep garbage collector is used to reclaim allocated
+chunks that are no longer in use by the VM.
+
 
 Design
 ------
 
-PyMite's use of a statically declared block of RAM as the source of the
-memory heap is to avoid using memory allocation functions such as ``malloc()``
-which vary from one embedded target library to another.
+PyMite uses a statically declared, contiguous block of RAM as the memory heap
+to avoid using memory allocation functions such as ``malloc()`` which vary
+from one embedded target library to another.
 
-Memory from the heap is divided into chunks.  A chunk has minimum and
-maximum size limits.  The minimum chunk size is equivalent to the size of
-the heap descriptor type.  Since the size of this type varies with the target
-device, there is not one set value for the minimum chunk size.  As an example,
-the minimum chunk size for an 8-bit Atmel AVR is 4 bytes.
+Memory from the heap is rendered to the caller in chunks.  A chunk is simply
+a contiguous block of memory with an object descriptor at the top of the chunk.
+The object descriptor contains information about the chunk that is used by the
+heap as well as the PyMite virtual machine.  When the caller requests a chunk
+of a certain size, the heap adds extra space to the chunk to allow for the
+object descriptor.  A chunk has minimum and maximum size limits.  The minimum
+chunk size is equivalent to the size of the heap descriptor type.  Since the
+size of a heap descriptor varies with the target device, the value for the
+minimum chunk size is platform depedent.  The size field in the object
+descriptor indicates the size of the chunk, but not directly.  That means,
+a value of 0x10 in the size field does not necessarily mean the chunk is 16
+bytes in size.  The actual meaning of the size field depends on the
+implementation.
 
-The maximum size for a chunk is limited by the number of the bits in the field
-in the object descriptor of the chunk that stores the chunk's size.  This field
-is 8-bits for all target devices.  So the maximum number of non-zero, unique 
-values is 255.  As of ticket #99 (Revision [195] mainlined 2007/03/16), this
-field is multiplied by 4 to get the actual chunk size.  This allows the VM to
-use larger chunks and also keeps the chunks aligned on 4-byte boundaries,
-which is important on some 32-bit platforms.  The maximum size of a chunk is 
-1020 bytes.
+The PyMite VM uses dynamic memory from the heap during operation to hold
+objects.  The VM must keep a reference to a chunk for it to be able to use
+the object in that chunk.  When the VM no longer needs an object it may
+explicitly free the chunk containing the object or it may simply erase the
+reference to the object.  In the latter case, the garbage collector
+is responsible for finding and reclaiming objects that are no longer in use.
+A reclaimed chunk can be overwritten an re-used for future chunk requests.
 
-The maximum size of a chunk has impacted other parts of the VM.  For example,
-the length of String and Tuple objects are directly constrained by the maximum 
-chunk size.  The List and Dict object implementations used a segmented linked 
-list in their implementations to overcome the chunk size limit.
+Interface
+---------
 
 The public API, ``heap_getChunk()``, shall be provided to allocate a chunk of
 memory from the heap.  This API will return an error code in its return value
 if a suitable chunk cannot be provided or some other error occurs.  If the
-return value indicates succes, a pointer to a chunk of memor is returned by
-reference.  This chunk shall have its size field set and its size shall the
-requested size or larger.  Similar to above, some 32-bit target devices require
-pointers be even multiples of four bytes.  So the implementation of
+return value indicates succes, a pointer to a chunk of memory is returned by
+reference.  This chunk shall have its size field set and its size shall be the
+requested size or larger.  Some 32-bit target devices require addresses of
+items to be even multiples of four bytes.  So the implementation of
 ``heap_getChunk()`` rounds up the requested chunk size to the next even multiple
-of four.  This results in some wasted memory, but increases the likelihood of
-a size match when memory chunks are recycled and offers the option to optimize
-the search for chunks in the heap's free list.
-
-This paragraph explains the memory allocation algorithm used by
-``heap_getChunk()``.  After the heap is initialized, all available memory is
-in one big block called the clean heap.  As long as there is sufficient memory
-in the clean heap for the requested size, the new chunk will be obtained from
-the clean heap.  If the clean heap is not large enough for the requested size,
-the free list is searched for a chunk of suitable size.  The first chunk that
-is equal to or greater than the requested size is used.  Chunks that are in the
-free list are never re-sized to fit a chunk request, nor are adjacent free
-chunks coalesced into a larger chunk.
+of four.  This results in a small amout of wasted memory (internal
+fragmentation).
 
 The public API, ``heap_freeChunk()``, shall be provided to return a chunk of
 memory to the heap.  This API will return an error code in its return value
-if an error occurs.  At this time, there are no ways a known error can occur.
-When chunks are returned to the heap, they are put in a linked list sorted
-from smallest to largest.  This list is called the free list and is used by
-``heap_getChunk()`` as explained the paragraph above.
+if an error occurs.  At this time, there are no known ways an error can occur.
+This API should only be used if the chunk being returned is known, for certain,
+to no longer be in use by the VM.  If it is not known whether a chunk is in
+use or not, the programmer should do nothing and allow the garbage collector
+to reclaim unused chunks.
+
+The garbage collector is activated automatically when, chunk allocation fails
+inside ``heap_getChunk()``.  The garbage collector reclaims chunks that are
+no longer being used by the VM and makes them available for allocation.
+Inside ``heap_getChunk()`` a second attempt to allocate a chunk is made after
+garbage collection is complete.  If this second attempt fails, an OutOfMemory
+exception is raised; otherwise, the newly allocated chunk is returned by
+reference.
+
+
+Implementation
+--------------
+
+This paragraph explains the memory allocation policy used by the heap.
+The allocator shall use a Best-Fit algorithm to allocate chunks from the heap.
+The Best-Fit algorithm is chosen because research shows that when it is
+combined with coalescing reclamation, fragmentation is reduced to
+insignificance [Johnstone1998]_.  Furthermore, Best-Fit is chosen because
+the cost of scanning the free list of PyMite's small heap is bounded.
+
+After the heap is initialized, all available memory is in one big chunk
+in the free list.  However, after the VM operates for some time, the free list
+contains multiple free chunks.  These chunks shall be kept in a doubly-linked
+list ordered by their size, from small to large.
+If a best fit chunk is not available, an exact fit chunk is carved from the
+largest chunk.
+
+Chunks are added to the free list by an explicit call to ``heap_freeChunk()``
+or during the sweep phase of the garbage collector.  When a chunk is added to
+the free list by ``heap_freeChunk()``, it is not coalesced with neighboring
+chunks even if they are not in use.  Instead, the chunk is just inserted into
+the free list.  That chunk will be coalesced the next time the garbage collector
+runs.  This method of lazy coalescing leaves the chunk in the free list
+which allows an opportunity for the chunk to be re-used without the cost
+of coalescing and splitting.  Garbage collection occurs when no chunks of
+suitable size are available, which is an appropriate time to perform coalescing.
+
+.. [Johnstone1998]
+   "The Memory Fragmentation Problem: Solved?",
+   M. S. Johnstone and P. R. Wilson,
+   *International Symposium on Memory Management*,
+   Oct. 1998.
+
+
+Heap Chunk Duality
+~~~~~~~~~~~~~~~~~~
+
+A memory chunk can take two forms throughout the execution of the PyMite VM.
+When a chunk is allocated and in use, it uses the object descriptor struct,
+``PmObjDesc_t``, to store important operational details.  This is accomplished
+by declaring ``PmObjDesc_t`` at the head of every PyMite object structure.
+However, when that same chunk is deallocated and in the free list, it uses
+the heap descriptor struct, ``PmHeapDesc_t``, so that a larger value can be
+stored in the size field.  When a chunk is not in use, the type field and GC
+mark bit are no longer needed and are not present in the heap descriptor.
+The ``PmHeapDesc_t`` structure also has one or more pointers used to create
+the free list.
+
+
+The Object Descriptor
+~~~~~~~~~~~~~~~~~~~~~
+
+Care is taken to keep the object descriptor as small as possible.  PyMite's
+object descriptor uses only two bytes.  The object desriptor has four fields:
+the size field (9 bits), the GC mark bit, the free bit and the object type
+(5-bits) field.
+
+The size field connotes the size of the chunk.  The size field is multiplied
+by four to get the actual size of the chunk.  The GC mark bit is used by the
+mark-sweep garbage collector.  The free bit indicates to the garbage
+collector's sweep phase when an object is free and available to be coalesced.
+The free bit is not strictly necessary, but having it eliminates the need to
+change the GC mark bit of all objects in the free list during garbage collection.
+The type field is used by the PyMite VM to denote the type of object in this
+chunk.
+
+The following is a diagram of the object descriptor at the head of a chunk::
+
+           MSb          LSb
+           7 6 5 4 3 2 1 0
+ pchunk-> +-+-+-+-+-+-+-+-+     S := od_size: Size of the chunk (2 LSbs dropped)
+          |     S[9:2]    |     F := od_free: free bit
+          +-+-+---------+-+     M := od_gcval: GC Mark bit
+          |F|M|    T    |S|     T := od_type: Object type (language specific)
+          +-+-+---------+-+
+          | object data   |
+          ...           ...
+          | end data      |     Theoretical min size == 2
+          +---------------+     Effective min size == 8
+
+
+This paragraph explains what happens when a chunk is allocated.  A chunk is
+allocated with a requested size, that size is bumped up to the
+next multiple of four to accomodate 4-byte alignment on some 32-bit platforms.
+The chunk's size field is set to the effective size (divided by 4).
+The free bit is cleared so that the GC knows this chunk is in use during the
+sweep phase.  The GC mark bit is set to the current GC mark, so the object
+doesn't accidently survive the next garbage collection cycle.
+The type field is left alone (the caller will set the object type).
+If this chunk is carved from the front of a larger chunk, the remainder
+chunk's heap descriptor must be created: the size field is set to the reduced
+size and the free bit is set.
+
+
+The Heap Descriptor
+~~~~~~~~~~~~~~~~~~~
+
+Since the heap descriptor is used in chunks that are not active and do not use
+the contents of the chunk, the heap descriptor is larger than the object
+descriptor.  PyMite's heap descriptor uses two bytes and two pointers.  Since
+pointer sizes vary on 8, 16 and 32-bit platforms, the size of the heap
+descriptor is platform dependent.  The heap desriptor has two fields:
+the size field (14 bits) and the free bit.  One bit is reserved for future
+use.
+
+The size field connotes the size of the chunk.  The size field is multiplied
+by four to get the actual size of the chunk.  Since chunks that are not in use
+may be as large as the entire heap, the size field is made larger than the one
+in the object descriptor.  However, the same trick of not storing the two LSbs
+is used.  Instead of having a GC mark bit, the heap descriptor uses the free
+bit to tell the GC that this chunk is not in use.  This means all chunks in the
+free list do not need to be marked during the mark phase of the GC.
+The free bit indicates to the garbage collector's sweep phase when an object
+is free and available to be coalesced.
+
+The heap descriptor also contains two pointers, prev and next.  These pointers
+are used to form the doubly-linked list of free chunks.
+
+The following is a diagram of the heap descriptor at the head of a chunk::
+
+           MSb          LSb
+           7 6 5 4 3 2 1 0
+ pchunk-> +-+-+-+-+-+-+-+-+
+          |     S[9:2]    |     S := hd_size: Size of the chunk (2 LSbs dropped)
+          +-+-+-----------+     F := hd_free: free bit
+          |F|R| S[15:10]  |     R := hd_reserved: Bit reserved for future use
+          +-+-+-----------+
+          |     P(L)      |     P := hd_prev: Pointer to previous node
+          |     P(H)      |     N := hd_next: Pointer to next node
+          |     N(L)      |
+          |     N(H)      |     Theoretical min size == 6
+          +---------------+     Effective min size == 8 (12 on 32-bit MCUs)
+          | unused space  |
+          ...           ...
+          | end chunk     |
+          +---------------+
+
+
+This paragraph explains what happens when a chunk is deallocated.  A chunk is
+deallocated in one of two ways.  A chunk can be explicitly deallocated by a
+call to ``heap_freeChunk()``.  In this case, the chunk's free bit is set
+and the chunk is inserted into the free list without being coalesced.  The chunk
+may be coalesced later during the sweep phase of garbage collection.  The
+heaps's available size is updated to include the free chunk.
+
+A chunk may also be implicitly deallocated by the garbage collector.  If a
+chunk is not reachable from the roots list during a GC cycle, that chunk is no
+longer being actively used by the VM and is deallocated.  In this case, the
+chunk's free bit is set and the chunk is possibly coalesced with free
+neighbor chunks during the sweep phase of the GC.  The coalesced chunk is
+inserted into the free list.  The heaps's available size is updated to include
+the free chunk.
+
 
 Garbage Collection
 ------------------
 
 Garbage collection is the process of reclaiming memory chunks that are no longer
-needed by the virtual machine.  The design of PyMite's heap includes plans for
-garbage collection, but the implementation does not yet include this ability.
-At this time, the focus of the heap implementation is to create allocation and
-deallocation functions that work flawlessly.  Only after this is achieved can
-garbage collection be possible.
+in use by the virtual machine.  PyMite uses a mark-sweep style garbage
+collector as opposed to a reference counting collector so that the programmer
+does not have to manually account for object use in native code.
+
+The garbage collector is activated when a request for a memory chunk is made
+and cannot be fulfilled because no chunk of suitable size is available.
+When the garbage collector is activated, the activity in the PyMite virtual
+machine stops.  Garbage collection begins with the mark phase of the mark-
+sweep collector.  The heap toggles a global bit that is used to represent the
+"marked" state.  Then, starting from the known root objects, the garbage
+collector recursively marks all objects that are reachable.  Remaining objects
+that were not marked now have a stale value in their object descriptor's GC mark
+field.  After all reachable objects are marked, the sweep phase of the collector
+begins.
+
+The sweep phase of the garbage collector starts at the base of the heap and
+proceeds sequentially through memory.  Each object that is free or whose GC
+mark field is stale is reclaimed.  Neighboring free chunks are coalesced into
+a single larger chunk.  Reclaimed chunks are inserted into the free list.
+Coalesced chunks, because their size has changed, must be removed and
+reinserted in the free list in order to maintain sorted order.
+A doubly linked list is used to make list removal and insertion easier.
+
+A special case arises when the GC activates when the interpreter is executing 
+native code.  In this case, newly-allocated objects could be collected because 
+they have not yet linked to their final object which would make it reachable 
+from the roots list.  To prevent this from happening, objects that are 
+allocated in a native code session are given a GC mark value that will
+allow that object to survive the next run of the GC.  Furthermore, the GC uses
+a counter variable in the native frame to prevent the GC from running twice
+while in one native code session.  These two implementation-specific features
+combine to prevent objects allocated in native code from being collected should
+the GC run later during that same native session.  If the case arises that the
+GC activates twice during one native code session, an out of memory exception
+is raised.
+
 
 Conclusion
 ----------
@@ -99,8 +292,80 @@ Conclusion
 PyMite includes its own dynamic memory allocation system that is based on a
 static block of RAM called the heap.  The heap allocates and reclaims chunks
 of memory to and from the PyMite VM during runtime.  Memory chunks are
-constrained in size and can explicitly reclaimed when no longer needed.
-Garbage collection is a possible future enhancement to this heap design.
+constrained in size and can be explicitly freed when no longer needed.
+Garbage collection is performed when needed.  The garbage collector coalesces
+neighboring chunks that, when combined with the Best-Fit allocator policy
+reduces fragmentation in the heap.
 
+
+
+.. Algorithm to allocate a chunk
+
+    pchunk = heap.freelist
+
+    # Skip to the first chunk that holds the requested size
+    while pchunk != NULL and PM_GET_SIZE(pchunk) < requestedSize:
+        pchunk = pchunk->next
+
+    if pchunk == NULL: return failure
+
+    heap_unlinkFromFreelist(pchunk)
+
+    # Check if a chunk can be carved from what is available
+    if PM_GET_SIZE(pchunk) - requestedSize >= PM_HEAP_MIN_CHUNK_SIZE:
+        remainderChunk = pchunk + requestedSize
+
+        # Create the object descriptor for the remainder chunk
+        PM_SET_FREE(remainderChunk, 1)
+        PM_SET_SIZE(remainderChunk, PM_GET_SIZE(pchunk) - requestedSize)
+        PM_SET_SIZE(pchunk, requestedSize)
+
+        heap_linkToFreelist(remainderChunk)
+
+    heap.avail -= PM_GET_SIZE(pchunk)
+    return pchunk
+
+
+.. Algorithm to coalesce during sweep:
+
+    pchunk = heap.base[0]
+    while (pchunk < heap.base[HEAP_SIZE]):
+
+        # Skip to the next unmarked or free chunk
+        while(not PM_GET_FREE(pchunk)
+              and (PM_GET_GCMARK(pchunk) == heap.gc_mark)):
+            pchunk += PM_GET_SIZE(pchunk)
+
+        # Accumulate the chunk's size of all consecutive unmarked or free chunks
+        totalchunksize = PM_GET_SIZE(pchunk)
+        additionalheapsize = 0
+        pnext = pchunk
+
+        # Coalesce all contiguous free chunks
+        while(PM_GET_FREE(pnext) or
+              (!PM_GET_FREE(pnext) and PM_GET_GCMARK(pchunk) != heap.gc_mark)):
+
+            totalchunksize += PM_GET_SIZE(pnext)
+
+            if PM_GET_FREE(pnext):
+                heap_unlinkFromFreelist(pnext)
+
+            else:
+                PM_SET_FREE(pnext, 1)
+                additionalheapsize += PM_GET_SIZE(pnext)
+
+            pnext += PM_GET_SIZE(pnext)
+            if (pnext >= heap.base[HEAP_SIZE]): break
+
+        # Set the chunk's free bit
+        PM_SET_FREE(pchunk, 1)
+
+        # Set this chunk's size
+        PM_SET_SIZE(pchunk, totalchunksize)
+
+        heap_linkToFreelist(pchunk)
+
+        # Continue to the next chunk
+        pchunk += totalchunksize
 
 .. :mode=rest:

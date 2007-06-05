@@ -58,7 +58,7 @@ def abs(n):
 
     /* Raise ValueError if arg is not int */
     pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
@@ -97,7 +97,7 @@ def chr(n):
 
     /* Raise TypeError if arg is not an int */
     pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -142,7 +142,7 @@ def eval(co, g, l):
 
     /* Raise ValueError if first arg is not a Code Object */
     pco = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
+    if (OBJ_GET_TYPE(pco) != OBJ_TYPE_COB)
     {
         PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
@@ -152,7 +152,7 @@ def eval(co, g, l):
     if (NATIVE_GET_NUM_ARGS() >= 2)
     {
         pg = NATIVE_GET_LOCAL(1);
-        if (OBJ_GET_TYPE(*pg) != OBJ_TYPE_DIC)
+        if (OBJ_GET_TYPE(pg) != OBJ_TYPE_DIC)
         {
             PM_RAISE(retval, PM_RET_EX_VAL);
             return retval;
@@ -169,7 +169,7 @@ def eval(co, g, l):
     if (NATIVE_GET_NUM_ARGS() >= 3)
     {
         pl = NATIVE_GET_LOCAL(2);
-        if (OBJ_GET_TYPE(*pl) != OBJ_TYPE_DIC)
+        if (OBJ_GET_TYPE(pl) != OBJ_TYPE_DIC)
         {
             PM_RAISE(retval, PM_RET_EX_VAL);
             return retval;
@@ -280,7 +280,7 @@ def len(s):
     ps = NATIVE_GET_LOCAL(0);
 
     /* Get the length of the arg based on its type */
-    switch (OBJ_GET_TYPE(*ps))
+    switch (OBJ_GET_TYPE(ps))
     {
         case OBJ_TYPE_STR:
             retval = int_new(((pPmString_t)ps)->length, &pr);
@@ -361,7 +361,7 @@ def ord(s):
     ps = NATIVE_GET_LOCAL(0);
 
     /* Raise TypeError if arg is not string of length 1 */
-    if ((OBJ_GET_TYPE(*ps) != OBJ_TYPE_STR)
+    if ((OBJ_GET_TYPE(ps) != OBJ_TYPE_STR)
         || (((pPmString_t)ps)->length != 1))
 
     {
@@ -511,11 +511,11 @@ def sum(s):
 
     /* Get the length of the sequence */
     ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*ps) == OBJ_TYPE_TUP)
+    if (OBJ_GET_TYPE(ps) == OBJ_TYPE_TUP)
     {
         len = ((pPmTuple_t)ps)->length;
     }
-    else if (OBJ_GET_TYPE(*ps) == OBJ_TYPE_LST)
+    else if (OBJ_GET_TYPE(ps) == OBJ_TYPE_LST)
     {
         len = ((pPmTuple_t)ps)->length;
     }
@@ -534,7 +534,7 @@ def sum(s):
         retval = seq_getSubscript(ps, i, &po);
 
         /* Raise TypeError if item is not an integer */
-        if (OBJ_GET_TYPE(*po) != OBJ_TYPE_INT)
+        if (OBJ_GET_TYPE(po) != OBJ_TYPE_INT)
         {
             PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
@@ -568,7 +568,7 @@ def type(o):
     po = NATIVE_GET_LOCAL(0);
 
     /* Create int from type enum */
-    retval = int_new(OBJ_GET_TYPE(*po), &pr);
+    retval = int_new(OBJ_GET_TYPE(po), &pr);
     NATIVE_SET_TOS(pr);
     return retval;
     """
@@ -594,7 +594,7 @@ def Co(i):
 
     /* Raise ValueError if arg is not a string */
     pimg = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pimg) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(pimg) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
@@ -626,7 +626,7 @@ def _exn():
     retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pexn = (pPmClass_t)pchunk;
-    OBJ_SET_TYPE(*pexn, OBJ_TYPE_EXN);
+    OBJ_SET_TYPE(pexn, OBJ_TYPE_EXN);
     retval = dict_new(&pobj);
     pexn->cl_attrs = (pPmDict_t)pobj;
 

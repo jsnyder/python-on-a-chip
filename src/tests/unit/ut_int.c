@@ -54,7 +54,7 @@ ut_int_new_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pint) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pint) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)pint)->val == 42);
@@ -84,7 +84,7 @@ ut_int_dup_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pdup) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pdup) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)pdup)->val == 42);
@@ -116,7 +116,7 @@ ut_int_positive_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*ppos) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(ppos) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)ppos)->val == 42);
@@ -148,7 +148,7 @@ ut_int_positive_001(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*ppos) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(ppos) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)ppos)->val == -42);
@@ -180,7 +180,7 @@ ut_int_positive_002(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*ppos) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(ppos) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)ppos)->val == 0);
@@ -212,7 +212,7 @@ ut_int_negative_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pneg) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pneg) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)pneg)->val == -42);
@@ -244,7 +244,7 @@ ut_int_negative_001(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pneg) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pneg) == OBJ_TYPE_INT);
     
     /* Check that the value is 42 */
     CuAssertTrue(tc, ((pPmInt_t)pneg)->val == 42);
@@ -276,7 +276,7 @@ ut_int_negative_002(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pneg) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pneg) == OBJ_TYPE_INT);
     
     /* Check that the value is 0 */
     CuAssertTrue(tc, ((pPmInt_t)pneg)->val == 0);
@@ -308,7 +308,7 @@ ut_int_bitInvert_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     
     /* Check that the type is INT */
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pinv) == OBJ_TYPE_INT);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pinv) == OBJ_TYPE_INT);
     
     /* Check that the value is -43 */
     CuAssertTrue(tc, ((pPmInt_t)pinv)->val == -43);

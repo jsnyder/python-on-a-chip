@@ -158,6 +158,9 @@ typedef struct PmFrame_s
  */
 typedef struct PmNativeFrame_s
 {
+    /** Object descriptor */
+    PmObjDesc_t od;
+
     /** Ptr to previous frame obj */
     struct PmFrame_s *nf_back;
 
@@ -167,6 +170,12 @@ typedef struct PmNativeFrame_s
     /** Single stack slot */
     pPmObj_t nf_stack;
 
+    /** Boolean to indicate if the native frame is active */
+    uint8_t nf_active;
+
+    /** Counter for number of times the GC runs in one native code session */
+    uint8_t nf_gcCount;
+    
     /** Local vars */
     pPmObj_t nf_locals[NATIVE_NUM_LOCALS];
 } PmNativeFrame_t,

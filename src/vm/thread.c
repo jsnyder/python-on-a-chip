@@ -51,7 +51,7 @@ thread_new(pPmObj_t pframe, pPmObj_t *r_pobj)
     C_ASSERT(pframe != C_NULL);
 
     /* If it's not a frame, raise TypeError */
-    if (OBJ_GET_TYPE(*pframe) != OBJ_TYPE_FRM)
+    if (OBJ_GET_TYPE(pframe) != OBJ_TYPE_FRM)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -63,7 +63,7 @@ thread_new(pPmObj_t pframe, pPmObj_t *r_pobj)
 
     /* Set type, frame and initialize status */
     pthread = (pPmThread_t)*r_pobj;
-    OBJ_SET_TYPE(*pthread, OBJ_TYPE_THR);
+    OBJ_SET_TYPE(pthread, OBJ_TYPE_THR);
     pthread->pframe = (pPmFrame_t)pframe;
     pthread->interpctrl = INTERP_CTRL_CONT;
 

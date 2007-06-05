@@ -43,22 +43,22 @@
 #define PM_PBUILTINS    (pPmObj_t)(gVmGlobal.builtins)
 
 /** The global None object */
-#define PM_NONE         (pPmObj_t)&(gVmGlobal.none)
+#define PM_NONE         (pPmObj_t)(gVmGlobal.pnone)
 
 /** The global False object */
-#define PM_FALSE        (pPmObj_t)&(gVmGlobal.zero)
+#define PM_FALSE        (pPmObj_t)(gVmGlobal.pzero)
 
 /** The global True object */
-#define PM_TRUE         (pPmObj_t)&(gVmGlobal.one)
+#define PM_TRUE         (pPmObj_t)(gVmGlobal.pone)
 
 /** The global integer 0 object */
-#define PM_ZERO         (pPmObj_t)&(gVmGlobal.zero)
+#define PM_ZERO         (pPmObj_t)(gVmGlobal.pzero)
 
 /** The global integer 1 object */
-#define PM_ONE          (pPmObj_t)&(gVmGlobal.one)
+#define PM_ONE          (pPmObj_t)(gVmGlobal.pone)
 
 /** The global integer -1 object */
-#define PM_NEGONE       (pPmObj_t)&(gVmGlobal.negone)
+#define PM_NEGONE       (pPmObj_t)(gVmGlobal.pnegone)
 
 /** The global string "code" */
 #define PM_CODE_STR     (pPmObj_t)(gVmGlobal.pcodeStr)
@@ -74,16 +74,16 @@
 typedef struct PmVmGlobal_s
 {
     /** Global none obj (none) */
-    PmObj_t none;
+    pPmObj_t pnone;
 
     /** Global integer 0 obj */
-    PmInt_t zero;
+    pPmInt_t pzero;
 
     /** Global integer 1 obj */
-    PmInt_t one;
+    pPmInt_t pone;
 
     /** Global integer -1 obj */
-    PmInt_t negone;
+    pPmInt_t pnegone;
 
     /** The string "code", used in interp.c RAISE_VARARGS */
     pPmString_t pcodeStr;
@@ -94,7 +94,7 @@ typedef struct PmVmGlobal_s
     /** Ptr to stack of code image info. */
     pPmImgInfo_t pimglist;
 
-    /** The single native frame */
+    /** The single native frame.  Static alloc so it won't be GC'd */
     PmNativeFrame_t nativeframe;
 
     /** PyMite release value for when an error occurs */

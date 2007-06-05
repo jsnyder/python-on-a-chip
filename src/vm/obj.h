@@ -43,23 +43,103 @@
 
 
 /***************************************************************
+ * Constants
+ **************************************************************/
+
+/** Object descriptor field constants */
+#define OD_MARK_SHIFT 14
+#define OD_FREE_SHIFT 15
+#define OD_MARK_BIT (uint16_t)(1 << OD_MARK_SHIFT)
+#define OD_FREE_BIT (uint16_t)(1 << OD_FREE_SHIFT)
+#define OD_SIZE_MASK (uint16_t)(0x01FF)
+#define OD_TYPE_MASK (uint16_t)(0x3E00)
+#define OD_TYPE_SHIFT 9
+
+/** Heap descriptor size mask */
+#define HD_SIZE_MASK (uint16_t)(0x3FFF)
+
+
+/***************************************************************
  * Macros
  **************************************************************/
 
-#define OBJ_GET_GCVAL(obj) ((obj).od.od_gcval)
-#define OBJ_SET_GCVAL(obj, gcval) (obj).od.od_gcval = (gcval)
-#define OBJ_GET_GCFREE(obj) ((obj).od.od_gcfree)
-#define OBJ_SET_GCFREE(obj, free) ((obj).od.od_gcfree = (uint8_t)free)
+/**
+ * Gets the free bit of the given object to the given value.
+ * If the object is marked free, it is not being used by the VM.
+ */
+#define OBJ_GET_FREE(pobj) \
+    ((((pPmObj_t)pobj)->od >> OD_FREE_SHIFT) & (uint8_t)1)
+
+/**
+ * Sets the free bit of the given object to the given value.
+ * Setting the free bit means that the object will use the heap descriptor
+ * structure instead of the object descriptor structure.
+ */
+#define OBJ_SET_FREE(pobj, free) \
+    do \
+    { \
+        ((pPmObj_t)pobj)->od = ((uint8_t)free) \
+                               ? ((pPmObj_t)pobj)->od | OD_FREE_BIT \
+                               : ((pPmObj_t)pobj)->od & ~OD_FREE_BIT;\
+    } \
+    while (0)
 
 /*
  * #99: od_size bits are shifted because size is a scaled value
  * True size is always a multiple of 4, so the lower two bits are ignored
  * and two more significant bits are gained.
  */
-#define OBJ_GET_SIZE(obj) ((obj).od.od_size << 2)
-#define OBJ_SET_SIZE(obj, size) (obj).od.od_size = (uint8_t)((size) >> 2)
-#define OBJ_GET_TYPE(obj) ((obj).od.od_type)
-#define OBJ_SET_TYPE(obj, type) (obj).od.od_type = (type)
+/**
+ * Gets the size of the chunk in bytes.
+ * Tests whether the object is free as that determines whether the chunk is
+ * using an object descriptor or a heap descriptor.  Heap descriptors have
+ * a larger size field and use a different bit mask than object descriptors.
+ */
+#define OBJ_GET_SIZE(pobj) \
+    ((((pPmObj_t)pobj)->od & OD_FREE_BIT) \
+     ? ((((pPmObj_t)pobj)->od & HD_SIZE_MASK) << 2) \
+     : ((((pPmObj_t)pobj)->od & OD_SIZE_MASK) << 2))
+
+/**
+ * Sets the size of the chunk in bytes.
+ * Tests whether the object is free as that determines whether the chunk is
+ * using an object descriptor or a heap descriptor.  Heap descriptors have
+ * a larger size field and use a different bit mask than object descriptors.
+ */
+#define OBJ_SET_SIZE(pobj, size) \
+    do \
+    { \
+        if (((pPmObj_t)pobj)->od & OD_FREE_BIT) \
+        { \
+            ((pPmObj_t)pobj)->od &= ~HD_SIZE_MASK; \
+            ((pPmObj_t)pobj)->od |= (((size) >> 2) & HD_SIZE_MASK); \
+        } \
+        else \
+        { \
+            ((pPmObj_t)pobj)->od &= ~OD_SIZE_MASK; \
+            ((pPmObj_t)pobj)->od |= (((size) >> 2) & OD_SIZE_MASK); \
+        } \
+    } \
+    while (0)
+
+/**
+ * Gets the type of the object
+ * This MUST NOT be called on objects that are free.
+ */
+#define OBJ_GET_TYPE(pobj) \
+    (((((pPmObj_t)pobj)->od) & OD_TYPE_MASK) >> OD_TYPE_SHIFT)
+
+/**
+ * Sets the type of the object
+ * This MUST NOT be called on objects that are free.
+ */
+#define OBJ_SET_TYPE(pobj, type) \
+    do \
+    { \
+        ((pPmObj_t)pobj)->od &= ~OD_TYPE_MASK; \
+        ((pPmObj_t)pobj)->od |= (((type) << OD_TYPE_SHIFT) & OD_TYPE_MASK); \
+    } \
+    while (0)
 
 
 /***************************************************************
@@ -151,44 +231,40 @@ typedef enum PmType_e
 
     /** Sequence iterator */
     OBJ_TYPE_SQI = 0x16,
+
+    /** Image info struct */
+    OBJ_TYPE_IIS = 0x17,
+
+    /** Native frame (there is only one) */
+    OBJ_TYPE_NFM = 0x18,
 } PmType_t, *pPmType_t;
 
 
 /**
  * Object Descriptor
  *
- * All PyMite "objects" must have this at the top of their struct.
+ * All active PyMite "objects" must have this at the top of their struct.
  * (CodeObj, Frame, Dict, List, Tuple, etc.).
  *
- * ALERT: Order of fields is important to maintain bit-order.
- * In this configuration, od_const is the msb and od_type
- * occupies the lower order bytes (using avr-gcc).
- * Although, not critical to operation, it makes reading the
- * raw values easier.
+ * The following is a diagram of the object descriptor:
+ *
+ *              MSb           LSb
+ *               7 6 5 4 3 2 1 0
+ *     pchunk-> +-+-+-+-+-+-+-+-+     S := Size of the chunk (2 LSbs dropped)
+ *              |     S[9:2]    |     F := Free bit
+ *              +-+-+---------+-+     M := GC Mark bit
+ *              |F|M|    T    |S|     T := Object type (PyMite specific)
+ *              +-+-+---------+-+
+ *              | object data   |
+ *              ...           ...
+ *              | end data      |     Theoretical min size == 2
+ *              +---------------+     Effective min size == 8
+ *                                    (due to pmHeapDesc_t)
+ *
+ * Macros are used to get and set field values.
+ * Using macros eliminates declaring bit fields which fails on some compilers.
  */
-typedef struct PmObjDesc_s
-{
-    /**
-     * Object size in bytes
-     * This is used to get/return heap space,
-     * so it must be accurate for the object
-     * containing this descriptor.
-     */
-    uint8_t od_size;
-
-    /** Object type */
-    PmType_t od_type:5;
-
-    /** Garbage collection mark value */
-    uint8_t od_gcval:1;
-
-    /** Garbage collection free flag */
-    uint8_t od_gcfree:1;
-
-    /** #100: Remove od_const bit from object descriptor */
-    uint8_t od_unused:1;
-} PmObjDesc_t,
- *pPmObjDesc_t;
+typedef uint16_t PmObjDesc_t, *pPmObjDesc_t;
 
 /**
  * Object

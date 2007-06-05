@@ -61,7 +61,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pco = ((pPmFunc_t)pfunc)->f_co;
 
     /* TypeError if passed func's CO is not a true COB */
-    if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
+    if (OBJ_GET_TYPE(pco) != OBJ_TYPE_COB)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -81,7 +81,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pframe = (pPmFrame_t)pchunk;
 
     /* Set frame fields */
-    OBJ_SET_TYPE(*pframe, OBJ_TYPE_FRM);
+    OBJ_SET_TYPE(pframe, OBJ_TYPE_FRM);
     pframe->fo_back = C_NULL;
     pframe->fo_func = (pPmFunc_t)pfunc;
     pframe->fo_memspace = pco->co_memspace;

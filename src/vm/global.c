@@ -68,6 +68,7 @@ global_init(void)
 {
     PmReturn_t retval;
     uint8_t *codestr = (uint8_t *)"code";
+    uint8_t *pchunk;
     pPmObj_t pobj;
 
     /* Clear the global struct */
@@ -77,23 +78,35 @@ global_init(void)
     gVmGlobal.errVmRelease = PM_RELEASE;
 
     /* Init zero */
-    OBJ_SET_TYPE(gVmGlobal.zero, OBJ_TYPE_INT);
-    OBJ_SET_SIZE(gVmGlobal.zero, sizeof(PmInt_t));
-    gVmGlobal.zero.val = (int32_t)0;
+    retval = heap_getChunk(sizeof(PmInt_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_INT);
+    ((pPmInt_t)pobj)->val = (int32_t)0;
+    gVmGlobal.pzero = (pPmInt_t)pobj;
 
     /* Init one */
-    OBJ_SET_TYPE(gVmGlobal.one, OBJ_TYPE_INT);
-    OBJ_SET_SIZE(gVmGlobal.one, sizeof(PmInt_t));
-    gVmGlobal.one.val = (int32_t)1;
+    retval = heap_getChunk(sizeof(PmInt_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_INT);
+    ((pPmInt_t)pobj)->val = (int32_t)1;
+    gVmGlobal.pone = (pPmInt_t)pobj;
 
     /* Init negone */
-    OBJ_SET_TYPE(gVmGlobal.negone, OBJ_TYPE_INT);
-    OBJ_SET_SIZE(gVmGlobal.negone, sizeof(PmInt_t));
-    gVmGlobal.negone.val = (int32_t)-1;
+    retval = heap_getChunk(sizeof(PmInt_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_INT);
+    ((pPmInt_t)pobj)->val = (int32_t)-1;
+    gVmGlobal.pnegone = (pPmInt_t)pobj;
 
     /* Init None */
-    OBJ_SET_TYPE(gVmGlobal.none, OBJ_TYPE_NON);
-    OBJ_SET_SIZE(gVmGlobal.none, sizeof(PmObj_t));
+    retval = heap_getChunk(sizeof(PmObj_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_NON);
+    gVmGlobal.pnone = pobj;
 
     /* Init "code" string obj */
     retval = string_new((uint8_t const **)&codestr, &pobj);
@@ -105,11 +118,14 @@ global_init(void)
     /* Empty img info list */
     gVmGlobal.pimglist = C_NULL;
 
-    /* Clear ptrs */
-    /*FP = C_NULL; *//* fp is local to interp, until thread struct is made */
+    /* Init native frame */
+    OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
+    OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
+    gVmGlobal.nativeframe.nf_gcCount = 0;
 
     /* Create empty threadList */
-    list_new((pPmObj_t *)&(gVmGlobal.threadList));
+    list_new(&pobj);
+    gVmGlobal.threadList = (pPmList_t)pobj;
 
     return retval;
 }

@@ -53,7 +53,7 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     pPmObj_t pobj;
 
     /* If it's not a code obj, raise TypeError */
-    if (OBJ_GET_TYPE(*pco) != OBJ_TYPE_COB)
+    if (OBJ_GET_TYPE(pco) != OBJ_TYPE_COB)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -63,7 +63,7 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     retval = heap_getChunk(sizeof(PmFunc_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     *pmod = (pPmObj_t)pchunk;
-    OBJ_SET_TYPE(**pmod, OBJ_TYPE_MOD);
+    OBJ_SET_TYPE(*pmod, OBJ_TYPE_MOD);
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
     /* Alloc and init attrs dict */
@@ -87,7 +87,7 @@ mod_import(pPmObj_t pstr, pPmObj_t *pmod)
     pPmObj_t pobj;
 
     /* If it's not a string obj, raise SyntaxError */
-    if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(pstr) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_SYNTAX);
         return retval;

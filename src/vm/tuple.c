@@ -100,7 +100,7 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
     /* Allocate a tuple */
     retval = heap_getChunk(size, (uint8_t **)r_ptuple);
     PM_RETURN_IF_ERROR(retval);
-    OBJ_SET_TYPE(**r_ptuple, OBJ_TYPE_TUP);
+    OBJ_SET_TYPE(*r_ptuple, OBJ_TYPE_TUP);
 
     /* Set the number of objs in the tuple */
     ((pPmTuple_t)*r_ptuple)->length = n;
@@ -120,20 +120,20 @@ tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple)
     uint8_t const *psrc;
 
     /* Raise TypeError if object is not a Tuple */
-    if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
+    if (OBJ_GET_TYPE(ptup) != OBJ_TYPE_TUP)
     {
         PM_RAISE(retval, PM_RET_EX_SYS);
         return retval;
     }
 
     /* Duplicate src tuple */
-    retval = heap_getChunk(OBJ_GET_SIZE(*ptup), &pchunk);
+    retval = heap_getChunk(OBJ_GET_SIZE(ptup), &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pnew = (pPmTuple_t)pchunk;
 
     pdest = (uint8_t *)pnew;
     psrc = (uint8_t const *)ptup;
-    mem_copy(MEMSPACE_RAM, &pdest, &psrc, OBJ_GET_SIZE(*ptup));
+    mem_copy(MEMSPACE_RAM, &pdest, &psrc, OBJ_GET_SIZE(ptup));
     *r_ptuple = (pPmObj_t)pnew;
     return PM_RET_OK;
 }
@@ -173,7 +173,7 @@ tuple_print(pPmObj_t ptup)
     C_ASSERT(ptup != C_NULL);
 
     /* If it's not a tuple, raise TypeError */
-    if (OBJ_GET_TYPE(*ptup) != OBJ_TYPE_TUP)
+    if (OBJ_GET_TYPE(ptup) != OBJ_TYPE_TUP)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

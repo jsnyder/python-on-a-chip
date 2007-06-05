@@ -123,13 +123,45 @@
             gVmGlobal.errFileId = __FILE_ID__; \
             gVmGlobal.errLineNum = (uint16_t)__LINE__; \
             return PM_RET_ASSERT_FAIL; \
-        }\
+        } \
     } \
     while (0)
 
 #else
 /** Assert statements are removed from production code */
 #define C_ASSERT(boolexpr)
+#endif
+
+/** Use as the first argument to C_DEBUG_PRINT for low volume messages */
+#define VERBOSITY_LOW 1
+
+/** Use as the first argument to C_DEBUG_PRINT for medium volume messages */
+#define VERBOSITY_MEDIUM 2
+
+/** Use as the first argument to C_DEBUG_PRINT for high volume messages */
+#define VERBOSITY_HIGH 3
+
+#if __DEBUG__
+
+/** To be used to set DEBUG_PRINT_VERBOSITY to a value so no prints occur */
+#define VERBOSITY_OFF 0
+
+/** Sets the level of verbosity to allow in debug prints */
+#define DEBUG_PRINT_VERBOSITY VERBOSITY_OFF
+
+/** Prints a debug message when the verbosity is within the set value */
+#define C_DEBUG_PRINT(v, f, ...) \
+    do \
+    { \
+        if (DEBUG_PRINT_VERBOSITY >= (v)) \
+        { \
+            printf("PM_DEBUG: " f, ## __VA_ARGS__); \
+        } \
+    } \
+    while (0)
+
+#else
+#define C_DEBUG_PRINT(...)
 #endif
 
 

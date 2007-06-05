@@ -59,7 +59,7 @@ int_dup(pPmObj_t pint, pPmObj_t *r_pint)
     PM_RETURN_IF_ERROR(retval);
 
     /* Copy value */
-    OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
+    OBJ_SET_TYPE(*r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = ((pPmInt_t)pint)->val;
     return retval;
 }
@@ -90,7 +90,7 @@ int_new(int32_t n, pPmObj_t *r_pint)
     /* Else create and return new int obj */
     retval = heap_getChunk(sizeof(PmInt_t), (uint8_t **)r_pint);
     PM_RETURN_IF_ERROR(retval);
-    OBJ_SET_TYPE(**r_pint, OBJ_TYPE_INT);
+    OBJ_SET_TYPE(*r_pint, OBJ_TYPE_INT);
     ((pPmInt_t)*r_pint)->val = n;
     return retval;
 }
@@ -102,7 +102,7 @@ int_positive(pPmObj_t pobj, pPmObj_t *r_pint)
     PmReturn_t retval;
 
     /* Raise TypeError if obj is not an int */
-    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -119,7 +119,7 @@ int_negative(pPmObj_t pobj, pPmObj_t *r_pint)
     PmReturn_t retval;
 
     /* Raise TypeError if obj is not an int */
-    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -136,7 +136,7 @@ int_bitInvert(pPmObj_t pobj, pPmObj_t *r_pint)
     PmReturn_t retval;
 
     /* Raise TypeError if obj is not an int */
-    if (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -159,14 +159,14 @@ int_print(pPmObj_t pint)
     C_ASSERT(pint != C_NULL);
 
     /* Raise TypeError if obj is not an int */
-    if (OBJ_GET_TYPE(*pint) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pint) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
 #ifdef TARGET_AVR
-    bytesWritten = snprintf_P((uint8_t *)&tBuffer, sizeof(tBuffer),
+    bytesWritten = snprintf_P((char *)&tBuffer, sizeof(tBuffer),
                               PSTR("%li"), ((pPmInt_t)pint)->val);
 #else
     /* This does not use snprintf because glibc's snprintf is only
@@ -231,7 +231,7 @@ _int_printHex(int32_t n)
 PmReturn_t
 int_printHex(pPmObj_t pint)
 {
-    C_ASSERT(OBJ_GET_TYPE(*pint) == OBJ_TYPE_INT);
+    C_ASSERT(OBJ_GET_TYPE(pint) == OBJ_TYPE_INT);
 
     /* Print the integer object */
     return _int_printHex(((pPmInt_t)pint)->val);
@@ -248,8 +248,8 @@ int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn)
     PmReturn_t retval;
 
     /* Raise TypeError if args aren't ints */
-    if ((OBJ_GET_TYPE(*px) != OBJ_TYPE_INT)
-        || (OBJ_GET_TYPE(*py) != OBJ_TYPE_INT))
+    if ((OBJ_GET_TYPE(px) != OBJ_TYPE_INT)
+        || (OBJ_GET_TYPE(py) != OBJ_TYPE_INT))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

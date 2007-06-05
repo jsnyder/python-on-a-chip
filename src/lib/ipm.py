@@ -67,7 +67,7 @@ def _getImg():
     pimg = (pPmString_t)pchunk;
 
     /* Set the string object's fields */
-    OBJ_SET_TYPE(*pimg, OBJ_TYPE_STR);
+    OBJ_SET_TYPE(pimg, OBJ_TYPE_STR);
     pimg->length = imgSize;
 
     /* Start the image with the bytes that have already been received */

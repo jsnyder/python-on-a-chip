@@ -56,7 +56,7 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
     C_ASSERT(pobj != C_NULL);
 
     /* If plist is not a list, raise a TypeError exception */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -79,7 +79,7 @@ list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj)
     PmReturn_t retval;
 
     /* If it's not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -114,7 +114,7 @@ list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj)
     C_ASSERT(pobj != C_NULL);
 
     /* Raise a TypeError if plist is not a List */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         retval = PM_RET_EX_TYPE;
         PM_RETURN_IF_ERROR(retval);
@@ -157,7 +157,7 @@ list_new(pPmObj_t *r_pobj)
 
     /* Set list type, empty the contents */
     plist = (pPmList_t)*r_pobj;
-    OBJ_SET_TYPE(*plist, OBJ_TYPE_LST);
+    OBJ_SET_TYPE(plist, OBJ_TYPE_LST);
     plist->length = 0;
 
     /* Create empty seglist */
@@ -186,7 +186,7 @@ list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
     C_ASSERT(r_pnewlist != C_NULL);
 
     /* If first arg is not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*psrclist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(psrclist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -219,7 +219,7 @@ list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj)
     PmReturn_t retval;
 
     /* If it's not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -251,7 +251,7 @@ list_remove(pPmObj_t plist, pPmObj_t item)
     uint16_t index;
 
     /* If it's not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -278,7 +278,7 @@ list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
     uint16_t index;
 
     /* If it's not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -316,7 +316,7 @@ list_print(pPmObj_t plist)
     C_ASSERT(plist != C_NULL);
 
     /* If it's not a list, raise TypeError */
-    if (OBJ_GET_TYPE(*plist) != OBJ_TYPE_LST)
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

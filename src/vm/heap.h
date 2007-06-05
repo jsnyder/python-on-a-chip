@@ -51,21 +51,6 @@
 
 
 /***************************************************************
- * Types
- **************************************************************/
-
-typedef struct PmHeapDesc_s
-{
-    /** Object descriptor (only the size field is relevant */
-    PmObjDesc_t od;
-
-    /** Ptr to next chunk */
-    struct PmHeapDesc_s *next;
-} PmHeapDesc_t,
- *pPmHeapDesc_t;
-
-
-/***************************************************************
  * Prototypes
  **************************************************************/
 
@@ -93,7 +78,7 @@ PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
  *
  * @param   ptr Pointer to object to free.
  */
-PmReturn_t heap_freeChunk(pPmObj_t);
+PmReturn_t heap_freeChunk(pPmObj_t ptr);
 
 /**
  * Returns the number of bytes available in the heap
@@ -102,5 +87,20 @@ PmReturn_t heap_freeChunk(pPmObj_t);
  * @return  Return code
  */
 PmReturn_t heap_getAvail(uint16_t *r_avail);
+
+/**
+ * Runs the mark-sweep garbage collector
+ *
+ * @return  Return code
+ */
+PmReturn_t heap_gcRun(void);
+
+/**
+ * Enables (if true) or disables automatic garbage collection
+ *
+ * @param   bool Value to enable or disable auto GC
+ * @return  Return code
+ */
+PmReturn_t heap_gcSetAuto(uint8_t bool);
 
 #endif /* __HEAP_H__ */

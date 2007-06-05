@@ -57,7 +57,7 @@ ut_list_new_000(CuTest *tc)
 
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertPtrNotNull(tc, pobj);
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pobj) == OBJ_TYPE_LST);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pobj) == OBJ_TYPE_LST);
     CuAssertTrue(tc, ((pPmDict_t)pobj)->length == 0);
 }
 
@@ -400,14 +400,14 @@ ut_list_copy_000(CuTest *tc)
     retval = list_copy(pobj, &pval);
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertTrue(tc, pobj != pval);
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pval) == OBJ_TYPE_LST);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pval) == OBJ_TYPE_LST);
     CuAssertTrue(tc, ((pPmList_t)pval)->length == 0);
 
     retval = list_append(pobj, PM_ONE);
     retval = list_copy(pobj, &pval);
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertTrue(tc, pobj != pval);
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pval) == OBJ_TYPE_LST);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pval) == OBJ_TYPE_LST);
     CuAssertTrue(tc, obj_compare(pval, pobj) == C_SAME);
 }
 
@@ -440,14 +440,14 @@ ut_list_replicate_000(CuTest *tc)
     retval = list_replicate(pobj, 1, &pval);
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertTrue(tc, pobj != pval);
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pval) == OBJ_TYPE_LST);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pval) == OBJ_TYPE_LST);
     CuAssertTrue(tc, ((pPmList_t)pval)->length == 0);
 
     retval = list_append(pobj, PM_ONE);
     retval = list_replicate(pobj, 1, &pval);
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertTrue(tc, pobj != pval);
-    CuAssertTrue(tc, OBJ_GET_TYPE(*pval) == OBJ_TYPE_LST);
+    CuAssertTrue(tc, OBJ_GET_TYPE(pval) == OBJ_TYPE_LST);
     CuAssertTrue(tc, ((pPmList_t)pval)->length == ((pPmList_t)pobj)->length);
 }
 

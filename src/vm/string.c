@@ -100,7 +100,7 @@ string_create(PmMemSpace_t memspace,
     pstr = (pPmString_t)pchunk;
 
     /* Fill the string obj */
-    OBJ_SET_TYPE(*pstr, OBJ_TYPE_STR);
+    OBJ_SET_TYPE(pstr, OBJ_TYPE_STR);
     pstr->length = len;
 
     /* Copy C-string into String obj */
@@ -108,7 +108,7 @@ string_create(PmMemSpace_t memspace,
     mem_copy(memspace, &pdst, paddr, len);
 
     /* Zero-pad end of string */
-    for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(*pstr); pdst++)
+    for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(pstr); pdst++)
     {
         *pdst = 0;
     }
@@ -192,7 +192,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
     C_ASSERT(pstr != C_NULL);
 
     /* Ensure string obj */
-    if (OBJ_GET_TYPE(*pstr) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(pstr) != OBJ_TYPE_STR)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

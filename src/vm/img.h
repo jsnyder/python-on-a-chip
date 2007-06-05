@@ -48,6 +48,9 @@
  */
 typedef struct PmImgInfo_s
 {
+    /** Object descriptor */
+    PmObjDesc_t od;
+    
     /** The image's name as a String obj */
     pPmString_t ii_name;
     

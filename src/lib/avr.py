@@ -67,7 +67,7 @@ def portA(a):
             pa = NATIVE_GET_LOCAL(0);
 
             /* If the arg is not an integer, raise TypeError */
-            if (OBJ_GET_TYPE(*pa) != OBJ_TYPE_INT)
+            if (OBJ_GET_TYPE(pa) != OBJ_TYPE_INT)
             {
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;

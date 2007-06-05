@@ -33,8 +33,11 @@
 #include "CuTest.h"
 #include "pm.h"
 
-#define HEAP_MAX_CHUNK_SIZE 1020
+/* Max chunk size for 32-bit desktop target */
+#define HEAP_MAX_CHUNK_SIZE 2044
 
+/* Min chunk size for 32-bit desktop target */
+#define HEAP_CHUNK_MIN_SIZE 12
 
 /**
  * Tests heap_init():
@@ -75,7 +78,7 @@ ut_heap_getChunk_000(CuTest *tc)
 
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertPtrNotNull(tc, pchunk);
-    CuAssertTrue(tc, OBJ_GET_SIZE(*pobj) == 8);
+    CuAssertTrue(tc, OBJ_GET_SIZE(pobj) == HEAP_CHUNK_MIN_SIZE);
 }
 
 
@@ -96,7 +99,7 @@ ut_heap_getChunk_001(CuTest *tc)
 
     CuAssertTrue(tc, retval == PM_RET_OK);
     CuAssertPtrNotNull(tc, pchunk);
-    CuAssertTrue(tc, OBJ_GET_SIZE(*pobj) >= HEAP_MAX_CHUNK_SIZE);
+    CuAssertTrue(tc, OBJ_GET_SIZE(pobj) >= HEAP_MAX_CHUNK_SIZE);
 }
 
 

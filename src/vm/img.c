@@ -118,6 +118,7 @@ img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr)
         retval = heap_getChunk(sizeof(PmImgInfo_t), &pchunk);
         PM_RETURN_IF_ERROR(retval);
         pii = (pPmImgInfo_t)pchunk;
+        OBJ_SET_TYPE(pii, OBJ_TYPE_IIS);
         pii->ii_name = (pPmString_t)pnamestr;
         pii->ii_memspace = memspace;
         pii->ii_addr = imgtop;

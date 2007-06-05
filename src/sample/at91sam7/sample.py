@@ -39,7 +39,7 @@ def getButtons(n):
 
     /* If arg is not an int, raise TypeError */
     pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -85,7 +85,7 @@ def setLeds(n):
 
     /* If arg is not an int, raise TypeError */
     pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(*pn) != OBJ_TYPE_INT)
+    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

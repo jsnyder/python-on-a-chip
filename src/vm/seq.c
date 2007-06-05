@@ -57,12 +57,12 @@ seq_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     int8_t retcompare;
 
     /* Get the lengths of supported types or return differ */
-    if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_TUP)
+    if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_TUP)
     {
         l1 = ((pPmTuple_t)pobj1)->length;
         l2 = ((pPmTuple_t)pobj2)->length;
     }
-    else if (OBJ_GET_TYPE(*pobj1) == OBJ_TYPE_LST)
+    else if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_LST)
     {
         l1 = ((pPmList_t)pobj2)->length;
         l2 = ((pPmList_t)pobj2)->length;
@@ -108,7 +108,7 @@ seq_getLength(pPmObj_t pobj, int16_t *r_index)
 {
     PmReturn_t retval = PM_RET_OK;
 
-    switch (OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_STR:
             *r_index = ((pPmString_t)pobj)->length;
@@ -139,7 +139,7 @@ seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj)
     PmReturn_t retval;
     uint8_t c;
 
-    switch (OBJ_GET_TYPE(*pobj))
+    switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_STR:
             /* Adjust for negative index */
@@ -190,7 +190,7 @@ seqiter_getNext(pPmObj_t pobj, pPmObj_t *r_pitem)
 
     C_ASSERT(pobj != C_NULL);
     C_ASSERT(*r_pitem != C_NULL);
-    C_ASSERT(OBJ_GET_TYPE(*pobj) == OBJ_TYPE_SQI);
+    C_ASSERT(OBJ_GET_TYPE(pobj) == OBJ_TYPE_SQI);
 
     /*
      * Raise TypeError if sequence iterator's object is not a sequence
@@ -230,9 +230,9 @@ seqiter_new(pPmObj_t pobj, pPmObj_t *r_pobj)
     C_ASSERT(*r_pobj != C_NULL);
 
     /* Raise a TypeError if pobj is not a sequence */
-    if ((OBJ_GET_TYPE(*pobj) != OBJ_TYPE_STR)
-        && (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_TUP)
-        && (OBJ_GET_TYPE(*pobj) != OBJ_TYPE_LST))
+    if ((OBJ_GET_TYPE(pobj) != OBJ_TYPE_STR)
+        && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_TUP)
+        && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_LST))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
@@ -244,7 +244,7 @@ seqiter_new(pPmObj_t pobj, pPmObj_t *r_pobj)
 
     /* Set the sequence iterator's fields */
     psi = (pPmSeqIter_t)pchunk;
-    OBJ_SET_TYPE(*psi, OBJ_TYPE_SQI);
+    OBJ_SET_TYPE(psi, OBJ_TYPE_SQI);
     psi->si_sequence = pobj;
     psi->si_index = 0;
 
