@@ -60,9 +60,9 @@ dict_new(pPmObj_t *r_pdict)
     pdict = (pPmDict_t)*r_pdict;
     OBJ_SET_TYPE(pdict, OBJ_TYPE_DIC);
     pdict->length = 0;
-    retval = seglist_new(&pdict->d_keys);
-    PM_RETURN_IF_ERROR(retval);
-    retval = seglist_new(&pdict->d_vals);
+    pdict->d_keys = C_NULL;
+    pdict->d_vals = C_NULL;
+
     return retval;
 }
 
@@ -104,13 +104,13 @@ PmReturn_t
 dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
 {
     PmReturn_t retval = PM_RET_OK;
-    int16_t indx = 0;
+    int16_t indx;
 
     C_ASSERT(pdict != C_NULL);
     C_ASSERT(pkey != C_NULL);
     C_ASSERT(pval != C_NULL);
 
-    /* if it's not a dict, raise TypeError */
+    /* If it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -124,27 +124,38 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
-    
-    /* check for matching key */
-    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
 
-    /* if found a matching key, replace val obj */
-    if (retval == PM_RET_OK)
+    /*
+     * #115: If this is the first key/value pair to be added to the Dict,
+     * allocate the key and value seglists that hold those items
+     */
+    if (((pPmDict_t)pdict)->length == 0)
     {
-        retval = seglist_setItem(((pPmDict_t)pdict)->d_vals, pval, indx);
-        return retval;
+        retval = seglist_new(&((pPmDict_t)pdict)->d_keys);
+        PM_RETURN_IF_ERROR(retval);
+        retval = seglist_new(&((pPmDict_t)pdict)->d_vals);
+        PM_RETURN_IF_ERROR(retval);
+    }
+    else
+    {
+        /* Check for matching key */
+        indx = 0;
+        retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
+
+        /* If found a matching key, replace val obj */
+        if (retval == PM_RET_OK)
+        {
+            retval = seglist_setItem(((pPmDict_t)pdict)->d_vals, pval, indx);
+            return retval;
+        }
     }
 
-    /* if no matching key, insert the key,val pair */
-    if (retval == PM_RET_NO)
-    {
-        retval = seglist_insertItem(((pPmDict_t)pdict)->d_keys, pkey, 0);
-        PM_RETURN_IF_ERROR(retval);
-        retval = seglist_insertItem(((pPmDict_t)pdict)->d_vals, pval, 0);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmDict_t)pdict)->length++;
-        return PM_RET_OK;
-    }
+    /* Otherwise, insert the key,val pair */
+    retval = seglist_insertItem(((pPmDict_t)pdict)->d_keys, pkey, 0);
+    PM_RETURN_IF_ERROR(retval);
+    retval = seglist_insertItem(((pPmDict_t)pdict)->d_vals, pval, 0);
+    ((pPmDict_t)pdict)->length++;
+
     return retval;
 }
 
