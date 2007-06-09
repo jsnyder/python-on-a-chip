@@ -765,14 +765,14 @@ class PmImgCreator:
         # for each entry create fxn
         for (funcname, funcstr) in self.nativetable:
             fileBuff.append("PmReturn_t\n"
-                            "%s(pPmFrame_t *ppframe, signed char numargs)\n"
+                            "%s(pPmFrame_t *ppframe)\n"
                             "{\n"
                             "%s\n"
                             "}\n\n" % (funcname, funcstr))
 
         # create fxn table
         fileBuff.append("/* native function lookup table */\n"
-                        "PmReturn_t (* %s[])(pPmFrame_t *, signed char) =\n"
+                        "PmReturn_t (* %s[])(pPmFrame_t *) =\n"
                         "{\n" % (NATIVE_TABLE_NAME[self.imgtarget]))
 
         # put all native funcs in the table

@@ -90,7 +90,7 @@
 /** gets a pointer to the frame that called this native fxn */
 #define NATIVE_GET_PFRAME()   (*ppframe)
 /** gets the number of args passed to the native fxn */
-#define NATIVE_GET_NUM_ARGS() (numargs)
+#define NATIVE_GET_NUM_ARGS() (gVmGlobal.nativeframe.nf_numlocals)
 
 
 /***************************************************************

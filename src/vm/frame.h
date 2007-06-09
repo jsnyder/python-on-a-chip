@@ -42,7 +42,7 @@
  * The maximum number of local variables a native function can have.
  * This defines the length of the locals array in the native frame struct.
  */
-#define NATIVE_NUM_LOCALS   8
+#define NATIVE_MAX_NUM_LOCALS   8
 
 
 /***************************************************************
@@ -175,9 +175,12 @@ typedef struct PmNativeFrame_s
 
     /** Counter for number of times the GC runs in one native code session */
     uint8_t nf_gcCount;
-    
+
+    /** Number of args passed to the native function */
+    uint8_t nf_numlocals;
+
     /** Local vars */
-    pPmObj_t nf_locals[NATIVE_NUM_LOCALS];
+    pPmObj_t nf_locals[NATIVE_MAX_NUM_LOCALS];
 } PmNativeFrame_t,
  *pPmNativeFrame_t;
 

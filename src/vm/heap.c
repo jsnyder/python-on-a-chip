@@ -586,6 +586,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 
             /* Mark the consts tuple */
             retval = heap_gcMarkObj((pPmObj_t)((pPmCo_t)pobj)->co_consts);
+            PM_RETURN_IF_ERROR(retval);
             break;
 
         case OBJ_TYPE_MOD:
@@ -734,16 +735,14 @@ heap_gcMarkObj(pPmObj_t pobj)
                 PM_RETURN_IF_ERROR(retval);
 
                 /* Mark the stack object */
-                retval = heap_gcMarkObj((pPmObj_t)
-                                        gVmGlobal.nativeframe.nf_stack);
+                retval = heap_gcMarkObj(gVmGlobal.nativeframe.nf_stack);
                 PM_RETURN_IF_ERROR(retval);
 
                 /* Mark the args to the native func */
-                /* TODO: a stale pointer here may cause trouble */
-                for (i = 0; i < NATIVE_NUM_LOCALS; i++)
+                for (i = 0; i < NATIVE_GET_NUM_ARGS(); i++)
                 {
-                    retval = heap_gcMarkObj((pPmObj_t)
-                                            gVmGlobal.nativeframe.nf_locals);
+                    retval = heap_gcMarkObj(gVmGlobal.nativeframe
+                                            .nf_locals[i]);
                     PM_RETURN_IF_ERROR(retval);
                 }
             }

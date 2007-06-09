@@ -65,8 +65,8 @@
  * Prototypes
  **************************************************************/
 
-extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *, signed char);
-extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *, signed char);
+extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *);
+extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *);
 
 
 /***************************************************************
@@ -1371,14 +1371,14 @@ interpret(const uint8_t returnOnNoThreads)
                          OBJ_TYPE_NOB)
                 {
                     /* Ensure num args fits in native frame */
-                    if (t16 > NATIVE_NUM_LOCALS)
+                    if (t16 > NATIVE_MAX_NUM_LOCALS)
                     {
                         PM_RAISE(retval, PM_RET_EX_SYS);
                         break;
                     }
 
-                    /* Keep numargs */
-                    t8 = (int8_t)t16;
+                    /* Set number of locals (arguments) */
+                    gVmGlobal.nativeframe.nf_numlocals = (uint8_t)t16;
 
                     /* Pop args from stack */
                     while (--t16 >= 0)
@@ -1402,13 +1402,13 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Positive index is a stdlib func */
                     if (t16 >= 0)
                     {
-                        retval = std_nat_fxn_table[t16] (&FP, t8);
+                        retval = std_nat_fxn_table[t16] (&FP);
                     }
 
                     /* Negative index is a usrlib func */
                     else
                     {
-                        retval = usr_nat_fxn_table[-t16] (&FP, t8);
+                        retval = usr_nat_fxn_table[-t16] (&FP);
                     }
 
                     /*
