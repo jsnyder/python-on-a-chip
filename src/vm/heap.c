@@ -587,6 +587,15 @@ heap_gcMarkObj(pPmObj_t pobj)
             /* Mark the consts tuple */
             retval = heap_gcMarkObj((pPmObj_t)((pPmCo_t)pobj)->co_consts);
             PM_RETURN_IF_ERROR(retval);
+
+            /* #122: Mark the code image if it is in RAM */
+            if (((pPmCo_t)pobj)->co_memspace == MEMSPACE_RAM)
+            {
+                /* Special case: The image is contained in a string object */
+                retval = heap_gcMarkObj((pPmObj_t)
+                                        (((pPmCo_t)pobj)->co_codeimgaddr
+                                         - sizeof(PmObjDesc_t)));
+            }
             break;
 
         case OBJ_TYPE_MOD:
