@@ -26,7 +26,7 @@ endif
 
 .PHONY: all vm clean
 
-# Default action is to build tests; run tests if target is desktop
+# Default action is to build main; run main if target is desktop
 all : vm $(EXECS)
 
 vm :

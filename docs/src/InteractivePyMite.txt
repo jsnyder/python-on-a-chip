@@ -92,15 +92,18 @@ The output of this project is used by ipm-host when it is
 commanded to connect using the "desktop" connection.  Perform the following
 steps to run ipm completely on the desktop:
 
-1. Build PyMite with a large stack and debugging enabled::
+1. Build PyMite with a large stack, debugging enabled and the ipm module
+   built in::
 
-    $ make clean; make STACK_SIZE=0xF000 DEBUG=true
+    $ make clean; make STACK_SIZE=0xF000 DEBUG=true IPM=true
 
 2. Build the ipm-desktop sample project::
 
     $ cd src/sample/ipm-desktop; make STACK_SIZE=0xF00 DEBUG=true
 
-3. Run ipm-host using the desktop connection::
+   (the resulting binary, main.o, should be left running)
+
+3. In a separate terminal, Run ipm-host using the desktop connection::
 
     $ cd ../../tools; ./ipm.py -d
 
