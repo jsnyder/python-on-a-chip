@@ -97,10 +97,11 @@ def _getImg():
 #
 import sys
 def ipm():
+    g = globals()
     while 1:
         # Wait for a code image, make a code object from it
         # and evaluate the code object.
-        rv = eval(Co(_getImg()))
+        rv = eval(Co(_getImg()), g)
 
         # Send a byte to indicate completion of evaluation
         sys.putb(0x04)

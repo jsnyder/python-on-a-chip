@@ -95,11 +95,11 @@ steps to run ipm completely on the desktop:
 1. Build PyMite with a large stack, debugging enabled and the ipm module
    built in::
 
-    $ make clean; make STACK_SIZE=0xF000 DEBUG=true IPM=true
+    $ make clean; make HEAP_SIZE=0xF000 DEBUG=true IPM=true
 
 2. Build the ipm-desktop sample project::
 
-    $ cd src/sample/ipm-desktop; make STACK_SIZE=0xF00 DEBUG=true
+    $ cd src/sample/ipm-desktop; make HEAP_SIZE=0xF000 DEBUG=true
 
    (the resulting binary, main.o, should be left running)
 
