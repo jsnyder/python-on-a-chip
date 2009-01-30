@@ -1157,74 +1157,6 @@ interpret(const uint8_t returnOnNoThreads)
                 IP = FP->fo_func->f_co->co_codeaddr + t16;
                 continue;
 
-            case FOR_LOOP:
-                /* WARNING #111: Old bytecodes shall be removed in r 06 */
-                /* Get skip bytes */
-                t16 = GET_ARG();
-
-                /* Get current index */
-                pobj1 = PM_POP();
-
-                /* Get the sequence */
-                pobj2 = PM_POP();
-
-                /* Ensure index is an int */
-                if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
-                {
-                    PM_RAISE(retval, PM_RET_EX_INDX);
-                    break;
-                }
-
-                /* If it's a tuple */
-                if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_TUP)
-                {
-                    /* If tup is exhausted, incr IP by delta */
-                    if (((pPmInt_t)pobj1)->val >= ((pPmTuple_t)pobj2)->length)
-                    {
-                        IP += t16;
-                        continue;
-                    }
-
-                    /* Get item, incr counter */
-                    pobj3 = ((pPmTuple_t)pobj2)->val[((pPmInt_t)pobj1)->val];
-                    retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
-                    PM_BREAK_IF_ERROR(retval);
-                }
-
-                /* If it's a list */
-                else if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_LST)
-                {
-                    /* If list is exhausted, incr IP by delta */
-                    if (((pPmInt_t)pobj1)->val >= ((pPmList_t)pobj2)->length)
-                    {
-                        IP += t16;
-                        continue;
-                    }
-
-                    /* Get item */
-                    retval = list_getItem(pobj2,
-                                          (int16_t)(((pPmInt_t)pobj1)->val),
-                                          &pobj3);
-                    PM_BREAK_IF_ERROR(retval);
-
-                    /* Incr counter */
-                    retval = int_new(((pPmInt_t)pobj1)->val + 1, &pobj1);
-                    PM_BREAK_IF_ERROR(retval);
-                }
-
-                /* TypeError: loop over non-sequence */
-                else
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* Push tup, counter and item */
-                PM_PUSH(pobj2);
-                PM_PUSH(pobj1);
-                PM_PUSH(pobj3);
-                continue;
-
             case LOAD_GLOBAL:
                 /* Get name */
                 t16 = GET_ARG();
@@ -1284,11 +1216,6 @@ interpret(const uint8_t returnOnNoThreads)
             case STORE_FAST:
                 t16 = GET_ARG();
                 FP->fo_locals[t16] = PM_POP();
-                continue;
-
-            case SET_LINENO:
-                /* WARNING #111: Old bytecodes shall be removed in r 06 */
-                FP->fo_line = GET_ARG();
                 continue;
 
             case RAISE_VARARGS:

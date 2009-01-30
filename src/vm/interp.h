@@ -250,7 +250,7 @@ typedef enum PmBcode_e
     JUMP_IF_FALSE,
     JUMP_IF_TRUE,               /* 0x70 */
     JUMP_ABSOLUTE,
-    FOR_LOOP,                   /* Deprecated in Python, legacy in PyMite */
+    UNUSED_72,
     UNUSED_73,
     LOAD_GLOBAL,
     UNUSED_75,
@@ -263,7 +263,7 @@ typedef enum PmBcode_e
     LOAD_FAST,
     STORE_FAST,
     DELETE_FAST,
-    SET_LINENO,                 /* Deprecated in Python, legacy in PyMite */
+    UNUSED_79,
     UNUSED_80,                  /* 0x80 */
     UNUSED_81,
     RAISE_VARARGS,              /* d130 */

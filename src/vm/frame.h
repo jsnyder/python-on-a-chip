@@ -121,9 +121,6 @@ typedef struct PmFrame_s
     /** Instrxn ptr (pts into memspace) */
     uint8_t const *fo_ip;
 
-    /** Current source line num */
-    uint16_t fo_line;
-
     /** Linked list of blocks */
     pPmBlock_t fo_blockstack;
 

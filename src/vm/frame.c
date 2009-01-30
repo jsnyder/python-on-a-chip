@@ -88,7 +88,6 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 
     /* Init instruction pointer, line number and block stack */
     pframe->fo_ip = pco->co_codeaddr;
-    pframe->fo_line = 0;
     pframe->fo_blockstack = C_NULL;
 
     /* Get globals and attrs from the function object */
