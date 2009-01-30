@@ -108,8 +108,8 @@ obj_isFalse(pPmObj_t pobj)
     switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_NON:
-            /* None evaluates to false */
-            return C_FALSE;
+            /* None evaluates to false, so return true */
+            return C_TRUE;
 
         case OBJ_TYPE_INT:
             /* Only the integer zero is false */
