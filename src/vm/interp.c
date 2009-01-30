@@ -1269,6 +1269,17 @@ interpret(const uint8_t returnOnNoThreads)
                 /* If it's regular func (not native) */
                 if (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
                 {
+                    /*
+                     * #132 Raise TypeError if num args does not match the
+                     * code object's expected argcount
+                     */
+                    if ((t16 & ((uint8_t)0xFF)) !=
+                        ((pPmFunc_t)pobj1)->f_co->co_argcount)
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);

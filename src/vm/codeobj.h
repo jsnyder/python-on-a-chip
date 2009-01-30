@@ -76,6 +76,8 @@ typedef struct PmCo_s
     pPmTuple_t co_consts;
     /** address in memspace of bytecode (or native function) */
     uint8_t const *co_codeaddr;
+    /** number of positional arguments the function expects */
+    uint8_t co_argcount;
 } PmCo_t,
  *pPmCo_t;
 
