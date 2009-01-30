@@ -333,13 +333,13 @@ def locals():
 def map(f, s):
     # Do this as a workaround since list.append() doesn't work
     r = [None,] * len(s)
-    
+
     # Call function f once with each argument in sequence s
     i = 0
     for a in s:
         r[i] = f(a)
         i += 1
-        
+
     # Return list of results
     return r
 
@@ -642,5 +642,19 @@ def _exn():
 #
 AssertionError = _exn()
 AssertionError.code = 0xE4
+
+
+#
+# Returns True if called within a module being run as the main; False otherwise
+#
+def ismain():
+    """__NATIVE__
+
+    NATIVE_SET_TOS((NATIVE_GET_PFRAME()->fo_isImport) ? PM_FALSE : PM_TRUE);
+
+    return PM_RET_OK;
+    """
+    pass
+
 
 #:mode=c:
