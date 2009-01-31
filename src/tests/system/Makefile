@@ -1,7 +1,7 @@
 SHELL = /bin/sh
 
 TARGET ?= DESKTOP
-HEAP_SIZE ?= 0x1000
+HEAP_SIZE ?= 0x2000
 TARGET_MCU ?= atmega103
 
 PMIMGCREATOR := ../../tools/pmImgCreator.py

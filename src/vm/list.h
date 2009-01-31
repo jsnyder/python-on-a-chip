@@ -161,6 +161,17 @@ PmReturn_t list_remove(pPmObj_t plist, pPmObj_t item);
  */
 PmReturn_t list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index);
 
+/**
+ * Removes the item at the given index.
+ * Raises a TypeError if the first argument is not a list.
+ * Raises an IndexError if the index is out of bounds.
+ *
+ * @param   plist Ptr to list obj
+ * @param   index Index of item to remove
+ * @return  Return status
+ */
+PmReturn_t list_delItem(pPmObj_t plist, int16_t index);
+
 #ifdef HAVE_PRINT
 /**
  * Prints out a list. Uses obj_print() to print elements.

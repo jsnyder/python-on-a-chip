@@ -35,6 +35,11 @@
 #
 
 
+#### MODULES
+
+import list, dict
+
+
 #### CONSTS
 
 C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."

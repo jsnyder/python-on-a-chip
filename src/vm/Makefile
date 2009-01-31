@@ -3,11 +3,13 @@
 #
 
 # Configure the contents of pmstdlib by editing this list
-PMSTDLIB_SOURCES = ../lib/__bi.py \
+PMSTDLIB_SOURCES = ../lib/list.py \
+                   ../lib/dict.py \
+                   ../lib/__bi.py \
                    ../lib/sys.py
 
 TARGET ?= DESKTOP
-HEAP_SIZE ?= 0x1000
+HEAP_SIZE ?= 0x2000
 
 PMIMGCREATOR := ../tools/pmImgCreator.py
 DEFS = -DTARGET_$(TARGET) -DHEAP_SIZE=$(HEAP_SIZE)

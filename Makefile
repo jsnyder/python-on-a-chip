@@ -27,7 +27,7 @@ VPATH := . src/vm src/lib docs/src
 
 # Build configuration
 TARGET := DESKTOP
-HEAP_SIZE = 0x1000
+HEAP_SIZE = 0x2000
 
 # Changes for an embedded target
 ifeq ($(TARGET), AVR)

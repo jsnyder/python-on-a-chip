@@ -304,6 +304,39 @@ list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
 }
 
 
+PmReturn_t
+list_delItem(pPmObj_t plist, int16_t index)
+{
+    PmReturn_t retval = PM_RET_OK;
+
+    /* If it's not a list, raise TypeError */
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Adjust the index */
+    if (index < 0)
+    {
+        index += ((pPmList_t)plist)->length;
+    }
+
+    /* Check the bounds of the index */
+    if ((index < 0) || (index >= ((pPmList_t)plist)->length))
+    {
+        PM_RAISE(retval, PM_RET_EX_INDX);
+        return retval;
+    }
+
+    /* Remove the item and decrement the list length */
+    retval = seglist_removeItem(((pPmList_t)plist)->val, index);
+    ((pPmList_t)plist)->length--;
+    return retval;
+}
+
+
+
 #ifdef HAVE_PRINT
 PmReturn_t
 list_print(pPmObj_t plist)

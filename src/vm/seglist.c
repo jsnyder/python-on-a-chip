@@ -203,7 +203,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
 
     C_ASSERT(index <= pseglist->sl_length);
 
-    /* If this is first item in seg */
+    /* If a new seg is needed */
     if ((pseglist->sl_length % SEGLIST_OBJS_PER_SEG) == 0)
     {
         /* Alloc and init new segment */
@@ -231,13 +231,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
         pseglist->sl_lastseg = pseg;
     }
 
-    /* Else get last seg */
-    else
-    {
-        pseg = pseglist->sl_lastseg;
-    }
-
-    /* Walk out to the proper segment */
+    /* Walk out to the segment for insertion */
     pseg = pseglist->sl_rootseg;
     C_ASSERT(pseg != C_NULL);
     for (i = (index / SEGLIST_OBJS_PER_SEG); i > 0; i--)
@@ -256,7 +250,7 @@ seglist_insertItem(pSeglist_t pseglist, pPmObj_t pobj, int16_t index)
         pobj1 = pobj2;
         indx++;
 
-        /* If indx exceeds this seg, go to next */
+        /* If indx exceeds this seg, go to next seg */
         if ((indx >= SEGLIST_OBJS_PER_SEG) && (pobj1 != C_NULL))
         {
             pseg = pseg->next;
