@@ -48,7 +48,7 @@
  * Constants
  **************************************************************/
 
-uint8_t const *global_bistr = (uint8_t const *)"__bi";
+static uint8_t const *bistr = (uint8_t const *)"__bi";
 
 
 /***************************************************************
@@ -135,6 +135,7 @@ global_setBuiltins(pPmFunc_t pmod)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
+    uint8_t const *pbistr = bistr;
 
     if (PM_PBUILTINS == C_NULL)
     {
@@ -143,7 +144,7 @@ global_setBuiltins(pPmFunc_t pmod)
     }
 
     /* Put builtins module in the module's attrs dict */
-    retval = string_new(&global_bistr, &pkey);
+    retval = string_new(&pbistr, &pkey);
     PM_RETURN_IF_ERROR(retval);
 
     return dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
@@ -158,9 +159,10 @@ global_loadBuiltins(void)
     uint8_t const *nonestr = (uint8_t const *)"None";
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
+    uint8_t const *pbistr = bistr;
 
     /* Import the builtins */
-    retval = string_new(&global_bistr, &pstr);
+    retval = string_new(&pbistr, &pstr);
     PM_RETURN_IF_ERROR(retval);
     retval = mod_import(pstr, &pbimod);
     PM_RETURN_IF_ERROR(retval);
