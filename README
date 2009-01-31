@@ -5,7 +5,7 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   05
+:Release:   06
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
@@ -105,12 +105,31 @@ My personal thanks go out to these people for their contribution to PyMite:
 Release Notes
 -------------
 
-This is PyMite release 05
+This is PyMite release 06
+
+* Release 06, 2009/01/30
+
+    - #13:  Implement the equivalent of '__name__ == "__main__"' in module attrs
+    - #39:  Absorb changes from SnarfVM
+    - #101: Backport core objects' new methods from SnarfVM
+    - #104: Design and implement garbage collection
+    - #111: Remove bytecodes that aren't used in Python 2.5 and later
+    - #115: Optimize Dict type's memory use
+    - #120: Update the document on how to release PyMite
+    - #122: Make GC mark CodeObj's image if it is in RAM
+    - #123: Fix GC so it marks native function arguments properly
+    - #124: Fix name space for recursive function call
+    - #132: VM doesn't throw TypeError when function has wrong number of
+      arguments
+    - #134: ipm instructions lead to an exception
+    - #135: Code "if None" executes the positive case
+    - #136: Create module interface for compound datatypes
+    - #137: Create release 06
 
 * Release 05, 2007/05/10
 
     - #116: Created Release 05 package
-    - #109: Created check to ensure stack is empty after RETURN_VALUE pops last 
+    - #109: Created check to ensure stack is empty after RETURN_VALUE pops last
       item
     - #114: Created platform file for Atmel's ARM7
     - #112: Forced Dict keys to be of hashable type
@@ -127,27 +146,27 @@ This is PyMite release 05
     - #100: Removed od_const bit from object descriptor
     - #103: Implemented obj_print() for other object types
     - #98:  Fixed writing image file for win32 target
-    - #99:  Designed a way for ipm to be able to receive images larger than 
+    - #99:  Designed a way for ipm to be able to receive images larger than
       HEAP_MAX_CHUNK_SIZE
     - #90:  Created new lib function to return system time
     - #63:  Created mmb sample project
     - #91:  Fixed vm so that error codes are returned by the main() function
-    - #93:  Changed ifdef from TARGET_DESKTOP to a debug-oriented definition 
+    - #93:  Changed ifdef from TARGET_DESKTOP to a debug-oriented definition
       where it is appropriate
     - #70:  Fixed incorrect exception for chr('a')
     - #96:  Created library function to spawn a new thread
     - #82:  Fixed namespace issue
-    - #95:  Fixed sys.heap() so it doesn't overwrite the static const 0 integer 
+    - #95:  Fixed sys.heap() so it doesn't overwrite the static const 0 integer
       obj
     - #94:  Fixed integer loading from image so it re-uses static ints (-1,0,1).
     - #89:  Moved plat module functions into sys module
     - #88:  Created library function to return heap stats
     - #84:  Fixed bus error when using ipm
     - #87:  Redesigned the heap
-    - #86:  Moved as much platform-specific code to the platform implementation 
+    - #86:  Moved as much platform-specific code to the platform implementation
       file
     - #83:  Updated documentation to reflect new size requirement
-    - #74:  Added to pmImgCreator a filter to catch constants of unsupported 
+    - #74:  Added to pmImgCreator a filter to catch constants of unsupported
       types
     - #65:  Created plat module with put and get routines
     - #71:  Added support for builtin function eval()
