@@ -102,7 +102,7 @@ in the prescribed order:
     - Mainline the branch
     - Tag the mainline::
 
-        % svn cp https://svn.pymite.python-hosting.com/trunk https://svn.pymite.python-hosting.com/tags/pymite-RR
+        % svn cp -m "Creating release RR" https://svn.pymite.python-hosting.com/trunk https://svn.pymite.python-hosting.com/tags/pymite-RR
 
     - Make the distribution file:
 

@@ -1083,7 +1083,16 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj3 = TOS;
                 C_ASSERT(obj_compare(pobj3, PM_NEGONE) == C_SAME);
 
-                /* TODO #110: Prevent importing previously-loaded module */
+                /* #110: Prevent importing previously-loaded module */
+                /* If the named module is in globals, put it on the stack */
+                retval = dict_getItem((pPmObj_t)FP->fo_globals, pobj1, &pobj2);
+                if ((retval == PM_RET_OK)
+                    && (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_MOD))
+                {
+                    PM_PUSH(pobj2);
+                    continue;
+                }
+
                 /* Load module from image */
                 retval = mod_import(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
@@ -1355,7 +1364,7 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Clear flag, so frame will not be marked by the GC */
                     gVmGlobal.nativeframe.nf_active = C_FALSE;
-                    
+
                     /* Reset GC count since the native session is done */
                     gVmGlobal.nativeframe.nf_gcCount = 0;
 
@@ -1445,7 +1454,7 @@ interp_reschedule(void)
     PmReturn_t retval = PM_RET_OK;
     static uint8_t threadIndex = (uint8_t)0;
     pPmObj_t pobj;
-    
+
     /* If there are no threads in the runnable list, null the active thread */
     if (gVmGlobal.threadList->length == 0)
     {
@@ -1459,7 +1468,7 @@ interp_reschedule(void)
         {
             threadIndex = (uint8_t)0;
         }
-        retval = list_getItem((pPmObj_t)gVmGlobal.threadList, threadIndex, 
+        retval = list_getItem((pPmObj_t)gVmGlobal.threadList, threadIndex,
                               &pobj);
         gVmGlobal.pthread = (pPmThread_t)pobj;
         PM_RETURN_IF_ERROR(retval);

@@ -65,7 +65,7 @@ TAGS :
 	$(CSCOPE) -b -c -R
 	$(if $(PYCSCOPE), cd src/tools && $(PYCSCOPE) -R *.py)
 
-dist : check docs
+dist : html
 ifndef PYMITE_RELEASE
 	$(error Must define PYMITE_RELEASE=RR)
 else

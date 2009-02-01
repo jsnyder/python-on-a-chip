@@ -60,11 +60,11 @@
 /**
  * Creates String object from character array in RAM
  *
- * @param s address in RAM of source string
+ * @param paddr pointer to address of source string
  * @param r_pstring Return arg; addr of ptr to string
  */
-#define string_new(s, r_pstring) \
-            string_create(MEMSPACE_RAM, (s), (uint8_t)0, (r_pstring))
+#define string_new(paddr, r_pstring) \
+            string_create(MEMSPACE_RAM, (paddr), (uint8_t)0, (r_pstring))
 
 /***************************************************************
  * Types
