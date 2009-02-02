@@ -61,21 +61,28 @@
 #ifndef HEAP_SIZE
 #error HEAP_SIZE not defined by the build environment
 #endif
+#if HEAP_SIZE & 3
+#error HEAP_SIZE is not a multiple of four
+#endif
 
 /**
- * The maximum size a chunk can be.
- * The chunk size is limited by the od_size field in the object descriptor.
- * Currently, that field is 8 bits.  Since the heap allocator already rounds
- * requested chunk sizes up to the next multiple of four, the lower two bits
- * are alway zero.  So, we can shift this adjusted size value to the right
- * two places which allows larger effective sizes.
- * The maximum size is now (2^11 - 1 == 2047), but it must be a multiple of
- * four to maintain alignment on some 32-bit platforms, so it becomes 2044.
+ * The maximum size a live chunk can be (a live chunk is one that is in use).
+ * The live chunk size is limited by the size field in the *object* descriptor.
+ * That field is nine bits with two assumed least significant bits (zeros):
+ * (0x1FF << 2) == 2044
  */
-#define HEAP_MAX_CHUNK_SIZE 2044
+#define HEAP_MAX_LIVE_CHUNK_SIZE 2044
 
-/** The minimum size a chunk can be */
-#define HEAP_MIN_CHUNK_SIZE sizeof(PmHeapDesc_t)
+/**
+ * The maximum size a free chunk can be (a free chunk is one that is not in use).
+ * The free chunk size is limited by the size field in the *heap* descriptor.
+ * That field is fourteen bits with two assumed least significant bits (zeros):
+ * (0x3FFF << 2) == 65532
+ */
+#define HEAP_MAX_FREE_CHUNK_SIZE 65532
+
+/** The minimum size a chunk can be (rounded up to a multiple of 4) */
+#define HEAP_MIN_CHUNK_SIZE ((sizeof(PmHeapDesc_t) + 3) & ~3)
 
 
 /***************************************************************
@@ -125,16 +132,16 @@
  *               | end chunk     |
  *               +---------------+
  */
-typedef struct PmHeapChunk_s
+typedef struct PmHeapDesc_s
 {
     /** Heap descriptor */
     uint16_t hd;
 
     /** Ptr to prev heap chunk */
-    struct PmHeapChunk_s *prev;
+    struct PmHeapDesc_s *prev;
 
     /** Ptr to next heap chunk */
-    struct PmHeapChunk_s *next;
+    struct PmHeapDesc_s *next;
 } PmHeapDesc_t,
  *pPmHeapDesc_t;
 
@@ -152,7 +159,11 @@ typedef struct PmHeap_s
     pPmHeapDesc_t pfreelist;
 
     /** The amount of heap space available in free list */
+#if HEAP_SIZE > 65535
+    uint32_t avail;
+#else
     uint16_t avail;
+#endif
 
     /** Garbage collection mark value */
     uint8_t gcval;
@@ -198,6 +209,8 @@ heap_unlinkFromFreelist(pPmHeapDesc_t pchunk)
 {
     C_ASSERT(pchunk != C_NULL);
 
+    pmHeap.avail -= OBJ_GET_SIZE(pchunk);
+
     if (pchunk->next != C_NULL)
     {
         pchunk->next->prev = pchunk->prev;
@@ -226,6 +239,8 @@ heap_linkToFreelist(pPmHeapDesc_t pchunk)
 
     /* Ensure the object is already free */
     C_ASSERT(OBJ_GET_FREE(pchunk) != 0);
+
+    pmHeap.avail += OBJ_GET_SIZE(pchunk);
 
     /* If free list is empty, add to head of list */
     if (pmHeap.pfreelist == C_NULL)
@@ -286,23 +301,41 @@ PmReturn_t
 heap_init(void)
 {
     pPmHeapDesc_t pchunk;
-
-    /* Create one big chunk */
-    pchunk = (pPmHeapDesc_t)pmHeap.base;
-    OBJ_SET_FREE(pchunk, 1);
-    OBJ_SET_SIZE(pchunk, HEAP_SIZE);
-    pchunk->next = C_NULL;
-    pchunk->prev = C_NULL;
-
+#if HEAP_SIZE > 65535
+    uint32_t hs;
+#else
+    uint16_t hs;
+#endif
 
     /* Init heap globals */
-    pmHeap.pfreelist = pchunk;
-    pmHeap.avail = HEAP_SIZE;
+    pmHeap.pfreelist = C_NULL;
+    pmHeap.avail = 0;
     pmHeap.gcval = (uint8_t)0;
     pmHeap.auto_gc = C_TRUE;
 
+    /* Create as many max-sized chunks as possible in the freelist */
+    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE; 
+         hs >= HEAP_MAX_FREE_CHUNK_SIZE; 
+         hs -= HEAP_MAX_FREE_CHUNK_SIZE)
+    {
+        OBJ_SET_FREE(pchunk, 1);
+        OBJ_SET_SIZE(pchunk, HEAP_MAX_FREE_CHUNK_SIZE);
+        heap_linkToFreelist(pchunk);
+        pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
+    }
+    
+    /* Add any leftover memory to the freelist */ 
+    if (hs >= HEAP_MIN_CHUNK_SIZE)
+    {
+        /* Round down to a multiple of four */
+        hs = hs & ~3;
+        OBJ_SET_FREE(pchunk, 1);
+        OBJ_SET_SIZE(pchunk, hs);
+        heap_linkToFreelist(pchunk);
+    }
+
     C_DEBUG_PRINT(VERBOSITY_LOW, "heap_init(), id=%p, s=%d\n",
-                  pmHeap.base, HEAP_SIZE);
+                  pmHeap.base, pmHeap.avail);
 
     string_cacheInit();
 
@@ -399,9 +432,6 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         OBJ_SET_GCVAL(pchunk, pmHeap.gcval);
     }
 
-    /* Reduce the amount of available memory */
-    pmHeap.avail -= OBJ_GET_SIZE(pchunk);
-
     /* Return the chunk */
     *r_pchunk = (uint8_t *)pchunk;
 
@@ -422,13 +452,13 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
     uint16_t adjustedsize;
 
     /* Ensure size request is valid */
-    if (requestedsize > HEAP_MAX_CHUNK_SIZE)
+    if (requestedsize > HEAP_MAX_LIVE_CHUNK_SIZE)
     {
         PM_RAISE(retval, PM_RET_EX_MEM);
         return retval;
     }
 
-    if (requestedsize < HEAP_MIN_CHUNK_SIZE)
+    else if (requestedsize < HEAP_MIN_CHUNK_SIZE)
     {
         requestedsize = HEAP_MIN_CHUNK_SIZE;
     }
@@ -483,8 +513,6 @@ heap_freeChunk(pPmObj_t ptr)
     retval = heap_linkToFreelist((pPmHeapDesc_t)ptr);
     PM_RETURN_IF_ERROR(retval);
 
-    /* Increase heap available amount */
-    pmHeap.avail += OBJ_GET_SIZE(ptr);
     return retval;
 }
 
@@ -827,7 +855,6 @@ heap_gcSweep(void)
     pPmObj_t pobj;
     pPmHeapDesc_t pchunk;
     uint16_t totalchunksize;
-    uint16_t additionalheapsize;
 
     /* Start at the base of the heap */
     pobj = (pPmObj_t)pmHeap.base;
@@ -849,7 +876,6 @@ heap_gcSweep(void)
 
         /* Accumulate the sizes of all consecutive unmarked or free chunks */
         totalchunksize = 0;
-        additionalheapsize = 0;
 
         /* Coalesce all contiguous free chunks */
         pchunk = (pPmHeapDesc_t)pobj;
@@ -874,7 +900,6 @@ heap_gcSweep(void)
             {
                 OBJ_SET_TYPE(pchunk, 0);
                 OBJ_SET_FREE(pchunk, 1);
-                additionalheapsize += OBJ_GET_SIZE(pchunk);
             }
 
             C_DEBUG_PRINT(VERBOSITY_HIGH, "heap_gcSweep(), id=%p, s=%d\n",
@@ -890,9 +915,6 @@ heap_gcSweep(void)
                 break;
             }
         }
-
-        /* Adjust the heap stats */
-        pmHeap.avail += additionalheapsize;
 
         /* Set the heap descriptor data */
         OBJ_SET_FREE(pobj, 1);
