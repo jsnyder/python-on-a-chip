@@ -66,7 +66,7 @@ PmReturn_t
 plat_init(void)
 {
     /* Let POSIX' SIGALRM fire every full millisecond. */
-    /* 
+    /*
      * #67 Using sigaction complicates the use of getchar (below),
      * so signal() is used instead.
      */
@@ -157,17 +157,39 @@ PmReturn_t
 plat_getMsTicks(uint32_t *r_ticks)
 {
     *r_ticks = pm_timerMsTicks;
-    
+
     return PM_RET_OK;
 }
 
 
-void 
+void
 plat_reportError(PmReturn_t result)
 {
+    /* Print error */
     printf("Error:     0x%02X\n", result);
     printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
     printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
     printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+
+    /* Print traceback */
+    {
+        pPmObj_t pframe;
+        pPmObj_t pstr;
+        PmReturn_t retval;
+
+        printf("Traceback (top first):\n");
+        for (pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
+             pframe != C_NULL;
+             pframe = (pPmObj_t)((pPmFrame_t)pframe)->fo_back)
+        {
+            /* The last name in the names tuple of the code obj is the name */
+            retval = tuple_getItem((pPmObj_t)((pPmFrame_t)pframe)->
+                                   fo_func->f_co->co_names, -1, &pstr);
+            if ((retval) != PM_RET_OK) break;
+
+            printf("  %s()\n", ((pPmString_t)pstr)->val);
+        }
+        printf("  <module>.\n");
+    }
 }
 
