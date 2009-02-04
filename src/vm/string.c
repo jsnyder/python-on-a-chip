@@ -255,3 +255,16 @@ string_cacheInit(void)
 #endif
     return PM_RET_OK;
 }
+
+
+PmReturn_t 
+string_getCache(pPmString_t **r_ppstrcache)
+{
+#if USE_STRING_CACHE
+    *r_ppstrcache = &pstrcache;
+#else
+    *r_ppstrcache = C_NULL;
+#endif
+    return PM_RET_OK;
+}
+

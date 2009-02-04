@@ -1,5 +1,5 @@
 # PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
-# Copyright 2002 Dean Hall
+# Copyright 2009 Dean Hall
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,25 +17,27 @@
 #
 
 #
-# Test for Issue #104: Design and implement garbage collection
+# System Test 141
+# String cache not handled by GC
 #
-# Run code that will cause a GC and then run more code to see that things
-# still work.
+# Creates a bunch of strings, removes references to them,
+# creates another bunch of strings causing a GC.
+# Expect enough space for the second bunch of strings.
+# This test is tuned for an 8 KB heap.
 #
 
 import sys
 
 print "Heap =", sys.heap()
 
-i = 150
-r = range(i)
-print "r = range(", i, ")"
+r = map(chr, range(ord('a'), 135))
+print "r = ", r
 
 print "Heap =", sys.heap()
 
-while i > 0:
-    i -= 1
-    r[i] += 10
+for i in range(len(r)):
+    r[i] = chr(ord(r[i]) - 32)
+print "r = ", r
 
 print "Heap =", sys.heap()
 print "Done."

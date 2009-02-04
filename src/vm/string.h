@@ -40,7 +40,7 @@
  * Constants
  **************************************************************/
 
-/** Set to nonzero to enable string cache */
+/** Set to nonzero to enable string cache.  DO NOT REMOVE THE DEFINITION. */
 #define USE_STRING_CACHE 1
 
 
@@ -161,7 +161,7 @@ int8_t string_compare(pPmString_t, pPmString_t);
  * @return Return status
  */
 PmReturn_t string_print(pPmObj_t pstr, uint8_t marshall);
-#endif /* HAVE_STRING */
+#endif /* HAVE_PRINT */
 
 /**
  * Clears the string cache if one exists.
@@ -171,4 +171,7 @@ PmReturn_t string_print(pPmObj_t pstr, uint8_t marshall);
  */
 PmReturn_t string_cacheInit(void);
 
+
+/** Returns a pointer to the base of the string cache */
+PmReturn_t string_getCache(pPmString_t **r_ppstrcache);
 #endif /* __STRING_H__ */

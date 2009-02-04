@@ -314,8 +314,8 @@ heap_init(void)
     pmHeap.auto_gc = C_TRUE;
 
     /* Create as many max-sized chunks as possible in the freelist */
-    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE; 
-         hs >= HEAP_MAX_FREE_CHUNK_SIZE; 
+    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE;
+         hs >= HEAP_MAX_FREE_CHUNK_SIZE;
          hs -= HEAP_MAX_FREE_CHUNK_SIZE)
     {
         OBJ_SET_FREE(pchunk, 1);
@@ -323,8 +323,8 @@ heap_init(void)
         heap_linkToFreelist(pchunk);
         pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
     }
-    
-    /* Add any leftover memory to the freelist */ 
+
+    /* Add any leftover memory to the freelist */
     if (hs >= HEAP_MIN_CHUNK_SIZE)
     {
         /* Round down to a multiple of four */
@@ -844,8 +844,55 @@ heap_gcMarkRoots(void)
 }
 
 
+#if USE_STRING_CACHE
+/**
+ * Purges free objects from the string cache.
+ * This function must only be called by the GC after the heap has been marked
+ * and before the heap has been swept.
+ *
+ * This solves the problem where a string object would be collected
+ * but its chunk was still linked into the free list
+ *
+ * @param gcval The current value for chunks marked by the GC
+ */
+static PmReturn_t
+heap_purgeStringCache(uint8_t gcval)
+{
+    PmReturn_t retval;
+    pPmString_t *ppstrcache;
+    pPmString_t pstr;
+
+    /*
+     * Update the string cache pointer
+     * if the first string objs are not referenced from a root
+     */
+    retval = string_getCache(&ppstrcache);
+    while (OBJ_GET_GCVAL(*ppstrcache) != gcval)
+    {
+        *ppstrcache = (*ppstrcache)->next;
+    }
+
+    /* Unlink remaining strings that are not referenced from a root */
+    for (pstr = *ppstrcache; pstr != C_NULL; pstr = pstr->next)
+    {
+        if (pstr->next == C_NULL)
+        {
+            break;
+        }
+
+        if (OBJ_GET_GCVAL(pstr->next) != gcval)
+        {
+            pstr->next = pstr->next->next;
+        }
+    }
+
+    return retval;
+}
+#endif
+
+
 /*
- * Reclaims any object that doesn't have a current mark.
+ * Reclaims any object that does not have a current mark.
  * Puts it in the free list.  Coalesces all contiguous free chunks.
  */
 static PmReturn_t
@@ -855,6 +902,10 @@ heap_gcSweep(void)
     pPmObj_t pobj;
     pPmHeapDesc_t pchunk;
     uint16_t totalchunksize;
+
+#if USE_STRING_CACHE
+    retval = heap_purgeStringCache(pmHeap.gcval);
+#endif
 
     /* Start at the base of the heap */
     pobj = (pPmObj_t)pmHeap.base;
@@ -883,7 +934,12 @@ heap_gcSweep(void)
                || (!OBJ_GET_FREE(pchunk)
                    && (OBJ_GET_GCVAL(pchunk) != pmHeap.gcval)))
         {
-            totalchunksize += OBJ_GET_SIZE(pchunk);
+            if ((totalchunksize + OBJ_GET_SIZE(pchunk))
+                > HEAP_MAX_FREE_CHUNK_SIZE)
+            {
+                break;
+            }
+            totalchunksize = totalchunksize + OBJ_GET_SIZE(pchunk);
 
             /*
              * If the chunk is already free, unlink it because its size
