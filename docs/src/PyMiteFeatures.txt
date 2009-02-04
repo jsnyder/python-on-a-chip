@@ -45,15 +45,15 @@ Keywords
 PyMite supports the following subset of Python's keywords::
 
     and         assert      break       continue    def
-    elif        else        for         global      if
-    import      in          is          not         or
-    pass        return      while
+    elif        else        for         from        global
+    if          import      in          is          not
+    or          pass        print       raise       return
+    while
 
 PyMite DOES NOT support these keywords::
 
     class       del         except      exec        finally
-    from        lambda      print       raise       try
-    yield
+    lambda      try         yield
 
 Identifiers
 ~~~~~~~~~~~
@@ -254,9 +254,16 @@ PyMite DOES NOT offer any of the library modules from Python.  Instead, PyMite
 offers its own set of library modules, some of which have the same name as
 a module name from Python.
 
-PyMite offers the following library module::
+PyMite offers the following library modules::
 
-    sys
+    dict            func            list            sys
+
+Idiom Hints
+-----------
+
+PyMite does NOT support the idiom ``if __name__ == "__main__"``,
+instead this should be used: ``if ismain()``
+where the ismain() function is part of the builtins module.
 
 Thanks
 ------
