@@ -846,7 +846,7 @@ heap_gcMarkRoots(void)
 
 #if USE_STRING_CACHE
 /**
- * Purges free objects from the string cache.
+ * Unlinks free objects from the string cache.
  * This function must only be called by the GC after the heap has been marked
  * and before the heap has been swept.
  *
@@ -862,27 +862,34 @@ heap_purgeStringCache(uint8_t gcval)
     pPmString_t *ppstrcache;
     pPmString_t pstr;
 
-    /*
-     * Update the string cache pointer
-     * if the first string objs are not referenced from a root
-     */
+    /* Update string cache pointer if the first string objs are not marked */
     retval = string_getCache(&ppstrcache);
-    while (OBJ_GET_GCVAL(*ppstrcache) != gcval)
+    if (ppstrcache == C_NULL)
+    {
+        return retval;
+    }
+    while ((*ppstrcache != C_NULL) && (OBJ_GET_GCVAL(*ppstrcache) != gcval))
     {
         *ppstrcache = (*ppstrcache)->next;
     }
-
-    /* Unlink remaining strings that are not referenced from a root */
-    for (pstr = *ppstrcache; pstr != C_NULL; pstr = pstr->next)
+    if (*ppstrcache == C_NULL)
     {
-        if (pstr->next == C_NULL)
-        {
-            break;
-        }
+        return retval;
+    }
 
-        if (OBJ_GET_GCVAL(pstr->next) != gcval)
+    /* Unlink remaining strings that are not marked */
+    for (pstr = *ppstrcache; pstr->next != C_NULL; )
+    {
+        /* Unlink consecutive non-marked strings */
+        while ((pstr->next != C_NULL) && (OBJ_GET_GCVAL(pstr->next) != gcval))
         {
             pstr->next = pstr->next->next;
+        }
+
+        /* If not at end of cache, string must be marked, skip it */
+        if (pstr->next != C_NULL)
+        {
+            pstr = pstr->next;
         }
     }
 

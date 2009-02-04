@@ -30,14 +30,16 @@ import sys
 
 print "Heap =", sys.heap()
 
-r = map(chr, range(ord('a'), 135))
+start = ord('a')
+r = map(chr, range(start, start+35))
+t = map(type, r)
 print "r = ", r
-
+print "t = ", t
 print "Heap =", sys.heap()
 
-for i in range(len(r)):
-    r[i] = chr(ord(r[i]) - 32)
+start = ord('A')
+r = map(chr, range(start, start+35))
 print "r = ", r
-
 print "Heap =", sys.heap()
+
 print "Done."
