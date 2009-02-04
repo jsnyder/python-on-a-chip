@@ -1,5 +1,5 @@
 # PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
-# Copyright 2002 Dean Hall
+# Copyright 2009 Dean Hall
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,23 +17,14 @@
 #
 
 #
-# System Test 119
-# Print Python traceback on exception
+# System Test 140
+# Create func module with introspection functions
 #
 
-def divzero(n):
-    print "In divzero"
-    a = n/0
+# This test requires that you build src/lib/func.py
+# The code is commented out so it won't cause a normal build to fail
+#import func
 
-def foo():
-    divzero(42)
 
-def bar():
-    foo()
-    
-def baz():
-    bar()
-
-if ismain():
-    print "calling baz()"
-#    baz()  # expect exception and traceback
+#print "co_names: ", func.co_names(list)
+#print "co_consts: ", func.co_consts(list)
