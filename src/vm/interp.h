@@ -91,7 +91,13 @@
 #define NATIVE_GET_PFRAME()   (*ppframe)
 /** gets the number of args passed to the native fxn */
 #define NATIVE_GET_NUM_ARGS() (gVmGlobal.nativeframe.nf_numlocals)
-
+/** Pins an allocated object for the native session */
+#define NATIVE_PIN_OBJ(rv, pobj) \
+        do \
+        { \
+            (rv) = list_append(gVmGlobal.nativeframe.nf_pinnedlist, \
+                               (pPmObj_t)(pobj)); \
+        } while (0)
 
 /***************************************************************
  * Types

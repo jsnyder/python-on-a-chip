@@ -336,7 +336,6 @@ list_delItem(pPmObj_t plist, int16_t index)
 }
 
 
-
 #ifdef HAVE_PRINT
 PmReturn_t
 list_print(pPmObj_t plist)
@@ -378,3 +377,29 @@ list_print(pPmObj_t plist)
     return plat_putByte(']');
 }
 #endif /* HAVE_PRINT */
+
+
+PmReturn_t
+list_clear(pPmObj_t plist)
+{
+    PmReturn_t retval = PM_RET_OK;
+
+    C_ASSERT(plist != C_NULL);
+
+    /* Raise TypeError if arg is not a dict */
+    if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* clear length */
+    ((pPmList_t)plist)->length = 0;
+
+    /* clear the keys and values seglists if needed */
+    if (((pPmList_t)plist)->val != C_NULL)
+    {
+        retval = seglist_clear(((pPmList_t)plist)->val);
+    }
+    return retval;
+}

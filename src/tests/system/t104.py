@@ -27,7 +27,7 @@ import sys
 
 print "Heap =", sys.heap()
 
-i = 150
+i = 170
 r = range(i)
 print "r = range(", i, ")"
 
@@ -36,6 +36,6 @@ print "Heap =", sys.heap()
 while i > 0:
     i -= 1
     r[i] += 10
-
+print "r[i] += 10; for all i"
 print "Heap =", sys.heap()
 print "Done."

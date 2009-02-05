@@ -1365,8 +1365,8 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Clear flag, so frame will not be marked by the GC */
                     gVmGlobal.nativeframe.nf_active = C_FALSE;
 
-                    /* Reset GC count since the native session is done */
-                    gVmGlobal.nativeframe.nf_gcCount = 0;
+                    /* Clear the pinned obj list now that the session is done */
+                    list_clear(gVmGlobal.nativeframe.nf_pinnedlist);
 
                     /* If the frame pointer was switched, do nothing to TOS */
                     if (retval == PM_RET_FRAME_SWITCH)

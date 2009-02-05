@@ -71,6 +71,8 @@ def keys(d):
     /* Create empty list */
     retval = list_new(&pl);
     PM_RETURN_IF_ERROR(retval);
+    NATIVE_PIN_OBJ(retval, pl);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Iterate through the keys seglist */
     psl = ((pPmDict_t)pd)->d_keys;
@@ -110,6 +112,8 @@ def values(d):
 
     /* Create empty list */
     retval = list_new(&pl);
+    PM_RETURN_IF_ERROR(retval);
+    NATIVE_PIN_OBJ(retval, pl);
     PM_RETURN_IF_ERROR(retval);
 
     /* Iterate through the values seglist */

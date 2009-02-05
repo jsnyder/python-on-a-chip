@@ -24,27 +24,20 @@
 """
 
 
-def getButtons(n):
+def getButtons():
     """__NATIVE__
     PmReturn_t retval = PM_RET_OK;
     uint32_t val = 0;
-    pPmObj_t pn;
+    pPmObj_t pint;
 
     /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 1)
+    if (NATIVE_GET_NUM_ARGS() != 0)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
 
-    /* If arg is not an int, raise TypeError */
-    pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
+    /* Collect the button input as bits in an int */
     if ((AT91F_PIO_GetInput(AT91C_BASE_PIOA) & SW1_MASK) == 0)
     {
         val |= 0x01;
@@ -62,9 +55,9 @@ def getButtons(n):
         val |= 0x08;
     }
 
-    /* WARNING: in-place integer modification!  Bad if int objs are ever cached. */
-    ((pPmInt_t)pn)->val = val;
-    NATIVE_SET_TOS(pn);
+    retval = int_new(val, &pint);
+    PM_RETURN_IF_ERROR(retval);
+
     return retval;
     """
     pass
@@ -103,10 +96,8 @@ def setLeds(n):
     pass
 
 
-n = 0
 while 1:
-    getButtons(n)
-    setLeds(n)
+    setLeds(getButtons())
 
 
 # :mode=c:

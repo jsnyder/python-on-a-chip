@@ -180,7 +180,14 @@ PmReturn_t list_delItem(pPmObj_t plist, int16_t index);
  * @return Return status
  */
 PmReturn_t list_print(pPmObj_t pobj);
-
 #endif /* HAVE_PRINT */
+
+/**
+ * Removes all items from the list and zeroes the length.
+ *
+ * @param pobj List to clear
+ * @return Return status
+ */
+PmReturn_t list_clear(pPmObj_t plist);
 
 #endif /* __LIST_H__ */

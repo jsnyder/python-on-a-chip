@@ -178,7 +178,33 @@ plat_reportError(PmReturn_t result)
         PmReturn_t retval;
 
         printf("Traceback (top first):\n");
-        for (pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
+
+        /* Get the top frame */
+        pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
+
+        /* If it's the native frame, print the native function name */
+        if (pframe == (pPmObj_t)&(gVmGlobal.nativeframe))
+        {
+
+            /* The last name in the names tuple of the code obj is the name */
+            retval = tuple_getItem((pPmObj_t)gVmGlobal.nativeframe.nf_func->
+                                   f_co->co_names, -1, &pstr);
+            if ((retval) != PM_RET_OK)
+            {
+                printf("  Unable to get native func name.\n");
+                return;
+            }
+            else
+            {
+                printf("  %s() __NATIVE__\n", ((pPmString_t)pstr)->val);
+            }
+
+            /* Get the frame that called the native frame */
+            pframe = (pPmObj_t)gVmGlobal.nativeframe.nf_back;
+        }
+
+        /* Print the remaining frame stack */
+        for (;
              pframe != C_NULL;
              pframe = (pPmObj_t)((pPmFrame_t)pframe)->fo_back)
         {

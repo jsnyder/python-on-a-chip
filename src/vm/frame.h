@@ -167,11 +167,11 @@ typedef struct PmNativeFrame_s
     /** Single stack slot */
     pPmObj_t nf_stack;
 
+    /** List to hold objects that are pinned during native session */
+    pPmObj_t nf_pinnedlist;
+
     /** Boolean to indicate if the native frame is active */
     uint8_t nf_active;
-
-    /** Counter for number of times the GC runs in one native code session */
-    uint8_t nf_gcCount;
 
     /** Number of args passed to the native function */
     uint8_t nf_numlocals;

@@ -110,6 +110,7 @@ global_init(void)
 
     /* Init "code" string obj */
     retval = string_new((uint8_t const **)&codestr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
     gVmGlobal.pcodeStr = (pPmString_t)pobj;
 
     /* Init empty builtins */
@@ -121,10 +122,12 @@ global_init(void)
     /* Init native frame */
     OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
     OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
-    gVmGlobal.nativeframe.nf_gcCount = 0;
+    retval = list_new(&pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.nativeframe.nf_pinnedlist = pobj;
 
     /* Create empty threadList */
-    list_new(&pobj);
+    retval = list_new(&pobj);
     gVmGlobal.threadList = (pPmList_t)pobj;
 
     return retval;

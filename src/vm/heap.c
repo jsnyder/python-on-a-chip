@@ -414,23 +414,10 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
     }
 
     /*
-     * If allocating this chunk within native code, set the chunk's GC mark
-     * so it will survive one cycle of the GC.  This will, hopefully, give
-     * it time to be linked and be reachable from the roots list
-     */
-    if (gVmGlobal.nativeframe.nf_active)
-    {
-        OBJ_SET_GCVAL(pchunk, !pmHeap.gcval);
-    }
-
-    /*
-     * Set the chunk's GC mark so it will be collected on next GC cycle
+     * Set the chunk's GC mark so it will be collected during the next GC cycle
      * if it is not reachable
      */
-    else
-    {
-        OBJ_SET_GCVAL(pchunk, pmHeap.gcval);
-    }
+    OBJ_SET_GCVAL(pchunk, pmHeap.gcval);
 
     /* Return the chunk */
     *r_pchunk = (uint8_t *)pchunk;
@@ -758,7 +745,11 @@ heap_gcMarkObj(pPmObj_t pobj)
              */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
 
-            /* Mark the native frame's fields if it is active */
+            /* Always mark the pinned list (so the list obj isn't swept) */
+            retval = heap_gcMarkObj(gVmGlobal.nativeframe.nf_pinnedlist);
+            PM_RETURN_IF_ERROR(retval);
+
+            /* Mark the native frame's remaining fields if active */
             if (gVmGlobal.nativeframe.nf_active)
             {
                 /* Mark the frame stack */
@@ -1002,23 +993,6 @@ heap_gcRun(void)
     PmReturn_t retval;
 
     C_DEBUG_PRINT(VERBOSITY_LOW, "heap_gcRun()\n");
-
-    /*
-     * Prevent the GC from running twice during one session of native code.
-     * Corruption can occur from collecting objects that were allocated
-     * during the native code session and are not yet reachable from the
-     * roots list.  Running the GC once is acceptable, a special case was
-     * created in the allocator to handle that situation.
-     * See #104 for greater detail.
-     */
-    if (gVmGlobal.nativeframe.nf_active)
-    {
-        if (++gVmGlobal.nativeframe.nf_gcCount >= 2)
-        {
-            PM_RAISE(retval, PM_RET_EX_MEM);
-            return retval;
-        }
-    }
 
     retval = heap_gcMarkRoots();
     PM_RETURN_IF_ERROR(retval);
