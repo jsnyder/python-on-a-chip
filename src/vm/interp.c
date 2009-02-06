@@ -1089,7 +1089,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((retval == PM_RET_OK)
                     && (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_MOD))
                 {
-                    PM_PUSH(pobj2);
+                    TOS = pobj2;
                     continue;
                 }
 
