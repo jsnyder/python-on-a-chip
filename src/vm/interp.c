@@ -1333,12 +1333,14 @@ interpret(const uint8_t returnOnNoThreads)
                         gVmGlobal.nativeframe.nf_locals[t16] = PM_POP();
                     }
 
+#ifdef HAVE_GC
                     /* If the heap is low on memory, run the GC */
                     if (heap_getAvail() < HEAP_GC_NF_THRESHOLD)
                     {
                         retval = heap_gcRun();
                         PM_BREAK_IF_ERROR(retval);
                     }
+#endif /* HAVE_GC */
 
                     /* Pop the function object (pobj2 is unused) */
                     pobj2 = PM_POP();

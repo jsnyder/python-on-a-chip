@@ -94,6 +94,7 @@ uint16_t
 #endif
 heap_getAvail(void);
 
+#ifdef HAVE_GC
 /**
  * Runs the mark-sweep garbage collector
  *
@@ -108,5 +109,6 @@ PmReturn_t heap_gcRun(void);
  * @return  Return code
  */
 PmReturn_t heap_gcSetAuto(uint8_t bool);
+#endif /* HAVE_GC */
 
 #endif /* __HEAP_H__ */

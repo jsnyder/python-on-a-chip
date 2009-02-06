@@ -39,4 +39,14 @@
  */
 #define HAVE_PRINT
 
+
+/**
+ * When defined, the code to perform mark-sweep garbage collection is included
+ * in the build and automatic GC is enabled.  When undefined the allocator
+ * will distribute memory until none is left, after which a memory exception
+ * will occur.
+ */
+#define HAVE_GC
+
+
 #endif /*FEATURES_H_ */

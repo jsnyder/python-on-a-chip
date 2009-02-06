@@ -99,6 +99,7 @@
  * Sets the GC's mark bit for the object
  * This MUST NOT be called on objects that are free.
  */
+#ifdef HAVE_GC
 #define OBJ_SET_GCVAL(pobj, gcval) \
     do \
     { \
@@ -106,6 +107,9 @@
                                        : ((pPmObj_t)pobj)->od & ~OD_MARK_BIT;\
     } \
     while (0)
+#else
+#define OBJ_SET_GCVAL(pobj, gcval)
+#endif /* HAVE_GC */
 
 
 /***************************************************************
@@ -165,11 +169,14 @@ typedef struct PmHeap_s
     uint16_t avail;
 #endif
 
+#ifdef HAVE_GC
     /** Garbage collection mark value */
     uint8_t gcval;
 
     /** Boolean to indicate if GC should run automatically */
     uint8_t auto_gc;
+#endif /* HAVE_GC */
+
 } PmHeap_t,
  *pPmHeap_t;
 
@@ -310,8 +317,10 @@ heap_init(void)
     /* Init heap globals */
     pmHeap.pfreelist = C_NULL;
     pmHeap.avail = 0;
+#ifdef HAVE_GC
     pmHeap.gcval = (uint8_t)0;
     pmHeap.auto_gc = C_TRUE;
+#endif /* HAVE_GC */
 
     /* Create as many max-sized chunks as possible in the freelist */
     for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE;
@@ -459,6 +468,7 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
     /* Attempt to get a chunk */
     retval = heap_getChunkImpl(adjustedsize, r_pchunk);
 
+#ifdef HAVE_GC
     /* Perform GC if out of memory, gc is enabled and not in native session */
     if ((retval == PM_RET_EX_MEM) && (pmHeap.auto_gc == C_TRUE)
         && (gVmGlobal.nativeframe.nf_active == C_FALSE))
@@ -469,6 +479,7 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
         /* Attempt to get a chunk */
         retval = heap_getChunkImpl(adjustedsize, r_pchunk);
     }
+#endif /* HAVE_GC */
 
     /* Ensure that the pointer is 4-byte aligned */
     if (retval == PM_RET_OK)
@@ -517,6 +528,7 @@ heap_getAvail(void)
 }
 
 
+#ifdef HAVE_GC
 /*****************************************************************************
  * Garbage Collector
  ****************************************************************************/
@@ -1009,3 +1021,4 @@ heap_gcSetAuto(uint8_t bool)
     pmHeap.auto_gc = bool;
     return PM_RET_OK;
 }
+#endif /* HAVE_GC */
