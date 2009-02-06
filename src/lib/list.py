@@ -125,6 +125,8 @@ def insert(l, i, o):
         PM_RAISE(retval, PM_RET_EX_SYS);
     }
 
+    NATIVE_SET_TOS(PM_NONE);
+
     return retval;
     """
     pass
