@@ -122,9 +122,6 @@ global_init(void)
     /* Init native frame */
     OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
     OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
-    retval = list_new(&pobj);
-    PM_RETURN_IF_ERROR(retval);
-    gVmGlobal.nativeframe.nf_pinnedlist = pobj;
 
     /* Create empty threadList */
     retval = list_new(&pobj);
@@ -132,6 +129,7 @@ global_init(void)
 
     return retval;
 }
+
 
 PmReturn_t
 global_setBuiltins(pPmFunc_t pmod)

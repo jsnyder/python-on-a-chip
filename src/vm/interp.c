@@ -627,7 +627,7 @@ interpret(const uint8_t returnOnNoThreads)
                 t8 = mem_getByte(FP->fo_func->f_co->co_memspace, &paddr);
 
                 /* SP should point to one past the end of the locals */
-                C_ASSERT(SP == &(FP->fo_locals[t8]));
+/*                C_ASSERT(SP == &(FP->fo_locals[t8]));*/
 #endif
 
                 /* Keep ref of expiring frame */
@@ -1333,6 +1333,13 @@ interpret(const uint8_t returnOnNoThreads)
                         gVmGlobal.nativeframe.nf_locals[t16] = PM_POP();
                     }
 
+                    /* If the heap is low on memory, run the GC */
+                    if (heap_getAvail() < HEAP_GC_NF_THRESHOLD)
+                    {
+                        retval = heap_gcRun();
+                        PM_BREAK_IF_ERROR(retval);
+                    }
+
                     /* Pop the function object (pobj2 is unused) */
                     pobj2 = PM_POP();
 
@@ -1340,7 +1347,7 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
                     t16 = ((pPmNo_t)pobj2)->no_funcindx;
 
-                    /* Set flag, so frame will be marked by the GC */
+                    /* Set flag, so the GC knows a native session is active */
                     gVmGlobal.nativeframe.nf_active = C_TRUE;
 
                     /*
@@ -1364,9 +1371,6 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Clear flag, so frame will not be marked by the GC */
                     gVmGlobal.nativeframe.nf_active = C_FALSE;
-
-                    /* Clear the pinned obj list now that the session is done */
-                    list_clear(gVmGlobal.nativeframe.nf_pinnedlist);
 
                     /* If the frame pointer was switched, do nothing to TOS */
                     if (retval == PM_RET_FRAME_SWITCH)

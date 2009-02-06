@@ -459,8 +459,9 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
     /* Attempt to get a chunk */
     retval = heap_getChunkImpl(adjustedsize, r_pchunk);
 
-    /* Perform GC if out of memory and auto-gc is enabled */
-    if ((retval == PM_RET_EX_MEM) && (pmHeap.auto_gc == C_TRUE))
+    /* Perform GC if out of memory, gc is enabled and not in native session */
+    if ((retval == PM_RET_EX_MEM) && (pmHeap.auto_gc == C_TRUE)
+        && (gVmGlobal.nativeframe.nf_active == C_FALSE))
     {
         retval = heap_gcRun();
         PM_RETURN_IF_ERROR(retval);
@@ -505,11 +506,14 @@ heap_freeChunk(pPmObj_t ptr)
 
 
 /* Returns, by reference, the number of bytes available in the heap */
-PmReturn_t
-heap_getAvail(uint16_t *r_avail)
+#if HEAP_SIZE > 65535
+uint32_t
+#else
+uint16_t
+#endif
+heap_getAvail(void)
 {
-    *r_avail = pmHeap.avail;
-    return PM_RET_OK;
+    return pmHeap.avail;
 }
 
 
@@ -744,10 +748,6 @@ heap_gcMarkObj(pPmObj_t pobj)
              * is here in case that ever changes
              */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
-
-            /* Always mark the pinned list (so the list obj isn't swept) */
-            retval = heap_gcMarkObj(gVmGlobal.nativeframe.nf_pinnedlist);
-            PM_RETURN_IF_ERROR(retval);
 
             /* Mark the native frame's remaining fields if active */
             if (gVmGlobal.nativeframe.nf_active)

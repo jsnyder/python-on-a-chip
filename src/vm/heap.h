@@ -37,6 +37,12 @@
  */
 
 
+/**
+ * The threshold of heap.avail under which the interpreter will run the GC
+ * just before starting a native session.
+ */
+#define HEAP_GC_NF_THRESHOLD (1024)
+
 /***************************************************************
  * Macros
  **************************************************************/
@@ -80,13 +86,13 @@ PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
  */
 PmReturn_t heap_freeChunk(pPmObj_t ptr);
 
-/**
- * Returns the number of bytes available in the heap
- *
- * @param   r_avail Return arg; number of bytes available in the heap
- * @return  Return code
- */
-PmReturn_t heap_getAvail(uint16_t *r_avail);
+/** @return  Return number of bytes available in the heap */
+#if HEAP_SIZE > 65535
+uint32_t
+#else
+uint16_t
+#endif
+heap_getAvail(void);
 
 /**
  * Runs the mark-sweep garbage collector

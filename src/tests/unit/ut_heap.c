@@ -47,15 +47,13 @@
 void
 ut_heap_init_000(CuTest *tc)
 {
-    uint16_t avail;
     PmReturn_t retval;
 
     retval = heap_init();
 
     CuAssertTrue(tc, retval == PM_RET_OK);
 
-    retval = heap_getAvail(&avail);
-    CuAssertTrue(tc, avail > 0);
+    CuAssertTrue(tc, heap_getAvail() > 0);
 }
 
 
@@ -113,16 +111,18 @@ ut_heap_getAvail_000(CuTest *tc)
 {
     uint16_t avail1;
     uint16_t avail2;
+    uint16_t actualsize;
     uint8_t *pchunk;
     PmReturn_t retval;
 
     retval = heap_init();
-    retval = heap_getAvail(&avail1);
-    CuAssertTrue(tc, retval == PM_RET_OK);
+    avail1 = heap_getAvail();
 
     retval = heap_getChunk(16, &pchunk);
-    retval = heap_getAvail(&avail2);
-    CuAssertTrue(tc, (avail1 - avail2) == 16);
+    actualsize = OBJ_GET_SIZE(pchunk);
+    
+    avail2 = heap_getAvail();
+    CuAssertTrue(tc, (avail1 - avail2) == actualsize);
 }
 
 
@@ -136,17 +136,19 @@ ut_heap_freeChunk_000(CuTest *tc)
 {
     uint16_t avail1;
     uint16_t avail2;
+    uint16_t actualsize;
     uint8_t *pchunk;
     PmReturn_t retval;
 
     retval = heap_init();
     retval = heap_getChunk(16, &pchunk);
-    retval = heap_getAvail(&avail1);
+    actualsize = OBJ_GET_SIZE(pchunk);
+    avail1 = heap_getAvail();
     retval = heap_freeChunk((pPmObj_t)pchunk);
     CuAssertTrue(tc, retval == PM_RET_OK);
 
-    retval = heap_getAvail(&avail2);
-    CuAssertTrue(tc, (avail2 - avail1) == 16);
+    avail2 = heap_getAvail();
+    CuAssertTrue(tc, (avail2 - avail1) == actualsize);
 }
 
 
@@ -165,11 +167,11 @@ ut_heap_freeChunk_001(CuTest *tc)
     PmReturn_t retval;
 
     retval = heap_init();
-    retval = heap_getAvail(&avail1);
+    avail1 = heap_getAvail();
     retval = heap_getChunk(19, &pchunk1);
     retval = heap_getChunk(33, &pchunk2);
     retval = heap_getChunk(88, &pchunk3);
-    retval = heap_getAvail(&avail2);
+    avail2 = heap_getAvail();
     CuAssertTrue(tc, avail1 - avail2 >= (19+33+88));
 
     retval = heap_freeChunk((pPmObj_t)pchunk1);
@@ -177,7 +179,7 @@ ut_heap_freeChunk_001(CuTest *tc)
     retval = heap_freeChunk((pPmObj_t)pchunk3);
     CuAssertTrue(tc, retval == PM_RET_OK);
 
-    retval = heap_getAvail(&avail2);
+    avail2 = heap_getAvail();
     CuAssertTrue(tc, avail2 == avail1);
 }
 

@@ -116,7 +116,6 @@ def heap():
     pPmObj_t pavail;
     pPmObj_t pmax;
     pPmObj_t ptup;
-    uint16_t avail;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
@@ -128,18 +127,13 @@ def heap():
     /* Allocate a tuple to store the return values */
     retval = tuple_new(2, &ptup);
     PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, ptup);
-    PM_RETURN_IF_ERROR(retval);
 
     /* Get the maximum heap size */
     retval = int_new(HEAP_SIZE, &pmax);
     PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, pmax);
-    PM_RETURN_IF_ERROR(retval);
 
     /* Allocate an int to hold the amount of heap available */
-    retval = heap_getAvail(&avail);
-    retval = int_new(avail - sizeof(PmInt_t), &pavail);
+    retval = int_new(heap_getAvail() - sizeof(PmInt_t), &pavail);
     PM_RETURN_IF_ERROR(retval);
 
     /* Put the two heap values in the tuple */

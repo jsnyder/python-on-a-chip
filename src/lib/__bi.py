@@ -184,13 +184,9 @@ def eval(co, g, l):
     /* Create func from code object */
     retval = func_new(pco, pg, &pfunc);
     PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, pfunc);
-    PM_RETURN_IF_ERROR(retval);
 
     /* Create frame from module object; globals is set to null */
     retval = frame_new(pfunc, &pnewframe);
-    PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, pnewframe);
     PM_RETURN_IF_ERROR(retval);
 
     /* TODO: Reclaim pnewframe's attrs dict created in frame_new */
@@ -465,8 +461,6 @@ def range(a, b, c):
     /* Allocate list */
     retval = list_new(&pr);
     PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, pr);
-    PM_RETURN_IF_ERROR(retval);
 
     /* Iterate depending on counting direction */
     if (((pPmInt_t)pc)->val > 0)
@@ -476,8 +470,6 @@ def range(a, b, c):
              i += ((pPmInt_t)pc)->val)
         {
             retval = int_new(i, &pi);
-            PM_RETURN_IF_ERROR(retval);
-            NATIVE_PIN_OBJ(retval, pi);
             PM_RETURN_IF_ERROR(retval);
 
             retval = list_append(pr, pi);
@@ -491,8 +483,6 @@ def range(a, b, c):
              i += ((pPmInt_t)pc)->val)
         {
             retval = int_new(i, &pi);
-            PM_RETURN_IF_ERROR(retval);
-            NATIVE_PIN_OBJ(retval, pi);
             PM_RETURN_IF_ERROR(retval);
 
             retval = list_append(pr, pi);
@@ -640,14 +630,10 @@ def _exn():
     /* Alloc a class object with attributes dict */
     retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
-    NATIVE_PIN_OBJ(retval, pchunk);
-    PM_RETURN_IF_ERROR(retval);
 
     pexn = (pPmClass_t)pchunk;
     OBJ_SET_TYPE(pexn, OBJ_TYPE_EXN);
     retval = dict_new(&pobj);
-    NATIVE_PIN_OBJ(retval, pobj);
-    PM_RETURN_IF_ERROR(retval);
     pexn->cl_attrs = (pPmDict_t)pobj;
 
     NATIVE_SET_TOS((pPmObj_t)pexn);
