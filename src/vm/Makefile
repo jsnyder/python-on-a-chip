@@ -6,7 +6,8 @@
 PMSTDLIB_SOURCES = ../lib/list.py \
                    ../lib/dict.py \
                    ../lib/__bi.py \
-                   ../lib/sys.py
+                   ../lib/sys.py \
+                   ../lib/string.py
 
 TARGET ?= DESKTOP
 HEAP_SIZE ?= 0x2000
