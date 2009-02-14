@@ -42,6 +42,7 @@ in the prescribed order:
           release.
 
     - Edit ``src/vm/pm.h``, update the value for the definition, ``PM_RELEASE``
+    - Run GNU indent on src/vm using the command ``make indent``
     - Perform all the standard builds to see that they complete without error
 
         - ``make html``

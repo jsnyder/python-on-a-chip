@@ -140,8 +140,8 @@ Dictionaries (Mappings)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 PyMite supports Dictionaries having up to 32767 key, value pairs.
-PyMite does NOT enforce that the key be a hashable type; it is the programmer's
-duty to use a proper type as the key to a dict.
+Dictionary keys must be of a hashable type.  A TypeError will occur if you try 
+set a value using a non-hashable key.
 Values can be of any type.
 
 Operator Precedence
