@@ -46,10 +46,10 @@
 #define PM_NONE         (pPmObj_t)(gVmGlobal.pnone)
 
 /** The global False object */
-#define PM_FALSE        (pPmObj_t)(gVmGlobal.pzero)
+#define PM_FALSE        (pPmObj_t)(gVmGlobal.pfalse)
 
 /** The global True object */
-#define PM_TRUE         (pPmObj_t)(gVmGlobal.pone)
+#define PM_TRUE         (pPmObj_t)(gVmGlobal.ptrue)
 
 /** The global integer 0 object */
 #define PM_ZERO         (pPmObj_t)(gVmGlobal.pzero)
@@ -84,6 +84,12 @@ typedef struct PmVmGlobal_s
 
     /** Global integer -1 obj */
     pPmInt_t pnegone;
+
+    /** Global boolean False obj */
+    pPmInt_t pfalse;
+
+    /** Global boolean True obj */
+    pPmInt_t ptrue;
 
     /** The string "code", used in interp.c RAISE_VARARGS */
     pPmString_t pcodeStr;

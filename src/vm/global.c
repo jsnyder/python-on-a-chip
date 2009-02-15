@@ -101,6 +101,22 @@ global_init(void)
     ((pPmInt_t)pobj)->val = (int32_t)-1;
     gVmGlobal.pnegone = (pPmInt_t)pobj;
 
+    /* Init False */
+    retval = heap_getChunk(sizeof(PmBoolean_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_BOOL);
+    ((pPmBoolean_t)pobj)->val = (int32_t)C_FALSE;
+    gVmGlobal.pfalse = (pPmInt_t)pobj;
+
+    /* Init True */
+    retval = heap_getChunk(sizeof(PmBoolean_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_BOOL);
+    ((pPmBoolean_t)pobj)->val = (int32_t)C_TRUE;
+    gVmGlobal.ptrue = (pPmInt_t)pobj;
+    
     /* Init None */
     retval = heap_getChunk(sizeof(PmObj_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);

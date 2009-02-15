@@ -54,7 +54,7 @@ obj_loadFromImg(PmMemSpace_t memspace,
 {
     PmReturn_t retval = PM_RET_OK;
     PmObj_t obj;
-    
+
 
     /* Get the object descriptor */
     obj.od= (PmObjDesc_t)0x0000;
@@ -131,6 +131,10 @@ obj_isFalse(pPmObj_t pobj)
             /* An empty dict is false */
             return ((pPmDict_t)pobj)->length == 0;
 
+        case OBJ_TYPE_BOOL:
+            /* C int zero means false */
+            return ((pPmBoolean_t)pobj)->val == 0;
+            
         default:
             /*
              * The following types are always not false:
@@ -314,6 +318,23 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             retval = tuple_print(pobj);
             break;
 
+        case OBJ_TYPE_BOOL:
+            if (((pPmBoolean_t)pobj)->val == C_TRUE)
+            {
+                plat_putByte('T');
+                plat_putByte('r');
+                plat_putByte('u');
+            }
+            else
+            {
+                plat_putByte('F');
+                plat_putByte('a');
+                plat_putByte('l');
+                plat_putByte('s');
+            }
+            retval = plat_putByte('e');
+            break;
+
         case OBJ_TYPE_COB:
         case OBJ_TYPE_MOD:
         case OBJ_TYPE_CLO:
@@ -331,49 +352,28 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
                 PM_RETURN_IF_ERROR(retval);
             }
             plat_putByte('<');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('o');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('b');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('j');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte(' ');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('t');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('y');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('p');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('e');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte(' ');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('0');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('x');
-            PM_RETURN_IF_ERROR(retval);
             int_printHexByte(OBJ_GET_TYPE(pobj));
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte(' ');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('@');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte(' ');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('0');
-            PM_RETURN_IF_ERROR(retval);
             plat_putByte('x');
-            PM_RETURN_IF_ERROR(retval);
             _int_printHex((int)pobj);
-            PM_RETURN_IF_ERROR(retval);
-            plat_putByte('>');
-            PM_RETURN_IF_ERROR(retval);
+            retval = plat_putByte('>');
             if (marshallString)
             {
-                plat_putByte('\'');
-                PM_RETURN_IF_ERROR(retval);
+                retval = plat_putByte('\'');
             }
             break;
 

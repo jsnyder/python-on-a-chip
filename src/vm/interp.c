@@ -370,8 +370,9 @@ interpret(const uint8_t returnOnNoThreads)
                 }
                 else
                 {
-                    /* Raise a TypeError if index is not an Integer */
-                    if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
+                    /* Raise a TypeError if index is not an Integer or Bool */
+                    if ((OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
+                        && (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_BOOL))
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
@@ -433,8 +434,9 @@ interpret(const uint8_t returnOnNoThreads)
                 /* If it's a list */
                 if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_LST)
                 {
-                    /* Ensure subscr is an int */
-                    if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
+                    /* Ensure subscr is an int or bool */
+                    if ((OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
+                        && (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_BOOL))
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
@@ -982,9 +984,11 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj2 = PM_POP();
                 t16 = GET_ARG();
 
-                /* Handle all integer-to-integer comparisons */
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_INT) &&
-                    (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_INT))
+                /* Handle all integer-to-integer (or bool) comparisons */
+                if (((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_INT)
+                     || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_BOOL))
+                    && ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_INT)
+                     || (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_BOOL)))
                 {
                     int32_t a = ((pPmInt_t)pobj2)->val;
                     int32_t b = ((pPmInt_t)pobj1)->val;
@@ -1030,10 +1034,6 @@ interpret(const uint8_t returnOnNoThreads)
                                 || ((t8 == C_DIFFER) && (t16 == COMP_NE)))
                             {
                                 pobj3 = PM_TRUE;
-                            }
-                            else
-                            {
-                                pobj3 = PM_FALSE;
                             }
                             break;
 

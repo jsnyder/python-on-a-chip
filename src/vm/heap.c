@@ -569,6 +569,7 @@ heap_gcMarkObj(pPmObj_t pobj)
         case OBJ_TYPE_FLT:
         case OBJ_TYPE_STR:
         case OBJ_TYPE_NOB:
+        case OBJ_TYPE_BOOL:
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
             break;
 
@@ -799,6 +800,11 @@ heap_gcMarkObj(pPmObj_t pobj)
             /* Mark the next node in the list */
             retval = heap_gcMarkObj((pPmObj_t)((pPmImgInfo_t)pobj)->next);
             break;
+
+        default:
+            /* There should be no invalid types */
+            PM_RAISE(retval, PM_RET_EX_SYS);
+            break;
     }
     return retval;
 }
@@ -818,6 +824,10 @@ heap_gcMarkRoots(void)
 
     /* Mark the constant objects */
     retval = heap_gcMarkObj(PM_NONE);
+    PM_RETURN_IF_ERROR(retval);
+    retval = heap_gcMarkObj(PM_FALSE);
+    PM_RETURN_IF_ERROR(retval);
+    retval = heap_gcMarkObj(PM_TRUE);
     PM_RETURN_IF_ERROR(retval);
     retval = heap_gcMarkObj(PM_ZERO);
     PM_RETURN_IF_ERROR(retval);

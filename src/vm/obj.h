@@ -205,8 +205,11 @@ typedef enum PmType_e
     /** Exception object */
     OBJ_TYPE_EXN = 0x0E,
 
+    /** Boolean object */
+    OBJ_TYPE_BOOL = 0x0F,
+    
     /* All types after this are not hashable */
-    OBJ_TYPE_HASHABLE_MAX = 0x0E,
+    OBJ_TYPE_HASHABLE_MAX = 0x0F,
 
     /** List (mutable sequence) */
     OBJ_TYPE_LST = 0x10,
@@ -215,28 +218,28 @@ typedef enum PmType_e
     OBJ_TYPE_DIC = 0x11,
 
     /* All types after this are not accessible to the user */
-    OBJ_TYPE_ACCESSIBLE_MAX = 0x11,
+    OBJ_TYPE_ACCESSIBLE_MAX = 0x19,
 
     /** Frame type */
-    OBJ_TYPE_FRM = 0x12,
+    OBJ_TYPE_FRM = 0x19,
 
     /** Block type (for,while,try,etc) */
-    OBJ_TYPE_BLK = 0x13,
+    OBJ_TYPE_BLK = 0x1A,
 
     /** Segment (within a seglist) */
-    OBJ_TYPE_SEG = 0x14,
+    OBJ_TYPE_SEG = 0x1B,
 
     /** Seglist */
-    OBJ_TYPE_SGL = 0x15,
+    OBJ_TYPE_SGL = 0x1C,
 
     /** Sequence iterator */
-    OBJ_TYPE_SQI = 0x16,
+    OBJ_TYPE_SQI = 0x1D,
 
     /** Image info struct */
-    OBJ_TYPE_IIS = 0x17,
+    OBJ_TYPE_IIS = 0x1E,
 
     /** Native frame (there is only one) */
-    OBJ_TYPE_NFM = 0x18,
+    OBJ_TYPE_NFM = 0x1F,
 } PmType_t, *pPmType_t;
 
 
@@ -277,6 +280,18 @@ typedef struct PmObj_s
     PmObjDesc_t od;
 } PmObj_t,
  *pPmObj_t;
+
+/** Boolean object */
+typedef struct PmBoolean_s
+{
+    /** Object descriptor */
+    PmObjDesc_t od;
+
+    /** Boolean value */
+    int32_t val;
+}
+PmBoolean_t,
+*pPmBoolean_t;
 
 
 /***************************************************************

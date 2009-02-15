@@ -35,14 +35,17 @@
 #
 
 
+#### CONSTS
+
+False = (0 == 1)
+True = not False
+
+C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
+
+
 #### MODULES
 
 import list, dict
-
-
-#### CONSTS
-
-C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
 
 
 #### FUNCS

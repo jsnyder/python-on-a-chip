@@ -125,6 +125,16 @@ dict_setItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t pval)
         return retval;
     }
 
+    /* #147: Change boolean keys to integers */
+    if (pkey == PM_TRUE)
+    {
+        pkey = PM_ONE;
+    }
+    else if (pkey == PM_FALSE)
+    {
+        pkey = PM_ZERO;
+    }
+
     /*
      * #115: If this is the first key/value pair to be added to the Dict,
      * allocate the key and value seglists that hold those items
@@ -180,6 +190,16 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj)
     {
         PM_RAISE(retval, PM_RET_EX_KEY);
         return retval;
+    }
+
+    /* #147: Change boolean keys to integers */
+    if (pkey == PM_TRUE)
+    {
+        pkey = PM_ONE;
+    }
+    else if (pkey == PM_FALSE)
+    {
+        pkey = PM_ZERO;
     }
 
     /* check for matching key */
