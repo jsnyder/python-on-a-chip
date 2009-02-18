@@ -100,6 +100,21 @@ INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
  */
 INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr);
 
+#ifdef HAVE_FLOAT
+/**
+ * Returns the 4-byte float at the given address in memspace.
+ *
+ * Float obtained in LITTLE ENDIAN order (per Python convention).
+ * afterward, addr points one byte past the float.
+ *
+ * @param   memspace memory space
+ * @param   paddr ptr to address
+ * @return  float from memory.
+ *          addr - points one byte past the word
+ */
+float mem_getFloat(PmMemSpace_t memspace, uint8_t const **paddr);
+#endif /* HAVE_FLOAT */
+
 /**
  * Copies count number of bytes from src in memspace to dest in RAM.
  * Leaves dest and src pointing one byte past end of the data.

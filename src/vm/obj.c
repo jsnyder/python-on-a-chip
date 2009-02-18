@@ -72,6 +72,13 @@ obj_loadFromImg(PmMemSpace_t memspace,
             retval = int_new(mem_getInt(memspace, paddr), r_pobj);
             break;
 
+#ifdef HAVE_FLOAT
+        case OBJ_TYPE_FLT:
+            /* Read a float and create an float object with the value */
+            retval = float_new(mem_getFloat(memspace, paddr), r_pobj);
+            break;
+#endif /* HAVE_FLOAT */
+
         case OBJ_TYPE_STR:
             retval = string_loadFromImg(memspace, paddr, r_pobj);
             break;
@@ -114,6 +121,13 @@ obj_isFalse(pPmObj_t pobj)
         case OBJ_TYPE_INT:
             /* Only the integer zero is false */
             return ((pPmInt_t)pobj)->val == 0;
+
+#ifdef HAVE_FLOAT
+        case OBJ_TYPE_FLT:
+            /* The floats 0.0 and -0.0 are false */
+            return (((pPmFloat_t)pobj)->val == 0.0) 
+                || (((pPmFloat_t)pobj)->val == -0.0);
+#endif /* HAVE_FLOAT */
 
         case OBJ_TYPE_STR:
             /* An empty string is false */
@@ -305,6 +319,11 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_INT:
             retval = int_print(pobj);
             break;
+#ifdef HAVE_FLOAT
+        case OBJ_TYPE_FLT:
+            retval = float_print(pobj);
+            break;
+#endif /* HAVE_FLOAT */
         case OBJ_TYPE_STR:
             retval = string_print(pobj, marshallString);
             break;

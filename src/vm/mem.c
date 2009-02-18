@@ -71,6 +71,28 @@ mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr)
 }
 
 
+#ifdef HAVE_FLOAT
+float
+mem_getFloat(PmMemSpace_t memspace, uint8_t const **paddr)
+{
+    union
+    {
+        char c[4];
+        float f;
+    }
+    v;
+
+    /* PyMite is little endian; get low byte first */
+    v.c[0] = mem_getByte(memspace, paddr);
+    v.c[1] = mem_getByte(memspace, paddr);
+    v.c[2] = mem_getByte(memspace, paddr);
+    v.c[3] = mem_getByte(memspace, paddr);
+
+    return v.f;
+}
+#endif /* HAVE_FLOAT */
+
+
 void
 mem_copy(PmMemSpace_t memspace,
          uint8_t **pdest, uint8_t const **psrc, uint16_t count)

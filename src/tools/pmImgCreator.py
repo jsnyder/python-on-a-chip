@@ -95,6 +95,18 @@ __usage__ = """USAGE:
 import exceptions, string, sys, types, dis, os, time, getopt, struct
 
 
+#
+# IMPORTANT: The following dict MUST reflect the HAVE_* items in pmfeatures.h.
+# If the item is defined in pmfeatures.h, the corresponding dict value should
+# be True; False otherwise.
+#
+PM_FEATURES = {
+    "HAVE_PRINT": True,
+    "HAVE_GC": True,
+    "HAVE_FLOAT": False,
+}
+
+
 ################################################################
 # CONSTANTS
 ################################################################
@@ -192,7 +204,7 @@ UNIMPLEMENTED_BCODES = (
 #    "INPLACE_AND", "INPLACE_XOR", "INPLACE_OR",
 #    "BREAK_LOOP",
     "WITH_CLEANUP",
-#    "LOAD_LOCALS", "RETURN_VALUE", "IMPORT_STAR", 
+#    "LOAD_LOCALS", "RETURN_VALUE", "IMPORT_STAR",
     "EXEC_STMT", "YIELD_VALUE",
 #    "POP_BLOCK",
     "END_FINALLY", "BUILD_CLASS",
@@ -340,6 +352,12 @@ class PmImgCreator:
                self._U8_to_str((w >> 8) & 0xff)
 
 
+    def _float_to_str(self, f):
+        """Convert the float object, f, to a string of four bytes.
+        """
+        return struct.pack("f", f)
+
+
     def _seq_to_str(self, seq):
         """Convert a Python sequence to a PyMite image.
 
@@ -364,7 +382,7 @@ class PmImgCreator:
             obj = seq[i]
             objtype = type(obj)
 
-            # if its a string
+            # if it is a string
             if objtype == types.StringType:
                 # ensure string is not too long
                 assert len(obj) <= MAX_STRING_LEN
@@ -372,7 +390,7 @@ class PmImgCreator:
                 imgstr += _U8_to_str(OBJ_TYPE_STR) + \
                           self._U16_to_str(len(obj)) + obj
 
-            # if its an integer
+            # if it is an integer
             elif objtype == types.IntType:
                 # marker, int (little endian)
                 imgstr += _U8_to_str(OBJ_TYPE_INT) + \
@@ -381,7 +399,7 @@ class PmImgCreator:
                           _U8_to_str((obj >> 16) & 0xff) + \
                           _U8_to_str((obj >> 24) & 0xff)
 
-            #if its a code object
+            # if it is a code object
             elif objtype == types.CodeType:
                 #determine if it's native or regular
                 if ((obj.co_consts[0] != None) and
@@ -391,16 +409,20 @@ class PmImgCreator:
                 else:
                     imgstr += self.co_to_str(obj)
 
-            #if its a tuple
+            # if it is a tuple
             elif objtype == types.TupleType:
                 imgstr += self._seq_to_str(obj)
 
-            #if its None
+            # if it is None
             elif objtype == types.NoneType:
                 # marker, none (0)
                 imgstr += _U8_to_str(OBJ_TYPE_NON)
 
-            #other type?
+            # if it is a float
+            elif objtype == types.FloatType and PM_FEATURES["HAVE_FLOAT"]:
+                imgstr += _U8_to_str(OBJ_TYPE_FLT) + self._float_to_str(obj)
+
+            # other type?
             else:
                 raise exceptions.NotImplementedError(
                           "Unhandled type %s." % objtype)

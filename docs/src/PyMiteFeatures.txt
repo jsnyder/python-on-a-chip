@@ -117,7 +117,11 @@ PyMite supports only the typical 32-bit signed integer number type.
     - Octal integer: 0177 (begins with a 0)
     - Hex integer: 0xFF (begins with 0x or 0X)
 
-PyMite DOES NOT support Long, Float or Complex numbers.
+PyMite must be configured to support Floating Point numbers.
+By default, PyMite does not enable this support.
+See the ``HAVE_FLOAT`` definition in ``src/vm/pmfeatures.h`` to enable support.
+
+PyMite DOES NOT support Long or Complex numbers.
 
 Sequences
 ~~~~~~~~~

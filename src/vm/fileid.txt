@@ -24,6 +24,7 @@ ID    FILE
 0x14  seq.c             created 2006/11/29
 0x15  pm.c
 0x16  thread.c
+0x17  float.c
 ----- ---------------------------------------
 0x50  plat/desktop.c    created 2006/12/26
 0x51  plat/avr.c        created 2006/12/27

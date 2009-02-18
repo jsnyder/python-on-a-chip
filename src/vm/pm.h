@@ -238,6 +238,7 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "global.h"
 #include "misc.h"
 #include "thread.h"
+#include "float.h"
 #include "plat/plat.h"
 
 

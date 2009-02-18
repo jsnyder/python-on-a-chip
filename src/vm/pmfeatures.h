@@ -22,6 +22,10 @@
  *
  * Compile time switches to include features or save space.
  *
+ * IMPORTANT: All of the HAVE_* items in this file should also exist in the
+ * PM_FEATURES dict in src/tools/pmImgCreator.py.  If the item is defined here,
+ * the corresponding dict value should be True; False otherwise.
+ *
  * Log
  * ---
  *
@@ -48,5 +52,11 @@
  */
 #define HAVE_GC
 
+
+/**
+ * When defined, the code to support floating point objects is included
+ * in the build.
+ */
+/*#define HAVE_FLOAT*/
 
 #endif /*FEATURES_H_ */
