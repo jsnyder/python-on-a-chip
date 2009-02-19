@@ -1,5 +1,5 @@
 # PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
-# Copyright 2002 Dean Hall
+# Copyright 2009 Dean Hall
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,11 +17,9 @@
 #
 
 #
-# Regression Test for Issue #6
-#
-# Ensure an image list is null terminated.
-# Only need a dummy module.
+# System Test 150
+# Replace PmImgInfo_t to save RAM
 #
 
-
-pass
+import sys
+print sys.heap()

@@ -141,4 +141,16 @@ void mem_copy(PmMemSpace_t memspace,
 uint16_t mem_getStringLength(PmMemSpace_t memspace,
                              uint8_t const * const pstr);
 
+/**
+ * Compares a byte array in RAM to a byte array in the given memory space
+ *
+ * @param cname Pointer to byte array in RAM
+ * @param cnamelen Length of byte array to compare
+ * @param memspace Memory space of other byte array
+ * @param paddr Pointer to address of other byte array
+ * @return PM_RET_OK if all bytes in both arrays match; PM_RET_NO otherwise
+ */
+PmReturn_t mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace, 
+    uint8_t const **paddr);
+
 #endif /* __MEM_H__ */

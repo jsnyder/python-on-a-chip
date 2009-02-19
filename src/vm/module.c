@@ -80,7 +80,7 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
 PmReturn_t
 mod_import(pPmObj_t pstr, pPmObj_t *pmod)
 {
-    pPmImgInfo_t pii = C_NULL;
+    PmMemSpace_t memspace;
     uint8_t const *imgaddr = C_NULL;
     pPmCo_t pco = C_NULL;
     PmReturn_t retval = PM_RET_OK;
@@ -93,28 +93,18 @@ mod_import(pPmObj_t pstr, pPmObj_t *pmod)
         return retval;
     }
 
-    /* Iterate through the global img list */
-    pii = gVmGlobal.pimglist;
-
-    /* Scan until end of list or string matches */
-    while ((pii != C_NULL)
-           && (string_compare((pPmString_t)pstr, pii->ii_name) == C_DIFFER))
-    {
-        pii = pii->next;
-    }
+    /* Try to find the image in the paths */
+    retval = img_findInPaths(pstr, &memspace, &imgaddr);
 
     /* If img was not found, raise ImportError */
-    if (pii == C_NULL)
+    if (retval == PM_RET_NO)
     {
         PM_RAISE(retval, PM_RET_EX_IMPRT);
         return retval;
     }
 
-    /* Make copy of addr so image list pointer isn't modified */
-    imgaddr = pii->ii_addr;
-
     /* Load img into code obj */
-    retval = obj_loadFromImg(pii->ii_memspace, &imgaddr, &pobj);
+    retval = obj_loadFromImg(memspace, &imgaddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco = (pPmCo_t)pobj;
 

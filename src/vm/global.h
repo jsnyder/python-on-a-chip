@@ -96,9 +96,9 @@ typedef struct PmVmGlobal_s
 
     /** Dict for builtins */
     pPmDict_t builtins;
-
-    /** Ptr to stack of code image info. */
-    pPmImgInfo_t pimglist;
+    
+    /** Paths to available images */
+    PmImgPaths_t imgPaths;
 
     /** The single native frame.  Static alloc so it won't be GC'd */
     PmNativeFrame_t nativeframe;

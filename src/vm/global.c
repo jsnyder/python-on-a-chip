@@ -44,6 +44,8 @@
 #include "pm.h"
 
 
+extern unsigned char stdlib_img[];
+
 /***************************************************************
  * Constants
  **************************************************************/
@@ -116,7 +118,7 @@ global_init(void)
     OBJ_SET_TYPE(pobj, OBJ_TYPE_BOOL);
     ((pPmBoolean_t)pobj)->val = (int32_t)C_TRUE;
     gVmGlobal.ptrue = (pPmInt_t)pobj;
-    
+
     /* Init None */
     retval = heap_getChunk(sizeof(PmObj_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
@@ -132,9 +134,6 @@ global_init(void)
     /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;
 
-    /* Empty img info list */
-    gVmGlobal.pimglist = C_NULL;
-
     /* Init native frame */
     OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
     OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
@@ -142,6 +141,11 @@ global_init(void)
     /* Create empty threadList */
     retval = list_new(&pobj);
     gVmGlobal.threadList = (pPmList_t)pobj;
+
+    /* Init the PmImgPaths with std image info */
+    gVmGlobal.imgPaths.memspace[0] = MEMSPACE_PROG;
+    gVmGlobal.imgPaths.pimg[0] = (uint8_t *)&stdlib_img;
+    gVmGlobal.imgPaths.pathcount = 1;
 
     return retval;
 }
@@ -204,6 +208,7 @@ global_loadBuiltins(void)
 
     return retval;
 }
+
 
 /***************************************************************
  * Main

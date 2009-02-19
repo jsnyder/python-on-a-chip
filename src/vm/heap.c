@@ -789,18 +789,6 @@ heap_gcMarkObj(pPmObj_t pobj)
             }
             break;
 
-        case OBJ_TYPE_IIS:
-            /* Mark the obj desc */
-            OBJ_SET_GCVAL(pobj, pmHeap.gcval);
-
-            /* Mark the name string */
-            retval = heap_gcMarkObj((pPmObj_t)((pPmImgInfo_t)pobj)->ii_name);
-            PM_RETURN_IF_ERROR(retval);
-
-            /* Mark the next node in the list */
-            retval = heap_gcMarkObj((pPmObj_t)((pPmImgInfo_t)pobj)->next);
-            break;
-
         default:
             /* There should be no invalid types */
             PM_RAISE(retval, PM_RET_EX_SYS);
@@ -836,10 +824,6 @@ heap_gcMarkRoots(void)
     retval = heap_gcMarkObj(PM_NEGONE);
     PM_RETURN_IF_ERROR(retval);
     retval = heap_gcMarkObj(PM_CODE_STR);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* Mark the image info struct nodes and their contents */
-    retval = heap_gcMarkObj((pPmObj_t)gVmGlobal.pimglist);
     PM_RETURN_IF_ERROR(retval);
 
     /* Mark the builtins dict */

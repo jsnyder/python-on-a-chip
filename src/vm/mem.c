@@ -138,3 +138,23 @@ mem_getStringLength(PmMemSpace_t memspace, uint8_t const * const pstr)
     while (mem_getByte(memspace, &psrc) != (uint8_t)0);
     return psrc - pstr - 1;
 }
+
+
+PmReturn_t
+mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
+    uint8_t const **paddr)
+{
+    uint8_t i;
+    uint8_t b;
+
+    /* Iterate over all characters */
+    for (i = 0; i < cnamelen; i++)
+    {
+        b = mem_getByte(memspace, paddr);
+        if (cname[i] != b)
+        {
+            return PM_RET_NO;
+        }
+    }
+    return PM_RET_OK;
+}

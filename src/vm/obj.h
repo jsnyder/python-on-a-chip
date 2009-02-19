@@ -235,11 +235,8 @@ typedef enum PmType_e
     /** Sequence iterator */
     OBJ_TYPE_SQI = 0x1D,
 
-    /** Image info struct */
-    OBJ_TYPE_IIS = 0x1E,
-
     /** Native frame (there is only one) */
-    OBJ_TYPE_NFM = 0x1F,
+    OBJ_TYPE_NFM = 0x1E,
 } PmType_t, *pPmType_t;
 
 

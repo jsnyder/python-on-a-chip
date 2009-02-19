@@ -38,7 +38,6 @@
 /** Number of millisecond-ticks to pass before scheduler is run */
 #define PM_THREAD_TIMESLICE_MS  10
 
-extern unsigned char stdlib_img[];
 
 /* Stores the timer millisecond-ticks since system start */
 volatile uint32_t pm_timerMsTicks = 0;
@@ -50,7 +49,6 @@ PmReturn_t
 pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
 {
     PmReturn_t retval;
-    uint8_t const *pimg;
 
     /* Initialize the hardware platform */
     retval = plat_init();
@@ -63,16 +61,10 @@ pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
     retval = global_init();
     PM_RETURN_IF_ERROR(retval);
 
-    /* Load std image info */
-    pimg = (uint8_t *)&stdlib_img;
-    retval = img_findInMem(MEMSPACE_PROG, &pimg);
-    PM_RETURN_IF_ERROR(retval);
-
     /* Load usr image info if given */
     if (pusrimg != C_NULL)
     {
-        pimg = pusrimg;
-        retval = img_findInMem(memspace, &pimg);
+        retval = img_appendToPath(memspace, pusrimg);
     }
 
     return retval;

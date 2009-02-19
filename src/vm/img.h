@@ -34,36 +34,18 @@
  * 2002/05/17   First.
  */
 
-/***************************************************************
- * Types
- **************************************************************/
 
-/**
- * Image information struct.
- *
- * This struct holds the location information of a code image.
- * The VM maintains one linked list of these structs
- * as the sole list to search when a named code object
- * is to be loaded.
- */
-typedef struct PmImgInfo_s
+/** The maximum number of paths available in PmImgPaths */
+#define PM_NUM_IMG_PATHS 4
+
+
+typedef struct PmImgPaths_s
 {
-    /** Object descriptor */
-    PmObjDesc_t od;
-    
-    /** The image's name as a String obj */
-    pPmString_t ii_name;
-    
-    /** The memory space in which the image is located */
-    PmMemSpace_t ii_memspace:8;
-    
-    /** The starting address of the image */
-    uint8_t const *ii_addr;
-    
-    /** Ptr to next image ID struct */
-    struct PmImgInfo_s *next;
-} PmImgInfo_t,
- *pPmImgInfo_t;
+    PmMemSpace_t memspace[PM_NUM_IMG_PATHS];
+    uint8_t const *pimg[PM_NUM_IMG_PATHS];
+    uint8_t pathcount;
+}
+PmImgPaths_t, *pPmImgPaths_t;
 
 
 /***************************************************************
@@ -71,28 +53,24 @@ typedef struct PmImgInfo_s
  **************************************************************/
 
 /**
- * Scans code images in memory.
+ * Iterates over all paths in the paths array until the named module is found.
+ * Returns the memspace,address of the head of the module.
  *
- * Find consecutive code images in the given memory space
- * starting at the given address.  Store (name, address)
- * info for use when interpreter needs to load a module.
- *
- * @param   memspace the memory space to search.
- * @param   paddr ptr to address value to start search.
- * @return  Return status
+ * @param pname Pointer to the name of the desired module
+ * @param r_memspace Return by reference the memory space of the module
+ * @param r_imgaddr Return by reference the address of the module's image
+ * @return Return status
  */
-PmReturn_t img_findInMem(PmMemSpace_t memspace, uint8_t const **paddr);
+PmReturn_t img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace, 
+    uint8_t const **r_imgaddr);
 
 /**
- * Loads a string obj from the names tuple at the given index.
+ * Appends the given memspace and address to the image path array
  *
- * @param   memspace Memory space to use.
- * @param   paddr Ptr to address of names tuple image.
- * @param   n Index into tuple.
- * @param   r_pname Return parm, name string
- * @return  Return status
+ * @param memspace The memspace
+ * @param paddr The address
+ * @return Return status
  */
-PmReturn_t img_getName(PmMemSpace_t memspace,
-                       uint8_t const **paddr, uint8_t n, pPmObj_t *r_pname);
+PmReturn_t img_appendToPath(PmMemSpace_t memspace, uint8_t *paddr);
 
 #endif /* __IMG_H__ */

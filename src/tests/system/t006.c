@@ -32,6 +32,9 @@
 
 #include "pm.h"
 
+#define __FILE_ID__ 0x99
+
+
 extern unsigned char stdlib_img[];
 extern unsigned char usrlib_img[];
 
@@ -40,35 +43,38 @@ int main(void)
 {
     uint8_t const *pimg;
     PmReturn_t retval = PM_RET_OK;
+    uint16_t size;
+    uint8_t type;
 
-    heap_init();
+    retval = heap_init();
+    PM_RETURN_IF_ERROR(retval);
     retval = global_init();
     PM_RETURN_IF_ERROR(retval);
 
-    /* Read in the stdlib modules */
+    /* Scan past stdlib images */
     pimg = (uint8_t *)&stdlib_img;
-    retval = img_findInMem(MEMSPACE_PROG, &pimg);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* The module image list terminator must be a null */
-    pimg -= 1;
-    if (*pimg != C_NULL)
+    type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
+    while (type == OBJ_TYPE_CIM)
     {
-        return PM_RET_EX_SYS;
+        size = mem_getWord(MEMSPACE_PROG, &pimg);
+        pimg += (size - 3);
+        type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
     }
+    /* The first byte after the last image should be the terminator */
+    C_ASSERT(type == C_NULL);
 
-    /* Read in the usrlib modules */
+    /* Scan past stdlib images */
     pimg = (uint8_t *)&usrlib_img;
-    retval = img_findInMem(MEMSPACE_PROG, &pimg);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* The module image list terminator must be a null */
-    pimg -= 1;
-    if (*pimg != C_NULL)
+    type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
+    while (type == OBJ_TYPE_CIM)
     {
-        return PM_RET_EX_SYS;
+        size = mem_getWord(MEMSPACE_PROG, &pimg);
+        pimg += (size - 3);
+        type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
     }
+    /* The first byte after the last image should be the terminator */
+    C_ASSERT(type == C_NULL);
 
-    return retval;
+    return PM_RET_OK;
 }
 
