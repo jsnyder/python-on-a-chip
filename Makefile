@@ -14,6 +14,7 @@ CP := cp
 MKDIR := mkdir -p
 TAGS := ctags
 CSCOPE := cscope
+PMDIST := src/tools/pmDist.py
 
 pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
 PYCSCOPE := $(call pathsearch,pycscope.py)
@@ -65,16 +66,11 @@ TAGS :
 	$(CSCOPE) -b -c -R
 	$(if $(PYCSCOPE), cd src/tools && $(PYCSCOPE) -R *.py)
 
-dist : html
-ifndef PYMITE_RELEASE
-	$(error Must define PYMITE_RELEASE=RR)
+dist :
+ifndef PM_RELEASE
+	$(error Must define PM_RELEASE=RR)
 else
-	# TODO: issue #5
-	# Make a script in tools/ that will:
-	# 	- make fresh export (no .svn folders),
-	#   - build docs
-	#   - make pymite-RR.tar.gz
-	#	- create release tag in svn repos
+	$(PMDIST) $(PM_RELEASE)
 endif
 
 check :

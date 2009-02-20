@@ -105,18 +105,9 @@ in the prescribed order:
 
         % svn cp -m "Creating release RR" https://svn.pymite.python-hosting.com/trunk https://svn.pymite.python-hosting.com/tags/pymite-RR
 
-    - Make the distribution file:
+    - Make the distribution file::
 
-        - Get a fresh `export` of the tag so no ``.svn`` artifacts are present;
-          the directory should be named ``pymite-RR``::
-
-            % svn export https://svn.pymite.python-hosting.com/tags/pymite-RR pymite-RR
-
-        - Run ``make dist PYMITE_RELEASE=RR`` where `RR` is the release number
-        - Tar and gzip the directory so it is named ``pymite-RR.tgz``::
-
-            % tar -c pymite-RR/ > pymite-RR.tar
-            % gzip pymite-RR.tar
+        % make dist PM_RELEASE=RR
 
     - Upload the tar file to a public file server and link to it from the
       PyMite wiki front page.  Get the MD5 hash so people can check the
