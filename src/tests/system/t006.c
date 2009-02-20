@@ -34,6 +34,9 @@
 
 #define __FILE_ID__ 0x99
 
+/* #152 Change image terminator */
+#define IMG_LIST_TERMINATOR ((uint8_t)0xFF)
+
 
 extern unsigned char stdlib_img[];
 extern unsigned char usrlib_img[];
@@ -61,7 +64,7 @@ int main(void)
         type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
     }
     /* The first byte after the last image should be the terminator */
-    C_ASSERT(type == C_NULL);
+    C_ASSERT(type == IMG_LIST_TERMINATOR);
 
     /* Scan past stdlib images */
     pimg = (uint8_t *)&usrlib_img;
@@ -73,7 +76,7 @@ int main(void)
         type = (PmType_t)mem_getByte(MEMSPACE_PROG, &pimg);
     }
     /* The first byte after the last image should be the terminator */
-    C_ASSERT(type == C_NULL);
+    C_ASSERT(type == IMG_LIST_TERMINATOR);
 
     return PM_RET_OK;
 }

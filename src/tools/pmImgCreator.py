@@ -231,6 +231,9 @@ UNIMPLEMENTED_BCODES = (
     "CALL_FUNCTION_VAR_KW", "EXTENDED_ARG"
     )
 
+# #152: Byte to append after the last image in the list
+IMG_LIST_TERMINATOR = "\xFF"
+
 
 ################################################################
 # GLOBALS
@@ -324,8 +327,8 @@ class PmImgCreator:
             imgs["imgs"].append(self.co_to_str(co))
 
         # Append null terminator to list of images
-        imgs["fns"].append("null-terminator")
-        imgs["imgs"].append("\x00")
+        imgs["fns"].append("img-list-terminator")
+        imgs["imgs"].append(IMG_LIST_TERMINATOR)
 
         self.imgDict = imgs
         return
