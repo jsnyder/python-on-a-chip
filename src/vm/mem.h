@@ -85,7 +85,7 @@ typedef enum PmMemSpace_e
  * @return  word from memory.
  *          addr - points one byte past the word
  */
-INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
+uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
 
 /**
  * Returns the 4-byte int at the given address in memspace.
@@ -98,7 +98,7 @@ INLINE uint16_t mem_getWord(PmMemSpace_t memspace, uint8_t const **paddr);
  * @return  int from memory.
  *          addr - points one byte past the word
  */
-INLINE uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr);
+uint32_t mem_getInt(PmMemSpace_t memspace, uint8_t const **paddr);
 
 #ifdef HAVE_FLOAT
 /**

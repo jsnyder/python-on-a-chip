@@ -39,8 +39,8 @@ def atoi(a, b):
     """__NATIVE__
     pPmObj_t pa;
     pPmObj_t pb;
-    uint8_t *pc;
-    uint8_t *pend;
+    char const *pc;
+    char *pend;
     long i;
     int8_t base;
     pPmObj_t pi;
@@ -80,8 +80,8 @@ def atoi(a, b):
 
     /* Perform conversion */
     pend = C_NULL;
-    pc = (uint8_t *)&(((pPmString_t)pa)->val);
-    i = strtol((const char *)pc, (char **)&pend, base);
+    pc = (char const *)&(((pPmString_t)pa)->val);
+    i = strtol(pc, &pend, base);
 
     /* Raise ValueError if there was a conversion error */
     if (*pend != C_NULL)
