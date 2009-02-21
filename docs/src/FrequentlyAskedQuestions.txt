@@ -1,0 +1,106 @@
+.. Copyright 2009 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+
+==========================
+Frequently Asked Questions
+==========================
+
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This document lists common questions and their answers that people new to PyMite
+ask.  In doing so, it is intended for new users and programmers.
+
+
+Questions
+---------
+
+#. `What is PyMite?`_
+#. `Under what terms is PyMite licensed?`_
+#. `Is a ready-to-go solution available?`_
+#. `How do I get PyMite running?`_
+#. `What microcontrollers are supported?`_
+#. `What microcontroller is recommended?`_
+#. `What do I need on my computer?`_
+
+
+Answers
+-------
+
+What is PyMite?
+~~~~~~~~~~~~~~~
+
+PyMite is a flyweight Python interpreter written from scratch to execute
+on 8-bit and larger microcontrollers with resources as limited as 64 KB of
+program memory (flash) and 8 KB of RAM. PyMite supports a subset of
+the Python 2.5 syntax and can execute a subset of the Python 2.5 bytecodes.
+PyMite can also be compiled, tested and executed on a desktop computer.
+
+
+Under what terms is PyMite licensed?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PyMite is offered under one of two licenses: commercial or open source.
+The GNU Public License version 2.0 is the open source license.
+Please `contact the author`_ for terms of the commercial license.
+
+.. _`contact the author`: http://www.deanandara.com/
+
+
+Is a ready-to-go solution available?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Not yet.
+
+
+How do I get PyMite running?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Download PyMite from http://pymite.python-hosting.com/ and follow the
+instructions in the README to build and run PyMite on the desktop.
+
+Read BuildSystem_ to learn how to build PyMite for a microcontroller target.
+To compile and flash PyMite to a microcontroller is highly dependent on which
+microcontroller you have.  I cannot answer this for you.  You'll have to find
+out how to do this for your specific target microcontroller.
+
+.. _BuildSystem: BuildSystem.html
+
+
+What microcontrollers are supported?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PyMite's build system currently supports Atmel AVR and AT91SAM7
+microcontrollers.  However, your AVR will need 8 KB of RAM or more.
+The target size used to be 4 KB, but PyMite has since grown.
+
+
+What microcontroller is recommended?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The more RAM you have, the better.  I recommend an AVR32 or ARM7TDMI with
+64 KB or more of RAM.
+
+
+What do I need on my computer?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Python 2.5 or 2.6.  Python 3.0 is not yet tested, so avoid it for now.
+You'll need gcc to compile for the desktop, avr-gcc for AVR, arm-elf-gcc for
+AT91SAM7S, etc.  If your OS is a version of Windows, I recommend using Cygwin_
+so you have a Unix-like terminal to run make and gcc.
+
+.. _Cygwin: http://www.cygwin.com/
+
+
+.. :mode=rest:
