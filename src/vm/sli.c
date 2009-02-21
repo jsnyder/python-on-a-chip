@@ -50,8 +50,10 @@
  * Functions
  **************************************************************/
 
+#if !HAVE_STRING_H
+
 void *
-sli_memcpy(unsigned char *to, const unsigned char *from, unsigned int n)
+sli_memcpy(unsigned char *to, unsigned char const *from, unsigned int n)
 {
     unsigned char *tobak;
 
@@ -95,19 +97,6 @@ sli_memcpy(unsigned char *to, const unsigned char *from, unsigned int n)
 }
 
 
-void
-sli_memset(unsigned char *dest, const char val, unsigned int n)
-{
-    unsigned int i;
-
-    for (i = 0; i < n; i++)
-    {
-        *dest = (unsigned char)val;
-        dest++;
-    }
-}
-
-
 int
 sli_strlen(char const *s)
 {
@@ -119,7 +108,7 @@ sli_strlen(char const *s)
 
 
 int
-sli_strcmp(const char *s1, const char *s2)
+sli_strcmp(char const *s1, char const *s2)
 {
     /* While not at either strings' end and they're same */
     while ((*s1 != C_NULL) && (*s2 != C_NULL) && (*s1 == *s2))
@@ -134,7 +123,7 @@ sli_strcmp(const char *s1, const char *s2)
 
 
 int
-sli_strncmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
+sli_strncmp(char const *s1, char const *s2, unsigned int n)
 {
     unsigned int i = 0;
 
@@ -153,4 +142,23 @@ sli_strncmp(const unsigned char *s1, const unsigned char *s2, unsigned int n)
         }
     }
     return 0;
+}
+
+#endif /* HAVE_STRING_H */
+
+
+/*
+ * This function is moved outside of HAVE_STRING_H because the one in string.h
+ * will not accept a null value for the second arg
+ */
+void
+sli_memset(unsigned char *dest, char const val, unsigned int n)
+{
+    unsigned int i;
+
+    for (i = 0; i < n; i++)
+    {
+        *dest = (unsigned char)val;
+        dest++;
+    }
 }

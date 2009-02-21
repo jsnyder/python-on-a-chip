@@ -174,8 +174,8 @@ string_compare(pPmString_t pstr1, pPmString_t pstr2)
     }
 
     /* Compare the strings' contents */
-    return sli_strncmp((const unsigned char *)&(pstr1->val),
-                       (const unsigned char *)&(pstr2->val),
+    return sli_strncmp((char const *)&(pstr1->val),
+                       (char const *)&(pstr2->val),
                        pstr1->length) == 0 ? C_SAME : C_DIFFER;
 }
 

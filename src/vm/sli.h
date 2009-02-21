@@ -50,7 +50,7 @@
  * If the compiler has string.h, set HAVE_STRING to 1;
  * otherwise, leave it 0 and the sli functions will be used.
  */
-#define HAVE_STRING_H   0
+#define HAVE_STRING_H 0
 
 
 /***************************************************************
@@ -72,7 +72,7 @@
 /*
  * This section creates a macro or a function prototype
  * for each library based on the corresponding constant.
- * For example, if HAVE_STRING is defined to non-zero,
+ * For example, if HAVE_STRING_H is defined to non-zero,
  * the system <string.h> file will be included,
  * and a macro "sli_strcmp" will be created to wrap the strcmp()
  * function.  But if HAVE_STRING is zero, the sli_strcmp()
@@ -80,15 +80,14 @@
  * implemented in sli.c
  */
 
-/* TODO #106: not just string.h, but stdio.h */
 #if HAVE_STRING_H
+
 #include <string.h>
-#define sli_memcmp(p, q, n)     memcmp((p), (q), (n))
+
 #define sli_memcpy(to, from, n) memcpy((to), (from), (n))
-#define sli_memset(dest, from, n) memcpy((dest), (from), (n))
 #define sli_strcmp(s1, s2)      strcmp((s1),(s2))
-#define sli_strcpy(s1, s2)      strcpy((s1),(s2))
 #define sli_strlen(s)           strlen(s)
+#define sli_strncmp(s1, s2, n)  strncmp((s1),(s2),(n))
 
 #else
 
@@ -101,18 +100,7 @@
  * @return  The initial pointer value of the destination
  * @see     mem_copy
  */
-void *sli_memcpy(unsigned char *, const unsigned char *, unsigned int);
-
-/**
- * Copy a value repeatedly into a block of memory
- *
- * @param   dest the destination address.
- * @param   val the value.
- * @param   n the number of bytes to copy.
- * @return  Nothing
- * @see     memset
- */
-void sli_memset(unsigned char *dest, const char val, unsigned int n);
+void *sli_memcpy(unsigned char *, unsigned char const *, unsigned int);
 
 /**
  * Compare strings.
@@ -123,7 +111,7 @@ void sli_memset(unsigned char *dest, const char val, unsigned int n);
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int sli_strcmp(const char *, const char *);
+int sli_strcmp(char const *, char const *);
 
 /**
  * Obtain string length.
@@ -143,14 +131,19 @@ int sli_strlen(char const *s);
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int sli_strncmp(const unsigned char *s1,
-                const unsigned char *s2, unsigned int n);
-
-/*
-int     sli_memcmp(const void *, const void *, unsigned int);
-char    sli_strcpy(char *, const char *);
-*/
+int sli_strncmp(char const *s1, char const *s2, unsigned int n);
 
 #endif /* HAVE_STRING_H */
+
+/**
+ * Copy a value repeatedly into a block of memory
+ *
+ * @param   dest the destination address.
+ * @param   val the value.
+ * @param   n the number of bytes to copy.
+ * @return  Nothing
+ * @see     memset
+ */
+void sli_memset(unsigned char *dest, const char val, unsigned int n);
 
 #endif /* __SLI_H__ */
