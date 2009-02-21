@@ -84,11 +84,19 @@ dict_clear(pPmObj_t pdict)
     /* clear length */
     ((pPmDict_t)pdict)->length = 0;
 
-    /* clear the keys and values seglists if needed */
+    /* Free the keys and values seglists if needed */
     if (((pPmDict_t)pdict)->d_keys != C_NULL)
     {
         PM_RETURN_IF_ERROR(seglist_clear(((pPmDict_t)pdict)->d_keys));
-        retval = seglist_clear(((pPmDict_t)pdict)->d_vals);
+        PM_RETURN_IF_ERROR(heap_freeChunk((pPmObj_t)
+                                          ((pPmDict_t)pdict)->d_keys));
+        ((pPmDict_t)pdict)->d_keys = C_NULL;
+    }
+    if (((pPmDict_t)pdict)->d_vals != C_NULL)
+    {
+        PM_RETURN_IF_ERROR(seglist_clear(((pPmDict_t)pdict)->d_vals));
+        retval = heap_freeChunk((pPmObj_t)((pPmDict_t)pdict)->d_vals);
+        ((pPmDict_t)pdict)->d_vals = C_NULL;
     }
     return retval;
 }
