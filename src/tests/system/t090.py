@@ -30,10 +30,28 @@ print "t0 = ", t0
 
 print "killing time..."
 i=0
-while i < 100:
-    print i, " ",
+while i < 10000:
+    j=0
+    while j < 100:
+        j += 1
+    if i%100 == 0:
+        print i / 100, " ",
     i += 1
 print
+
+t1 = sys.time()
+
+if t1 <= t0:
+    print "killing more time..."
+    i=0
+    while i < 10000:
+        j=0
+        while j < 1000:
+            j += 1
+        if i%100 == 0:
+            print i / 100, " ",
+        i += 1
+    print
 
 t1 = sys.time()
 print "t1 = ", t1
