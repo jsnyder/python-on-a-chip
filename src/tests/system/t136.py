@@ -21,6 +21,9 @@
 # Create module interface for compound datatypes
 #
 
+import dict, list
+
+
 # Tests for list
 if 1:
     foo = [0]
@@ -62,7 +65,7 @@ if 1:
     print d
     print dict.keys(d)
     print dict.values(d)
-    
+
     dict.clear(d)
     print d
     d['new'] = "more"

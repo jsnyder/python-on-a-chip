@@ -20,6 +20,8 @@
 # Test for Issue #149: Support the keyword del
 #
 
+import dict
+
 
 #
 # Tests for DELETE_SUBSCR bytecode

@@ -21,6 +21,8 @@
 # Fix dict.clear() which fails to free the seglists
 #
 
+import dict
+
 # Clear a dict and then make sure it can be used afterward
 d = {0:"zero", "one":1}
 dict.clear(d)

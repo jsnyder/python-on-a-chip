@@ -21,6 +21,8 @@
 # list.append left a remnant on the stack
 #
 
+import list
+
 l=[]
 rv = list.append(l, 42)
 

@@ -44,13 +44,6 @@ def clear(d):
     pass
 
 
-def has_key(d, k):
-    if k in dict.keys(d):
-        return 1
-    else:
-        return 0
-
-
 def keys(d):
     """__NATIVE__
     pPmObj_t pd;
@@ -89,6 +82,13 @@ def keys(d):
     return retval;
     """
     pass
+
+
+def has_key(d, k):
+    if k in keys(d):
+        return 1
+    else:
+        return 0
 
 
 def values(d):

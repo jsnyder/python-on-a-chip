@@ -21,6 +21,8 @@
 # globals namespace isn't right
 #
 
+import dict
+
 print "dict.keys(globals()) = ", dict.keys(globals())
 
 assert "__bi" in dict.keys(globals())

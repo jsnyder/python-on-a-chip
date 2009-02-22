@@ -56,7 +56,7 @@ def count(l, v):
 
 def extend(l, s):
     for i in s:
-        list.append(l, i)
+        append(l, i)
 
 
 def index(l, o):

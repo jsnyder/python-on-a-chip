@@ -161,7 +161,9 @@ global_setBuiltins(pPmFunc_t pmod)
     if (PM_PBUILTINS == C_NULL)
     {
         /* Need to load builtins first */
+printf("before: (%d, %d)\n", heap_getAvail(), 8*1024);
         global_loadBuiltins();
+printf("after:  (%d, %d)\n", heap_getAvail(), 8*1024);
     }
 
     /* Put builtins module in the module's attrs dict */
@@ -178,6 +180,8 @@ global_loadBuiltins(void)
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
     uint8_t const *nonestr = (uint8_t const *)"None";
+    uint8_t const *falsestr = (uint8_t const *)"False";
+    uint8_t const *truestr = (uint8_t const *)"True";
     pPmObj_t pstr = C_NULL;
     pPmObj_t pbimod;
     uint8_t const *pbistr = bistr;
@@ -201,6 +205,18 @@ global_loadBuiltins(void)
     retval = string_new(&nonestr, &pkey);
     PM_RETURN_IF_ERROR(retval);
     retval = dict_setItem(PM_PBUILTINS, pkey, PM_NONE);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Set False manually */
+    retval = string_new(&falsestr, &pkey);
+    PM_RETURN_IF_ERROR(retval);
+    retval = dict_setItem(PM_PBUILTINS, pkey, PM_FALSE);
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Set True manually */
+    retval = string_new(&truestr, &pkey);
+    PM_RETURN_IF_ERROR(retval);
+    retval = dict_setItem(PM_PBUILTINS, pkey, PM_TRUE);
     PM_RETURN_IF_ERROR(retval);
 
     /* Deallocate builtins module */

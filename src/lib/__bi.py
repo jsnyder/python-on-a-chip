@@ -37,15 +37,10 @@
 
 #### CONSTS
 
-False = (0 == 1)
-True = not False
-
-C = "Copyright 2002 Dean Hall.  Licensed under GPL v2."
-
-
-#### MODULES
-
-import list, dict
+#
+# Commented out to conserve memory
+#
+# C = "C 2002 Dean Hall. All rights reserved."
 
 
 #### FUNCS
@@ -339,7 +334,7 @@ def locals():
 
 
 def map(f, s):
-    # Do this as a workaround since list.append() doesn't work
+    # Allocate the array
     r = [None,] * len(s)
 
     # Call function f once with each argument in sequence s
