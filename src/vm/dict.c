@@ -225,6 +225,41 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj)
     return retval;
 }
 
+
+#ifdef HAVE_DEL
+PmReturn_t
+dict_delItem(pPmObj_t pdict, pPmObj_t pkey)
+{
+    PmReturn_t retval = PM_RET_OK;
+    int16_t indx = 0;
+
+    C_ASSERT(pdict != C_NULL);
+
+    /* Check for matching key */
+    retval = seglist_findEqual(((pPmDict_t)pdict)->d_keys, pkey, &indx);
+
+    /* Raise KeyError if key is not found */
+    if (retval == PM_RET_NO)
+    {
+        PM_RAISE(retval, PM_RET_EX_KEY);
+    }
+
+    /* Return any other error */
+    PM_RETURN_IF_ERROR(retval);
+
+    /* Remove the key and value */
+    retval = seglist_removeItem(((pPmDict_t)pdict)->d_keys, indx);
+    PM_RETURN_IF_ERROR(retval);
+    retval = seglist_removeItem(((pPmDict_t)pdict)->d_vals, indx);
+
+    /* Reduce the item count */
+    ((pPmDict_t)pdict)->length--;
+
+    return retval;
+}
+#endif /* HAVE_DEL */
+
+
 #ifdef HAVE_PRINT
 PmReturn_t
 dict_print(pPmObj_t pdict)

@@ -81,6 +81,19 @@ PmReturn_t dict_clear(pPmObj_t pdict);
  */
 PmReturn_t dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj);
 
+#ifdef HAVE_DEL
+/**
+ * Removes a key and value from the dict.
+ * Throws TypeError if pdict is not a dict.
+ * Throws KeyError if pkey does not exist in pdict.
+ *
+ * @param   pdict Ptr to dict to search
+ * @param   pkey Ptr to key obj
+ * @return  Return status
+ */
+PmReturn_t dict_delItem(pPmObj_t pdict, pPmObj_t pkey);
+#endif /* HAVE_DEL */
+
 /**
  * Allocates space for a new Dict.
  * Return a pointer to the dict by reference.

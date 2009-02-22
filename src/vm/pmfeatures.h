@@ -59,4 +59,9 @@
  */
 /*#define HAVE_FLOAT*/
 
-#endif /*FEATURES_H_ */
+/**
+ * When defined, the code to support the keyword del is included in the build.
+ */
+#define HAVE_DEL
+
+#endif /* FEATURES_H_ */

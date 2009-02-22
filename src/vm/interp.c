@@ -556,6 +556,34 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;
 
+#ifdef HAVE_DEL
+            case DELETE_SUBSCR:
+                pobj1 = PM_POP();
+                pobj2 = PM_POP();
+
+                if ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_LST)
+                    && (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_INT))
+                {
+                    retval = list_delItem(pobj2,
+                                          (int16_t)((pPmInt_t)pobj1)->val);
+                }
+
+                else if ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_DIC)
+                         && (OBJ_GET_TYPE(pobj1) <= OBJ_TYPE_HASHABLE_MAX))
+                {
+                    retval = dict_delItem(pobj2, pobj1);
+                }
+
+                /* Raise TypeError if obj is not a list or dict */
+                else
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                }
+
+                PM_BREAK_IF_ERROR(retval);
+                continue;
+#endif /* HAVE_DEL */
+
             case BINARY_LSHIFT:
             case INPLACE_LSHIFT:
                 /* If both objs are ints, perform the op */
@@ -805,6 +833,23 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
+#ifdef HAVE_DEL
+            case DELETE_NAME:
+                /* Get name index */
+                t16 = GET_ARG();
+
+                /* Get value */
+                pobj1 = PM_POP();
+
+                /* Get key */
+                pobj2 = FP->fo_func->f_co->co_names->val[t16];
+
+                /* Remove key,val pair from current frame's attrs dict */
+                retval = dict_delItem((pPmObj_t)FP->fo_attrs, pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                continue;
+#endif /* HAVE_DEL */
+
             case UNPACK_SEQUENCE:
                 /* Get ptr to sequence */
                 pobj1 = PM_POP();
@@ -904,6 +949,58 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 
+#ifdef HAVE_DEL
+            case DELETE_ATTR:
+                /* del TOS.name */
+                /* Get names index */
+                t16 = GET_ARG();
+
+                /* Get obj */
+                pobj1 = PM_POP();
+
+                /* Get attrs dict from obj */
+                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN)
+                    || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_MOD))
+                {
+                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
+                }
+                else if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_EXN))
+                {
+                    pobj2 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
+                }
+
+                /* Other types result in an AttributeError */
+                else
+                {
+                    PM_RAISE(retval, PM_RET_EX_ATTR);
+                    break;
+                }
+
+                /* If attrs is not a dict, raise SystemError */
+                if (OBJ_GET_TYPE(pobj2) != OBJ_TYPE_DIC)
+                {
+                    PM_RAISE(retval, PM_RET_EX_SYS);
+                    break;
+                }
+
+                /* Get name/key obj */
+                pobj3 = FP->fo_func->f_co->co_names->val[t16];
+
+                /* Remove key,val from obj's dict */
+                retval = dict_delItem(pobj2, pobj3);
+
+                /* Raise an AttributeError if key is not found */
+                if (retval == PM_RET_EX_KEY)
+                {
+                    PM_RAISE(retval, PM_RET_EX_ATTR);
+                }
+
+                PM_BREAK_IF_ERROR(retval);
+                continue;
+#endif /* HAVE_DEL */
+
             case STORE_GLOBAL:
                 /* Get name index */
                 t16 = GET_ARG();
@@ -918,6 +1015,23 @@ interpret(const uint8_t returnOnNoThreads)
                 retval = dict_setItem((pPmObj_t)FP->fo_globals, pobj2, pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
+
+#ifdef HAVE_DEL
+            case DELETE_GLOBAL:
+                /* Get name index */
+                t16 = GET_ARG();
+
+                /* Get value */
+                pobj1 = PM_POP();
+
+                /* Get key */
+                pobj2 = FP->fo_func->f_co->co_names->val[t16];
+
+                /* Remove key,val from globals */
+                retval = dict_delItem((pPmObj_t)FP->fo_globals, pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                continue;
+#endif /* HAVE_DEL */
 
             case DUP_TOPX:
                 t16 = GET_ARG();
@@ -1068,6 +1182,13 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Push attr with given name onto stack */
                 retval = dict_getItem(pobj1, pobj2, &pobj3);
+
+                /* Raise an AttributeError if key is not found */
+                if (retval == PM_RET_EX_KEY)
+                {
+                    PM_RAISE(retval, PM_RET_EX_ATTR);
+                }
+
                 PM_BREAK_IF_ERROR(retval);
                 PM_PUSH(pobj3);
                 continue;
@@ -1330,6 +1451,13 @@ interpret(const uint8_t returnOnNoThreads)
                 t16 = GET_ARG();
                 FP->fo_locals[t16] = PM_POP();
                 continue;
+
+#ifdef HAVE_DEL
+            case DELETE_FAST:
+                t16 = GET_ARG();
+                FP->fo_locals[t16] = PM_NONE;
+                continue;
+#endif /* HAVE_DEL */
 
             case RAISE_VARARGS:
                 t16 = GET_ARG();
