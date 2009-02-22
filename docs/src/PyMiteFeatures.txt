@@ -45,15 +45,15 @@ Keywords
 PyMite supports the following subset of Python's keywords::
 
     and         assert      break       continue    def
-    elif        else        for         from        global
-    if          import      in          is          not
-    or          pass        print       raise       return
-    while
+    del         elif        else        for         from
+    global      if          import      in          is
+    not         or          pass        print       raise
+    return      while
 
 PyMite DOES NOT support these keywords::
 
-    class       del         except      exec        finally
-    lambda      try         yield
+    class       except      exec        finally     lambda
+    try         yield
 
 Identifiers
 ~~~~~~~~~~~
@@ -144,7 +144,7 @@ Dictionaries (Mappings)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 PyMite supports Dictionaries having up to 32767 key, value pairs.
-Dictionary keys must be of a hashable type.  A TypeError will occur if you try 
+Dictionary keys must be of a hashable type.  A TypeError will occur if you try
 set a value using a non-hashable key.
 Values can be of any type.
 
