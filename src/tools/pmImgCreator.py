@@ -105,6 +105,8 @@ PM_FEATURES = {
     "HAVE_GC": True,
     "HAVE_FLOAT": False,
     "HAVE_DEL": True,
+    "HAVE_IMPORTS": True,
+    "HAVE_ASSERT": True,
 }
 
 
@@ -190,6 +192,7 @@ UNIMPLEMENTED_BCODES = [
     "CALL_FUNCTION_VAR", "CALL_FUNCTION_KW", "CALL_FUNCTION_VAR_KW",
     "EXTENDED_ARG",
     ]
+
 if not PM_FEATURES["HAVE_DEL"]:
     UNIMPLEMENTED_BCODES.extend([
         "DELETE_SUBSCR",
@@ -198,6 +201,18 @@ if not PM_FEATURES["HAVE_DEL"]:
         "DELETE_ATTR",
         "DELETE_FAST",
         ])
+
+if not PM_FEATURES["HAVE_IMPORTS"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "IMPORT_STAR",
+        "IMPORT_FROM",
+        ])
+
+if not PM_FEATURES["HAVE_ASSERT"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "RAISE_VARARGS",
+        ])
+
 
 # #152: Byte to append after the last image in the list
 IMG_LIST_TERMINATOR = "\xFF"

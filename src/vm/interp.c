@@ -781,6 +781,7 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(heap_freeChunk(pobj1));
                 continue;
 
+#ifdef HAVE_IMPORTS
             case IMPORT_STAR:
                 /* #102: Implement the remaining IMPORT_ bytecodes */
                 /* Expect a module on the top of the stack */
@@ -792,6 +793,7 @@ interpret(const uint8_t returnOnNoThreads)
                                      (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs);
                 PM_BREAK_IF_ERROR(retval);
                 continue;
+#endif /* HAVE_IMPORTS */
 
             case POP_BLOCK:
             {
@@ -810,7 +812,6 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Delete block */
                 PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
                 continue;
-
             }
 
             /***************************************************
@@ -1342,6 +1343,7 @@ interpret(const uint8_t returnOnNoThreads)
                 FP = (pPmFrame_t)pobj3;
                 continue;
 
+#ifdef HAVE_IMPORTS
             case IMPORT_FROM:
                 /* #102: Implement the remaining IMPORT_ bytecodes */
                 /* Expect the module on the top of the stack */
@@ -1360,6 +1362,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Push the object onto the top of the stack */
                 PM_PUSH(pobj3);
                 continue;
+#endif /* HAVE_IMPORTS */
 
             case JUMP_FORWARD:
                 t16 = GET_ARG();
@@ -1459,6 +1462,7 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 #endif /* HAVE_DEL */
 
+#ifdef HAVE_ASSERT
             case RAISE_VARARGS:
                 t16 = GET_ARG();
 
@@ -1490,6 +1494,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Raise exception by breaking with retval set to code */
                 PM_RAISE(retval, (PmReturn_t)(((pPmInt_t)pobj2)->val & 0xFF));
                 break;
+#endif /* HAVE_ASSERT */
 
             case CALL_FUNCTION:
                 /* Get num args */

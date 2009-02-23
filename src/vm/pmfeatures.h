@@ -61,7 +61,21 @@
 
 /**
  * When defined, the code to support the keyword del is included in the build.
+ * This involves the bytecodes: DELETE_SUBSCR, DELETE_NAME, DELETE_ATTR, 
+ * DELETE_GLOBAL and DELETE_FAST.
  */
 #define HAVE_DEL
+
+/**
+ * When defined, the code to support the IMPORT_FROM and IMPORT_STAR styles
+ * is included in the build.
+ */
+#define HAVE_IMPORTS
+
+/**
+ * When defined, the code to support the assert statement is included
+ * in the build.
+ */
+#define HAVE_ASSERT
 
 #endif /* FEATURES_H_ */
