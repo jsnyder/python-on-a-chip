@@ -161,9 +161,7 @@ global_setBuiltins(pPmFunc_t pmod)
     if (PM_PBUILTINS == C_NULL)
     {
         /* Need to load builtins first */
-printf("before: (%d, %d)\n", heap_getAvail(), 8*1024);
         global_loadBuiltins();
-printf("after:  (%d, %d)\n", heap_getAvail(), 8*1024);
     }
 
     /* Put builtins module in the module's attrs dict */
