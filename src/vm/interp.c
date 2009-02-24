@@ -168,19 +168,18 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case UNARY_NEGATIVE:
-                pobj1 = PM_POP();
 #ifdef HAVE_FLOAT
-                if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FLT)
+                if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                 {
-                    retval = float_negative(pobj1, &pobj2);
+                    retval = float_negative(TOS, &pobj2);
                 }
                 else
 #endif /* HAVE_FLOAT */
                 {
-                    retval = int_negative(pobj1, &pobj2);
+                    retval = int_negative(TOS, &pobj2);
                 }
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
+                TOS = pobj2;
                 continue;
 
             case UNARY_NOT:
@@ -204,35 +203,33 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Otherwise perform bit-wise complement */
-                pobj1 = PM_POP();
-                retval = int_bitInvert(pobj1, &pobj2);
+                retval = int_bitInvert(TOS, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj2);
+                TOS = pobj2;
                 continue;
 
             case BINARY_POWER:
             case INPLACE_POWER:
-                /* Pop args right to left */
-                pobj2 = PM_POP();
-                pobj1 = TOS;
 
 #ifdef HAVE_FLOAT
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FLT)
-                    || (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_FLT))
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
+                    || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
                     /* Calculate float power */
-                    retval = float_op(pobj1, pobj2, &pobj3, 'P');
+                    retval = float_op(TOS1, TOS, &pobj3, 'P');
                     PM_BREAK_IF_ERROR(retval);
+                    SP--;
                     TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
 
                 /* Calculate integer power */
-                retval = int_pow(pobj1, pobj2, &pobj3);
+                retval = int_pow(TOS1, TOS, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Set return value */
+                SP--;
                 TOS = pobj3;
                 continue;
 
@@ -254,12 +251,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val *
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val *
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -267,11 +263,10 @@ interpret(const uint8_t returnOnNoThreads)
                 else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = float_op(pobj2, pobj1, &pobj3, '*');
+                    retval = float_op(TOS1, TOS, &pobj3, '*');
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
@@ -280,20 +275,13 @@ interpret(const uint8_t returnOnNoThreads)
                 else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                          && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_LST))
                 {
-                    /* Int number of times to duplicate */
-                    pobj1 = PM_POP();
-                    if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_TYPE);
-                        break;
-                    }
-                    t16 = (int16_t)((pPmInt_t)pobj1)->val;
+                    t16 = (int16_t)((pPmInt_t)TOS)->val;
 
                     /* List that is copied */
-                    pobj2 = PM_POP();
-                    retval = list_replicate(pobj2, t16, &pobj3);
+                    retval = list_replicate(TOS1, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -310,11 +298,10 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = float_op(pobj2, pobj1, &pobj3, '/');
+                    retval = float_op(TOS1, TOS, &pobj3, '/');
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
@@ -335,12 +322,11 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Otherwise perform operation */
-                pobj1 = PM_POP();
-                pobj2 = PM_POP();
-                retval = int_new(((pPmInt_t)pobj2)->val /
-                                 ((pPmInt_t)pobj1)->val, &pobj3);
+                retval = int_new(((pPmInt_t)TOS1)->val /
+                                 ((pPmInt_t)TOS)->val, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj3);
+                SP--;
+                TOS = pobj3;
                 continue;
 
             case BINARY_MODULO:
@@ -350,11 +336,10 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = float_op(pobj2, pobj1, &pobj3, '%');
+                    retval = float_op(TOS1, TOS, &pobj3, '%');
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
@@ -375,12 +360,11 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Otherwise perform operation */
-                pobj1 = PM_POP();
-                pobj2 = PM_POP();
-                retval = int_new(((pPmInt_t)pobj2)->val %
-                                 ((pPmInt_t)pobj1)->val, &pobj3);
+                retval = int_new(((pPmInt_t)TOS1)->val %
+                                 ((pPmInt_t)TOS)->val, &pobj3);
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj3);
+                SP--;
+                TOS = pobj3;
                 continue;
 
             case BINARY_ADD:
@@ -390,11 +374,10 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = float_op(pobj2, pobj1, &pobj3, '+');
+                    retval = float_op(TOS1, TOS, &pobj3, '+');
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
@@ -403,12 +386,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val +
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val +
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -423,11 +405,10 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = float_op(pobj2, pobj1, &pobj3, '-');
+                    retval = float_op(TOS1, TOS, &pobj3, '-');
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
@@ -436,12 +417,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val -
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val -
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -452,60 +432,52 @@ interpret(const uint8_t returnOnNoThreads)
             case BINARY_SUBSCR:
                 /* Implements TOS = TOS1[TOS]. */
 
-                /* Get index */
-                pobj1 = PM_POP();
-
-                /* Get sequence */
-                pobj2 = PM_POP();
-
-                if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_DIC)
                 {
-                    retval = dict_getItem(pobj2, pobj1, &pobj3);
+                    retval = dict_getItem(TOS1, TOS, &pobj3);
                 }
                 else
                 {
                     /* Raise a TypeError if index is not an Integer or Bool */
-                    if ((OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
-                        && (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_BOOL))
+                    if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
+                        && (OBJ_GET_TYPE(TOS) != OBJ_TYPE_BOOL))
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
 
                     /* Ensure the index doesn't overflow */
-                    C_ASSERT(((pPmInt_t)pobj1)->val <= 0x0000FFFF);
-                    t16 = (int16_t)((pPmInt_t)pobj1)->val;
+                    C_ASSERT(((pPmInt_t)TOS)->val <= 0x0000FFFF);
+                    t16 = (int16_t)((pPmInt_t)TOS)->val;
 
-                    retval = seq_getSubscript(pobj2, t16, &pobj3);
+                    retval = seq_getSubscript(TOS1, t16, &pobj3);
                 }
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj3);
+                SP--;
+                TOS = pobj3;
                 continue;
 
             case SLICE_0:
                 /* Implements TOS = TOS[:], push a copy of the sequence */
 
-                /* Get sequence */
-                pobj1 = PM_POP();
-
                 /* If it's a string */
                 if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_STR)
                 {
                     /* Just copy the pointer, since Strings are immutable */
-                    pobj2 = pobj1;
+                    pobj2 = TOS;
                 }
 
                 /* If it's a tuple */
-                else if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_TUP)
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_TUP)
                 {
-                    retval = tuple_copy(pobj1, &pobj2);
+                    retval = tuple_copy(TOS, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
                 /* If it's a list */
-                else if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_LST)
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_LST)
                 {
-                    retval = list_copy(pobj1, &pobj2);
+                    retval = list_copy(TOS, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
                 }
 
@@ -516,39 +488,39 @@ interpret(const uint8_t returnOnNoThreads)
                     break;
                 }
 
-                PM_PUSH(pobj2);
+                SP--;
+                TOS = pobj2;
                 continue;
 
             case STORE_SUBSCR:
                 /* Implements TOS1[TOS] = TOS2 */
-                pobj1 = PM_POP();
-                pobj2 = PM_POP();
-                pobj3 = PM_POP();
 
                 /* If it's a list */
-                if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_LST)
+                if (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_LST)
                 {
                     /* Ensure subscr is an int or bool */
-                    if ((OBJ_GET_TYPE(pobj1) != OBJ_TYPE_INT)
-                        && (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_BOOL))
+                    if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
+                        && (OBJ_GET_TYPE(TOS) != OBJ_TYPE_BOOL))
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
                     /* Set the list item */
-                    retval = list_setItem(pobj2,
-                                          (int16_t)(((pPmInt_t)pobj1)->val),
-                                          pobj3);
+                    retval = list_setItem(TOS1,
+                                          (int16_t)(((pPmInt_t)TOS)->val),
+                                          TOS2);
                     PM_BREAK_IF_ERROR(retval);
+                    SP -= 3;
                     continue;
                 }
 
                 /* If it's a dict */
-                if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_DIC)
+                if (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_DIC)
                 {
                     /* Set the dict item */
-                    retval = dict_setItem(pobj2, pobj1, pobj3);
+                    retval = dict_setItem(TOS1, TOS, TOS2);
                     PM_BREAK_IF_ERROR(retval);
+                    SP -= 3;
                     continue;
                 }
 
@@ -558,20 +530,18 @@ interpret(const uint8_t returnOnNoThreads)
 
 #ifdef HAVE_DEL
             case DELETE_SUBSCR:
-                pobj1 = PM_POP();
-                pobj2 = PM_POP();
 
-                if ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_LST)
-                    && (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_INT))
+                if ((OBJ_GET_TYPE(TOS1) == OBJ_TYPE_LST)
+                    && (OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT))
                 {
-                    retval = list_delItem(pobj2,
-                                          (int16_t)((pPmInt_t)pobj1)->val);
+                    retval = list_delItem(TOS1,
+                                          (int16_t)((pPmInt_t)TOS)->val);
                 }
 
-                else if ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_DIC)
-                         && (OBJ_GET_TYPE(pobj1) <= OBJ_TYPE_HASHABLE_MAX))
+                else if ((OBJ_GET_TYPE(TOS1) == OBJ_TYPE_DIC)
+                         && (OBJ_GET_TYPE(TOS) <= OBJ_TYPE_HASHABLE_MAX))
                 {
-                    retval = dict_delItem(pobj2, pobj1);
+                    retval = dict_delItem(TOS1, TOS);
                 }
 
                 /* Raise TypeError if obj is not a list or dict */
@@ -581,6 +551,7 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 PM_BREAK_IF_ERROR(retval);
+                SP -= 2;
                 continue;
 #endif /* HAVE_DEL */
 
@@ -590,12 +561,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val <<
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val <<
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -609,12 +579,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val >>
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val >>
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -628,12 +597,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val &
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val &
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -647,12 +615,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val ^
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val ^
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -666,12 +633,11 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT))
                 {
-                    pobj1 = PM_POP();
-                    pobj2 = PM_POP();
-                    retval = int_new(((pPmInt_t)pobj2)->val |
-                                     ((pPmInt_t)pobj1)->val, &pobj3);
+                    retval = int_new(((pPmInt_t)TOS1)->val |
+                                     ((pPmInt_t)TOS)->val, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
-                    PM_PUSH(pobj3);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 
@@ -686,9 +652,9 @@ interpret(const uint8_t returnOnNoThreads)
 
             case PRINT_ITEM:
                 /* Print out topmost stack element */
-                pobj1 = PM_POP();
-                retval = obj_print(pobj1, (uint8_t)0);
+                retval = obj_print(TOS, (uint8_t)0);
                 PM_BREAK_IF_ERROR(retval);
+                SP--;
                 if (bc != PRINT_EXPR)
                 {
                     continue;
@@ -786,12 +752,12 @@ interpret(const uint8_t returnOnNoThreads)
                 /* #102: Implement the remaining IMPORT_ bytecodes */
                 /* Expect a module on the top of the stack */
                 C_ASSERT(OBJ_GET_TYPE(TOS) == OBJ_TYPE_MOD);
-                pobj1 = PM_POP();
 
                 /* Update FP's attrs with those of the module on the stack */
                 retval = dict_update((pPmObj_t)FP->fo_attrs,
-                                     (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs);
+                                     (pPmObj_t)((pPmFunc_t)TOS)->f_attrs);
                 PM_BREAK_IF_ERROR(retval);
+                SP--;
                 continue;
 #endif /* HAVE_IMPORTS */
 
@@ -823,24 +789,19 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get name index */
                 t16 = GET_ARG();
 
-                /* Get value */
-                pobj1 = PM_POP();
-
                 /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
 
                 /* Set key=val in current frame's attrs dict */
-                retval = dict_setItem((pPmObj_t)FP->fo_attrs, pobj2, pobj1);
+                retval = dict_setItem((pPmObj_t)FP->fo_attrs, pobj2, TOS);
                 PM_BREAK_IF_ERROR(retval);
+                SP--;
                 continue;
 
 #ifdef HAVE_DEL
             case DELETE_NAME:
                 /* Get name index */
                 t16 = GET_ARG();
-
-                /* Get value */
-                pobj1 = PM_POP();
 
                 /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
@@ -889,15 +850,14 @@ interpret(const uint8_t returnOnNoThreads)
 
             case FOR_ITER:
                 t16 = GET_ARG();
-                pobj1 = TOS;
 
                 /* Get the next item in the sequence iterator */
-                retval = seqiter_getNext(pobj1, &pobj2);
+                retval = seqiter_getNext(TOS, &pobj2);
 
                 /* If StopIteration, pop iterator and jump outside loop */
                 if (retval == PM_RET_EX_STOP)
                 {
-                    pobj1 = PM_POP();
+                    SP--;
                     retval = PM_RET_OK;
                     IP += t16;
                     continue;
@@ -912,20 +872,17 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get names index */
                 t16 = GET_ARG();
 
-                /* Get obj */
-                pobj1 = PM_POP();
-
                 /* Get attrs dict from obj */
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN)
-                    || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_MOD))
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FXN)
+                    || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MOD))
                 {
-                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
+                    pobj2 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_EXN))
+                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
                 {
-                    pobj2 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
+                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
 
                 /* Other types result in an AttributeError */
@@ -946,8 +903,9 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj3 = FP->fo_func->f_co->co_names->val[t16];
 
                 /* Set key=val in obj's dict */
-                retval = dict_setItem(pobj2, pobj3, PM_POP());
+                retval = dict_setItem(pobj2, pobj3, TOS1);
                 PM_BREAK_IF_ERROR(retval);
+                SP -= 2;
                 continue;
 
 #ifdef HAVE_DEL
@@ -956,20 +914,17 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get names index */
                 t16 = GET_ARG();
 
-                /* Get obj */
-                pobj1 = PM_POP();
-
                 /* Get attrs dict from obj */
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN)
-                    || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_MOD))
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FXN)
+                    || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MOD))
                 {
-                    pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
+                    pobj2 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_EXN))
+                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
                 {
-                    pobj2 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
+                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
 
                 /* Other types result in an AttributeError */
@@ -999,6 +954,7 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 PM_BREAK_IF_ERROR(retval);
+                SP -= 2;
                 continue;
 #endif /* HAVE_DEL */
 
@@ -1006,24 +962,19 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get name index */
                 t16 = GET_ARG();
 
-                /* Get value */
-                pobj1 = PM_POP();
-
                 /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
 
                 /* Set key=val in global dict */
-                retval = dict_setItem((pPmObj_t)FP->fo_globals, pobj2, pobj1);
+                retval = dict_setItem((pPmObj_t)FP->fo_globals, pobj2, TOS);
                 PM_BREAK_IF_ERROR(retval);
+                SP--;
                 continue;
 
 #ifdef HAVE_DEL
             case DELETE_GLOBAL:
                 /* Get name index */
                 t16 = GET_ARG();
-
-                /* Get value */
-                pobj1 = PM_POP();
 
                 /* Get key */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
@@ -1036,33 +987,14 @@ interpret(const uint8_t returnOnNoThreads)
 
             case DUP_TOPX:
                 t16 = GET_ARG();
-                if (t16 == 1)
-                {
-                    pobj1 = TOS;
-                    PM_PUSH(pobj1);
-                }
-                else if (t16 == 2)
-                {
-                    pobj1 = TOS;
-                    pobj2 = TOS1;
-                    PM_PUSH(pobj2);
-                    PM_PUSH(pobj1);
-                }
-                else if (t16 == 3)
-                {
-                    pobj1 = TOS;
-                    pobj2 = TOS1;
-                    pobj3 = TOS2;
-                    PM_PUSH(pobj3);
-                    PM_PUSH(pobj2);
-                    PM_PUSH(pobj1);
-                }
-                else
-                {
-                    /* Python compiler is responsible for keeping arg <= 3 */
-                    PM_RAISE(retval, PM_RET_EX_SYS);
-                    break;
-                }
+                C_ASSERT(t16 <= 3);
+
+                pobj1 = TOS;
+                pobj2 = TOS1;
+                pobj3 = TOS2;
+                if (t16 >= 3) PM_PUSH(pobj3);
+                if (t16 >= 2) PM_PUSH(pobj2);
+                if (t16 >= 1) PM_PUSH(pobj1);
                 continue;
 
             case LOAD_CONST:
@@ -1119,16 +1051,15 @@ interpret(const uint8_t returnOnNoThreads)
 
             case BUILD_LIST:
                 t16 = GET_ARG();
+                /* WARNING: Is list object protected from GC sweep? */
                 retval = list_new(&pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 for (; --t16 >= 0;)
                 {
-                    /* Get obj */
-                    pobj2 = PM_POP();
-
                     /* Insert obj into list */
-                    retval = list_insert(pobj1, 0, pobj2);
+                    retval = list_insert(pobj1, 0, TOS);
                     PM_BREAK_IF_ERROR(retval);
+                    SP--;
                 }
                 /* Test again outside for loop */
                 PM_BREAK_IF_ERROR(retval);
@@ -1146,22 +1077,20 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case LOAD_ATTR:
+                /* Implements TOS.attr */
                 t16 = GET_ARG();
 
-                /* Get obj that has the attrs */
-                pobj1 = PM_POP();
-
                 /* Get attrs dict from obj */
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN) ||
-                    (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_MOD))
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FXN) ||
+                    (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MOD))
                 {
-                    pobj1 = (pPmObj_t)((pPmFunc_t)pobj1)->f_attrs;
+                    pobj1 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_EXN))
+                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
                 {
-                    pobj1 = (pPmObj_t)((pPmClass_t)pobj1)->cl_attrs;
+                    pobj1 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
 
                 /* Other types result in an AttributeError */
@@ -1181,7 +1110,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get name */
                 pobj2 = FP->fo_func->f_co->co_names->val[t16];
 
-                /* Push attr with given name onto stack */
+                /* Get attr with given name */
                 retval = dict_getItem(pobj1, pobj2, &pobj3);
 
                 /* Raise an AttributeError if key is not found */
@@ -1189,35 +1118,35 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     PM_RAISE(retval, PM_RET_EX_ATTR);
                 }
-
                 PM_BREAK_IF_ERROR(retval);
-                PM_PUSH(pobj3);
+                
+                /* Put attr on the stack */
+                TOS = pobj3;
                 continue;
 
             case COMPARE_OP:
                 retval = PM_RET_OK;
-                pobj1 = PM_POP();
-                pobj2 = PM_POP();
                 t16 = GET_ARG();
 
 #ifdef HAVE_FLOAT
-                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FLT)
-                    || (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_FLT))
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
+                    || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    retval = float_compare(pobj2, pobj1, &pobj3, t16);
-                    PM_PUSH(pobj3);
+                    retval = float_compare(TOS1, TOS, &pobj3, t16);
+                    SP--;
+                    TOS = pobj3;
                     continue;
                 }
 #endif /* HAVE_FLOAT */
 
                 /* Handle all integer-to-integer (or bool) comparisons */
-                if (((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_INT)
-                     || (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_BOOL))
-                    && ((OBJ_GET_TYPE(pobj2) == OBJ_TYPE_INT)
-                     || (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_BOOL)))
+                if (((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
+                     || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_BOOL))
+                    && ((OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT)
+                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_BOOL)))
                 {
-                    int32_t a = ((pPmInt_t)pobj2)->val;
-                    int32_t b = ((pPmInt_t)pobj1)->val;
+                    int32_t a = ((pPmInt_t)TOS1)->val;
+                    int32_t b = ((pPmInt_t)TOS)->val;
 
                     switch (t16)
                     {
@@ -1228,8 +1157,8 @@ interpret(const uint8_t returnOnNoThreads)
                         case COMP_NE: t8 = (int8_t)(a != b); break;
                         case COMP_GT: t8 = (int8_t)(a >  b); break;
                         case COMP_GE: t8 = (int8_t)(a >= b); break;
-                        case COMP_IS: t8 = (int8_t)(pobj1 == pobj2); break;
-                        case COMP_IS_NOT: t8 = (int8_t)(pobj1 != pobj2);break;
+                        case COMP_IS: t8 = (int8_t)(TOS == TOS1); break;
+                        case COMP_IS_NOT: t8 = (int8_t)(TOS != TOS1);break;
                         case COMP_IN:
                         case COMP_NOT_IN:
                             PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -1255,7 +1184,7 @@ interpret(const uint8_t returnOnNoThreads)
                         case COMP_NE:
                             /* Handle equality for non-int types */
                             pobj3 = PM_FALSE;
-                            t8 = obj_compare(pobj1, pobj2);
+                            t8 = obj_compare(TOS, TOS1);
                             if (((t8 == C_SAME) && (t16 == COMP_EQ))
                                 || ((t8 == C_DIFFER) && (t16 == COMP_NE)))
                             {
@@ -1267,7 +1196,7 @@ interpret(const uint8_t returnOnNoThreads)
                         case COMP_NOT_IN:
                             /* Handle membership comparisons */
                             pobj3 = PM_FALSE;
-                            retval = obj_isIn(pobj1, pobj2);
+                            retval = obj_isIn(TOS, TOS1);
                             if (retval == PM_RET_OK)
                             {
                                 if (t16 == COMP_IN)
@@ -1292,7 +1221,8 @@ interpret(const uint8_t returnOnNoThreads)
                     }
                     PM_BREAK_IF_ERROR(retval);
                 }
-                PM_PUSH(pobj3);
+                SP--;
+                TOS = pobj3;
                 continue;
 
             case IMPORT_NAME:
@@ -1303,11 +1233,10 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = FP->fo_func->f_co->co_names->val[t16];
 
                 /* Pop unused None object */
-                pobj3 = PM_POP();
+                SP--;
 
                 /* Ensure "level" is -1; no support for relative import yet */
-                pobj3 = TOS;
-                C_ASSERT(obj_compare(pobj3, PM_NEGONE) == C_SAME);
+                C_ASSERT(obj_compare(TOS, PM_NEGONE) == C_SAME);
 
                 /* #110: Prevent importing previously-loaded module */
                 /* If the named module is in globals, put it on the stack */
@@ -1474,15 +1403,14 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Raise type error if TOS is not an exception object */
-                pobj1 = PM_POP();
-                if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_EXN)
+                if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_EXN)
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
 
                 /* Push the traceback, parameter and exception object */
-                PM_PUSH(PM_NONE);
+                TOS = PM_NONE;
                 PM_PUSH(PM_NONE);
                 PM_PUSH(pobj1);
 
@@ -1579,8 +1507,8 @@ interpret(const uint8_t returnOnNoThreads)
                     }
 #endif /* HAVE_GC */
 
-                    /* Pop the function object (pobj2 is unused) */
-                    pobj2 = PM_POP();
+                    /* Pop the function object */
+                    SP--;
 
                     /* Get native function index */
                     pobj2 = (pPmObj_t)((pPmFunc_t)pobj1)->f_co;
@@ -1630,15 +1558,12 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get num default args to fxn */
                 t16 = GET_ARG();
 
-                /* Load func from CO */
-                pobj1 = PM_POP();
-
                 /*
                  * The current frame's globals become the function object's
                  * globals.  The current frame is the container object
                  * of this new function object
                  */
-                retval = func_new(pobj1, (pPmObj_t)FP->fo_globals, &pobj2);
+                retval = func_new(TOS, (pPmObj_t)FP->fo_globals, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Put any default args in a tuple */
@@ -1646,6 +1571,7 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     retval = tuple_new(t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
+                    SP--;
                     while (--t16 >= 0)
                     {
                         ((pPmTuple_t)pobj3)->val[t16] = PM_POP();
@@ -1653,6 +1579,10 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Set func's default args */
                     ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
+                }
+                else
+                {
+                    SP--;
                 }
 
                 /* Push func obj */
