@@ -275,10 +275,18 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
             return C_SAME;
 
         case OBJ_TYPE_INT:
-        case OBJ_TYPE_FLT:
             return ((pPmInt_t)pobj1)->val ==
                 ((pPmInt_t)pobj2)->val ? C_SAME : C_DIFFER;
 
+#ifdef HAVE_FLOAT
+        case OBJ_TYPE_FLT:
+        {
+            pPmObj_t r_pobj;    
+            float_compare(pobj1, pobj2, &r_pobj, COMP_EQ);
+            return (r_pobj == PM_TRUE) ? C_SAME : C_DIFFER;
+        }
+#endif /* HAVE_FLOAT */
+                   
         case OBJ_TYPE_STR:
             return string_compare((pPmString_t)pobj1, (pPmString_t)pobj2);
 

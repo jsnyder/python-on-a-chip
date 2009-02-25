@@ -504,6 +504,10 @@ def sum(s):
     uint16_t len;
     uint16_t i;
     PmReturn_t retval;
+#ifdef HAVE_FLOAT
+    float f;
+    uint8_t usefloat = C_FALSE;
+#endif /* HAVE_FLOAT */
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
@@ -532,22 +536,49 @@ def sum(s):
 
     /* Calculate the sum of the sequence */
     n = 0;
+#ifdef HAVE_FLOAT
+    f = 0.0;
+#endif
     for (i = 0; i < len; i++)
     {
         retval = seq_getSubscript(ps, i, &po);
 
+        if (OBJ_GET_TYPE(po) == OBJ_TYPE_INT)
+        {
+            /* Add value to sum */
+            n += ((pPmInt_t)po)->val;
+#ifdef HAVE_FLOAT
+            f += (float)((pPmInt_t)po)->val;
+#endif /* HAVE_FLOAT */
+        }
+        
+#ifdef HAVE_FLOAT
+        else if (OBJ_GET_TYPE(po) == OBJ_TYPE_FLT)
+        {
+            /* Add value to sum */
+            f += ((pPmFloat_t)po)->val;
+            usefloat = C_TRUE;
+        }
+#endif /* HAVE_FLOAT */
+
         /* Raise TypeError if item is not an integer */
-        if (OBJ_GET_TYPE(po) != OBJ_TYPE_INT)
+        else
         {
             PM_RAISE(retval, PM_RET_EX_TYPE);
             return retval;
         }
-
-        /* Add value to sum */
-        n += ((pPmInt_t)po)->val;
     }
 
-    retval = int_new(n, &pn);
+#ifdef HAVE_FLOAT
+    if (usefloat)
+    {
+        retval = float_new(f, &pn);
+    }
+    else
+#endif /* HAVE_FLOAT */
+    {
+        retval = int_new(n, &pn);
+    }
     NATIVE_SET_TOS(pn);
     return retval;
     """
