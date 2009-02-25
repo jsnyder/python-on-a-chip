@@ -1403,7 +1403,8 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 /* Raise type error if TOS is not an exception object */
-                if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_EXN)
+                pobj1 = TOS;
+                if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_EXN)
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
