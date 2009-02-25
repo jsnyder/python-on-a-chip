@@ -57,8 +57,11 @@ typedef struct PmFunc_s
     /** Ptr to globals dict */
     pPmDict_t f_globals;
 
+#ifdef HAVE_DEFAULTARGS
     /** Ptr to tuple holding default args */
     pPmTuple_t f_defaultargs;
+#endif /* HAVE_DEFAULTARGS */
+
 } PmFunc_t,
  *pPmFunc_t;
 

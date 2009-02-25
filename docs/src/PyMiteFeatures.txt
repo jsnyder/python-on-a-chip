@@ -5,18 +5,22 @@
    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
    Texts.  A copy of the license is in the file docs/LICENSE.
 
+
 ===============
 PyMite Features
 ===============
 
+
 :Author:    Dean Hall
 :Id:        $Id$
+
 
 Purpose
 -------
 
 This document describes the features of the Python language that
 are supported by PyMite.  In doing so, it serves as a guide to the user.
+
 
 Overview
 --------
@@ -27,6 +31,7 @@ PyMite had to sacrifice many features found in desktop Python.
 This document attempts to itemize the features found in PyMite in order
 to convey to the user what is possible when using this programming environment.
 
+
 Invocation Options and Environment Variables
 --------------------------------------------
 
@@ -35,6 +40,7 @@ desktop-style shell-like interface.  Usually, the application is executed
 directly when the target device is powered up or reset.  For these reasons,
 PyMite DOES NOT have any invocation options or observe any environment
 variables.
+
 
 Lexical Entities
 ----------------
@@ -64,6 +70,7 @@ PyMite observes the same rules as Python for identifiers::
 
 However, NO special actions (or inactions) are taken for identifiers
 with the special forms: `_ident`, `__ident__` and `__ident`.
+.. ` This is just to fix the colorizer
 
 String Literals
 ~~~~~~~~~~~~~~~
@@ -105,17 +112,19 @@ Escape          Meaning
 Boolean Constants
 ~~~~~~~~~~~~~~~~~
 
-PyMite DOES NOT yet support the ``bool`` datatype or the boolean constants:
-``True`` or ``False``.
+PyMite supports the ``bool`` datatype and the boolean constants, ``True`` and
+``False``.  When used as a subscript (such as ``seq[bool]``), a ``False`` bool
+is equivalent to an integer 0; and a ``True`` bool is equivalent to 1.
 
 Numbers
 ~~~~~~~
 
-PyMite supports only the typical 32-bit signed integer number type.
+PyMite supports the typical 32-bit signed integer number type.
+A number can be input in any of the following forms:
 
-    - Decimal integer: 1234,
-    - Octal integer: 0177 (begins with a 0)
-    - Hex integer: 0xFF (begins with 0x or 0X)
+- Decimal integer: 1234,
+- Octal integer: 0177 (begins with a 0)
+- Hex integer: 0xFF (begins with 0x or 0X)
 
 PyMite must be configured to support Floating Point numbers.
 By default, PyMite does not enable this support.
@@ -156,7 +165,7 @@ PyMite keeps the same operator precedence as Python.
 =========================== ================================================
 Operator                    Comment
 =========================== ================================================
-, [...] {...} `...`         Tuple, list & dict. creation; string conv.
+, [...] {...}               Tuple, List & Dict. creation.
 s[i] s[:] s.attr f(...)     Index & copy; attributes, function calls
 +x, -x, ~x                  Unary operators
 x**y                        Power
@@ -221,35 +230,74 @@ x **or** y          If x is false then y, else x
 x **and** y         If x is false then x, else y
 =================== ========================================================
 
+
+Statements
+----------
+
+======================  ========================================================
+Statement               Result
+======================  ========================================================
+``pass``                Null statement
+``del`` `name`          Unbind name(s) from object
+``print`` s1 [,s2]*     Writes to output defined in platform-specific code
+======================  ========================================================
+
+PyMite implementes all of Python's ``control flow`` statements
+(``if/elif/else``, ``while/else``, ``for/in/else``, ``break, continue, return``)
+with the exception of the ``yield`` statement.
+PyMite DOES NOT implement exceptions(``try/except/else/finally``).
+PyMite supports these forms of the ``import`` statement::
+
+    import module
+    import module as name
+    from module import name
+    from module import *
+
+PyMite supports use of the ``global`` statement to declare a global variable.
+
+PyMite supports the basic form of function definition::
+
+    def funcname(arg1, arg2, ... ):
+        funcbody
+
+Support for arguments having default values is configurable (in pmfeatures.h)
+and is enabled by default::
+
+    def funcname(arg1, arg2="foo", arg3=42):
+        funcbody
+
+
 Built-in Functions
 ------------------
 
 Built-in functions are defined in the module ``__bi`` which is automatically
 imported.
 
-=========== ================================================================
+=========== ====================================================================
 Function    Result
-=========== ================================================================
+=========== ====================================================================
 abs(x)      The absolute value of the number `x`
-chr(i)      Returns one-character string whose ASCII code is integer i.
+chr(i)      Returns one-character string whose ASCII code is integer `i`.
 eval(co)    Evaluates a given code object (created by Co()).
 globals()   Returns a dictionary containing the current global variables.
-id()        Returns a unique integer identifier for object.
+id(o)       Returns a unique integer identifier for object, `o`.
 len(obj)    Returns the length (the number of items) of a sequence or
             dictionary.
 locals()    Returns a dictionary containing current local variables.
-map()       <Exists but is not correctly implemented>
-ord(c)      Returns integer ASCII value of c (a string of len 1).
-pow(x,y)    Returns x to power y. See also ``**`` operator.
+map(f,s)    Returns a list containing the output of function, `f`, applied to
+            every item in sequence, `s`.
+ord(c)      Returns integer ASCII value of `c` (a string of len 1).
+pow(x,y)    Returns `x` to power `y`. See also ``**`` operator.
 range(...)  Returns list of ints from >= start and < end.
             With 1 arg, list from 0..arg-1.
             With 2 args, list from start..end-1.
             With 3 args, list from start up to end by step.
-sum(s)      Returns the sum of a sequence of numbers (not strings).
+sum(s)      Returns the sum of a sequence of numbers, `s` (not strings).
             Returns ``0`` when the sequence is empty.
 type(obj)   Returns an integer representing the `type` of an object.
             See obj.h in PyMite for the value of each type.
-=========== ================================================================
+=========== ====================================================================
+
 
 Library Modules
 ---------------
@@ -260,14 +308,16 @@ a module name from Python.
 
 PyMite offers the following library modules::
 
-    dict            func            list            sys
+    dict            func            list            string          sys
+
 
 Idiom Hints
 -----------
 
-PyMite does NOT support the idiom ``if __name__ == "__main__"``,
-instead this should be used: ``if ismain()``
-where the ismain() function is part of the builtins module.
+PyMite does NOT support the idiom ``if __name__ == "__main__":``,
+instead this should be used: ``if ismain():``
+where the ``ismain()`` function is part of the builtins module.
+
 
 Thanks
 ------

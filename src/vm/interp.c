@@ -1119,7 +1119,7 @@ interpret(const uint8_t returnOnNoThreads)
                     PM_RAISE(retval, PM_RET_EX_ATTR);
                 }
                 PM_BREAK_IF_ERROR(retval);
-                
+
                 /* Put attr on the stack */
                 TOS = pobj3;
                 continue;
@@ -1447,8 +1447,33 @@ interpret(const uint8_t returnOnNoThreads)
                      * #132 Raise TypeError if num args does not match the
                      * code object's expected argcount
                      */
+
+#ifdef HAVE_DEFAULTARGS
+                    /* If this func has no default arguments */
+                    if (((pPmFunc_t)pobj1)->f_defaultargs == C_NULL)
+                    {
+                        t8 = 0;
+                    }
+
+                    /* Num required args := argcount - num default args */
+                    else
+                    {
+                        t8 = ((pPmFunc_t)pobj1)->f_co->co_argcount
+                             - ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)
+                                ->length;
+                    }
+
+                    /*
+                     * Raise a TypeError if num args passed
+                     * is more than allowed or less than required
+                     */
+                    if (((t16 & ((uint8_t)0xFF))
+                         > ((pPmFunc_t)pobj1)->f_co->co_argcount)
+                        || ((t16 & ((uint8_t)0xFF)) < t8))
+#else
                     if ((t16 & ((uint8_t)0xFF)) !=
                         ((pPmFunc_t)pobj1)->f_co->co_argcount)
+#endif /* HAVE_DEFAULTARGS */
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
@@ -1457,6 +1482,24 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
+
+#ifdef HAVE_DEFAULTARGS
+                    /* If this func has default arguments, put them in place */
+                    if (((pPmFunc_t)pobj1)->f_defaultargs != C_NULL)
+                    {
+                        int8_t i = 0;
+
+                        /* Copy default args into the new frame's locals */
+                        for (/* t8 set above */;
+                             t8 < ((pPmFunc_t)pobj1)->f_co->co_argcount;
+                             t8++)
+                        {
+                            ((pPmFrame_t)pobj2)->fo_locals[t8] =
+                                ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)
+                                 ->val[i++];
+                        }
+                    }
+#endif /* HAVE_DEFAULTARGS */
 
                     /* Pass args to new frame */
                     while (--t16 >= 0)
@@ -1569,6 +1612,8 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Put any default args in a tuple */
                 if (t16 > 0)
                 {
+
+#ifdef HAVE_DEFAULTARGS
                     retval = tuple_new(t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
@@ -1579,6 +1624,12 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Set func's default args */
                     ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
+#else
+                    /* Default arguments not configured in pmfeatures.h */
+                    PM_RAISE(retval, PM_RET_EX_SYS);
+                    break;
+#endif /* HAVE_DEFAULTARGS */
+
                 }
                 else
                 {

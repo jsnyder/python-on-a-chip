@@ -53,6 +53,7 @@
 #define HAVE_GC
 
 
+/* #148 Create configurable float datatype */
 /**
  * When defined, the code to support floating point objects is included
  * in the build.
@@ -77,5 +78,12 @@
  * in the build.
  */
 #define HAVE_ASSERT
+
+/* #157 Support default args */
+/**
+ * When defined, the code to support default arguments to functions is included
+ * in the build.
+ */
+#define HAVE_DEFAULTARGS
 
 #endif /* FEATURES_H_ */

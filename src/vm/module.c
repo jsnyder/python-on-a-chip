@@ -73,6 +73,11 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     /* A module's globals is the same as its attrs */
     ((pPmFunc_t)*pmod)->f_globals = (pPmDict_t)pobj;
 
+#ifdef HAVE_DEFAULTARGS
+    /* Clear the default args (only used by funcs) */
+    ((pPmFunc_t)*pmod)->f_defaultargs = C_NULL;
+#endif /* HAVE_DEFAULTARGS */
+
     return retval;
 }
 

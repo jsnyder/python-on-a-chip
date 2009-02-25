@@ -80,8 +80,10 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
         pfunc->f_attrs = C_NULL;
     }
 
+#ifdef HAVE_DEFAULTARGS
     /* Clear default args (will be set later, if at all) */
     pfunc->f_defaultargs = C_NULL;
+#endif /* HAVE_DEFAULTARGS */
 
     *r_pfunc = (pPmObj_t)pfunc;
     return PM_RET_OK;

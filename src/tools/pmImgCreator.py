@@ -107,6 +107,7 @@ PM_FEATURES = {
     "HAVE_DEL": True,
     "HAVE_IMPORTS": True,
     "HAVE_ASSERT": True,
+    "HAVE_DEFAULTARGS": True,
 }
 
 
@@ -570,6 +571,19 @@ class PmImgCreator:
 
             #else copy three bytes
             else:
+
+                # Raise error if default arguments exist and are not configured
+                if (not PM_FEATURES["HAVE_DEFAULTARGS"]
+                    and c == dis.opmap["MAKE_FUNCTION"]
+                    and self._str_to_U16(s[i+1:i+3]) > 0):
+
+                    raise NotImplementedError(
+                            "Bytecode (%d/%s/%s) not configured "
+                            "to support default arguments; "
+                            "comes at offset %d in file %s." %
+                            (c, hex(c), dis.opname[c], i, co.co_filename))
+
+                # Otherwise, copy the code (3 bytes)
                 code += s[i:i+3]
                 i += 3
 
