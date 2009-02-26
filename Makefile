@@ -47,12 +47,16 @@ endif
 # Export config to child makefiles
 export TARGET HEAP_SIZE TARGET_MCU
 
-.PHONY: all vm pmstdlib docs TAGS dist check clean
+.PHONY: all vm ipm html indent TAGS dist check clean
 
 all : vm
 
 vm :
 	$(MAKE) -C src/vm
+
+ipm : all
+	$(MAKE) -C src/sample/ipm-desktop
+	cd src/tools && ./ipm.py -d
 
 html : docs/src/*.txt
 	$(MKDIR) docs/html
@@ -81,3 +85,7 @@ check :
 clean :
 	$(MAKE) -C src/vm clean
 
+# Removes files made by make check
+check-clean :
+	$(MAKE) -C src/tests/unit clean
+	$(MAKE) -C src/tests/system clean

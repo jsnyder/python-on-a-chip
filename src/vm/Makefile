@@ -36,6 +36,8 @@ endif
 ifeq ($(TARGET), DESKTOP)
 	CFLAGS += -ansi
 	SOURCES += plat/desktop.c
+	SIZE = size
+	IPM=true
 else
 ifeq ($(TARGET), AVR)
 	TARGET_MCU ?= atmega103

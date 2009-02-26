@@ -20,7 +20,6 @@
 # Runs the interactive interpreter
 #
 
-# Uncomment the following two lines when #82 is fixed
 import ipm
 
 ipm.ipm()
