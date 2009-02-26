@@ -90,28 +90,15 @@ Using ipm
 A sample project has been created to build PyMite for the desktop target.
 The output of this project is used by ipm-host when it is
 commanded to connect using the "desktop" connection.  Perform the following
-steps to run ipm completely on the desktop:
+steps from the project root directory to run ipm on the desktop::
 
-1. Build PyMite with a large stack, debugging enabled and the ipm module
-   built in::
-
-    $ make clean; make HEAP_SIZE=0xF000 DEBUG=true IPM=true
-
-2. Build the ipm-desktop sample project::
-
-    $ cd src/sample/ipm-desktop; make HEAP_SIZE=0xF000 DEBUG=true
-
-   (the resulting binary, main.o, should be left running)
-
-3. In a separate terminal, Run ipm-host using the desktop connection::
-
-    $ cd ../../tools; ./ipm.py -d
+    make ipm
 
 Ipm-host should launch and print its startup message followed by the ipm prompt.
-Now you may type source code and see the results.  Type Ctrl+D when you are
-done.  The following is a sample interactive session::
+Now you may type source code and see the results.  Type Ctrl+D (twice) when 
+you are done.  The following is a sample interactive session::
 
-    ipm> import plat; plat.puts("timmy")
+    ipm> print "timmy"
     timmy
     ipm> d={}
     ipm> d[0] = None
