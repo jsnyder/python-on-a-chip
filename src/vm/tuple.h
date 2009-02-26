@@ -62,6 +62,8 @@ typedef struct PmTuple_s
  *pPmTuple_t;
 
 
+#define tuple_copy(src, dest) tuple_replicate((src), 1, (dest))
+
 /***************************************************************
  * Prototypes
  **************************************************************/
@@ -98,16 +100,16 @@ PmReturn_t tuple_loadFromImg(PmMemSpace_t memspace,
 PmReturn_t tuple_new(uint16_t n, pPmObj_t *r_ptuple);
 
 /**
- * Creates a copy of the tuple.
+ * Replicates a tuple, n number of times to create a new tuple
  *
- * Must allocate the necessary memory.
- * Duplicate ptrs to objs.
+ * Copies the pointers (not the objects).
  *
  * @param   ptup Ptr to source tuple.
+ * @param   n Number of times to replicate the tuple.
  * @param   r_ptuple Return arg; Ptr to new tuple.
  * @return  Return status
  */
-PmReturn_t tuple_copy(pPmObj_t ptup, pPmObj_t *r_ptuple);
+PmReturn_t tuple_replicate(pPmObj_t ptup, int16_t n, pPmObj_t *r_ptuple);
 
 /**
  * Gets the object in the tuple at the index.

@@ -271,19 +271,56 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 #endif /* HAVE_FLOAT */
 
+#ifdef HAVE_REPLICATION
                 /* If it's a list replication operation */
                 else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                          && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_LST))
                 {
                     t16 = (int16_t)((pPmInt_t)TOS)->val;
 
-                    /* List that is copied */
                     retval = list_replicate(TOS1, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                     TOS = pobj3;
                     continue;
                 }
+
+                /* If it's a tuple replication operation */
+                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
+                         && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_TUP))
+                {
+                    t16 = (int16_t)((pPmInt_t)TOS)->val;
+                    if (t16 < 0)
+                    {
+                        t16 = 0;
+                    }
+
+                    retval = tuple_replicate(TOS1, t16, &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    SP--;
+                    TOS = pobj3;
+                    continue;
+                }
+
+                /* If it's a string replication operation */
+                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
+                         && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_STR))
+                {
+                    t16 = (int16_t)((pPmInt_t)TOS)->val;
+                    if (t16 < 0)
+                    {
+                        t16 = 0;
+                    }
+
+                    pobj2 = TOS1;
+                    retval = string_replicate((uint8_t const **)&pobj2, t16,
+                                              &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    SP--;
+                    TOS = pobj3;
+                    continue;
+                }
+#endif /* HAVE_REPLICATION */
 
                 /* Otherwise raise a TypeError */
                 PM_RAISE(retval, PM_RET_EX_TYPE);

@@ -96,9 +96,10 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
-    - Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues and
-      fixes.
-    - Josh Lifton: Used PyMite in PhD work, donated many code fixes and tests.
+    - Mark Eichin: Feedback on system tests and Makefile
+    - Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues,
+      fixes and tests.
+    - Josh Lifton: Donated many code fixes and tests.
     - www.webfaction.com: for providing quality, free project hosting on
       www.python-hosting.com
 

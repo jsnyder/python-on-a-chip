@@ -67,13 +67,14 @@ static pPmString_t pstrcache = C_NULL;
  * into the cache.
  */
 PmReturn_t
-string_create(PmMemSpace_t memspace,
-              uint8_t const **paddr, uint8_t isimg, pPmObj_t *r_pstring)
+string_create(PmMemSpace_t memspace, uint8_t const **paddr, uint8_t isimg,
+              int16_t n, pPmObj_t *r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
     uint16_t len = 0;
     pPmString_t pstr = C_NULL;
     uint8_t *pdst = C_NULL;
+    uint8_t const *psrc = C_NULL;
 
 #if USE_STRING_CACHE
     pPmString_t pcacheentry = C_NULL;
@@ -95,17 +96,24 @@ string_create(PmMemSpace_t memspace,
     }
 
     /* Get space for String obj */
-    retval = heap_getChunk(sizeof(PmString_t) + len, &pchunk);
+    retval = heap_getChunk(sizeof(PmString_t) + len * n, &pchunk);
     PM_RETURN_IF_ERROR(retval);
     pstr = (pPmString_t)pchunk;
 
     /* Fill the string obj */
     OBJ_SET_TYPE(pstr, OBJ_TYPE_STR);
-    pstr->length = len;
+    pstr->length = len * n;
 
     /* Copy C-string into String obj */
     pdst = (uint8_t *)&(pstr->val);
-    mem_copy(memspace, &pdst, paddr, len);
+    while (--n >= 0)
+    {
+        psrc = *paddr;
+        mem_copy(memspace, &pdst, &psrc, len);
+    }
+
+    /* Be sure paddr points to one byte past the end of the source string */
+    *paddr = psrc;
 
     /* Zero-pad end of string */
     for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(pstr); pdst++)
@@ -257,7 +265,7 @@ string_cacheInit(void)
 }
 
 
-PmReturn_t 
+PmReturn_t
 string_getCache(pPmString_t **r_ppstrcache)
 {
 #if USE_STRING_CACHE

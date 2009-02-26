@@ -55,7 +55,7 @@
  * @param paddr address in memoryspace of source string
  */
 #define string_loadFromImg(ms, paddr, r_pstring) \
-            string_create((ms), (paddr), (uint8_t)1, (r_pstring))
+    string_create((ms), (paddr), (uint8_t)1, (int16_t)1, (r_pstring))
 
 /**
  * Creates String object from character array in RAM
@@ -64,7 +64,17 @@
  * @param r_pstring Return arg; addr of ptr to string
  */
 #define string_new(paddr, r_pstring) \
-            string_create(MEMSPACE_RAM, (paddr), (uint8_t)0, (r_pstring))
+    string_create(MEMSPACE_RAM, (paddr), (uint8_t)0, (int16_t)1, (r_pstring))
+
+/**
+ * Creates String object by replicating an existing C string, n times
+ *
+ * @param paddr pointer to address of source string
+ * @param n number of times to replicate the source string
+ * @param r_pstring Return arg; addr of ptr to string
+ */
+#define string_replicate(paddr, n, r_pstring) \
+    string_create(MEMSPACE_RAM, (paddr), (uint8_t)0, (n), (r_pstring))
 
 /***************************************************************
  * Types
@@ -105,14 +115,14 @@ typedef struct PmString_s
 
 /**
  * Creates a new String obj.
- * If n is zero, load from a String image.
+ * If isimg is zero, load from a String image.
  *      A string image has the following structure:
  *          -type:      int8 - OBJ_TYPE_STRING
  *          -length:    uint16 - number of bytes in the string
  *          -val:       uint8[] - array of chars with null term
  *
- * If n is not zero, create from a C string.
- * Return ptr to String obj.
+ * If isimg is not zero, create from a C string.
+ * Returns by reference a ptr to String obj.
  *
  * Obtain space for String from the heap.
  * Copy string from memspace.
@@ -130,7 +140,8 @@ typedef struct PmString_s
  * @return  Return status
  */
 PmReturn_t string_create(PmMemSpace_t memspace, uint8_t const **paddr,
-                         uint8_t isimg, pPmObj_t *r_pstring);
+                         uint8_t isimg, int16_t n, pPmObj_t *r_pstring);
+;
 
 /**
  * Creates a new String object from a single character.

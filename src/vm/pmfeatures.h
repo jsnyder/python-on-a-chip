@@ -86,4 +86,12 @@
  */
 #define HAVE_DEFAULTARGS
 
+/* #160 Add support for string and tuple replication */
+/**
+ * When defined, the code to support sequence (list, tuple, string) replcation
+ * is included in the build.
+ * This feature is required by the builtin function __bi.map().
+ */
+#define HAVE_REPLICATION
+
 #endif /* FEATURES_H_ */
