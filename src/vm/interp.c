@@ -208,6 +208,12 @@ interpret(const uint8_t returnOnNoThreads)
                 TOS = pobj2;
                 continue;
 
+            case LIST_APPEND:
+                /* list_append will raise a TypeError if TOS1 is not a list */
+                retval = list_append(TOS1, TOS);
+                SP -= 2;
+                continue;
+
             case BINARY_POWER:
             case INPLACE_POWER:
 
