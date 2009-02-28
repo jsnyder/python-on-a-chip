@@ -205,6 +205,7 @@ def runInThread(f):
     }
 
     retval = interp_addThread((pPmFunc_t)pf);
+    NATIVE_SET_TOS(PM_NONE);
     return retval;
     """
     pass
