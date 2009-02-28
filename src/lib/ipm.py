@@ -95,15 +95,14 @@ def _getImg():
 #
 # Runs the target device-side interactive session.
 #
-import sys
 def ipm():
-    g = globals()
+    g = {}
     while 1:
         # Wait for a code image, make a code object from it
         # and evaluate the code object.
         rv = eval(Co(_getImg()), g)
 
         # Send a byte to indicate completion of evaluation
-        sys.putb(0x04)
+        print '\x04',
 
 #:mode=c:

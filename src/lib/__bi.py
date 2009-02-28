@@ -122,6 +122,73 @@ def chr(n):
     pass
 
 
+def dir(o):
+    """__NATIVE__
+    PmReturn_t retval = PM_RET_OK;
+    pPmObj_t po;
+    pPmObj_t pk;
+    pPmObj_t pl;
+    pSeglist_t psl;
+    int16_t i;
+
+    /* Use globals if no arg given */
+    if (NATIVE_GET_NUM_ARGS() == 0)
+    {
+        /* Get the globals dict */
+        po = (pPmObj_t)NATIVE_GET_PFRAME()->fo_globals;
+    }
+
+    /* Otherwise use the given arg */
+    else if (NATIVE_GET_NUM_ARGS() == 1)
+    {
+        po = NATIVE_GET_LOCAL(0);
+
+        /* If object is a function or module, use its attrs dict */
+        if ((OBJ_GET_TYPE(po) == OBJ_TYPE_FXN)
+            || (OBJ_GET_TYPE(po) == OBJ_TYPE_MOD))
+        {
+            po = (pPmObj_t)((pPmFunc_t)po)->f_attrs;
+        }
+        else
+        {
+            po = C_NULL;
+        }
+    }
+
+    /* Raise TypeError if wrong number of args */
+    else
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    if (po == C_NULL)
+    {
+        pl = PM_NONE;
+    }
+    else
+    {
+        /* Create new list */
+        retval = list_new(&pl);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Copy dict's keys to the list */
+        psl = ((pPmDict_t)po)->d_keys;
+        for (i = 0; i < ((pPmDict_t)po)->length; i++)
+        {
+            retval = seglist_getItem(psl, i, &pk);
+            PM_RETURN_IF_ERROR(retval);
+            retval = list_append(pl, pk);
+            PM_RETURN_IF_ERROR(retval);
+        }
+    }
+
+    NATIVE_SET_TOS(pl);
+    return retval;
+    """
+    pass
+
+
 #
 # Evaluates a given code object (created by Co()).
 # Optionally accepts a globals dict as the second parameter
@@ -551,7 +618,7 @@ def sum(s):
             f += (float)((pPmInt_t)po)->val;
 #endif /* HAVE_FLOAT */
         }
-        
+
 #ifdef HAVE_FLOAT
         else if (OBJ_GET_TYPE(po) == OBJ_TYPE_FLT)
         {

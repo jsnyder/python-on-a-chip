@@ -89,3 +89,7 @@ clean :
 check-clean :
 	$(MAKE) -C src/tests/unit clean
 	$(MAKE) -C src/tests/system clean
+
+# Removes files made by ipm
+ipm-clean :
+	$(MAKE) -C src/sample/ipm-desktop clean
