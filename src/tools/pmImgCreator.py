@@ -154,6 +154,15 @@ MAX_STRING_LEN = 999
 # Maximum number of chars in a code img
 MAX_IMG_LEN = 32767
 
+# Masks for co_flags (from Python's code.h)
+CO_OPTIMIZED = 0x0001
+CO_NEWLOCALS = 0x0002
+CO_VARARGS = 0x0004
+CO_VARKEYWORDS = 0x0008
+CO_NESTED = 0x0010
+CO_GENERATOR = 0x0020
+CO_NOFREE = 0x0040
+
 # String used to ID a native method
 NATIVE_INDICATOR = "__NATIVE__"
 NATIVE_INDICATOR_LENGTH = len(NATIVE_INDICATOR)
@@ -507,6 +516,11 @@ class PmImgCreator:
             Ensure num consts is less than 256.
             Replace __doc__ with None if present.
 
+        Flags filter:
+            Check co_flags for flags that indicate an unsupported feature
+            Supported flags: CO_NOFREE, CO_OPTIMIZED, CO_NEWLOCALS, CO_NESTED
+            Unsupported flags: CO_VARARGS, CO_VARKEYWORDS, CO_GENERATOR
+
         Native code filter:
             If this function has a native indicator,
             extract the native code from the doc string
@@ -529,17 +543,24 @@ class PmImgCreator:
 
         ## General filter
         # ensure values fit within S8 type size
-        assert len(co.co_consts) < 128
-        assert len(co.co_names) < 128
-        assert co.co_argcount < 128
-        assert co.co_stacksize < 128
-        assert co.co_nlocals < 128
+        assert len(co.co_consts) < 128, "too many constants."
+        assert len(co.co_names) < 128, "too many names."
+        assert co.co_argcount < 128, "too many arguments."
+        assert co.co_stacksize < 128, "too large of a stack."
+        assert co.co_nlocals < 128, "too many local variables."
 
         # make consts a list so a single element can be modified
         consts = list(co.co_consts)
+
+        # Check co_flags
+        assert co.co_flags \
+               & (CO_VARARGS | CO_VARKEYWORDS | CO_GENERATOR) == 0,\
+               "Unsupported code identified by co_flags (%s)." % hex(co.co_flags)
+
         # get trimmed src file name and module name
         fn = os.path.basename(co.co_filename)
         mn = os.path.splitext(fn)[0]
+
         # init native code
         nativecode = None
 
