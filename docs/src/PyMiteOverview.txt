@@ -62,7 +62,7 @@ PyMite supports the important datatypes an experienced Python programmer
 expects: 32-bit signed integers, Strings, Tuples, Lists and Dictionaries
 (a.k.a. Dicts, Hashes and Maps).  PyMite also supports the basic flow
 control statements and logic statements.  However, some of Python's more
-advanced features such as list comprehension and generators are not supported.
+advanced features such as generators, classes and decorators are not supported.
 See `PyMiteFeatures`_ for a detailed description of what PyMite supports.
 Suffice to say, PyMite has enough to keep you busy.
 
