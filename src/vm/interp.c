@@ -195,20 +195,21 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case UNARY_INVERT:
-                /*
-                 * Perform bit-wise complement
-                 * or raise TypeError if it's not an int
-                 */
+                /* Raise TypeError if it's not an int */
+                if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    break;
+                }
+
+                /* Otherwise perform bit-wise complement */
                 retval = int_bitInvert(TOS, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
                 TOS = pobj2;
                 continue;
 
             case LIST_APPEND:
-                /*
-                 * Appends the object to the list
-                 * or raises a TypeError if TOS1 is not a list
-                 */
+                /* list_append will raise a TypeError if TOS1 is not a list */
                 retval = list_append(TOS1, TOS);
                 SP -= 2;
                 continue;
