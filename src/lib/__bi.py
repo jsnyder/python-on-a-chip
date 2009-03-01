@@ -45,43 +45,43 @@
 
 #### FUNCS
 
-def abs(n):
-    """__NATIVE__
-    pPmObj_t pn;
-    pPmObj_t pm;
-    int32_t n;
-    PmReturn_t retval = PM_RET_OK;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 1)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* Raise ValueError if arg is not int */
-    pn = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
-    {
-        PM_RAISE(retval, PM_RET_EX_VAL);
-        return retval;
-    }
-
-    /* Push the absolute value onto the stack */
-    n = ((pPmInt_t)pn)->val;
-    if (n >= 0)
-    {
-        NATIVE_SET_TOS(pn);
-    }
-    else
-    {
-        retval = int_new(-n, &pm);
-        NATIVE_SET_TOS(pm);
-    }
-
-    return retval;
-    """
-    pass
+#def abs(n):
+#    """__NATIVE__
+#    pPmObj_t pn;
+#    pPmObj_t pm;
+#    int32_t n;
+#    PmReturn_t retval = PM_RET_OK;
+#
+#    /* If wrong number of args, raise TypeError */
+#    if (NATIVE_GET_NUM_ARGS() != 1)
+#    {
+#        PM_RAISE(retval, PM_RET_EX_TYPE);
+#        return retval;
+#    }
+#
+#    /* Raise ValueError if arg is not int */
+#    pn = NATIVE_GET_LOCAL(0);
+#    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
+#    {
+#        PM_RAISE(retval, PM_RET_EX_VAL);
+#        return retval;
+#    }
+#
+#    /* Push the absolute value onto the stack */
+#    n = ((pPmInt_t)pn)->val;
+#    if (n >= 0)
+#    {
+#        NATIVE_SET_TOS(pn);
+#    }
+#    else
+#    {
+#        retval = int_new(-n, &pm);
+#        NATIVE_SET_TOS(pm);
+#    }
+#
+#    return retval;
+#    """
+#    pass
 
 
 def chr(n):
@@ -122,71 +122,71 @@ def chr(n):
     pass
 
 
-def dir(o):
-    """__NATIVE__
-    PmReturn_t retval = PM_RET_OK;
-    pPmObj_t po;
-    pPmObj_t pk;
-    pPmObj_t pl;
-    pSeglist_t psl;
-    int16_t i;
-
-    /* Use globals if no arg given */
-    if (NATIVE_GET_NUM_ARGS() == 0)
-    {
-        /* Get the globals dict */
-        po = (pPmObj_t)NATIVE_GET_PFRAME()->fo_globals;
-    }
-
-    /* Otherwise use the given arg */
-    else if (NATIVE_GET_NUM_ARGS() == 1)
-    {
-        po = NATIVE_GET_LOCAL(0);
-
-        /* If object is a function or module, use its attrs dict */
-        if ((OBJ_GET_TYPE(po) == OBJ_TYPE_FXN)
-            || (OBJ_GET_TYPE(po) == OBJ_TYPE_MOD))
-        {
-            po = (pPmObj_t)((pPmFunc_t)po)->f_attrs;
-        }
-        else
-        {
-            po = C_NULL;
-        }
-    }
-
-    /* Raise TypeError if wrong number of args */
-    else
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    if (po == C_NULL)
-    {
-        pl = PM_NONE;
-    }
-    else
-    {
-        /* Create new list */
-        retval = list_new(&pl);
-        PM_RETURN_IF_ERROR(retval);
-
-        /* Copy dict's keys to the list */
-        psl = ((pPmDict_t)po)->d_keys;
-        for (i = 0; i < ((pPmDict_t)po)->length; i++)
-        {
-            retval = seglist_getItem(psl, i, &pk);
-            PM_RETURN_IF_ERROR(retval);
-            retval = list_append(pl, pk);
-            PM_RETURN_IF_ERROR(retval);
-        }
-    }
-
-    NATIVE_SET_TOS(pl);
-    return retval;
-    """
-    pass
+#def dir(o):
+#    """__NATIVE__
+#    PmReturn_t retval = PM_RET_OK;
+#    pPmObj_t po;
+#    pPmObj_t pk;
+#    pPmObj_t pl;
+#    pSeglist_t psl;
+#    int16_t i;
+#
+#    /* Use globals if no arg given */
+#    if (NATIVE_GET_NUM_ARGS() == 0)
+#    {
+#        /* Get the globals dict */
+#        po = (pPmObj_t)NATIVE_GET_PFRAME()->fo_globals;
+#    }
+#
+#    /* Otherwise use the given arg */
+#    else if (NATIVE_GET_NUM_ARGS() == 1)
+#    {
+#        po = NATIVE_GET_LOCAL(0);
+#
+#        /* If object is a function or module, use its attrs dict */
+#        if ((OBJ_GET_TYPE(po) == OBJ_TYPE_FXN)
+#            || (OBJ_GET_TYPE(po) == OBJ_TYPE_MOD))
+#        {
+#            po = (pPmObj_t)((pPmFunc_t)po)->f_attrs;
+#        }
+#        else
+#        {
+#            po = C_NULL;
+#        }
+#    }
+#
+#    /* Raise TypeError if wrong number of args */
+#    else
+#    {
+#        PM_RAISE(retval, PM_RET_EX_TYPE);
+#        return retval;
+#    }
+#
+#    if (po == C_NULL)
+#    {
+#        pl = PM_NONE;
+#    }
+#    else
+#    {
+#        /* Create new list */
+#        retval = list_new(&pl);
+#        PM_RETURN_IF_ERROR(retval);
+#
+#        /* Copy dict's keys to the list */
+#        psl = ((pPmDict_t)po)->d_keys;
+#        for (i = 0; i < ((pPmDict_t)po)->length; i++)
+#        {
+#            retval = seglist_getItem(psl, i, &pk);
+#            PM_RETURN_IF_ERROR(retval);
+#            retval = list_append(pl, pk);
+#            PM_RETURN_IF_ERROR(retval);
+#        }
+#    }
+#
+#    NATIVE_SET_TOS(pl);
+#    return retval;
+#    """
+#    pass
 
 
 #
@@ -312,25 +312,25 @@ def globals():
     pass
 
 
-def id(o):
-    """__NATIVE__
-    PmReturn_t retval;
-    pPmObj_t pr = C_NULL;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 1)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* Return object's address as an int on the stack */
-    retval = int_new((int)NATIVE_GET_LOCAL(0), &pr);
-    NATIVE_SET_TOS(pr);
-
-    return retval;
-    """
-    pass
+#def id(o):
+#    """__NATIVE__
+#    PmReturn_t retval;
+#    pPmObj_t pr = C_NULL;
+#
+#    /* If wrong number of args, raise TypeError */
+#    if (NATIVE_GET_NUM_ARGS() != 1)
+#    {
+#        PM_RAISE(retval, PM_RET_EX_TYPE);
+#        return retval;
+#    }
+#
+#    /* Return object's address as an int on the stack */
+#    retval = int_new((int)NATIVE_GET_LOCAL(0), &pr);
+#    NATIVE_SET_TOS(pr);
+#
+#    return retval;
+#    """
+#    pass
 
 
 def len(s):
@@ -379,25 +379,25 @@ def len(s):
     pass
 
 
-def locals():
-    """__NATIVE__
-    pPmObj_t pr = C_NULL;
-    PmReturn_t retval;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 0)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    /* Return calling frame's local attrs dict on the stack */
-    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_attrs;
-    NATIVE_SET_TOS(pr);
-
-    return PM_RET_OK;
-    """
-    pass
+#def locals():
+#    """__NATIVE__
+#    pPmObj_t pr = C_NULL;
+#    PmReturn_t retval;
+#
+#    /* If wrong number of args, raise TypeError */
+#    if (NATIVE_GET_NUM_ARGS() != 0)
+#    {
+#        PM_RAISE(retval, PM_RET_EX_TYPE);
+#        return retval;
+#    }
+#
+#    /* Return calling frame's local attrs dict on the stack */
+#    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_attrs;
+#    NATIVE_SET_TOS(pr);
+#
+#    return PM_RET_OK;
+#    """
+#    pass
 
 
 def map(f, s):
@@ -448,36 +448,33 @@ def ord(s):
     pass
 
 
+#def pow(x, y):
+#    """__NATIVE__
+#    pPmObj_t px;
+#    pPmObj_t py;
+#    pPmObj_t pn;
+#    PmReturn_t retval;
 #
-# This implementation is needed by bytecodes BINARY_POWER and INPLACE_POWER
+#    /* If wrong number of args, raise TypeError */
+#    if (NATIVE_GET_NUM_ARGS() != 2)
+#    {
+#        PM_RAISE(retval, PM_RET_EX_TYPE);
+#        return retval;
+#    }
 #
-def pow(x, y):
-    """__NATIVE__
-    pPmObj_t px;
-    pPmObj_t py;
-    pPmObj_t pn;
-    PmReturn_t retval;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 2)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    px = NATIVE_GET_LOCAL(0);
-    py = NATIVE_GET_LOCAL(1);
-
-    /* Calculate integer power */
-    retval = int_pow(px, py, &pn);
-    PM_RETURN_IF_ERROR(retval);
-
-    /* Push result on stack */
-    NATIVE_SET_TOS(pn);
-
-    return retval;
-    """
-    pass
+#    px = NATIVE_GET_LOCAL(0);
+#    py = NATIVE_GET_LOCAL(1);
+#
+#    /* Calculate integer power */
+#    retval = int_pow(px, py, &pn);
+#    PM_RETURN_IF_ERROR(retval);
+#
+#    /* Push result on stack */
+#    NATIVE_SET_TOS(pn);
+#
+#    return retval;
+#    """
+#    pass
 
 
 def range(a, b, c):
