@@ -41,6 +41,7 @@ Date            Action
 
 
 import cmd, dis, getopt, os, subprocess, sys
+import serial
 import pmImgCreator
 
 
@@ -67,6 +68,7 @@ class Connection(object):
     def open(self,): raise NotImplementedError
     def read(self,): raise NotImplementedError
     def write(self, msg): raise NotImplementedError
+    def close(self,): raise NotImplementedError
 
 
 class PipeConnection(Connection):
@@ -95,7 +97,7 @@ class PipeConnection(Connection):
 
         # Collect all characters up to and including the ipm reply terminator
         chars = []
-        c = 'z'
+        c = ''
         while c != REPLY_TERMINATOR:
             c = self.child.stdout.read(1)
             if c == '':
@@ -112,6 +114,33 @@ class PipeConnection(Connection):
         self.child.stdin.flush()
 
 
+    def close(self,):
+        self.write("\0")
+
+
+class SerialConnection(Connection):
+    """Provides ipm-host to target connection over a serial device.
+    This connection should work on any platform that PySerial supports.
+    The ipm-device must be running at the same baud rate (19200 default).
+    """
+    def __init__(self, serdev="/dev/cu.SLAB_USBtoUART", baud=19200):
+        self.s = serial.Serial(serdev, baud)
+        self.s.setTimeout(2)
+
+    def read(self,):
+        # Collect all characters up to and including the ipm reply terminator
+        return self.s.readline(eol=REPLY_TERMINATOR)
+
+
+    def write(self, msg):
+        self.s.write(msg)
+        self.s.flush()
+
+
+    def close(self,):
+        self.s.close()
+
+
 class Interactive(cmd.Cmd):
     """The interactive command line parser accepts typed input line-by-line.
     If a statement requires multiple lines to complete,  the input
@@ -124,6 +153,7 @@ class Interactive(cmd.Cmd):
         cmd.Cmd.__init__(self,)
         self.prompt = IPM_PROMPT
         self.conn = conn
+        self.pic = pmImgCreator.PmImgCreator()
 
 
     def do_help(self, *args):
@@ -147,59 +177,16 @@ class Interactive(cmd.Cmd):
         # TODO: load module, compile to image, send to target
 
 
-    def do_input(self, line):
-        """Compiles the input and creates a code image from "line",
-        sends the code image to the target over the connection,
-        prints the return stream.
-        """
-
-        codeobj = compile(line, COMPILE_FN, COMPILE_MODE)
-
-        # DEBUG: Uncomment the next line to print the statement's bytecodes
-        #dis.disco(codeobj)
-
-        # Convert to a code image
-        pic = pmImgCreator.PmImgCreator()
-        try:
-            codeimg = pic.co_to_str(codeobj)
-
-        # Print any conversion errors
-        except Exception, e:
-            self.stdout.write("%s:%s\n" % (e.__class__.__name__, e))
-
-        # Otherwise send the image and print the reply
-        else:
-
-            # DEBUG: Uncomment the next line to print the size of the code image
-            # print "DEBUG: len(codeimg) = ", len(codeimg)
-            # DEBUG: Uncomment the next line to print the code image
-            # print "DEBUG: codeimg = ", repr(codeimg)
-
-            try:
-                self.conn.write(codeimg)
-            except Exception, e:
-                self.stdout.write("Connection write error, type Ctrl+D to quit.\n")
-
-            rv = self.conn.read()
-            if rv == '':
-                self.stdout.write("Connection read error, type Ctrl+D to quit.\n")
-            else:
-                self.stdout.write(rv)
-
-
     def onecmd(self, line):
         """Gathers one interactive line of input (gets more lines as needed).
         """
-
         # Ignore empty line, continue interactive prompt
         if not line:
             return
 
         # Handle ctrl+D (End Of File) input, stop interactive prompt
         if line == "EOF":
-            # Send invalid image to disconnect the target
-            self.conn.write("\0")
-            # The connection will close automatically
+            self.conn.close()
 
             # Do this so OS prompt is on a new line
             self.stdout.write("\n")
@@ -241,8 +228,35 @@ class Interactive(cmd.Cmd):
                 self.stdout.write("%s:%s\n" % (e.__class__.__name__, e))
                 return
 
-        # Process the input
-        self.do_input(line)
+        # DEBUG: Uncomment the next line to print the statement's bytecodes
+        #dis.disco(codeobj)
+
+        # Convert to a code image
+        try:
+            codeimg = self.pic.co_to_str(codeobj)
+
+        # Print any conversion errors
+        except Exception, e:
+            self.stdout.write("%s:%s\n" % (e.__class__.__name__, e))
+
+        # Otherwise send the image and print the reply
+        else:
+
+            # DEBUG: Uncomment the next line to print the size of the code image
+            # print "DEBUG: len(codeimg) = ", len(codeimg)
+            # DEBUG: Uncomment the next line to print the code image
+            # print "DEBUG: codeimg = ", repr(codeimg)
+
+            try:
+                self.conn.write(codeimg)
+            except Exception, e:
+                self.stdout.write("Connection write error, type Ctrl+D to quit.\n")
+
+            rv = self.conn.read()
+            if rv == '':
+                self.stdout.write("Connection read error, type Ctrl+D to quit.\n")
+            else:
+                self.stdout.write(rv)
 
 
     def run(self,):
@@ -255,7 +269,7 @@ class Interactive(cmd.Cmd):
         self.stop = False
         while not self.stop:
             try:
-                self.stop = self.cmdloop()
+                self.cmdloop()
             except KeyboardInterrupt, ki:
                 print "\n", ki.__class__.__name__
                 # TODO: check connection?
@@ -266,7 +280,7 @@ def parse_cmdline():
     """
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d", [])
+        opts, args = getopt.getopt(sys.argv[1:], "ds", [])
     except Exception, e:
         raise e
         print __usage__
@@ -279,6 +293,8 @@ def parse_cmdline():
     for opt in opts:
         if opt[0] == "-d":
             conn = PipeConnection()
+        elif opt[0] == "-s":
+            conn = SerialConnection()
 
     return (conn,)
 
@@ -289,5 +305,31 @@ def main():
     i.run()
 
 
+def ser_test():
+    """Test ipm over serial connection directly.
+    """
+    pic = pmImgCreator.PmImgCreator()
+    serconn = serial.Serial("/dev/cu.SLAB_USBtoUART", 19200)
+    serconn.setTimeout(2)
+
+    testcode = (
+        'print "Hello"\n',
+        'import sys\n',
+        'print sys.heap()\n',
+        )
+
+    for line in testcode:
+        print "compiling ``%s``" % line
+        codeobj = compile(line, COMPILE_FN, COMPILE_MODE)
+        codeimg = pic.co_to_str(codeobj)
+        print "codeimg is %d bytes" % len(codeimg)
+        print "sending codeimg..."
+        serconn.write(codeimg)
+        reply = serconn.readline(eol=REPLY_TERMINATOR)
+        print "reply is %d bytes" % len(reply)
+        print "reply is:\n%s" % reply
+
+
 if __name__ == "__main__":
+#    ser_test()
     main()

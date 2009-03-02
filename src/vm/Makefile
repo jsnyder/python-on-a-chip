@@ -46,7 +46,7 @@ ifeq ($(TARGET), AVR)
 	AR = avr-ar
 	CC = avr-gcc
 	SIZE = avr-size
-	CFLAGS += -mmcu=$(TARGET_MCU) 
+	CFLAGS += -mmcu=$(TARGET_MCU) -fshort-enums
 	DEFS += -DTARGET_MCU=$(TARGET_MCU) -DF_CPU=$(F_CPU) -DUART_BAUD=$(UART_BAUD)
 	SOURCES += plat/avr.c
 	PMSTDLIB_SOURCES += ../lib/avr.py

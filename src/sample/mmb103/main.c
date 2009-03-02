@@ -28,6 +28,10 @@
  */
 
 
+#include <stdio.h>
+#include <avr/io.h>
+
+#include "libmmb103.h"
 #include "pm.h"
 
 
@@ -38,9 +42,13 @@ int main(void)
 {
     PmReturn_t retval;
 
+    /* Init board */
+    mmb_init(BAUD_19200, ADC_CK_DIV_128, PWM_CK_DIV_8, 4, 20);
+
+    /* Init and run PyMite */
     retval = pm_init(MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
-    retval = pm_run((uint8_t *)"sample");
+    retval = pm_run((uint8_t *)"main");
     return (int)retval;
 }

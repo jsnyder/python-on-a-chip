@@ -34,6 +34,7 @@
 
 # PyMite Configuration
 LIBNATIVE_SOURCES = mmb.py
+#LIBNATIVE_SOURCES =
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 PM_HEAP_SIZE = 0x0D00
 
@@ -46,7 +47,7 @@ F_CPU = 4000000UL
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = sample
+TARGET = main
 
 
 # List C source files here. (C dependencies are automatically generated.)
@@ -166,21 +167,20 @@ LDFLAGS += -L../../vm -lpmvm -L. -lmmb103
 
 
 
-# Programming support using avrdude. Settings and variables.
+#---------------- Programming Options (avrdude) ----------------
 
 # Programming hardware: alf avr910 avrisp bascom bsd
-# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
+# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500 stk500v2
 #
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk200
 
-# com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = lpt1    # programmer connected to parallel port
+AVRDUDE_PROGRAMMER = stk500v2
+AVRDUDE_PORT = /dev/cu.Pololu
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -190,7 +190,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
-#AVRDUDE_NO_VERIFY = -V
+AVRDUDE_NO_VERIFY = -V
 
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>

@@ -172,7 +172,7 @@ plat_getByte(uint8_t *b)
     loop_until_bit_is_set(USR, RXC);
     
     /* If a framing error or data overrun occur, raise an IOException */
-    if (UCR & (_BV(FE) | _BV(DOR)))
+    if (USR & (_BV(FE) | _BV(DOR)))
     {
         PM_RAISE(retval, PM_RET_EX_IO);
         return retval;
@@ -221,8 +221,59 @@ plat_getMsTicks(uint32_t *r_ticks)
 }
 
 
-void 
+void
 plat_reportError(PmReturn_t result)
 {
-    /* TODO #97: Implement plat_reportError for AVR */
+    /* Print error */
+    printf("Error:     0x%02X\n", result);
+    printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
+    printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
+    printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+
+    /* Print traceback */
+    {
+        pPmObj_t pframe;
+        pPmObj_t pstr;
+        PmReturn_t retval;
+
+        printf("Traceback (top first):\n");
+
+        /* Get the top frame */
+        pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
+
+        /* If it's the native frame, print the native function name */
+        if (pframe == (pPmObj_t)&(gVmGlobal.nativeframe))
+        {
+
+            /* The last name in the names tuple of the code obj is the name */
+            retval = tuple_getItem((pPmObj_t)gVmGlobal.nativeframe.nf_func->
+                                   f_co->co_names, -1, &pstr);
+            if ((retval) != PM_RET_OK)
+            {
+                printf("  Unable to get native func name.\n");
+                return;
+            }
+            else
+            {
+                printf("  %s() __NATIVE__\n", ((pPmString_t)pstr)->val);
+            }
+
+            /* Get the frame that called the native frame */
+            pframe = (pPmObj_t)gVmGlobal.nativeframe.nf_back;
+        }
+
+        /* Print the remaining frame stack */
+        for (;
+             pframe != C_NULL;
+             pframe = (pPmObj_t)((pPmFrame_t)pframe)->fo_back)
+        {
+            /* The last name in the names tuple of the code obj is the name */
+            retval = tuple_getItem((pPmObj_t)((pPmFrame_t)pframe)->
+                                   fo_func->f_co->co_names, -1, &pstr);
+            if ((retval) != PM_RET_OK) break;
+
+            printf("  %s()\n", ((pPmString_t)pstr)->val);
+        }
+        printf("  <module>.\n");
+    }
 }
