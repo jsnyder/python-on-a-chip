@@ -96,6 +96,7 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
+    - Diego Martins: Reporting a build break (#173) and including a patch.
     - Mark Eichin: Feedback on system tests and Makefile
     - Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues,
       fixes and tests.
