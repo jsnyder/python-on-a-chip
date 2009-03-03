@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 
-# PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
-# Copyright 2002 Dean Hall
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+# Copyright 2002 Dean Hall.  All rights reserved.
+# PyMite is offered through one of two licenses: commercial or open-source.
+# See the LICENSE file at the root of this package for licensing details.
 #
 
 """
@@ -39,39 +28,6 @@ to the given filename.  When native functions are present, the user
 should specify where the native functions should be placed-- in the
 standard library or the user library--using the argument -s or -u,
 respectively.
-
-Log
----
-
-==========      ==============================================================
-Date            Action
-==========      ==============================================================
-2006/12/01      #51: Update to Python 2.5 bytecodes
-2006/09/15      #28: Module with __NATIVE__ at root doesn't load
-2006/09/12      #2: Separate stdlib from user app
-2006/09/06      #24: Remove consts[0] == docstring assumption
-2006/09/01      #11: Make src/tests/ build module images as C files, not
-                header files
-2006/08/25      #6: Have pmImgCreator append a null terminator to image list
-2006/08/15      Added option for storing image to RAM or FLASH
-2006/08/14      Smooth command line use
-2006/08/10      Make command line interface work
-2002/12/15      Native images reduced to four bytes!
-2002/09/04      Rename from co_conv.py to pmImgCreator.py
-                Refactor to use new UI.
-2002/09/03      Refactor:
-                    create init_globals.
-                    add named consts.
-2002/06/04      Remove nameoff and codeoff from code img.
-2002/05/26      Add command line interface.
-2002/05/25      Remove consts len and names len from code img.
-2002/04/27      Add tuple as a type to encode into img.
-2002/04/25      Recode to match pPyCo_t
-2001/10/12      Recode to match py_code_obj and py_static_obj.
-                Rename all functions *ToStr() or strTo*().
-2001/10/10      Recode to match py_code_obj and py_obj_desc.
-2001/10/07      First go.
-==========      ==============================================================
 """
 
 
