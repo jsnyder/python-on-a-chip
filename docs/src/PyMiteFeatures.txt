@@ -53,13 +53,12 @@ PyMite supports the following subset of Python's keywords::
     and         assert      break       continue    def
     del         elif        else        for         from
     global      if          import      in          is
-    not         or          pass        print       raise
-    return      while
+    lambda      not         or          pass        print
+    raise       return      while
 
 PyMite DOES NOT support these keywords::
 
-    class       except      exec        finally     lambda
-    try         yield
+    class       except      exec        finally     try         yield
 
 Identifiers
 ~~~~~~~~~~~

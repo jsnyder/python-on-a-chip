@@ -398,7 +398,8 @@ class PmImgCreator:
             # if it is a code object
             elif objtype == types.CodeType:
                 #determine if it's native or regular
-                if ((obj.co_consts[0] != None) and
+                if (len(obj.co_consts) > 0 and
+                    (obj.co_consts[0] != None) and
                     (obj.co_consts[0][0:NATIVE_INDICATOR_LENGTH] ==
                     NATIVE_INDICATOR)):
                     imgstr += self.no_to_str(obj)
@@ -609,7 +610,7 @@ class PmImgCreator:
                 i += 3
 
         # if the first const is a String,
-        if (type(consts[0]) == types.StringType):
+        if (len(consts) > 0 and type(consts[0]) == types.StringType):
 
             ## Native code filter
             # if this CO is intended to be a native func.
