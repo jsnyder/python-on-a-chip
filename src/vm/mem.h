@@ -1,43 +1,21 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __MEM_H__
 #define __MEM_H__
+
 
 /**
  * VM Memory
  *
  * VM memory header.
- *
- * Log
- * ---
- *
- * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/04/21   First.
  */
 
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /**
  * Memory Space enum.
@@ -56,10 +34,6 @@ typedef enum PmMemSpace_e
     MEMSPACE_OTHER3
 } PmMemSpace_t, *pPmMemSpace_t;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Returns the byte at the given address in memspace.
@@ -150,7 +124,7 @@ uint16_t mem_getStringLength(PmMemSpace_t memspace,
  * @param paddr Pointer to address of other byte array
  * @return PM_RET_OK if all bytes in both arrays match; PM_RET_NO otherwise
  */
-PmReturn_t mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace, 
+PmReturn_t mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
     uint8_t const **paddr);
 
 #endif /* __MEM_H__ */

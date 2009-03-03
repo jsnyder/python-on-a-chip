@@ -1,19 +1,17 @@
+/*
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
+ */
+
+
 #ifndef __LIBMMB103_H__
 #define __LIBMMB103_H__
+
+
 /*
- * Copyright 2002 Dean Hall.  All rights reserved.
- *
  * MMB103 Library Header
- *
- * ===========  ================================================================
- * Date         Action
- * ===========  ================================================================
- * 2008/01/04   Refresh to make a solid library
- * 2002/10/03   Refresh
- *                  - prefix all fxns with "mmb_"
- *                  - change motor PWM to 10-bit mode
- * 2002/02/20   First.
- * ===========  ================================================================
  */
 
 

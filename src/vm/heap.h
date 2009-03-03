@@ -1,39 +1,19 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __HEAP_H__
 #define __HEAP_H__
+
 
 /**
  * VM Heap
  *
  * VM heap header.
- *
- * Log
- * ---
- *
- * 2006/11/15   #53: Fix Win32/x86 build break
- * 2006/09/10   #20: Implement assert statement
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/08/31   Implemented freelist when chunk is deleted.
- * 2002/04/30   First.
  */
 
 
@@ -43,9 +23,6 @@
  */
 #define HEAP_GC_NF_THRESHOLD (1024)
 
-/***************************************************************
- * Macros
- **************************************************************/
 
 #ifdef __DEBUG__
 #define DEBUG_PRINT_HEAP_AVAIL(s) \
@@ -55,10 +32,6 @@
 #define DEBUG_PRINT_HEAP_AVAIL(s)
 #endif
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Initializes the heap for use.

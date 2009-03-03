@@ -1,35 +1,16 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2006 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x51
 
-/**
- * PyMite platform-specific routines for AVR target
- *
- * Log
- * ---
- *
- * 2007/01/31   #86: Move platform-specific code to the platform impl file
- * 2007/01/10   #75: Added time tick service for desktop (POSIX) and AVR. (P.Adelt)
- * 2006/12/26   #65: Create plat module with put and get routines
- */
+
+/** PyMite platform-specific routines for AVR target */
 
 
 #include <stdio.h>
@@ -41,10 +22,6 @@
 #include "../pm.h"
 
 
-/***************************************************************
- * Configuration
- **************************************************************/
-
 /**
  * When defined, the AVR target configures Timer/Counter0 to generate an
  * overflow interrupt to call pm_vmPeriodic().
@@ -55,22 +32,14 @@
 #define AVR_DEFAULT_TIMER_SOURCE
 
 
-/***************************************************************
- * Constants
- **************************************************************/
- 
 #ifdef AVR_DEFAULT_TIMER_SOURCE
 
-/* Hint: 1,000,000 탎/s * 256 T/C0 clock cycles per tick * 8 CPU clocks per  
- * T/C0 clock cycle / x,000,000 CPU clock cycles per second -> 탎 per tick  
- */  
+/* Hint: 1,000,000 탎/s * 256 T/C0 clock cycles per tick * 8 CPU clocks per
+ * T/C0 clock cycle / x,000,000 CPU clock cycles per second -> 탎 per tick
+ */
 #define PLAT_TIME_PER_TICK_USEC (1000000ULL*256ULL*8ULL/F_CPU)
 
 #endif /* AVR_DEFAULT_TIMER_SOURCE */
-  
-/***************************************************************
- * Functions
- **************************************************************/
 
 
 /*
@@ -88,7 +57,7 @@ plat_init(void)
     /* Enable the transmit and receive pins */
     UCR = _BV(TXEN) | _BV(RXEN);
     /* PORT END */
-    
+
 #ifdef AVR_DEFAULT_TIMER_SOURCE
     /* PORT BEGIN: Configure a timer that fits your needs. */
     /* Use T/C0 in synchronous mode, aim for a tick rate of
@@ -101,7 +70,7 @@ plat_init(void)
     TCCR0 |= (1<<CS01);
 #else
 #error No timer configuration is implemented for this AVR.
-#endif 
+#endif
 #endif /* AVR_DEFAULT_TIMER_SOURCE */
     /* PORT END */
 
@@ -109,12 +78,12 @@ plat_init(void)
 }
 
 #ifdef AVR_DEFAULT_TIMER_SOURCE
-ISR(TIMER0_OVF_vect) 
+ISR(TIMER0_OVF_vect)
 {
-    /* TODO Find a clever way to handle bad return code, maybe use 
+    /* TODO Find a clever way to handle bad return code, maybe use
      * PM_REPORT_IF_ERROR(retval) when that works on AVR inside an
      * interrupt.
-     */ 
+     */
     pm_vmPeriodic(PLAT_TIME_PER_TICK_USEC);
 }
 #endif
@@ -170,7 +139,7 @@ plat_getByte(uint8_t *b)
     /* PORT BEGIN: Set these UART/USART SFRs properly for your AVR */
     /* Loop until serial receive is complete */
     loop_until_bit_is_set(USR, RXC);
-    
+
     /* If a framing error or data overrun occur, raise an IOException */
     if (USR & (_BV(FE) | _BV(DOR)))
     {
@@ -195,7 +164,7 @@ plat_putByte(uint8_t b)
     /* PORT BEGIN: Set these UART/USART SFRs properly for your AVR */
     /* Loop until serial data reg is empty (from previous transfer) */
     loop_until_bit_is_set(USR, UDRE);
-    
+
     /* Put the byte to send into the serial data register */
     UDR = b;
     /* PORT END */

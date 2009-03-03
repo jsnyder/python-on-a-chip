@@ -1,24 +1,14 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __SEGLIST_H__
 #define __SEGLIST_H__
+
 
 /**
  * Segmented List data structure
@@ -36,25 +26,12 @@
  * That is, there are no gaps in a segment.
  * All entries point to an object, except entries
  * that are beyond the index of the last item.
- *
- * Log:
- *
- * 2006/01/09   Implemented seglist_removeItem() (P.Adelt)
- * 2006/11/18   #54: Change seglist API
- * 2002/12/20   First.
  */
 
-/***************************************************************
- * Constants
- **************************************************************/
 
 /** Defines the length of the object array in a segment */
 #define SEGLIST_OBJS_PER_SEG 8
 
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /** Segment - an array of ptrs to objs */
 typedef struct Segment_s
@@ -83,10 +60,6 @@ typedef struct Seglist_s
 } Seglist_t,
  *pSeglist_t;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Puts the new object at the end of the list.

@@ -1,33 +1,17 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2007 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x52
 
-/**
- * PyMite platform-specific routines for ARM7 target
- *
- * Log
- * ---
- *
- * 2007/04/29   #114: Create platform file for ARM
- */
+
+/** PyMite platform-specific routines for ARM7 target */
+
 
 #include "../pm.h"
 
@@ -35,19 +19,11 @@
 #include "lib_AT91SAM7S64.h"
 
 
-/***************************************************************
- * Constants
- **************************************************************/
-
 #define RTTC_INTERRUPT_LEVEL 0
 
 /** 200 ms for 48 MHz */
-#define PIV_200_MS 600000  
+#define PIV_200_MS 600000
 
-
-/***************************************************************
- * Functions
- **************************************************************/
 
 static void
 at91sam7_pit_handler(void)
@@ -151,12 +127,12 @@ plat_getMsTicks(uint32_t *r_ticks)
 {
     /* TODO: make access atomic */
     *r_ticks = pm_timerMsTicks;
-    
+
     return PM_RET_OK;
 }
 
 
-void 
+void
 plat_reportError(PmReturn_t result)
 {
 }

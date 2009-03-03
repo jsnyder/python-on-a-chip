@@ -1,24 +1,14 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x06
+
 
 /**
  * VM Heap
@@ -26,33 +16,11 @@
  * VM heap operations.
  * All of PyMite's dynamic memory is obtained from this heap.
  * The heap provides dynamic memory on demand.
- *
- * Log
- * ---
- *
- * 2007/05/21   #104: Design and implement garbage collection
- * 2007/02/02   #87: Redesign the heap
- * 2007/01/09   #75: Added thread type, fail correctly w/o GC (P.Adelt)
- * 2006/11/15   #53: Fix Win32/x86 build break
- * 2006/09/14   #27: Fix S16/U16 are 32-bits on DESKTOP
- * 2006/09/10   #20: Implement assert statement
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2003/02/10   Started GC marking fxns.
- * 2002/08/31   Implemented freelist when chunk is deleted.
- * 2002/04/30   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
 
 #include "pm.h"
 
-
-/***************************************************************
- * Constants
- **************************************************************/
 
 /**
  * Static initial size of the heap.
@@ -85,10 +53,6 @@
 #define HEAP_MIN_CHUNK_SIZE ((sizeof(PmHeapDesc_t) + 3) & ~3)
 
 
-/***************************************************************
- * Macros
- **************************************************************/
-
 /**
  * Gets the GC's mark bit for the object.
  * This MUST NOT be called on objects that are free.
@@ -111,10 +75,6 @@
 #define OBJ_SET_GCVAL(pobj, gcval)
 #endif /* HAVE_GC */
 
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /**
  * The following is a diagram of the heap descriptor at the head of the chunk:
@@ -181,17 +141,9 @@ typedef struct PmHeap_s
  *pPmHeap_t;
 
 
-/***************************************************************
- * Globals
- **************************************************************/
-
 /** The PyMite heap */
 static PmHeap_t pmHeap;
 
-
-/***************************************************************
- * Functions
- **************************************************************/
 
 #if 0
 static void
@@ -529,10 +481,6 @@ heap_getAvail(void)
 
 
 #ifdef HAVE_GC
-/*****************************************************************************
- * Garbage Collector
- ****************************************************************************/
-
 /*
  * Marks the given object and the objects it references.
  *

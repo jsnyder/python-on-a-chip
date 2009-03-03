@@ -1,77 +1,32 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x09
+
 
 /**
  * VM Interpreter
  *
  * VM interpreter operations.
- *
- * Log
- * ---
- *
- * 2007/04/14   #102: Implement the remaining IMPORT_ bytecodes
- * 2007/01/29   #80: Fix DUP_TOPX bytecode
- * 2007/01/17   #76: Print will differentiate on strings and print tuples
- * 2007/01/09   #75: Changed IMPORT_NAME, printing (P.Adelt)
- * 2007/01/09   #75: Restructed for green threading (P.Adelt)
- * 2006/09/29   #45: Finish interpret loop edits
- * 2006/09/10   #20: Implement assert statement
- * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
- * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
- * 2006/08/29   #12: Make mem_*() funcs use RAM when target is DESKTOP
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/12/08   Print statement support removed,
- *              use platform native function to print instead.
- * 2002/11/10   Fixed BREAK_LOOP to jump to handler.
- * 2002/05/04   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
 
 #include "pm.h"
 
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /** if retval is not OK, break from the interpreter */
 #define PM_BREAK_IF_ERROR(retval) if((retval) != PM_RET_OK)break
 
 
-/***************************************************************
- * Prototypes
- **************************************************************/
-
 extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *);
 extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *);
 
-
-/***************************************************************
- * Functions
- **************************************************************/
 
 PmReturn_t
 interpret(const uint8_t returnOnNoThreads)
@@ -1716,6 +1671,7 @@ interpret(const uint8_t returnOnNoThreads)
     return retval;
 }
 
+
 PmReturn_t
 interp_reschedule(void)
 {
@@ -1747,6 +1703,7 @@ interp_reschedule(void)
     return retval;
 }
 
+
 PmReturn_t
 interp_addThread(pPmFunc_t pfunc)
 {
@@ -1765,6 +1722,7 @@ interp_addThread(pPmFunc_t pfunc)
     /* Add thread to end of list */
     return list_append((pPmObj_t)gVmGlobal.threadList, pthread);
 }
+
 
 void
 interp_setRescheduleFlag(uint8_t boolean)

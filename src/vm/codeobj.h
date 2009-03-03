@@ -1,43 +1,21 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __CODEOBJ_H__
 #define __CODEOBJ_H__
+
 
 /**
  * CodeObj Type
  *
  * CodeObj type header.
- *
- * Log
- * ---
- *
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/06/04   making co_names a tuple,
- *              removing nameoff and codeoff from img.
- * 2002/05/04   First.
  */
 
-/***************************************************************
- * Constants
- **************************************************************/
 
 /** Code image field offset consts */
 #define CI_TYPE_FIELD       0
@@ -50,10 +28,6 @@
 /** Native code image size */
 #define NATIVE_IMAGE_SIZE   4
 
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /**
  * Code Object
@@ -99,10 +73,6 @@ typedef struct PmNo_s
 } PmNo_t,
  *pPmNo_t;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Creates a CodeObj by loading info from a code image in memory.

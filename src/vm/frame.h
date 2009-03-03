@@ -1,42 +1,21 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __FRAME_H__
 #define __FRAME_H__
+
 
 /**
  * VM Frame
  *
  * VM frame header.
- *
- * Log
- * ---
- *
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/12/15   Frame's memspace set to use one byte.
- * 2002/04/20   First.
  */
 
-/***************************************************************
- * Constants
- **************************************************************/
 
 /**
  * The maximum number of local variables a native function can have.
@@ -44,10 +23,6 @@
  */
 #define NATIVE_MAX_NUM_LOCALS   8
 
-
-/***************************************************************
- * Types
- **************************************************************/
 
 /**
  * Block Type
@@ -142,6 +117,7 @@ typedef struct PmFrame_s
 } PmFrame_t,
  *pPmFrame_t;
 
+
 /**
  * Native Frame
  *
@@ -178,10 +154,6 @@ typedef struct PmNativeFrame_s
 } PmNativeFrame_t,
  *pPmNativeFrame_t;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Allocate space for a new frame, fill its fields

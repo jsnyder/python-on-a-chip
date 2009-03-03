@@ -1,53 +1,25 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __PM_H__
 #define __PM_H__
+
 
 /**
  * PyMite Header
  *
  * Include things that are needed by nearly everything.
- *
- * Log
- * ---
- *
- * 2006/09/16   #16: Create pm_init() that does the initial housekeeping
- * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
- * 2006/08/30   #6: Have pmImgCreator append a null terminator to image list
- * 2002/05/04   Merged most of contents to respective files.
- *              Started doxygen comments.
- * 2002/04/15   Merging object descriptor into tops of objects.
- * 2002/02/06   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
 
 #include <stdint.h>
 #include <stdio.h>
 
-
-/***************************************************************
- * Configurables
- **************************************************************/
 
 /**
  * Value indicating the release of PyMite
@@ -58,10 +30,6 @@
  */
 #define PM_RELEASE 6
 
-
-/***************************************************************
- * Constants
- **************************************************************/
 
 /** null for C code */
 #define C_NULL 0
@@ -81,10 +49,6 @@
 /** PORT inline for C code */
 #define INLINE __inline__
 
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /**
  * Returns an exception error code and stores debug data
@@ -165,10 +129,6 @@
 #endif
 
 
-/***************************************************************
- * Types
- **************************************************************/
-
 /**
  * Return values for system functions
  * to report status, errors, exceptions, etc.
@@ -207,16 +167,10 @@ typedef enum PmReturn_e
 } PmReturn_t;
 
 
-/***************************************************************
- * Globals
- **************************************************************/
-
 extern volatile uint32_t pm_timerMsTicks;
 
-/***************************************************************
- * Includes (order is critical)
- **************************************************************/
 
+/* WARNING: The order of the following includes is critical */
 #include "pmfeatures.h"
 #include "sli.h"
 #include "mem.h"
@@ -241,10 +195,6 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "float.h"
 #include "plat/plat.h"
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Initializes the PyMite virtual machine and indexes the user's application

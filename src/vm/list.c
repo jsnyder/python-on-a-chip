@@ -1,51 +1,24 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #undef __FILE_ID__
 #define __FILE_ID__ 0x0B
+
 
 /**
  * List Object Type
  *
  * List object type operations.
- *
- * Log
- * ---
- *
- * 2007/01/17   #76: Print will differentiate on strings and print tuples
- * 2007/01/09   #75: Printing support (P.Adelt)
- * 2007/01/09   #75: implemented list_remove() and list_index() (P.Adelt)
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/04/22   First.
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
 
 #include "pm.h"
 
-
-/***************************************************************
- * Functions
- **************************************************************/
 
 PmReturn_t
 list_append(pPmObj_t plist, pPmObj_t pobj)

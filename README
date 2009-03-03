@@ -9,6 +9,7 @@ PyMite
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
+
 Purpose
 -------
 
@@ -18,27 +19,12 @@ of program memory (flash) and 4 KiB of RAM. PyMite supports a subset of
 the Python 2.5 syntax and can execute a subset of the Python 2.5 bytecodes.
 PyMite can also be compiled, tested and executed on a desktop computer.
 
+
 License
 -------
 
-All of the source code for PyMite is licensed under the GNU General
-Public License v2.  A copy of the license is in the file ``LICENSE``.
-
-    Copyright 2002 Dean Hall.
-
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of version 2 of the GNU General
-    Public License as published by the Free Software Foundation.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public
-    License along with this program; if not, write to the Free
-    Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-    Boston, MA  02110-1301, USA
+PyMite is offered through one of two licenses: commercial or open-source.
+See the LICENSE file at the root of this package for licensing details.
 
 All of the documentation and images for PyMite are
 licensed under the GNU Free Documentation License.
@@ -50,6 +36,7 @@ licensed under the GNU Free Documentation License.
     or any later version published by the Free Software Foundation;
     with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
     Texts.  A copy of the license is in the file ``docs/LICENSE``.
+
 
 Build
 -----
@@ -79,6 +66,7 @@ PyMite builds as an archive.  The user should then build his
 own main() function following examples in ``src/sample/`` and link to
 ``libpmvm.a`` and the appropriate PyMite native libraries.
 
+
 Discussion
 ----------
 
@@ -91,18 +79,20 @@ all issues are captured and available for public inspection.
 .. _`PyMite Trac`: http://pymite.python-hosting.com/
 .. _`PyMite maillist`: http://groups.google.com/group/pymite
 
+
 Thanks
 ------
 
 My personal thanks go out to these people for their contribution to PyMite:
 
-    - Diego Martins: Reporting a build break (#173) and including a patch.
-    - Mark Eichin: Feedback on system tests and Makefile
-    - Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues,
-      fixes and tests.
-    - Josh Lifton: Donated many code fixes and tests.
-    - www.webfaction.com: for providing quality, free project hosting on
-      www.python-hosting.com
+- Diego Martins: Reporting a build break (#173) and including a patch.
+- Mark Eichin: Feedback on system tests and Makefile
+- Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues,
+  fixes and tests.
+- Josh Lifton: Donated many code fixes and tests.
+- www.webfaction.com: for providing quality, free project hosting on
+  www.python-hosting.com
+
 
 Release Notes
 -------------

@@ -1,52 +1,28 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
 
-#ifndef THREAD_H_
-#define THREAD_H_
+
+#ifndef __THREAD_H__
+#define __THREAD_H__
+
 
 /**
  * VM Thread
  *
  * Encapsulating a frame pointer, a root code object and thread state.
- *
- * Log
- * ---
- *
- * 2007/01/03   #75: First (P.Adelt)
  */
 
-/***************************************************************
- * Includes
- **************************************************************/
 
 #include "interp.h"
 
-/***************************************************************
- * Constants
- **************************************************************/
 
  /** Frequency in Hz to switch threads */
 #define THREAD_RESCHEDULE_FREQUENCY    10
 
-/***************************************************************
- * Types
- **************************************************************/
 
 /**
  * Interpreter return values
@@ -92,10 +68,6 @@ typedef struct PmThread_s
  *pPmThread_t;
 
 
-/***************************************************************
- * Prototypes
- **************************************************************/
-
 /**
  * Constructs a thread for a root frame.
  *
@@ -105,4 +77,4 @@ typedef struct PmThread_s
  */
 PmReturn_t thread_new(pPmObj_t pframe, pPmObj_t *r_pobj);
 
-#endif /*THREAD_H_ */
+#endif /* __THREAD_H__ */

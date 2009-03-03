@@ -1,50 +1,21 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __OBJ_H__
 #define __OBJ_H__
+
 
 /**
  * Object Type
  *
  * Object type header.
- *
- * Log
- * ---
- *
- * 2007/03/16   #99: Design a way for ipm to be able to receive images larger
- *              than HEAP_MAX_CHUNK_SIZE
- * 2007/01/17   #76: Print will differentiate on strings and print tuples
- * 2007/01/09   #75: OBJ_TYPE_THR for thread objects (P.Adelt)
- * 2007/01/09   #75: Printing support (P.Adelt)
- * 2006/09/20   #35: Macroize all operations on object descriptors
- * 2006/08/31   #9: Fix BINARY_SUBSCR for case stringobj[intobj]
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/12/16   OD's order changed to size-first to assist GC.
- * 2002/05/04   First.
  */
 
-
-/***************************************************************
- * Constants
- **************************************************************/
 
 /** Object descriptor field constants */
 #define OD_MARK_SHIFT 14
@@ -58,10 +29,6 @@
 /** Heap descriptor size mask */
 #define HD_SIZE_MASK (uint16_t)(0x3FFF)
 
-
-/***************************************************************
- * Macros
- **************************************************************/
 
 /**
  * Gets the free bit of the given object to the given value.
@@ -142,10 +109,6 @@
     while (0)
 
 
-/***************************************************************
- * Types
- **************************************************************/
-
 /**
  * Object type enum
  *
@@ -207,7 +170,7 @@ typedef enum PmType_e
 
     /** Boolean object */
     OBJ_TYPE_BOOL = 0x0F,
-    
+
     /* All types after this are not hashable */
     OBJ_TYPE_HASHABLE_MAX = 0x0F,
 
@@ -290,10 +253,6 @@ typedef struct PmBoolean_s
 PmBoolean_t,
 *pPmBoolean_t;
 
-
-/***************************************************************
- * Prototypes
- **************************************************************/
 
 /**
  * Loads an object from an image in memory.

@@ -1,37 +1,20 @@
 /*
- * PyMite - A flyweight Python interpreter for 8-bit microcontrollers and more.
- * Copyright 2002 Dean Hall
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
  */
+
 
 #ifndef __IMG_H__
 #define __IMG_H__
+
 
 /**
  * Image header
  *
  * Created to eliminate a circular include
  * among mem, string and obj.
- *
- * Log
- * ---
- *
- * 2006/08/29   #15 - All mem_*() funcs and pointers in the vm should use
- *              unsigned not signed or void
- * 2002/05/17   First.
  */
 
 
@@ -48,10 +31,6 @@ typedef struct PmImgPaths_s
 PmImgPaths_t, *pPmImgPaths_t;
 
 
-/***************************************************************
- * Prototypes
- **************************************************************/
-
 /**
  * Iterates over all paths in the paths array until the named module is found.
  * Returns the memspace,address of the head of the module.
@@ -61,7 +40,7 @@ PmImgPaths_t, *pPmImgPaths_t;
  * @param r_imgaddr Return by reference the address of the module's image
  * @return Return status
  */
-PmReturn_t img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace, 
+PmReturn_t img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
     uint8_t const **r_imgaddr);
 
 /**

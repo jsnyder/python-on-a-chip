@@ -33,12 +33,12 @@ for the C library.  Unless you are making your own wrapper module, you don't
 need to worry about this.
 
 The ``mmb.py`` module requires an initialization routine to be run before other
-functions.  So you'll see in ``sample.py`` that the ``main()`` function calls
+functions.  So you'll see in ``main.py`` that the ``main()`` function calls
 ``mmb.init()`` at the top of the function.
 
-The ``sample.py`` module contains the ``main()`` function that is the primary
-program to run.  PyMite knows to run ``sample.py`` because it is told to do so
-in the C code in ``sample.c``.
+The ``main.py`` module contains the ``main()`` function that is the primary
+program to run.  PyMite knows to run ``main.py`` because it is told to do so
+in the C code in ``main.c``.
 
 Building the Project
 --------------------
@@ -50,7 +50,7 @@ and then build this sample project.::
     $ cd src/sample/mmb103
     $ make
 
-This will result in the file ``src/sample/mmb103/sample.hex``.  Use your AVR
+This will result in the file ``src/sample/mmb103/main.hex``.  Use your AVR
 programmer of choice to program that file into the ATmega103 target device.
 
 .. :mode=rest:
