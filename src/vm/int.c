@@ -40,10 +40,6 @@
 
 #include "pm.h"
 
-#if defined(HAVE_PRINT) && defined(TARGET_AVR)
-#include <avr/pgmspace.h>
-#endif
-
 
 /***************************************************************
  * Functions
@@ -165,16 +161,11 @@ int_print(pPmObj_t pint)
         return retval;
     }
 
-#ifdef TARGET_AVR
-    bytesWritten = snprintf_P((char *)&tBuffer, sizeof(tBuffer),
-                              PSTR("%li"), ((pPmInt_t)pint)->val);
-#else
     /* This does not use snprintf because glibc's snprintf is only
      * included for compiles without strict-ansi.
      */
     bytesWritten =
         sprintf((void *)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
-#endif /* !TARGET_AVR */
 
 
     /* Sanity check */
