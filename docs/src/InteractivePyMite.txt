@@ -29,73 +29,79 @@ interactive mode`_.  Ipm is made from two pieces: the interactive
 interface running on the host (ipm-host) and a program running on the target
 that communicates with the host and executes the interactive code (ipm-target).
 
-.. _`Python's interactive mode`: http://docs.python.org/tut/node4.html#SECTION004120000000000000000
+.. _`Python's interactive mode`: http://docs.python.org/tutorial/interpreter.html#interactive-mode
 
 Design of ipm-host
 ------------------
 
-Ipm-host shall be a program that runs on a host computer (desktop or laptop)
-and shall run on 3 popular operating systems (Mac OS X, Linux and MS-Win32).
-Ipm-host shall provide an interactive interface much like CPython's interactive
-mode.  The user shall provide the desired method to connect to the target as
-an option given to ipm-host.  Ipm-host shall connect to the target over the
-designated connection method and communicate bi-directionally with the target.
+Ipm-host is the program that runs on a host computer (desktop or laptop)
+and runs on 3 popular operating systems (Mac OS X, Linux and MS-Win32).
+Ipm-host provides an interactive interface much like CPython's interactive
+mode.  The user provides the desired method to connect to the target as
+an option given to ipm-host.  Ipm-host connects to the target over the
+designated connection method and communicates bi-directionally with the target.
 
-Ipm-host shall print a prompt and accept user input.  Three types of input are
+Ipm-host prints a prompt and accept user input.  Three types of input are
 accepted: source code to be executed on the target, commands that change
 the operating environment, and commands to interrupt or quit the interactive
 session.
 
-When the user types source code, the code shall be compiled to a code image
-using pmImgCreator.py found in src/tools.  The image shall be sent over the
-connection to the target device.  Ipm-host shall read all reply characters
-from the connection until the byte, 0x04, is received.  Ipm-host shall
-print the reply to the host's screen and repeat the process.
+When the user types source code, the code is compiled to a code image
+using pmImgCreator.py found in src/tools.  The image is sent over the
+connection to the target device.  Ipm-host reads all reply characters
+from the connection until a designated termination byte is received.  Ipm-host
+prints the reply to the host's screen and repeats the process.
 
 Ipm-host commands are TBD.  One early estimate of a command is
-``load <module>``.  Which may compile a module on the host to an image and
-transfer the image to the target where it is stored in a persistent memory.
+``load <module>``.  Which compiles a module on the host to an image and
+transfers the image to the target where it is stored in persistent memory.
 Ipm-host commands should not use names that are Python keywords and ipm
 users shall not be able to name variables that are names of ipm commands.
 
-Ipm-host shall accept two special control commands: Ctrl+C and Ctrl+D.
-Ctrl+C shall interrupt ipm-host as it waits for a reply from the target
-and cause ipm-host to ignore any response from the target.
-Ctrl+D shall cause ipm-host to send the byte, 0x00, over the connection
-as a signal to ipm-target to quit; and then ipm-host shall itself quit.
+Ipm-host accepts two special control commands: Ctrl+C and Ctrl+D.
+Ctrl+C interrupts ipm-host as it waits for a reply from the target
+and causes ipm-host to ignore any response from the target.
+Ctrl+D causes ipm-host to signal ipm-target to quit; and then ipm-host itself
+quits.
 
 
 Design of ipm-target
 --------------------
 
-Ipm-target shall be a program that runs in the PyMite VM on the target device
-(embedded and desktop).  Ipm-host shall be implemented in the ``ipm`` module.
-The target device must be explicitly programmed to initiate the ipm-target
-program.
+Ipm-target is a program that runs in the PyMite VM on the target device
+(embedded or desktop).  Ipm-target is implemented in the ``ipm`` module that
+is part of PyMite's standard library.  The target device must be explicitly
+programmed to initiate the ipm-target program.
 
-Ipm-target shall wait indefinitely for input over the target's standard
-connection.  Ipm-target expects a code image.  The second byte in the code
-image contains the size of the entire image.  Ipm-target shall read the exact
-number of bytes to obtain the code image.  Ipm-target converts the code image
-to a code object and then calls the built-in function ``eval()`` on that code
-object.  The code image shall contain within it any commands to print output,
-no extra printing is done by ipm-target.  After the code is executed ipm-target
-sends the byte, 0x04, out the connection to indicate that evaluation is
+Ipm-target waits indefinitely for input over the target's standard connection
+(serial port).  Ipm-target expects a code image.  Ipm-target converts the code
+image to a code object and then calls the built-in function ``eval()`` on that
+code object.  Since the code image was compiled by ipm-host using the ``single``
+argument to ``compile()``, the code image already contains the commands
+necessary to print output.  After the code is executed ipm-target
+sends the designated terminal byte to indicate that evaluation is
 complete and that ipm-target is ready for the next image.
 
 
-Using ipm
----------
+Using ipm-host
+--------------
 
-A sample project has been created to build PyMite for the desktop target.
-The output of this project is used by ipm-host when it is
-commanded to connect using the "desktop" connection.  Perform the following
+PyMite includes the Python program, ``src/tools/ipm.py``, that is a
+cross-platform implementation of ipm-host that runs from a command prompt.
+
+
+Using ipm-desktop
+-----------------
+
+The sample project in ``src/sample/ipm-desktop/`` was created to build PyMite
+for the desktop target. The output of this project is used by ipm-host when it
+is commanded to connect using the "desktop" connection.  Perform the following
 steps from the project root directory to run ipm on the desktop::
 
     make ipm
 
 Ipm-host should launch and print its startup message followed by the ipm prompt.
-Now you may type source code and see the results.  Type Ctrl+D (twice) when 
+Now you may type source code and see the results.  Type Ctrl+D (twice) when
 you are done.  The following is a sample interactive session::
 
     ipm> print "timmy"
@@ -106,10 +112,29 @@ you are done.  The following is a sample interactive session::
     ipm> d[2] = abs(-99)
     ipm> d[3] = len(range(5))
     ipm> d['hello'] = "world"
-    ipm> t=(2,"tuple")
+    ipm> t = (2,"tuple")
     ipm> d[t] = []
     ipm> print d
     {(2, 'tuple'):[], 'hello':'world', 3:5, 2:99, 1:'one', 0:None}
-    ipm>
+    ipm> [chr(x+0x30) for x in range(50) if x%4 == 3]
+    ['3', '7', ';', '?', 'C', 'G', 'K', 'O', 'S', 'W', '[', '_']
+    ipm> ^D
+
+
+Running ipm on an embedded target
+---------------------------------
+
+The sample project in ``src/sample/mmb103`` demonstrates running ipm on an
+Atmel ATmega103 microcontroller and connecting to its UART.  This project is
+specific to hardware that is not publicly availble; so it cannot be used as is.
+However, it serves as an example that can be copied.
+
+To run ipm on the target, write your PyMite application so that it executes
+these two lines.  The second line runs in a loop until an exception occurs that
+causes the VM to exit::
+
+    import ipm
+    ipm.ipm()
+
 
 .. :mode=rest:

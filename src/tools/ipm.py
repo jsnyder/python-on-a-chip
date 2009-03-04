@@ -27,11 +27,18 @@ import pmImgCreator
 
 
 __usage__ = """USAGE:
-    ipm.py -d
+    ipm.py -[d|s /dev/tty] --[desktop | serial=/dev/tty [baud=19200]]
 
-    -d      Specifies the desktop connection; uses pipes to send/receive bytes
-            to/from the target, which is the vm also running on the desktop.
-            ipm will spawn the process and run the vm.
+    -d          Specifies a desktop connection; uses pipes to send/receive bytes
+    --desktop   to/from the target, which is the vm also running on the desktop.
+                ipm spawns the vm and runs ipm-desktop as a subprocess.
+
+    -s <d> [<r>]  Specifies a serial connection over character device, <d>;
+                  optional argument baud rate, <r> (default=19200)
+
+    --serial=<d> Specifies a serial connection over character device, <d>.
+
+    --baud=<r>  Specifies the baud rate for a serial connection (default=19200)
     """
 
 PMVM_EXE = "../sample/ipm-desktop/main.out"
@@ -259,9 +266,13 @@ class Interactive(cmd.Cmd):
 def parse_cmdline():
     """Parses the command line for options.
     """
-
+    baud = 19200
+    Conn = PipeConnection
+    serdev = None
+    
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ds", [])
+        opts, args = getopt.getopt(sys.argv[1:], "ds",
+            ["desktop", "serial=", "baud="])
     except Exception, e:
         raise e
         print __usage__
@@ -272,16 +283,30 @@ def parse_cmdline():
         sys.exit(os.EX_USAGE)
 
     for opt in opts:
-        if opt[0] == "-d":
-            conn = PipeConnection()
+        if opt[0] == "-d" or opt[0] == "--desktop":
+            Conn = PipeConnection
         elif opt[0] == "-s":
-            conn = SerialConnection()
+            Conn = SerialConnection
+            serdev = args[0]
+            if len(args) > 1:
+                baud = int(args[1])
+        elif opt[0] == "--serial":
+            Conn = SerialConnection
+            serdev = opt[1]
+        elif opt[0] == "--baud":
+            assert serdev, "--serial must be specified before --baud."
+            baud = int(opt[1])
 
-    return (conn,)
+    if Conn == SerialConnection:
+        c = Conn(serdev, baud)
+    else:
+        c = Conn()
+
+    return c
 
 
 def main():
-    (conn,) = parse_cmdline()
+    conn = parse_cmdline()
     i = Interactive(conn)
     i.run()
 
@@ -312,5 +337,4 @@ def ser_test():
 
 
 if __name__ == "__main__":
-#    ser_test()
     main()
