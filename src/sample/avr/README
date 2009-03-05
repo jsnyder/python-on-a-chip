@@ -22,18 +22,21 @@ microcontroller.  The file ``sample.c`` is used to initialize PyMite
 and indicate the name of the module it should run.  In this case, it
 will run the module ``sample.py``
 
-In the module ``sample.py``, we see that the program imports the ``avr`` module,
-which is provided by PyMite.  An initialization function sets the port A data
-direction register so that port A pins are all outputs.  A delay routine is
-hardcoded to delay for one second.  We also see that the ``main()`` function
-sets alternate pins high and low by writing value 0xAA to port A.
+In the module ``sample.py``, we see that the program prints a "Hello world"
+message, defines and runs an initialization function and then imports the
+``avr`` module that is provided by PyMite.  The function ``avr.portA()`` is
+called with the argument ``0xaa`` which will set the Port A pins to binary
+``10101010``.  Afterwards, another print statement warns of a pending error.
+This is followed by a call to the function ``foo()`` which, because it is not
+defined, will generate a NameError and an exception and traceback will be
+printed out the AVR's serial port.
 
 
 Building the Project
 --------------------
 
 Start with a clean PyMite tree.  Edit the ``src/sample/avr/Makefile`` near
-line 42 to set the type of AVR you are using and near line 43 to set the
+line 42 to set the type of AVR you are using and near line 42 to set the
 frequency of your AVR's main clock.  The default values are::
 
     MCU = atmega103
@@ -45,7 +48,18 @@ Then build the PyMite archive with ``TARGET=AVR`` and this sample project.::
     $ cd src/sample/avr
     $ make
 
-This will result in the file ``src/sample/avr/sample.hex``.  Use your AVR
-programmer of choice to program that file onto your target AVR device.
+
+Flashing the Binary
+-------------------
+
+The steps above result in the binary file(s) that need to go on the AVR.
+The Makefile is configured to use avrdude with an stk500v2 compatible
+programmer.  If this matches your configuration, or you change the Makefile
+to match your configuration, then you connect your device and type::
+
+    $ make program
+
+Otherwise, use your AVR programmer of choice to program
+``src/sample/avr/sample.hex`` onto your target AVR device.
 
 .. :mode=rest:

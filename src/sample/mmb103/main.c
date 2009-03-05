@@ -23,8 +23,8 @@ int main(void)
 {
     PmReturn_t retval;
 
-    /* Init board */
-    mmb_init(BAUD_19200, ADC_CK_DIV_128, PWM_CK_DIV_8, 4, 20);
+    /* Init board (don't overwrite PyMite's AVR UART config) */
+    mmb_init(0, ADC_CK_DIV_128, PWM_CK_DIV_8, 2, 16);
 
     /* Init and run PyMite */
     retval = pm_init(MEMSPACE_PROG, usrlib_img);

@@ -42,6 +42,12 @@
 #endif /* AVR_DEFAULT_TIMER_SOURCE */
 
 
+/* Configure stdin, stdout, stderr */
+static int uart_putc(char c, FILE *stream);
+static int uart_getc(FILE *stream);
+FILE avr_uart = FDEV_SETUP_STREAM(uart_putc, uart_getc, _FDEV_SETUP_RW);
+
+
 /*
  * AVR target shall use stdio for I/O routines.
  * The UART or USART must be configured for the interactive interface to work.
@@ -56,6 +62,8 @@ plat_init(void)
 
     /* Enable the transmit and receive pins */
     UCR = _BV(TXEN) | _BV(RXEN);
+
+    stdin = stdout = stderr = &avr_uart;
     /* PORT END */
 
 #ifdef AVR_DEFAULT_TIMER_SOURCE
@@ -123,6 +131,36 @@ plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
         default:
             return 0;
     }
+}
+
+
+static int
+uart_getc(FILE *stream)
+{
+    char c;
+
+    /* Wait for reception of a byte */
+    loop_until_bit_is_set(USR, RXC);
+    c = UDR;
+
+    /* Return errors for Framing error or Overrun */
+    if (USR & _BV(FE)) return _FDEV_EOF;
+    if (USR & _BV(DOR)) return _FDEV_ERR;
+
+    return c;
+}
+
+
+static int
+uart_putc(char c, FILE *stream)
+{
+    /* Wait until UART can accept the byte */
+    loop_until_bit_is_set(USR, UDRE);
+
+    /* Send the byte */
+    UDR = c;
+
+    return 0;
 }
 
 
@@ -194,10 +232,10 @@ void
 plat_reportError(PmReturn_t result)
 {
     /* Print error */
-    printf("Error:     0x%02X\n", result);
-    printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
-    printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
-    printf("  LineNum: %d\n", gVmGlobal.errLineNum);
+    printf_P(PSTR("Error:     0x%02X\n"), result);
+    printf_P(PSTR("  Release: 0x%02X\n"), gVmGlobal.errVmRelease);
+    printf_P(PSTR("  FileId:  0x%02X\n"), gVmGlobal.errFileId);
+    printf_P(PSTR("  LineNum: %d\n"), gVmGlobal.errLineNum);
 
     /* Print traceback */
     {
@@ -205,7 +243,7 @@ plat_reportError(PmReturn_t result)
         pPmObj_t pstr;
         PmReturn_t retval;
 
-        printf("Traceback (top first):\n");
+        puts_P(PSTR("Traceback (top first):"));
 
         /* Get the top frame */
         pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
@@ -219,12 +257,12 @@ plat_reportError(PmReturn_t result)
                                    f_co->co_names, -1, &pstr);
             if ((retval) != PM_RET_OK)
             {
-                printf("  Unable to get native func name.\n");
+                puts_P(PSTR("  Unable to get native func name."));
                 return;
             }
             else
             {
-                printf("  %s() __NATIVE__\n", ((pPmString_t)pstr)->val);
+                printf_P(PSTR("  %s() __NATIVE__\n"), ((pPmString_t)pstr)->val);
             }
 
             /* Get the frame that called the native frame */
@@ -241,8 +279,8 @@ plat_reportError(PmReturn_t result)
                                    fo_func->f_co->co_names, -1, &pstr);
             if ((retval) != PM_RET_OK) break;
 
-            printf("  %s()\n", ((pPmString_t)pstr)->val);
+            printf_P(PSTR("  %s()\n"), ((pPmString_t)pstr)->val);
         }
-        printf("  <module>.\n");
+        puts_P(PSTR("  <module>."));
     }
 }

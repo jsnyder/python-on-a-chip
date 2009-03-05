@@ -14,11 +14,11 @@
 """
 
 
-import avr
+print "Hello world."
 
 
 #
-# Initialize the port A pin direction
+# Initialize the AVR's port A pin direction
 #
 def init():
     """__NATIVE__
@@ -30,10 +30,10 @@ def init():
     """
     pass
 
+init()
+import avr
+avr.portA(0xaa)
 
-def main():
-    init()
-    avr.portA(0xaa)
 
-
-main()
+print "Expect a NameError (0xEA) after this."
+foo()

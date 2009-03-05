@@ -113,7 +113,7 @@ class SerialConnection(Connection):
     """
     def __init__(self, serdev="/dev/cu.SLAB_USBtoUART", baud=19200):
         self.s = serial.Serial(serdev, baud)
-        self.s.setTimeout(2)
+        self.s.setTimeout(4)
 
     def read(self,):
         # Collect all characters up to and including the ipm reply terminator

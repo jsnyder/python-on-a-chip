@@ -169,15 +169,17 @@ LDFLAGS += -L../../vm -lpmvm -L.
 # Programming support using avrdude. Settings and variables.
 
 # Programming hardware: alf avr910 avrisp bascom bsd
-# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
+# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500 stk500v2
 #
 # Type: avrdude -c ?
 # to get a full listing.
 #
-AVRDUDE_PROGRAMMER = stk200
+#AVRDUDE_PROGRAMMER = stk200
+AVRDUDE_PROGRAMMER = stk500v2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = lpt1    # programmer connected to parallel port
+#AVRDUDE_PORT = lpt1    # programmer connected to parallel port
+AVRDUDE_PORT = /dev/cu.Pololu
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
