@@ -41,7 +41,7 @@ PmImgPaths_t, *pPmImgPaths_t;
  * @return Return status
  */
 PmReturn_t img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
-    uint8_t const **r_imgaddr);
+                           uint8_t const **r_imgaddr);
 
 /**
  * Appends the given memspace and address to the image path array

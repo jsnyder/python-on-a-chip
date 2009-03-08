@@ -74,7 +74,7 @@ global_init(void)
     PM_RETURN_IF_ERROR(retval);
     pobj = (pPmObj_t)pchunk;
     OBJ_SET_TYPE(pobj, OBJ_TYPE_BOOL);
-    ((pPmBoolean_t)pobj)->val = (int32_t)C_FALSE;
+    ((pPmBoolean_t) pobj)->val = (int32_t)C_FALSE;
     gVmGlobal.pfalse = (pPmInt_t)pobj;
 
     /* Init True */
@@ -82,7 +82,7 @@ global_init(void)
     PM_RETURN_IF_ERROR(retval);
     pobj = (pPmObj_t)pchunk;
     OBJ_SET_TYPE(pobj, OBJ_TYPE_BOOL);
-    ((pPmBoolean_t)pobj)->val = (int32_t)C_TRUE;
+    ((pPmBoolean_t) pobj)->val = (int32_t)C_TRUE;
     gVmGlobal.ptrue = (pPmInt_t)pobj;
 
     /* Init None */

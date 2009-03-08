@@ -135,7 +135,7 @@ typedef struct PmHeap_s
 
     /** Boolean to indicate if GC should run automatically */
     uint8_t auto_gc;
-#endif /* HAVE_GC */
+#endif                          /* HAVE_GC */
 
 } PmHeap_t,
  *pPmHeap_t;
@@ -150,6 +150,7 @@ static void
 heap_gcPrintFreelist(void)
 {
     pPmHeapDesc_t pchunk = pmHeap.pfreelist;
+
     printf("DEBUG: pmHeap.avail = %d\n", pmHeap.avail);
     printf("DEBUG: freelist:\n");
     while (pchunk != C_NULL)
@@ -260,6 +261,7 @@ PmReturn_t
 heap_init(void)
 {
     pPmHeapDesc_t pchunk;
+
 #if HEAP_SIZE > 65535
     uint32_t hs;
 #else
@@ -276,13 +278,13 @@ heap_init(void)
 
     /* Create as many max-sized chunks as possible in the freelist */
     for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE;
-         hs >= HEAP_MAX_FREE_CHUNK_SIZE;
-         hs -= HEAP_MAX_FREE_CHUNK_SIZE)
+         hs >= HEAP_MAX_FREE_CHUNK_SIZE; hs -= HEAP_MAX_FREE_CHUNK_SIZE)
     {
         OBJ_SET_FREE(pchunk, 1);
         OBJ_SET_SIZE(pchunk, HEAP_MAX_FREE_CHUNK_SIZE);
         heap_linkToFreelist(pchunk);
-        pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
+        pchunk =
+            (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
     }
 
     /* Add any leftover memory to the freelist */
@@ -361,8 +363,9 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         OBJ_SET_FREE(pchunk, 0);
         OBJ_SET_SIZE(pchunk, size);
 
-        C_DEBUG_PRINT(VERBOSITY_HIGH, "heap_getChunkImpl()carved, id=%p, s=%d\n",
-                      pchunk, size);
+        C_DEBUG_PRINT(VERBOSITY_HIGH,
+                      "heap_getChunkImpl()carved, id=%p, s=%d\n", pchunk,
+                      size);
     }
     else
     {
@@ -370,8 +373,9 @@ heap_getChunkImpl(uint16_t size, uint8_t **r_pchunk)
         OBJ_SET_TYPE((pPmObj_t)pchunk, OBJ_TYPE_NON);
         OBJ_SET_FREE(pchunk, 0);
 
-        C_DEBUG_PRINT(VERBOSITY_HIGH, "heap_getChunkImpl()exact, id=%p, s=%d\n",
-                      pchunk, OBJ_GET_SIZE(pchunk));
+        C_DEBUG_PRINT(VERBOSITY_HIGH,
+                      "heap_getChunkImpl()exact, id=%p, s=%d\n", pchunk,
+                      OBJ_GET_SIZE(pchunk));
     }
 
     /*
@@ -502,7 +506,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 
     /* The pointer must be within the heap (native frame is special case) */
     C_ASSERT((((uint8_t *)pobj >= &pmHeap.base[0])
-             && ((uint8_t *)pobj <= &pmHeap.base[HEAP_SIZE]))
+              && ((uint8_t *)pobj <= &pmHeap.base[HEAP_SIZE]))
              || ((uint8_t *)pobj == (uint8_t *)&gVmGlobal.nativeframe));
 
     /* The object must not already be free */
@@ -511,7 +515,7 @@ heap_gcMarkObj(pPmObj_t pobj)
     type = OBJ_GET_TYPE(pobj);
     switch (type)
     {
-        /* Objects with no references to other objects */
+            /* Objects with no references to other objects */
         case OBJ_TYPE_NON:
         case OBJ_TYPE_INT:
         case OBJ_TYPE_FLT:
@@ -609,10 +613,10 @@ heap_gcMarkObj(pPmObj_t pobj)
             retval = heap_gcMarkObj((pPmObj_t)((pPmClass_t)pobj)->cl_attrs);
             break;
 
-        /*
-         * An obj in ram should not be of these types.
-         * Images arrive in RAM as string objects (image is array of bytes)
-         */
+            /*
+             * An obj in ram should not be of these types.
+             * Images arrive in RAM as string objects (image is array of bytes)
+             */
         case OBJ_TYPE_CIM:
         case OBJ_TYPE_NIM:
             PM_RAISE(retval, PM_RET_EX_SYS);
@@ -732,8 +736,8 @@ heap_gcMarkObj(pPmObj_t pobj)
                 /* Mark the args to the native func */
                 for (i = 0; i < NATIVE_GET_NUM_ARGS(); i++)
                 {
-                    retval = heap_gcMarkObj(gVmGlobal.nativeframe
-                                            .nf_locals[i]);
+                    retval =
+                        heap_gcMarkObj(gVmGlobal.nativeframe.nf_locals[i]);
                     PM_RETURN_IF_ERROR(retval);
                 }
             }
@@ -825,7 +829,7 @@ heap_purgeStringCache(uint8_t gcval)
     }
 
     /* Unlink remaining strings that are not marked */
-    for (pstr = *ppstrcache; pstr->next != C_NULL; )
+    for (pstr = *ppstrcache; pstr->next != C_NULL;)
     {
         /* Unlink consecutive non-marked strings */
         while ((pstr->next != C_NULL) && (OBJ_GET_GCVAL(pstr->next) != gcval))
@@ -917,7 +921,7 @@ heap_gcSweep(void)
 
             /* Proceed to the next chunk */
             pchunk = (pPmHeapDesc_t)
-                     ((uint8_t *)pchunk + OBJ_GET_SIZE(pchunk));
+                ((uint8_t *)pchunk + OBJ_GET_SIZE(pchunk));
 
             /* Stop if it's past the end of the heap */
             if ((uint8_t *)pchunk >= &pmHeap.base[HEAP_SIZE])

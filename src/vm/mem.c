@@ -96,7 +96,7 @@ mem_copy(PmMemSpace_t memspace,
 
 
 uint16_t
-mem_getStringLength(PmMemSpace_t memspace, uint8_t const * const pstr)
+mem_getStringLength(PmMemSpace_t memspace, uint8_t const *const pstr)
 {
     uint8_t const *psrc;
 
@@ -115,7 +115,7 @@ mem_getStringLength(PmMemSpace_t memspace, uint8_t const * const pstr)
 
 PmReturn_t
 mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
-    uint8_t const **paddr)
+         uint8_t const **paddr)
 {
     uint8_t i;
     uint8_t b;

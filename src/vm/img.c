@@ -28,7 +28,7 @@
  */
 static PmReturn_t
 img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
-    uint8_t const **paddr)
+               uint8_t const **paddr)
 {
     uint8_t const *imgtop;
     PmType_t type;
@@ -53,7 +53,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
 
         /* Ensure it's a tuple */
         type = mem_getByte(memspace, paddr);
-        C_ASSERT (type == OBJ_TYPE_TUP);
+        C_ASSERT(type == OBJ_TYPE_TUP);
 
         /* Scan to last name in tuple (it's the module's name) */
         i = mem_getByte(memspace, paddr) - (uint8_t)1;
@@ -95,7 +95,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
 
 PmReturn_t
 img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
-    uint8_t const **r_imgaddr)
+                uint8_t const **r_imgaddr)
 {
     uint8_t i;
     PmReturn_t retval = PM_RET_NO;
@@ -107,8 +107,7 @@ img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
         *r_memspace = gVmGlobal.imgPaths.memspace[i];
         retval = img_findInPath(((pPmString_t)pname)->val,
                                 ((pPmString_t)pname)->length,
-                                *r_memspace,
-                                r_imgaddr);
+                                *r_memspace, r_imgaddr);
         if (retval == PM_RET_NO)
         {
             continue;

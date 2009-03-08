@@ -227,7 +227,8 @@ typedef enum PmType_e
  * Macros are used to get and set field values.
  * Using macros eliminates declaring bit fields which fails on some compilers.
  */
-typedef uint16_t PmObjDesc_t, *pPmObjDesc_t;
+typedef uint16_t PmObjDesc_t,
+ *pPmObjDesc_t;
 
 /**
  * Object
@@ -250,8 +251,7 @@ typedef struct PmBoolean_s
     /** Boolean value */
     int32_t val;
 }
-PmBoolean_t,
-*pPmBoolean_t;
+PmBoolean_t, *pPmBoolean_t;
 
 
 /**

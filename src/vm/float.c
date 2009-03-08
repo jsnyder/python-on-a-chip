@@ -37,7 +37,7 @@ float_new(float f, pPmObj_t *r_pf)
     retval = heap_getChunk(sizeof(PmFloat_t), (uint8_t **)r_pf);
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(*r_pf, OBJ_TYPE_FLT);
-    ((pPmFloat_t)*r_pf)->val = f;
+    ((pPmFloat_t) * r_pf)->val = f;
     return retval;
 }
 
@@ -63,8 +63,7 @@ float_print(pPmObj_t pf)
     /* This does not use snprintf because glibc's snprintf is only
      * included for compiles without strict-ansi.
      */
-    bytesWritten =
-        sprintf((void *)&tBuffer, "%f", ((pPmFloat_t)pf)->val);
+    bytesWritten = sprintf((void *)&tBuffer, "%f", ((pPmFloat_t) pf)->val);
 
     /* Sanity check */
     C_ASSERT(bytesWritten != 0);
@@ -83,7 +82,7 @@ PmReturn_t
 float_negative(pPmObj_t pf, pPmObj_t *r_pf)
 {
     /* Create new int obj */
-    return float_new(-((pPmFloat_t)pf)->val, r_pf);
+    return float_new(-((pPmFloat_t) pf)->val, r_pf);
 }
 
 #endif /* HAVE_PRINT */
@@ -114,7 +113,7 @@ float_op(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn, int8_t op)
     }
     else
     {
-        x = ((pPmFloat_t)px)->val;
+        x = ((pPmFloat_t) px)->val;
     }
 
     if (OBJ_GET_TYPE(py) == OBJ_TYPE_INT)
@@ -123,7 +122,7 @@ float_op(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn, int8_t op)
     }
     else
     {
-        y = ((pPmFloat_t)py)->val;
+        y = ((pPmFloat_t) py)->val;
     }
 
     /* Raise ZeroDivisionError if denominator is zero */
@@ -176,7 +175,7 @@ float_compare(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pobj, PmCompare_t cmp)
     }
     else
     {
-        x = ((pPmFloat_t)px)->val;
+        x = ((pPmFloat_t) px)->val;
     }
 
     if (OBJ_GET_TYPE(py) == OBJ_TYPE_INT)
@@ -185,7 +184,7 @@ float_compare(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pobj, PmCompare_t cmp)
     }
     else
     {
-        y = ((pPmFloat_t)py)->val;
+        y = ((pPmFloat_t) py)->val;
     }
 
     switch (cmp)

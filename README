@@ -5,7 +5,7 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   06
+:Release:   07
 :Site:      http://pymite.python-hosting.com/
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
@@ -24,7 +24,7 @@ License
 -------
 
 PyMite is offered through one of two licenses: commercial or open-source.
-See the LICENSE file at the root of this package for licensing details.
+See the LICENSE_ file at the root of this package for licensing details.
 
 All of the documentation and images for PyMite are
 licensed under the GNU Free Documentation License.
@@ -36,6 +36,8 @@ licensed under the GNU Free Documentation License.
     or any later version published by the Free Software Foundation;
     with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
     Texts.  A copy of the license is in the file ``docs/LICENSE``.
+
+.. _LICENSE: LICENSE
 
 
 Build
@@ -54,8 +56,9 @@ To build for AVR targets like the ATmega103 (refer to the Makefile for others):
     2. In ``src/sample/avr`` run ``make`` to build a sample program for the AVR.
 
 The development system should have installed the GNU Compiler
-Collection version 3.4 or later and Python 2.5 or later.
-The author also uses avr-gcc to target Atmel AVR microcontrollers.
+Collection version 3.4 or later and Python 2.5 or 2.6.
+The author also uses avr-gcc to target Atmel AVR microcontrollers
+and arm-elf-gcc to target ARM7TDMI microcontrollers.
 
 PyMite is developed on Mac OS X and should also compile on
 GNU/Linux and Cygwin operating systems.  Since PyMite is so
@@ -97,7 +100,61 @@ My personal thanks go out to these people for their contribution to PyMite:
 Release Notes
 -------------
 
-This is PyMite release 06
+This is PyMite release 07
+
+* Release 07, 2009/03/08
+
+    - #166:   Created release 07
+    - #97:    Implemented plat_reportError for AVR
+    - #176:   Improved ipm host to accept serial device and baudrate arguments
+    - #175:   Removed src/tests/interactive
+    - #168:   Updated file header copyright
+    - #171:   Removed platform-specific code from src/vm/
+    - #174:   Added support for keyword lambda
+    - #173:   Fixed type-punned pointer warning in interp.c
+    - #167:   Updated the MMB103 sample project
+    - #169:   Removed rarely used builtins to save heap
+    - #164:   Added support for list comprehensions
+    - #163:   Fixed sys.runInThread()
+    - #162:   Implemented builtin function dir()
+    - #161:   Improved filter for unsupported code
+    - #160:   Added support for string and tuple replication
+    - #159:   Created a make target for ipm
+    - #158:   Fixed builtin sum() to support float
+    - #155:   Fixed bytecodes that POP an object
+    - #157:   Added support for funcs with default args
+    - #52:    Investigated GPL issues with respect to the user's application
+      code
+    - #146:   Found and made some existing features configurable
+    - #154:   Reduced heap memory used during global_loadBuiltins()
+    - #149:   Supported the keyword del
+    - #151:   t090 runs too fast and fails on some systems
+    - #66:    Created doc explaining requirements for using PyMite on device
+    - #106:   Documented in the code when to use HAVE_STRING_H
+    - #153:   Fixed dict.clear() which fails to free the seglists
+    - #5:     Created script to automate dist process
+    - #44:    Updated DevelopmentProcess.txt for short and long branches
+    - #152:   Changed image terminator
+    - #121:   Fixed type-punned compiler warnings
+    - #150:   Replaced PmImgInfo_t to save RAM
+    - #148:   Created configurable Float datatype
+    - #147:   Supported Boolean type and True/False constants
+    - #47:    Designed and implement method for basic types to access their
+      respective class methods
+    - #144:   Maked GC a configurable option
+    - #142:   list.append left a remnant on the stack
+    - #143:   ipm can't import sys
+    - #145:   System test t110.py fails during make check
+    - #126:   Fixed GC so it works properly during ipm
+    - #125:   Unreachable chunks not collected
+    - #127:   SEGV or Error 0xFC in endless loop
+    - #141:   String cache not handled by GC
+    - #140:   Created func module with introspection functions
+    - #55:    Created index doc
+    - #119:   Printed Python traceback on exception
+    - #139:   Allow heap larger than 64 KB
+    - #110:   Prevent IMPORT_NAME from reloading existing module
+    - #138:   globals namespace isn't right
 
 * Release 06, 2009/01/30
 
@@ -126,10 +183,10 @@ This is PyMite release 06
     - #114: Created platform file for Atmel's ARM7
     - #112: Forced Dict keys to be of hashable type
     - #105: Moved OBJ_TYPE_THR to some value before OBJ_TYPE_HASHABLE_MAX
-    - #108: Cleaned up *_POWER bytecodes
+    - #108: Cleaned up \*_POWER bytecodes
     - #113: Fixed the implementation of builtin map()
     - #68:  Cleaned up code to meet standards
-    - #102: Implemented the remaining IMPORT_ bytecodes
+    - #102: Implemented the remaining IMPORT_* bytecodes
     - #46:  Finalized design of string objects
     - #69:  Fixed bitwise operators to prevent automatic promotion
     - #32:  Used GNU indent for code formatting

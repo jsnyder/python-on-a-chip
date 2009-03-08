@@ -29,7 +29,7 @@ obj_loadFromImg(PmMemSpace_t memspace,
 
 
     /* Get the object descriptor */
-    obj.od= (PmObjDesc_t)0x0000;
+    obj.od = (PmObjDesc_t)0x0000;
     OBJ_SET_TYPE(&obj, mem_getByte(memspace, paddr));
 
     switch (OBJ_GET_TYPE(&obj))
@@ -97,8 +97,8 @@ obj_isFalse(pPmObj_t pobj)
 #ifdef HAVE_FLOAT
         case OBJ_TYPE_FLT:
             /* The floats 0.0 and -0.0 are false */
-            return (((pPmFloat_t)pobj)->val == 0.0)
-                || (((pPmFloat_t)pobj)->val == -0.0);
+            return (((pPmFloat_t) pobj)->val == 0.0)
+                || (((pPmFloat_t) pobj)->val == -0.0);
 #endif /* HAVE_FLOAT */
 
         case OBJ_TYPE_STR:
@@ -119,7 +119,7 @@ obj_isFalse(pPmObj_t pobj)
 
         case OBJ_TYPE_BOOL:
             /* C int zero means false */
-            return ((pPmBoolean_t)pobj)->val == 0;
+            return ((pPmBoolean_t) pobj)->val == 0;
 
         default:
             /*
@@ -254,6 +254,7 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
         case OBJ_TYPE_FLT:
         {
             pPmObj_t r_pobj;
+
             float_compare(pobj1, pobj2, &r_pobj, COMP_EQ);
             return (r_pobj == PM_TRUE) ? C_SAME : C_DIFFER;
         }
@@ -318,7 +319,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             break;
 
         case OBJ_TYPE_BOOL:
-            if (((pPmBoolean_t)pobj)->val == C_TRUE)
+            if (((pPmBoolean_t) pobj)->val == C_TRUE)
             {
                 plat_putByte('T');
                 plat_putByte('r');

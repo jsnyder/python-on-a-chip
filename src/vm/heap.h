@@ -65,7 +65,7 @@ uint32_t
 #else
 uint16_t
 #endif
-heap_getAvail(void);
+  heap_getAvail(void);
 
 #ifdef HAVE_GC
 /**

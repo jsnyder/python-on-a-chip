@@ -63,7 +63,7 @@ interpret(const uint8_t returnOnNoThreads)
             continue;
         }
 
-        /* Reschedule threads if flag is true?*/
+        /* Reschedule threads if flag is true? */
         if (gVmGlobal.reschedule)
         {
             retval = interp_reschedule();
@@ -222,7 +222,7 @@ interpret(const uint8_t returnOnNoThreads)
 
 #ifdef HAVE_FLOAT
                 else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
-                    || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
+                         || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
                     retval = float_op(TOS1, TOS, &pobj3, '*');
                     PM_BREAK_IF_ERROR(retval);
@@ -274,8 +274,8 @@ interpret(const uint8_t returnOnNoThreads)
                     }
 
                     pobj2 = TOS1;
-                    retval = string_replicate(
-                        (uint8_t const **)(uint8_t *)&pobj2, t16, &pobj3);
+                    retval = string_replicate((uint8_t const **)(uint8_t *)
+                                              &pobj2, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                     TOS = pobj3;
@@ -711,7 +711,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* #109: Check that stack should now be empty */
                 /* Get the number of local variables for this code obj */
                 uint8_t const *paddr = FP->fo_func->f_co->co_codeimgaddr
-                                       + CI_STACKSIZE_FIELD + 1;
+                    + CI_STACKSIZE_FIELD + 1;
                 t8 = mem_getByte(FP->fo_func->f_co->co_memspace, &paddr);
 
                 /* SP should point to one past the end of the locals */
@@ -990,9 +990,12 @@ interpret(const uint8_t returnOnNoThreads)
                 pobj1 = TOS;
                 pobj2 = TOS1;
                 pobj3 = TOS2;
-                if (t16 >= 3) PM_PUSH(pobj3);
-                if (t16 >= 2) PM_PUSH(pobj2);
-                if (t16 >= 1) PM_PUSH(pobj1);
+                if (t16 >= 3)
+                    PM_PUSH(pobj3);
+                if (t16 >= 2)
+                    PM_PUSH(pobj2);
+                if (t16 >= 1)
+                    PM_PUSH(pobj1);
                 continue;
 
             case LOAD_CONST:
@@ -1141,7 +1144,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if (((OBJ_GET_TYPE(TOS) == OBJ_TYPE_INT)
                      || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_BOOL))
                     && ((OBJ_GET_TYPE(TOS1) == OBJ_TYPE_INT)
-                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_BOOL)))
+                        || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_BOOL)))
                 {
                     int32_t a = ((pPmInt_t)TOS1)->val;
                     int32_t b = ((pPmInt_t)TOS)->val;
@@ -1238,7 +1241,8 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* #110: Prevent importing previously-loaded module */
                 /* If the named module is in globals, put it on the stack */
-                retval = dict_getItem((pPmObj_t)FP->fo_globals, pobj1, &pobj2);
+                retval =
+                    dict_getItem((pPmObj_t)FP->fo_globals, pobj1, &pobj2);
                 if ((retval == PM_RET_OK)
                     && (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_MOD))
                 {
@@ -1458,8 +1462,9 @@ interpret(const uint8_t returnOnNoThreads)
                     else
                     {
                         t8 = ((pPmFunc_t)pobj1)->f_co->co_argcount
-                             - ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)
-                                ->length;
+                            -
+                            ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)->
+                            length;
                     }
 
                     /*
@@ -1489,13 +1494,12 @@ interpret(const uint8_t returnOnNoThreads)
                         int8_t i = 0;
 
                         /* Copy default args into the new frame's locals */
-                        for (/* t8 set above */;
-                             t8 < ((pPmFunc_t)pobj1)->f_co->co_argcount;
-                             t8++)
+                        for ( /* t8 set above */ ;
+                             t8 < ((pPmFunc_t)pobj1)->f_co->co_argcount; t8++)
                         {
                             ((pPmFrame_t)pobj2)->fo_locals[t8] =
-                                ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)
-                                 ->val[i++];
+                                ((pPmTuple_t)((pPmFunc_t)pobj1)->
+                                 f_defaultargs)->val[i++];
                         }
                     }
 #endif /* HAVE_DEFAULTARGS */

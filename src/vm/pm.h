@@ -28,7 +28,7 @@
  * It helps locate a defect when used in conjunction with a fileID
  * and line number.
  */
-#define PM_RELEASE 6
+#define PM_RELEASE 7
 
 
 /** null for C code */

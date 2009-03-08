@@ -5,7 +5,7 @@
  * See the LICENSE file at the root of this package for licensing details.
  */
 
- 
+
 #undef __FILE_ID__
 #define __FILE_ID__ 0x13
 
@@ -16,7 +16,7 @@
  * Tuple object type operations.
  */
 
- 
+
 #include "pm.h"
 
 
@@ -108,7 +108,7 @@ tuple_replicate(pPmObj_t ptup, int16_t n, pPmObj_t *r_ptuple)
     {
         for (j = 0; j < length; j++)
         {
-            ((pPmTuple_t)*r_ptuple)->val[length*i + j] =
+            ((pPmTuple_t)*r_ptuple)->val[length * i + j] =
                 ((pPmTuple_t)ptup)->val[j];
         }
     }
