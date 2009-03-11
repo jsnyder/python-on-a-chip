@@ -53,11 +53,15 @@ ifeq ($(TARGET), AVR)
 else
 ifeq ($(TARGET), AT91SAM7)
 	TARGET_MCU ?= arm7tdmi
+	MCK ?= 47923200
+	UART_BAUD ?= 19200
 	AR = arm-elf-ar
 	CC = arm-elf-gcc
 	SIZE = arm-elf-size
 	CFLAGS += -mcpu=$(TARGET_MCU) -mthumb -mthumb-interwork -DTARGET_MCU=$(TARGET_MCU)
+	CFLAGS += -DUART_BAUD=$(UART_BAUD) -DMCK=$(MCK)
 	SOURCES += plat/at91sam7.c
+	IPM=true
 endif
 endif
 endif

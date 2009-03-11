@@ -25,6 +25,9 @@
 #define PIV_200_MS 600000
 
 
+static AT91S_USART * pusart0 = AT91C_BASE_US0;
+
+
 static void
 at91sam7_pit_handler(void)
 {
@@ -38,6 +41,10 @@ at91sam7_pit_handler(void)
 PmReturn_t
 plat_init(void)
 {
+    /* Enable PIO's clock for PIOA and USART0 */
+    AT91F_PMC_EnablePeriphClock(AT91C_BASE_PMC, (1 << AT91C_ID_PIOA)
+                                                | (1 << AT91C_ID_US0));
+
     /* Configure PIT interrupt */
     AT91F_AIC_ConfigureIt(AT91C_BASE_AIC,
                           AT91C_ID_SYS,
@@ -50,6 +57,24 @@ plat_init(void)
                                  | AT91C_PITC_PITIEN
                                  | PIV_200_MS;
     AT91F_AIC_EnableIt(AT91C_BASE_AIC, AT91C_ID_SYS);
+
+    /* Enable RxD0, TxDO pins */
+    *AT91C_PIOA_PDR = AT91C_PA5_RXD0 | AT91C_PA6_TXD0;
+
+    /* Reset Rx, Tx and Rx Tx disables */
+    pusart0->US_CR = AT91C_US_RSTRX | AT91C_US_RSTTX
+                    | AT91C_US_RXDIS | AT91C_US_TXDIS;
+
+    /* Normal Mode, Clock = MCK, 8N1 */
+    pusart0->US_MR = AT91C_US_USMODE_NORMAL | AT91C_US_CLKS_CLOCK
+                    | AT91C_US_CHRL_8_BITS | AT91C_US_PAR_NONE
+                    | AT91C_US_NBSTOP_1_BIT;
+
+    /* Baud Rate Divisor */
+    pusart0->US_BRGR = (MCK / (16 * UART_BAUD));
+
+    /* Rx, Tx enable */
+    pusart0->US_CR = AT91C_US_RXEN | AT91C_US_TXEN;
 
     return PM_RET_OK;
 }
@@ -84,17 +109,17 @@ plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
 }
 
 
-/* ARM7 target shall use stdio for I/O routines */
 PmReturn_t
 plat_getByte(uint8_t *b)
 {
     int c;
     PmReturn_t retval = PM_RET_OK;
 
-    c = getchar();
+    while ((pusart0->US_CSR & AT91C_US_RXRDY) == 0);
+    c = (pusart0->US_RHR);
     *b = c & 0xFF;
 
-    if (c == EOF)
+    if (c > 0xFF)
     {
         PM_RAISE(retval, PM_RET_EX_IO);
     }
@@ -103,22 +128,13 @@ plat_getByte(uint8_t *b)
 }
 
 
-/* ARM7 target shall use stdio for I/O routines */
 PmReturn_t
 plat_putByte(uint8_t b)
 {
-    int i;
-    PmReturn_t retval = PM_RET_OK;
+    while (!(pusart0->US_CSR & AT91C_US_TXRDY));
+    pusart0->US_THR = b;
 
-    i = putchar(b);
-    fflush(stdout);
-
-    if ((i != b) || (i == EOF))
-    {
-        PM_RAISE(retval, PM_RET_EX_IO);
-    }
-
-    return retval;
+    return PM_RET_OK;
 }
 
 
@@ -135,4 +151,8 @@ plat_getMsTicks(uint32_t *r_ticks)
 void
 plat_reportError(PmReturn_t result)
 {
+    plat_putByte('E');
+    plat_putByte('r');
+    plat_putByte('r');
+    plat_putByte('\n');
 }

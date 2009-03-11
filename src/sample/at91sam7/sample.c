@@ -18,23 +18,13 @@ main(void)
 {
     PmReturn_t retval;
 
-    /* Enable PIO's clock */
-    AT91F_PMC_EnablePeriphClock(AT91C_BASE_PMC, 1 << AT91C_ID_PIOA);
-
-    /* Configure PIO lines as outputs for LEDs 1-4 */
-    AT91F_PIO_CfgOutput(AT91C_BASE_PIOA, LED_MASK);
-
-    /* Clear all LED's (active low) */
-    AT91F_PIO_SetOutput(AT91C_BASE_PIOA, LED_MASK);
-
-    /* Report results via LEDs */
-    AT91F_PIO_ClearOutput(AT91C_BASE_PIOA, 0x01);
-
-
     /* Init PyMite */
     retval = pm_init(MEMSPACE_PROG, usrlib_img);
+
+    /* Configure PIOA for LEDs and clear them */
+    AT91F_PIO_CfgOutput(AT91C_BASE_PIOA, LED_MASK);
     AT91F_PIO_SetOutput(AT91C_BASE_PIOA, LED_MASK);
-    AT91F_PIO_ClearOutput(AT91C_BASE_PIOA, 0x02);
+
     PM_RETURN_IF_ERROR(retval);
 
     /* Run the sample program */

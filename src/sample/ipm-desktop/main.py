@@ -9,6 +9,6 @@
 # Runs the interactive interpreter
 #
 
-import ipm
 
-ipm.ipm()
+import ipm
+ipm.ipm(globals())

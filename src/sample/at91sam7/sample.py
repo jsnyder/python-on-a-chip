@@ -13,7 +13,7 @@
 """
 
 
-def getButtons():
+def get_buttons():
     """__NATIVE__
     PmReturn_t retval = PM_RET_OK;
     uint32_t val = 0;
@@ -45,14 +45,14 @@ def getButtons():
     }
 
     retval = int_new(val, &pint);
-    PM_RETURN_IF_ERROR(retval);
+    NATIVE_SET_TOS(pint);
 
     return retval;
     """
     pass
 
 
-def setLeds(n):
+def set_leds(n):
     """__NATIVE__
     pPmObj_t pn;
     int32_t n;
@@ -85,8 +85,8 @@ def setLeds(n):
     pass
 
 
-while 1:
-    setLeds(getButtons())
+import ipm
+ipm.ipm(globals())
 
 
 # :mode=c:

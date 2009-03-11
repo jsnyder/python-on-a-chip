@@ -40,7 +40,7 @@ else
 ifeq ($(TARGET), AT91SAM7)
 	# TARGET_MCU should equal arm-elf-gcc option "-mcpu" possible values.
 	TARGET_MCU := arm7tdmi
-	HEAP_SIZE = 0x2000
+	HEAP_SIZE = 0x3000
 endif
 endif
 

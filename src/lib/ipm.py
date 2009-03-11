@@ -77,8 +77,7 @@ def _getImg():
 #
 # Runs the target device-side interactive session.
 #
-def ipm():
-    g = {}
+def ipm(g={}):
     while 1:
         # Wait for a code image, make a code object from it
         # and evaluate the code object.

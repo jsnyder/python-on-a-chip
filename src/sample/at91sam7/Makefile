@@ -35,7 +35,6 @@
 
 # PyMite Configuration
 PMIMGCREATOR := ../../tools/pmImgCreator.py
-PM_HEAP_SIZE = 0x2000
 
 FLASH_TOOL = SAM7UTILS
 #FLASH_TOOL = UVISION
@@ -67,11 +66,11 @@ TARGET = sample
 
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
-SRC = $(TARGET).c 
+SRC = 
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
-SRCARM = Cstartup_SAM7.c 
+SRCARM = $(TARGET).c Cstartup_SAM7.c 
 
 # List C++ source files here.
 # use file-extension cpp for C++-files (use extension .cpp)
@@ -134,7 +133,7 @@ AT91LIBNOWARN = yes
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options for C here
-CDEFS =  -D$(RUN_MODE) -DHEAP_SIZE=$(PM_HEAP_SIZE) -DTARGET_ARM
+CDEFS =  -D$(RUN_MODE) -DTARGET_ARM
 
 # Place -I options here
 CINCS = -I../../vm
@@ -297,9 +296,9 @@ MSG_FORMATERROR = Can not handle output-format
 MSG_LPC21_RESETREMINDER = You may have to bring the target in bootloader-mode now.
 
 # Define all object files.
-COBJ      = $(SRC:.c=.o) $(TARGET)_img.o $(TARGET)_nat.o
+COBJ      = $(SRC:.c=.o)
 AOBJ      = $(ASRC:.S=.o)
-COBJARM   = $(SRCARM:.c=.o)
+COBJARM   = $(SRCARM:.c=.o) $(TARGET)_img.o $(TARGET)_nat.o
 AOBJARM   = $(ASRCARM:.S=.o)
 CPPOBJ    = $(CPPSRC:.cpp=.o) 
 CPPOBJARM = $(CPPSRCARM:.cpp=.o)
