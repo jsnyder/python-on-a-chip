@@ -42,7 +42,7 @@ What is PyMite?
 
 PyMite is a flyweight Python interpreter written from scratch to execute
 on 8-bit and larger microcontrollers with resources as limited as 64 KB of
-program memory (flash) and 8 KB of RAM. PyMite supports a subset of
+program memory (flash) and 4 KB of RAM. PyMite supports a subset of
 the Python 2.5 syntax and can execute a subset of the Python 2.5 bytecodes.
 PyMite can also be compiled, tested and executed on a desktop computer.
 
@@ -80,16 +80,18 @@ out how to do this for your specific target microcontroller.
 What microcontrollers are supported?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-PyMite's build system currently supports Atmel AVR and AT91SAM7
-microcontrollers.  However, your AVR will need 8 KB of RAM or more.
-The target size used to be 4 KB, but PyMite has since grown.
+There are two sample projects in the source tree.  One for an 8-bit Atmel
+ATmega103 (but any AVR/ATmega with 4 KB RAM or more will do) and one for
+the 32-bit Atmel AT91SAM7S64 running on the AT91SAM7S-EK evaluation board.
 
 
 What microcontroller is recommended?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The more RAM you have, the better.  I recommend an AVR32 or ARM7TDMI with
-64 KB or more of RAM.
+PyMite is so easy to port (there are 4 functions to adapt, see examples in
+the src/vm/plat directory) that any microcontroller with 8 KB or more of RAM
+will do.  I recommend 8 KB of RAM because 4 KB is rather tight and doesn't
+allow much more than simple programs.
 
 
 What do I need on my computer?
