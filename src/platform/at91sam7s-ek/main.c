@@ -28,7 +28,7 @@ main(void)
     PM_RETURN_IF_ERROR(retval);
 
     /* Run the sample program */
-    retval = pm_run((uint8_t *)"sample");
+    retval = pm_run((uint8_t *)"main");
 
     /* Report results via LEDs */
     if (retval == PM_RET_OK)

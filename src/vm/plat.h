@@ -10,7 +10,7 @@
 #define __PLAT_H__
 
 
-/** Platform-specific routines for Desktop target */
+/** PyMite's Porting Interface */
 
 
 /**
@@ -19,12 +19,11 @@
  */
 PmReturn_t plat_init(void);
 
-
 /**
- * Return the byte at the given address in memspace.
+ * Returns the byte at the given address in memspace.
  *
- * Increment the address (just like getc and read(1))
- * to make image loading work (recursive).
+ * Increments the address (just like getc and read(1))
+ * to make image loading work (recursively).
  *
  * PORT:    fill in getByte for each memspace in the system;
  *          call sys_error for invalid memspaces.

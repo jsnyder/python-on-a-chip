@@ -41,7 +41,7 @@ __usage__ = """USAGE:
     --baud=<r>  Specifies the baud rate for a serial connection (default=19200)
     """
 
-PMVM_EXE = "../sample/ipm-desktop/main.out"
+PMVM_EXE = "../platform/desktop/main.out"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"

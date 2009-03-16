@@ -33,15 +33,20 @@
 
 
 # PyMite Configuration
-LIBNATIVE_SOURCES = mmb.py
-#LIBNATIVE_SOURCES =
-PMIMGCREATOR := ../../tools/pmImgCreator.py
+PLATFORM := $(notdir $(CURDIR))
+PM_LIB_ROOT = pmvm.$(PLATFORM)
+PM_LIB_FN = lib$(PM_LIB_ROOT).a
+PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
+PM_USR_SOURCES = main.py mmb.py
 PM_HEAP_SIZE = 0x0D00
+PMIMGCREATOR := ../../tools/pmImgCreator.py
 
 
-# MCU name
+# Platform Configuration
 MCU = atmega103
 F_CPU = 4000000UL
+UART_BAUD = 19200UL
+
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -51,7 +56,7 @@ TARGET = main
 
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c
+SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 
 
 # List Assembler source files here.
@@ -73,11 +78,11 @@ OPT = s
 # Debugging format.
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
-DEBUG = stabs
+DEBUG_FMT = stabs
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS =
+EXTRAINCDIRS = ../../vm
 
 
 # Compiler flag to set the C Standard level.
@@ -88,10 +93,15 @@ EXTRAINCDIRS =
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS = -D F_CPU=$(F_CPU) -D HEAP_SIZE=$(PM_HEAP_SIZE) -D TARGET_AVR
+CDEFS = -DF_CPU=$(F_CPU) -DUART_BAUD=$(UART_BAUD)
+# PyMite CDEFS
+CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE) 
+ifeq ($(DEBUG),true)
+	CDEFS += -g -g$(DEBUG_FMT) -D__DEBUG__=1
+endif
 
 # Place -I options here
-CINCS = -I../../vm
+CINCS =
 
 
 # Compiler flags.
@@ -101,15 +111,15 @@ CINCS = -I../../vm
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
-CFLAGS += $(CDEFS) $(CINCS)
+CFLAGS = $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -Wall -Wstrict-prototypes -Werror
-CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
+CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-
+# PyMite CFLAGS
+#CFLAGS += -ansi # Removed because it causes a build error
 
 
 # Assembler flags.
@@ -163,7 +173,7 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # PyMite
-LDFLAGS += -L../../vm -lpmvm -L. -lmmb103
+LDFLAGS += -L../../vm -l$(PM_LIB_ROOT) -L. -lmmb103
 
 
 
@@ -220,12 +230,11 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE = avr-size
+AR = avr-ar
 NM = avr-nm
 AVRDUDE = avrdude
 REMOVE = rm -f
 COPY = cp
-
-
 
 
 # Define Messages
@@ -245,12 +254,10 @@ MSG_LINKING = Linking:
 MSG_COMPILING = Compiling:
 MSG_ASSEMBLING = Assembling:
 MSG_CLEANING = Cleaning project:
-MSG_PMVM = Building PyMite VM archive
-
 
 
 # Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) $(TARGET)_img.o $(TARGET)_nat.o
+OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
 
 # Define all listing files.
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
@@ -267,11 +274,8 @@ ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
-
-
-
 # Default target.
-all: pmvm begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion pmvm sizebefore build sizeafter finished end
 
 build: elf hex eep lss sym
 
@@ -282,13 +286,11 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 
 
-#
-# Build the PyMite VM archive if it doesn't exist
-#
-pmvm:
-	@echo $(MSG_PMVM)
-	make -C ../../vm TARGET=AVR HEAP_SIZE=$(PM_HEAP_SIZE)
+# PyMite: Build the VM archive if it doesn't exist
+pmvm : $(PM_LIB_PATH)
 
+$(PM_LIB_PATH) :
+	make -C ../../vm
 
 # Eye candy.
 # AVR Studio 3.x does not check make's exit code but relies on
@@ -315,11 +317,9 @@ sizeafter:
 	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); echo; fi
 
 
-
 # Display compiler version information.
 gccversion :
 	@$(CC) --version
-
 
 
 # Program the device.
@@ -404,8 +404,8 @@ extcoff: $(TARGET).elf
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 # PyMite: The native fxn table and bytecode image are generated from python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(TARGET).py
-	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py $(LIBNATIVE_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
+	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 
 # Target: clean project.
@@ -441,5 +441,7 @@ clean_list :
 
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
-build elf hex eep lss sym coff extcoff \
-clean clean_list program
+build elf hex eep lss sym coff extcoff clean clean_list program pmvm
+
+
+export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN

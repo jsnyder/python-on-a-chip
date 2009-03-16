@@ -13,10 +13,11 @@
 /** PyMite platform-specific routines for ARM7 target */
 
 
-#include "../pm.h"
+#include "pm.h"
 
 #include "AT91SAM7S64.h"
 #include "lib_AT91SAM7S64.h"
+#include "Board.h"
 
 
 #define RTTC_INTERRUPT_LEVEL 0
@@ -44,6 +45,10 @@ plat_init(void)
     /* Enable PIO's clock for PIOA and USART0 */
     AT91F_PMC_EnablePeriphClock(AT91C_BASE_PMC, (1 << AT91C_ID_PIOA)
                                                 | (1 << AT91C_ID_US0));
+
+    /* Configure PIOA for LEDs and clear them */
+    AT91F_PIO_CfgOutput(AT91C_BASE_PIOA, LED_MASK);
+    AT91F_PIO_SetOutput(AT91C_BASE_PIOA, LED_MASK);
 
     /* Configure PIT interrupt */
     AT91F_AIC_ConfigureIt(AT91C_BASE_AIC,

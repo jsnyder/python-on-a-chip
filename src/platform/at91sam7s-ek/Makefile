@@ -1,7 +1,7 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinARM template makefile 
-# by Martin Thomas, Kaiserslautern, Germany 
+# WinARM template makefile
+# by Martin Thomas, Kaiserslautern, Germany
 # <eversmith@heizung-thomas.de>
 #
 # based on the WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
@@ -34,7 +34,14 @@
 #
 
 # PyMite Configuration
+PLATFORM := $(notdir $(CURDIR))
+PM_LIB_ROOT = pmvm.$(PLATFORM)
+PM_LIB_FN = lib$(PM_LIB_ROOT).a
+PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
+PM_USR_SOURCES = main.py
+PM_HEAP_SIZE = 0x3000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PM_UART_BAUD = 19200
 
 FLASH_TOOL = SAM7UTILS
 #FLASH_TOOL = UVISION
@@ -49,7 +56,7 @@ USE_THUMB_MODE = YES
 
 ## Create ROM-Image (final)
 RUN_MODE=ROM_RUN
-## Create RAM-Image (debugging) 
+## Create RAM-Image (debugging)
 ##( not used: example does not fit in AT91SAM7S64 RAM )
 #RUN_MODE=RAM_RUN
 
@@ -62,24 +69,24 @@ RUN_MODE=ROM_RUN
 #VECTOR_LOCATION=VECTORS_IN_RAM
 
 # Target file name (without extension).
-TARGET = sample
+TARGET = main
 
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
-SRC = 
+SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
-SRCARM = $(TARGET).c Cstartup_SAM7.c 
+SRCARM = Cstartup_SAM7.c
 
 # List C++ source files here.
 # use file-extension cpp for C++-files (use extension .cpp)
-CPPSRC = 
+CPPSRC =
 
 # List C++ source files here which must be compiled in ARM-Mode.
 # use file-extension cpp for C++-files (use extension .cpp)
 #CPPSRCARM = $(TARGET).cpp
-CPPSRCARM = 
+CPPSRCARM =
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -88,7 +95,7 @@ CPPSRCARM =
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
+ASRC =
 
 # List Assembler source files here which must be assembled in ARM-Mode..
 ASRCARM  = Cstartup.S
@@ -98,7 +105,7 @@ ASRCARM  = Cstartup.S
 #FORMAT = ihex
 FORMAT = binary
 
-# Optimization level, can be [0, 1, 2, 3, s]. 
+# Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
 # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
 OPT = s
@@ -107,12 +114,11 @@ OPT = s
 # Debugging format.
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
-DEBUG = stabs
-#DEBUG = dwarf-2
+DEBUG_FMT = stabs
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = 
+EXTRAINCDIRS = ../../vm
 
 # List any extra directories to look for library files here.
 #     Each directory must be seperated by a space.
@@ -120,7 +126,7 @@ EXTRAINCDIRS =
 EXTRA_LIBDIRS = ../../vm
 
 ## Using the Atmel AT91_lib produces warning with
-## the default warning-levels. 
+## the default warning-levels.
 ## yes - disable these warnings; no - keep default settings
 AT91LIBNOWARN = yes
 #AT91LIBNOWARN = no
@@ -132,11 +138,16 @@ AT91LIBNOWARN = yes
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = -std=gnu99
 
-# Place -D or -U options for C here
-CDEFS =  -D$(RUN_MODE) -DTARGET_ARM
+# Place -D or -U options here
+CDEFS =  -D$(RUN_MODE)
+# PyMite CDEFS
+CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE) -DUART_BAUD=$(PM_UART_BAUD)
+ifeq ($(DEBUG),true)
+	CDEFS += -g -g$(DEBUG_FMT) -D__DEBUG__=1
+endif
 
 # Place -I options here
-CINCS = -I../../vm
+CINCS =
 
 # Place -D or -U options for ASM here
 ADEFS =  -D$(RUN_MODE)
@@ -153,10 +164,11 @@ ADEFS += -D__WinARM__
 
 ifeq ($(USE_THUMB_MODE),YES)
 THUMB    = -mthumb
-THUMB_IW = -mthumb-interwork
-else 
-THUMB    = 
-THUMB_IW = 
+#THUMB_IW = -mthumb-interwork
+THUMB_IW =
+else
+THUMB    =
+THUMB_IW =
 endif
 
 #  -g*:          generate debugging information
@@ -167,47 +179,46 @@ endif
 #    -adhlns...: create assembler listing
 #
 # Flags for C and C++ (arm-elf-gcc/arm-elf-g++)
-CFLAGS = -g$(DEBUG)
-CFLAGS += $(CDEFS) $(CINCS)
+CFLAGS = $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
-CFLAGS += -Wall -Wcast-align -Wimplicit 
+CFLAGS += -Wall -Wcast-align -Wimplicit
 CFLAGS += -Wpointer-arith -Wswitch
 CFLAGS += -Wredundant-decls -Wreturn-type -Wshadow -Wunused
-CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<) 
+CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 #### CFLAGS += -ffunction-sections -fdata-sections
 
 # flags only for C
-CONLYFLAGS += -Wnested-externs 
+CONLYFLAGS += -Wnested-externs
 CONLYFLAGS += $(CSTANDARD)
 
 ifneq ($(AT91LIBNOWARN),yes)
 #AT91-lib warnings with:
 CFLAGS += -Wcast-qual
-CONLYFLAGS += -Wmissing-prototypes 
+CONLYFLAGS += -Wmissing-prototypes
 CONLYFLAGS += -Wstrict-prototypes
 CONLYFLAGS += -Wmissing-declarations
 endif
 
 # flags only for C++ (arm-elf-g++)
 # CPPFLAGS = -fno-rtti -fno-exceptions
-CPPFLAGS = 
+CPPFLAGS =
 
 # Assembler flags.
 #  -Wa,...:    tell GCC to pass this to the assembler.
 #  -ahlns:     create listing
-#  -g$(DEBUG): have the assembler create line number information
-ASFLAGS = $(ADEFS) -Wa,-adhlns=$(<:.S=.lst),--g$(DEBUG)
+#  -g$(DEBUG_FMT): have the assembler create line number information
+ASFLAGS = $(ADEFS) -Wa,-adhlns=$(<:.S=.lst),--g$(DEBUG_FMT)
 
 
 #Additional libraries.
 
 # Extra libraries
 #    Each library-name must be seperated by a space.
-#    To add libxyz.a, libabc.a and libefsl.a: 
+#    To add libxyz.a, libabc.a and libefsl.a:
 #    EXTRA_LIBS = xyz abc efsl
 #EXTRA_LIBS = efsl
-EXTRA_LIBS = pmvm
+EXTRA_LIBS = $(PM_LIB_ROOT)
 
 #Support for newlibc-lpc (file: libnewlibc-lpc.a)
 #NEWLIBLPC = -lnewlib-lpc
@@ -225,7 +236,7 @@ LDFLAGS = -nostartfiles
 LDFLAGS += -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += -lc
 LDFLAGS += $(NEWLIBLPC) $(MATH_LIB)
-LDFLAGS += -lc -lgcc 
+LDFLAGS += -lc -lgcc
 LDFLAGS += $(CPLUSPLUS_LIB)
 LDFLAGS += $(patsubst %,-L%,$(EXTRA_LIBDIRS))
 LDFLAGS += $(patsubst %,-l%,$(EXTRA_LIBS))
@@ -234,13 +245,13 @@ LDFLAGS += $(patsubst %,-l%,$(EXTRA_LIBS))
 # Set Linker-Script Depending On Selected Memory and Controller
 ifeq ($(RUN_MODE),RAM_RUN)
 LDFLAGS +=-T$(SUBMDL)-RAM.ld
-else 
+else
 LDFLAGS +=-T$(SUBMDL)-ROM.ld
 endif
 
 
 # ---------------------------------------------------------------------------
-# Flash-Programming support using lpc21isp by Martin Maurer 
+# Flash-Programming support using lpc21isp by Martin Maurer
 # only for Philips LPC and Analog ADuC ARMs
 #
 # Settings and variables:
@@ -270,16 +281,18 @@ CPP = arm-elf-g++
 OBJCOPY = arm-elf-objcopy
 OBJDUMP = arm-elf-objdump
 SIZE = arm-elf-size
+AR = arm-elf-ar
 NM = arm-elf-nm
 REMOVE = rm -f
 COPY = cp
+
 
 # Define Messages
 # English
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = "-------- begin (mode: $(RUN_MODE)) --------"
 MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before: 
+MSG_SIZE_BEFORE = Size before:
 MSG_SIZE_AFTER = Size after:
 MSG_FLASH = Creating load file for Flash:
 MSG_EXTENDED_LISTING = Creating Extended Listing:
@@ -298,9 +311,9 @@ MSG_LPC21_RESETREMINDER = You may have to bring the target in bootloader-mode no
 # Define all object files.
 COBJ      = $(SRC:.c=.o)
 AOBJ      = $(ASRC:.S=.o)
-COBJARM   = $(SRCARM:.c=.o) $(TARGET)_img.o $(TARGET)_nat.o
+COBJARM   = $(SRCARM:.c=.o)
 AOBJARM   = $(ASRCARM:.S=.o)
-CPPOBJ    = $(CPPSRC:.cpp=.o) 
+CPPOBJ    = $(CPPSRC:.cpp=.o)
 CPPOBJARM = $(CPPSRCARM:.cpp=.o)
 
 # Define all listing files.
@@ -309,34 +322,40 @@ LST += $(CPPSRC:.cpp=.lst) $(CPPSRCARM:.cpp=.lst)
 
 # Compiler flags to generate dependency files.
 ### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
+#GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS  = -mcpu=$(MCU) $(THUMB_IW) -I. $(CFLAGS) $(GENDEPFLAGS)
-ALL_ASFLAGS = -mcpu=$(MCU) $(THUMB_IW) -I. -x assembler-with-cpp $(ASFLAGS)
+ALL_CFLAGS  = -mcpu=$(MCU) $(THUMB) $(THUMB_IW) -I. $(CFLAGS) $(GENDEPFLAGS)
+ALL_ASFLAGS = -mcpu=$(MCU) $(THUMB) $(THUMB_IW) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion pmvm sizebefore build sizeafter finished end
 
 ifeq ($(FORMAT),ihex)
-build: elf hex lss sym
+build: elf hex bin lss sym
 hex: $(TARGET).hex
 IMGEXT=hex
-else 
+else
 ifeq ($(FORMAT),binary)
 build: elf bin lss sym
 bin: $(TARGET).bin
 IMGEXT=bin
-else 
+else
 $(error "$(MSG_FORMATERROR) $(FORMAT)")
 endif
 endif
 
 elf: $(TARGET).elf
-lss: $(TARGET).lss 
+lss: $(TARGET).lss
 sym: $(TARGET).sym
+
+# PyMite: Build the VM archive if it doesn't exist
+pmvm : $(PM_LIB_PATH)
+
+$(PM_LIB_PATH) :
+	make -C ../../vm
 
 # Eye candy.
 begin:
@@ -362,13 +381,13 @@ sizeafter:
 
 
 # Display compiler version information.
-gccversion : 
+gccversion :
 	@$(CC) --version
 
 
 # Program the device.
 ifeq ($(FLASH_TOOL),UVISION)
-# Program the device with Keil's uVision (needs configured uVision-Workspace). 
+# Program the device with Keil's uVision (needs configured uVision-Workspace).
 program: $(TARGET).$(IMGEXT)
 	@echo
 	@echo "Programming with uVision"
@@ -409,7 +428,7 @@ endif
 	@echo
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O $(FORMAT) $< $@
-	
+
 # Create final output file (.bin) from ELF output file.
 %.bin: %.elf
 	@echo
@@ -438,33 +457,31 @@ endif
 %.elf:  $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM)
 	@echo
 	@echo $(MSG_LINKING) $@
-#	$(CC) $(THUMB) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM) --output $@ $(LDFLAGS)
 	$(CC) $(THUMB) $(ALL_CFLAGS) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM) --output $@ $(LDFLAGS)
-#	$(CPP) $(THUMB) $(ALL_CFLAGS) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM) --output $@ $(LDFLAGS)
 
 # Compile: create object files from C source files. ARM/Thumb
 $(COBJ) : %.o : %.c
 	@echo
 	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(THUMB) $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@ 
+	$(CC) -c $(THUMB) $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@
 
 # Compile: create object files from C source files. ARM-only
 $(COBJARM) : %.o : %.c
 	@echo
 	@echo $(MSG_COMPILING_ARM) $<
-	$(CC) -c $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@ 
+	$(CC) -c $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@
 
 # Compile: create object files from C++ source files. ARM/Thumb
 $(CPPOBJ) : %.o : %.cpp
 	@echo
 	@echo $(MSG_COMPILINGCPP) $<
-	$(CPP) -c $(THUMB) $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@ 
+	$(CPP) -c $(THUMB) $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@
 
 # Compile: create `object files from C++ source files. ARM-only
 $(CPPOBJARM) : %.o : %.cpp
 	@echo
 	@echo $(MSG_COMPILINGCPP_ARM) $<
-	$(CPP) -c $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@ 
+	$(CPP) -c $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@
 
 
 # Compile: create assembler files from C source files. ARM/Thumb
@@ -487,10 +504,9 @@ $(AOBJARM) : %.o : %.S
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 
-# PyMite: The native fxn table and bytecode image are generated from python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(TARGET).py
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(TARGET).py
-
+# PyMite: Generate native code and module images from the python source
+$(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
+	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 
 # Target: clean project.
@@ -498,9 +514,9 @@ clean: begin clean_list finished end
 
 
 clean_list :
+	$(MAKE) -C ../../vm clean
 	@echo
 	@echo $(MSG_CLEANING)
-	$(REMOVE) ../Common_WinARM/$(TARGET).hex
 	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).bin
 	$(REMOVE) $(TARGET).obj
@@ -522,11 +538,13 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRCARM:.c=.s)
 	$(REMOVE) $(SRCARM:.c=.d)
-	$(REMOVE) $(CPPSRC:.cpp=.s) 
+	$(REMOVE) $(CPPSRC:.cpp=.s)
 	$(REMOVE) $(CPPSRC:.cpp=.d)
-	$(REMOVE) $(CPPSRCARM:.cpp=.s) 
+	$(REMOVE) $(CPPSRCARM:.cpp=.s)
 	$(REMOVE) $(CPPSRCARM:.cpp=.d)
-	$(REMOVE) .dep/*
+#	$(REMOVE) .dep/*
+	$(REMOVE) $(TARGET)_img.c
+	$(REMOVE) $(TARGET)_nat.c
 
 
 # Include the dependency files.
@@ -535,5 +553,7 @@ clean_list :
 
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
-build elf hex bin lss sym clean clean_list program
+build elf hex bin lss sym clean clean_list program pmvm
 
+
+export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN

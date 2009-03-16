@@ -19,7 +19,7 @@
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 
-#include "../pm.h"
+#include "pm.h"
 
 
 /**

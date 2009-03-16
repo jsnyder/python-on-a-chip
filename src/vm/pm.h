@@ -176,7 +176,7 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "mem.h"
 #include "obj.h"
 #include "seq.h"
-#include "string.h"
+#include "strobj.h"
 #include "heap.h"
 #include "int.h"
 #include "tuple.h"
@@ -193,7 +193,7 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "misc.h"
 #include "thread.h"
 #include "float.h"
-#include "plat/plat.h"
+#include "plat.h"
 
 
 /**
