@@ -48,10 +48,12 @@ in the prescribed order:
         - ``make html``
         - ``make TAGS``
         - ``make check``
-        - ``make clean; make TARGET=AT91SAM7``
-        - ``cd src/sample/at91sam7; make``
-        - ``cd ../../..; make clean; make TARGET=AVR``
-        - ``cd src/sample/avr; make; cd ../../..``
+        - ``make ipm``
+        - ``map(range, range(5))``
+        - ``Ctrl+D``
+        - ``make PLATFORM=at91sam7s-ek``
+        - ``make PLATFORM=avr``
+        - ``cd src/platform/avr; avr-size main.elf``
         - Record the size of the AVR sample app in the ticket
 
     - Verify that a sample app runs on an AVR device; this can be done in
@@ -66,11 +68,9 @@ in the prescribed order:
 
         - Download and run a known good app on an actual AT91SAM7 device
 
-            - ``make clean; make TARGET=AT91SAM7; cd src/sample/at91sam7; make``
+            - ``cd src/platform/at91sam7s-ek; make``
             - Connect the AT91SAM7S-EK to the computer via a USB cable
-            - Apply a jumper to JP28 for 5 seconds to clear flash; remove the
-              jumper
-            - Apply a jumper to JP5 for 30 seconds to restore SAM-BA; remove
+            - Apply a jumper to JP5 for 10 seconds to restore SAM-BA; remove
               the jumper
             - Disconnect, pause and reconnect the AT91SAM7S-EK's USB cable
               to reset the connection

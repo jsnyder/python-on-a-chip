@@ -1,0 +1,28 @@
+==========================
+The Desktop Sample Project
+==========================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This is a sample project that demonstrates running interactive PyMite on the
+desktop.  Any POSIX-compliant OS should work (Mac OS X, Linux, Cygwin).
+
+
+Building the Project
+--------------------
+
+Start with a clean PyMite tree.  Build the PyMite VM archive as well as the 
+sample application::
+
+    $ cd src/platform/desktop
+    $ make
+
+
+Read ``docs/src/InteractivePyMite.txt`` to learn how to run ipm.
+
+
+.. :mode=rest:

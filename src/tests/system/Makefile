@@ -19,7 +19,7 @@ CDEFS = -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) -ansi -I../../vm
+CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) -I../../vm
 
 
 # Build an executable from the C sources

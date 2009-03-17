@@ -18,11 +18,11 @@ Details
 -------
 
 This sample project demonstrates a simple use case of PyMite on a
-microcontroller.  The file ``sample.c`` is used to initialize PyMite
+microcontroller.  The file ``main.c`` is used to initialize PyMite
 and indicate the name of the module it should run.  In this case, it
-will run the module ``sample.py``
+will run the module ``main.py``
 
-In the module ``sample.py``, we see that the program prints a "Hello world"
+In the module ``main.py``, we see that the program prints a "Hello world"
 message, defines and runs an initialization function and then imports the
 ``avr`` module that is provided by PyMite.  The function ``avr.portA()`` is
 called with the argument ``0xaa`` which will set the Port A pins to binary
@@ -35,17 +35,17 @@ printed out the AVR's serial port.
 Building the Project
 --------------------
 
-Start with a clean PyMite tree.  Edit the ``src/sample/avr/Makefile`` near
-line 42 to set the type of AVR you are using and near line 42 to set the
+Start with a clean PyMite tree.  Edit the ``src/platform/avr/Makefile`` near
+line 20 to set the type of AVR you are using and near line 23 to set the
 frequency of your AVR's main clock.  The default values are::
 
     MCU = atmega103
     F_CPU = 4000000UL
 
-Then build the PyMite archive with ``TARGET=AVR`` and this sample project.::
+``platform/avr/Makefile`` will build the PyMite VM archive as well as the 
+sample application::
 
-    $ make TARGET=AVR
-    $ cd src/sample/avr
+    $ cd src/platform/avr
     $ make
 
 
@@ -60,6 +60,6 @@ to match your configuration, then you connect your device and type::
     $ make program
 
 Otherwise, use your AVR programmer of choice to program
-``src/sample/avr/sample.hex`` onto your target AVR device.
+``src/platform/avr/main.hex`` onto your target AVR device.
 
 .. :mode=rest:

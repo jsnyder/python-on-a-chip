@@ -35,7 +35,7 @@ The developer needs a host computer with a USB port and a recent copy of
 Subversion_ SCM.
 
 The developer shall download the sam7utils_ open source software::
-    
+
     svn co https://oss.tekno.us/svn/sam7utils/trunk sam7utils
 
 The developer shall build same7utils for his host computer::
@@ -52,20 +52,16 @@ The developer shall build same7utils for his host computer::
 Preparing the Device
 --------------------
 
-The AT91SAM7S64-EK needs to have its program memory erased and its bootloader
-restored before a new program can be flashed.
-
-To erase the AT91SAM7S64's program memory:
-
-    - Connect the AT91SAM7S-EK to the computer via a USB cable
-    - Apply a jumper to JP28 for 5 seconds to clear flash; remove the jumper
+The AT91SAM7S64-EK needs to have its bootloader restored in order to flash
+a new program.
 
 To restore the bootloader (SAM-BA):
 
-    - Apply a jumper to JP5 for 30 seconds to restore SAM-BA; remove
+    - Apply a jumper to JP5 for 15 seconds to restore SAM-BA; remove
       the jumper
     - Disconnect, pause and reconnect the AT91SAM7S-EK's USB cable
       to reset the connection
+
 
 Loading the PyMite Program
 --------------------------

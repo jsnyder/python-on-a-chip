@@ -1,35 +1,8 @@
 # Hey Emacs, this is a -*- makefile -*-
-#
-# WinAVR Sample makefile written by Eric B. Weddington, Jörg Wunsch, et al.
-# Released to the Public Domain
-# Please read the make user manual!
-#
-# Additional material for this makefile was submitted by:
-#  Tim Henigan
-#  Peter Fleury
-#  Reiner Patommel
-#  Sander Pool
-#  Frederik Rouleau
-#  Markus Pfaff
-#
-# On command line:
-#
-# make all = Make software.
-#
-# make clean = Clean out built project files.
-#
-# make coff = Convert ELF to AVR COFF (for use with AVR Studio 3.x or VMLAB).
-#
-# make extcoff = Convert ELF to AVR Extended COFF (for use with AVR Studio
-#                4.07 or greater).
-#
-# make program = Download the hex file to the device, using avrdude.  Please
-#                customize the avrdude settings below first!
-#
-# make filename.s = Just compile filename.c into the assembler code only
-#
-# To rebuild project do "make clean" then "make all".
-#
+
+# AVR-GCC Makefile template, derived from the WinAVR template (which
+# is public domain), believed to be neutral to any flavor of "make"
+# (GNU make, BSD make, SysV make)
 
 
 # PyMite Configuration
@@ -40,50 +13,23 @@ PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py mmb.py
 PM_HEAP_SIZE = 0x0D00
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+IPM=false
 
 
 # Platform Configuration
 MCU = atmega103
+FORMAT = ihex
+TARGET = main
 F_CPU = 4000000UL
 UART_BAUD = 19200UL
-
-
-# Output format. (can be srec, ihex, binary)
-FORMAT = ihex
-
-# Target file name (without extension).
-TARGET = main
-
-
-# List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
-
-
-# List Assembler source files here.
-# Make them always end in a capital .S.  Files ending in a lowercase .s
-# will not be considered source files but generated files (assembler
-# output from the compiler), and will be deleted upon "make clean"!
-# Even though the DOS/Win* filesystem matches both .s and .S the same,
-# it will preserve the spelling of the filenames, and gcc itself does
-# care about how the name is spelled on its command-line.
 ASRC =
-
-
-
-# Optimization level, can be [0, 1, 2, 3, s].
-# 0 = turn off optimization. s = optimize for size.
-# (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
 OPT = s
 
 # Debugging format.
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
 DEBUG_FMT = stabs
-
-# List any extra directories to look for include files here.
-#     Each directory must be seperated by a space.
-EXTRAINCDIRS = ../../vm
-
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -95,42 +41,23 @@ CSTANDARD = -std=gnu99
 # Place -D or -U options here
 CDEFS = -DF_CPU=$(F_CPU) -DUART_BAUD=$(UART_BAUD)
 # PyMite CDEFS
-CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE) 
+CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -g$(DEBUG_FMT) -D__DEBUG__=1
 endif
 
 # Place -I options here
-CINCS =
+CINCS = -I../../vm
 
 
-# Compiler flags.
-#  -g*:          generate debugging information
-#  -O*:          optimization level
-#  -f...:        tuning, see GCC manual and avr-libc documentation
-#  -Wall...:     warning level
-#  -Wa,...:      tell GCC to pass this to the assembler.
-#    -adhlns...: create assembler listing
-CFLAGS = $(CDEFS) $(CINCS)
-CFLAGS += -O$(OPT)
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -Wall -Wstrict-prototypes -Werror
-CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<)
-CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
-CFLAGS += $(CSTANDARD)
-# PyMite CFLAGS
-#CFLAGS += -ansi # Removed because it causes a build error
+CDEBUG = -g$(DEBUG_FMT)
+CWARN = -Wall -Wstrict-prototypes
+CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+#CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
+CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CTUNING) $(CEXTRA)
 
 
-# Assembler flags.
-#  -Wa,...:   tell GCC to pass this to the assembler.
-#  -ahlms:    create listing
-#  -gstabs:   have the assembler create line number information; note that
-#             for use in COFF files, additional information about filenames
-#             and function names needs to be present in the assembler source
-#             files -- see avr-libc docs [FIXME: not yet described there]
-ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
-
+#ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
 
 
 #Additional libraries.
@@ -151,7 +78,7 @@ SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 
 SCANF_LIB =
 
-MATH_LIB =
+#MATH_LIB = -lm
 
 # External memory options
 
@@ -165,32 +92,19 @@ MATH_LIB =
 
 EXTMEMOPTS =
 
-# Linker flags.
-#  -Wl,...:     tell GCC to pass this to linker.
-#    -Map:      create map file
-#    --cref:    add cross reference to  map file
-LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
-LDFLAGS += $(EXTMEMOPTS)
-LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+#LDMAP = $(LDFLAGS) -Wl,-Map=$(TARGET).map,--cref
+LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 # PyMite
 LDFLAGS += -L../../vm -l$(PM_LIB_ROOT) -L. -lmmb103
 
 
-
-#---------------- Programming Options (avrdude) ----------------
-
-# Programming hardware: alf avr910 avrisp bascom bsd
-# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500 stk500v2
-#
-# Type: avrdude -c ?
-# to get a full listing.
-#
+# Programming support using avrdude. Settings and variables.
 
 AVRDUDE_PROGRAMMER = stk500v2
 AVRDUDE_PORT = /dev/cu.Pololu
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
-AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
+#AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 
 # Uncomment the following if you want avrdude's erase cycle counter.
@@ -200,31 +114,17 @@ AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
 # Uncomment the following if you do /not/ wish a verification to be
 # performed after programming the device.
-AVRDUDE_NO_VERIFY = -V
+#AVRDUDE_NO_VERIFY = -V
 
 # Increase verbosity level.  Please use this when submitting bug
 # reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
-AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
-AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
-AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
-AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
+AVRDUDE_BASIC = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+AVRDUDE_FLAGS = $(AVRDUDE_BASIC) $(AVRDUDE_NO_VERIFY) $(AVRDUDE_VERBOSE) $(AVRDUDE_ERASE_COUNTER)
 
 
-
-# ---------------------------------------------------------------------------
-
-# Define directories, if needed.
-DIRAVR = c:/winavr
-DIRAVRBIN = $(DIRAVR)/bin
-DIRAVRUTILS = $(DIRAVR)/utils/bin
-DIRINC = .
-DIRLIB = $(DIRAVR)/avr/lib
-
-
-# Define programs and commands.
 SHELL = sh
 CC = avr-gcc
 OBJCOPY = avr-objcopy
@@ -234,27 +134,8 @@ AR = avr-ar
 NM = avr-nm
 AVRDUDE = avrdude
 REMOVE = rm -f
+MV = mv -f
 COPY = cp
-
-
-# Define Messages
-# English
-MSG_ERRORS_NONE = Errors: none
-MSG_BEGIN = -------- begin --------
-MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before:
-MSG_SIZE_AFTER = Size after:
-MSG_COFF = Converting to AVR COFF:
-MSG_EXTENDED_COFF = Converting to AVR Extended COFF:
-MSG_FLASH = Creating load file for Flash:
-MSG_EEPROM = Creating load file for EEPROM:
-MSG_EXTENDED_LISTING = Creating Extended Listing:
-MSG_SYMBOL_TABLE = Creating Symbol Table:
-MSG_LINKING = Linking:
-MSG_COMPILING = Compiling:
-MSG_ASSEMBLING = Assembling:
-MSG_CLEANING = Cleaning project:
-
 
 # Define all object files.
 OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
@@ -262,22 +143,16 @@ OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
 # Define all listing files.
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
-
-# Compiler flags to generate dependency files.
-GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-
-
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-# Removed from below until cygwin's make (3.81) is corrected: $(GENDEPFLAGS)
 ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: begin gccversion pmvm sizebefore build sizeafter finished end
+all: pmvm build
 
-build: elf hex eep lss sym
+build: elf hex eep
 
 elf: $(TARGET).elf
 hex: $(TARGET).hex
@@ -286,43 +161,7 @@ lss: $(TARGET).lss
 sym: $(TARGET).sym
 
 
-# PyMite: Build the VM archive if it doesn't exist
-pmvm : $(PM_LIB_PATH)
-
-$(PM_LIB_PATH) :
-	make -C ../../vm
-
-# Eye candy.
-# AVR Studio 3.x does not check make's exit code but relies on
-# the following magic strings to be generated by the compile job.
-begin:
-	@echo
-	@echo $(MSG_BEGIN)
-
-finished:
-	@echo $(MSG_ERRORS_NONE)
-
-end:
-	@echo $(MSG_END)
-	@echo
-
-
-# Display size of file.
-HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
-ELFSIZE = $(SIZE) -A $(TARGET).elf
-sizebefore:
-	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); echo; fi
-
-sizeafter:
-	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); echo; fi
-
-
-# Display compiler version information.
-gccversion :
-	@$(CC) --version
-
-
-# Program the device.
+# Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
@@ -334,114 +173,86 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 --change-section-address .data-0x800000 \
 --change-section-address .bss-0x800000 \
 --change-section-address .noinit-0x800000 \
---change-section-address .eeprom-0x810000
+--change-section-address .eeprom-0x810000 
+
+
+# PyMite: Build the VM archive if it doesn't exist
+pmvm : $(PM_LIB_PATH)
+
+$(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
+	make -C ../../vm
+
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
+	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 
 coff: $(TARGET).elf
-	@echo
-	@echo $(MSG_COFF) $(TARGET).cof
-	$(COFFCONVERT) -O coff-avr $< $(TARGET).cof
+	$(COFFCONVERT) -O coff-avr $(TARGET).elf $(TARGET).cof
 
 
 extcoff: $(TARGET).elf
-	@echo
-	@echo $(MSG_EXTENDED_COFF) $(TARGET).cof
-	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
+	$(COFFCONVERT) -O coff-ext-avr $(TARGET).elf $(TARGET).cof
 
 
+.SUFFIXES: .elf .hex .eep .lss .sym
 
-# Create final output files (.hex, .eep) from ELF output file.
-%.hex: %.elf
-	@echo
-	@echo $(MSG_FLASH) $@
+.elf.hex:
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
-%.eep: %.elf
-	@echo
-	@echo $(MSG_EEPROM) $@
+.elf.eep:
 	-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
 
 # Create extended listing file from ELF output file.
-%.lss: %.elf
-	@echo
-	@echo $(MSG_EXTENDED_LISTING) $@
+.elf.lss:
 	$(OBJDUMP) -h -S $< > $@
 
 # Create a symbol table from ELF output file.
-%.sym: %.elf
-	@echo
-	@echo $(MSG_SYMBOL_TABLE) $@
+.elf.sym:
 	$(NM) -n $< > $@
 
 
 
 # Link: create ELF output file from object files.
-.SECONDARY : $(TARGET).elf
-.PRECIOUS : $(OBJ)
-%.elf: $(OBJ)
-	@echo
-	@echo $(MSG_LINKING) $@
+$(TARGET).elf: $(OBJ)
 	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
 
 
 # Compile: create object files from C source files.
-%.o : %.c
-	@echo
-	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(ALL_CFLAGS) $< -o $@
+.c.o:
+	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
 
 # Compile: create assembler files from C source files.
-%.s : %.c
+.c.s:
 	$(CC) -S $(ALL_CFLAGS) $< -o $@
 
 
 # Assemble: create object files from assembler source files.
-%.o : %.S
-	@echo
-	@echo $(MSG_ASSEMBLING) $<
+.S.o:
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
-# PyMite: The native fxn table and bytecode image are generated from python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 
 # Target: clean project.
-clean: begin clean_list finished end
-
-clean_list :
-	@echo
-	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).a90
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lnk
-	$(REMOVE) $(TARGET).lss
+clean:
+	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
+	$(TARGET).map $(TARGET).sym $(TARGET).lss \
+	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)
 	$(REMOVE) $(TARGET)_img.*
 	$(REMOVE) $(TARGET)_nat.*
-	$(REMOVE) $(OBJ)
-	$(REMOVE) $(LST)
-	$(REMOVE) $(SRC:.c=.s)
-	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) .dep/*
 
+depend:
+	if grep '^# DO NOT DELETE' $(MAKEFILE) >/dev/null; \
+	then \
+		sed -e '/^# DO NOT DELETE/,$$d' $(MAKEFILE) > \
+			$(MAKEFILE).$$$$ && \
+		$(MV) $(MAKEFILE).$$$$ $(MAKEFILE); \
+	fi
+	echo '# DO NOT DELETE THIS LINE -- make depend depends on it.' \
+		>> $(MAKEFILE); \
+	$(CC) -M -mmcu=$(MCU) $(CDEFS) $(CINCS) $(SRC) $(ASRC) >> $(MAKEFILE)
 
-
-# Include the dependency files.
--include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
-
-
-# Listing of phony targets.
-.PHONY : all begin finish end sizebefore sizeafter gccversion \
-build elf hex eep lss sym coff extcoff clean clean_list program pmvm
-
+.PHONY:	all build elf hex eep lss sym program coff extcoff clean depend pmvm
 
 export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN

@@ -5,7 +5,7 @@ PLATFORM ?= desktop
 PM_LIB_ROOT = pmvm.$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
-PM_HEAP_SIZE ?= 0x1000
+PM_HEAP_SIZE = 0x2000
 DEBUG = true
 
 UT_SOURCES = $(wildcard ut*.c)
@@ -19,7 +19,7 @@ ifeq ($(DEBUG),true)
 endif
 CFLAGS = -I../../vm $(CDEFS)
 
-.PHONY: all check clean
+.PHONY: all check clean $(PRODUCT)
 
 export CFLAGS IPM HEAP_SIZE PM_LIB_FN
 

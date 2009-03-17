@@ -43,14 +43,16 @@ in the C code in ``main.c``.
 Building the Project
 --------------------
 
-Start with a clean PyMite tree.  Build the PyMite archive with ``TARGET=AVR``
-and then build this sample project.::
+Start with a clean PyMite tree.  The following commands build the PyMite
+interpreter and the sample project.::
 
-    $ make TARGET=AVR
-    $ cd src/sample/mmb103
+    $ cd src/platform/mmb103
     $ make
 
-This will result in the file ``src/sample/mmb103/main.hex``.  Use your AVR
+This will result in the file ``src/platform/mmb103/main.hex``.  Use your AVR
 programmer of choice to program that file into the ATmega103 target device.
+The author's defaults are set in the Makefile, so this programs the device::
+
+    $ make program
 
 .. :mode=rest:

@@ -1,0 +1,36 @@
+============================
+The AT91SAM7S Sample Project
+============================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This is a sample project that demonstrates running interactive PyMite (ipm)
+on the Atmel `AT91SAM7S-EK`_ which is an evaluation board for the 
+`SAM7S family`_ of microcontrollers.  Any SAM7 with at least 
+64 KiB of program memory and 8 KiB of RAM can run PyMite.
+
+.. _`AT91SAM7S-EK`: http://atmel.com/dyn/products/tools_card.asp?tool_id=3784
+.. _`SAM7S family`: http://atmel.com/products/at91/default.asp
+
+
+Building the Project
+--------------------
+
+Start with a clean PyMite tree.  Build the PyMite VM archive as well as the 
+sample application::
+
+    $ cd src/platform/avr
+    $ make
+
+
+Flashing the Binary
+-------------------
+
+Use your ISP programming method of choice to program
+``src/platform/at91sam7s-ek/main.hex`` onto your target AVR device.
+
+.. :mode=rest:

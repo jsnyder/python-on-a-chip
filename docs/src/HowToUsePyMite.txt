@@ -36,15 +36,15 @@ PyMite Example
 --------------
 
 This section demonstrates how a trivial program is written to run
-in the PyMite VM.  A more detailed example can be found in the PyMite
-source tree in ``src/sample``.
+in the PyMite VM.  An example can be found in the PyMite source tree in
+``src/platform/desktop/``.
 
 First write the Python application, ``trivial.py`` that will run in the VM::
 
     def funcname(n):
         return n-42
 
-    funcname(6*7)
+    print funcname(6*7)
 
 Notice that an application in PyMite does not use the
 ``if __name__ == "__main__":`` convention that Python does;
@@ -73,7 +73,7 @@ above line by line.  The ``include`` statement brings many PyMite definitions
 such as ``pm_init()``, ``pm_run()``, and ``MEMSPACE_PROG`` into the namespace
 of this file.  The ``extern`` line tells the compiler that the variable
 ``usrlib_img[]`` is defined in another file.  Next the ``main()`` function
-means this program will run as the primary executable on the target.
+means this program will run as the primary executable.
 
 Inside ``main()`` the ``retval`` variable is declared.  It is used to catch
 any error codes that might come from the PyMite API functions.
@@ -90,9 +90,8 @@ suggests.
 
 The next PyMite API, ``pm_run()`` tries to execute the module with the same
 name as the string you give to the function.  Here we tell the VM to find
-the module ``trivial`` in the global list of modules and run it.
-Behind the scenes, the module is loaded from its image into a structure in RAM
-and bytecodes are executed until program completion or an unhandled exception
-occurs.
+the module, ``trivial`` and run it.  Behind the scenes, the module is loaded
+from its image into a structure in RAM and bytecodes are executed until program
+completion or an unhandled exception occurs.
 
 .. :mode=rest:

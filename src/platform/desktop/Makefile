@@ -15,7 +15,7 @@ CDEFS = -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -ansi -I../../vm $(CDEFS)
+CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -I../../vm $(CDEFS)
 
 %.out : %*_nat.c %*_img.c %.c
 	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../../vm/libpmvm.a
@@ -38,4 +38,4 @@ $(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
 
 clean :
 	$(MAKE) -C ../../vm clean
-	$(RM) $(OBJS) $(TARGET)_img.* $(TARGET)_nat.*
+	$(RM) $(TARGET).out $(OBJS) $(TARGET)_img.* $(TARGET)_nat.*

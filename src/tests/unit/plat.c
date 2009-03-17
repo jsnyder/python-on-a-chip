@@ -13,19 +13,7 @@
 /** PyMite platform-specific routines for Desktop target */
 
 
-/* PyMite build process uses -ansi which disables certain features that
- * in turn disable features needed for signal processing. To work around
- * this, temporarily disable the corresponding #define. This is not
- * needed for Cygwin but for Linux. The -ansi option of GCC is explained
- * here: http://gcc.gnu.org/onlinedocs/gcc-4.0.3/gcc/C-Dialect-Options.html
- */
-#ifdef __STRICT_ANSI__
-#undef __STRICT_ANSI__
 #include <stdio.h>
-#define __STRICT_ANSI__
-#else
-#include <stdio.h>
-#endif
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>

@@ -37,6 +37,7 @@ DevelopmentProcess.html_            N       Y           the PyMite
 ErrorsAndExceptions.html_           N       Y           the software design
                                                         of VM errors and
                                                         exceptions
+FrequentlyAskedQuestions.html_      Y       Y           Answers FAQs.
 HeapDesign.html_                    N       Y           the software design
                                                         of the VM heap
 HowToProgramTheAt91sam7s64-ek.html_ Y       Y           how to flash
@@ -64,6 +65,7 @@ Testing.html_                       N       Y           the unit and system
 .. _BuildSystem.html: BuildSystem.html
 .. _DevelopmentProcess.html: DevelopmentProcess.html
 .. _ErrorsAndExceptions.html: ErrorsAndExceptions.html
+.. _FrequentlyAskedQuestions.html: FrequentlyAskedQuestions.html
 .. _HeapDesign.html: HeapDesign.html
 .. _HowToProgramTheAt91sam7s64-ek.html: HowToProgramTheAt91sam7s64-ek.html
 .. _HowToReleasePyMite.html: HowToReleasePyMite.html

@@ -71,7 +71,7 @@ the return types that will lead to exceptions:
     =================   =========   ========================================
     PM_RET_EX           0xE0        General exception
     PM_RET_EX_EXIT      0xE1        System exit
-    PM_RET_EX_FLOAT     0xE2        Floating point error
+    PM_RET_EX_IO        0xE2        Input/output error
     PM_RET_EX_ZDIV      0xE3        Zero division error
     PM_RET_EX_ASSRT     0xE4        Assertion error
     PM_RET_EX_ATTR      0xE5        Attribute error
@@ -81,11 +81,12 @@ the return types that will lead to exceptions:
     PM_RET_EX_MEM       0xE9        Memory error
     PM_RET_EX_NAME      0xEA        Name error
     PM_RET_EX_RUNTIME   0xEB        Runtime error
-    PM_RET_EX_SYNTAX    0xEC        Syntax error
-    PM_RET_EX_SYS       0xED        System error
-    PM_RET_EX_TYPE      0xEE        Type error
-    PM_RET_EX_VAL       0xEF        Value error
-    PM_RET_EX_WARN      0xD0        Warning
+    PM_RET_EX_SYNTAX    0xEB        Syntax error
+    PM_RET_EX_SYS       0xEc        System error
+    PM_RET_EX_TYPE      0xED        Type error
+    PM_RET_EX_VAL       0xEE        Value error
+    PM_RET_EX_STOP      0xEF        Stop iteration
+    PM_RET_EX_WARN      0xF0        Warning
     =================   =========   ========================================
 
 In PyMite, there is only one kind of exception object and the PyMite user

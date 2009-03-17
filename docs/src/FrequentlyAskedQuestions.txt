@@ -90,8 +90,8 @@ What microcontroller is recommended?
 
 PyMite is so easy to port (there are 4 functions to adapt, see examples in
 the src/vm/plat directory) that any microcontroller with 8 KB or more of RAM
-will do.  I recommend 8 KB of RAM because 4 KB is rather tight and doesn't
-allow much more than simple programs.
+will do.  I recommend 8 KB or more of RAM because 4 KB is rather tight and 
+doesn't allow much more than simple programs.
 
 
 What do I need on my computer?
