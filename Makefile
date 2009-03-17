@@ -14,10 +14,10 @@ CP := cp
 MKDIR := mkdir -p
 TAGS := ctags
 CSCOPE := cscope
+PYCSCOPE := $(abspath src/tools/pycscope.py)
 PMDIST := src/tools/pmDist.py
 
 pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
-PYCSCOPE := $(call pathsearch,pycscope.py)
 
 VPATH := . src/vm src/lib docs/src
 
@@ -44,7 +44,8 @@ indent :
 TAGS :
 	$(TAGS) -R *
 	$(CSCOPE) -b -c -R
-	$(if $(PYCSCOPE), cd src/tools && $(PYCSCOPE) -R *.py)
+	cd src/tools && $(PYCSCOPE) *.py
+	cd src/lib && $(PYCSCOPE) *.py
 
 dist :
 ifndef PM_RELEASE
