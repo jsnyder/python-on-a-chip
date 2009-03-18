@@ -1,0 +1,49 @@
+import os
+
+Import("vars")
+
+vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x0D00)
+vars.Add("PM_UART_BAUD", "Baud rate of the ipm serial connection.", "19200UL")
+vars.Add("IPM", "Add the interactive library to the standard lib", True)
+vars.Add("MCU", "Type of AVR device; the arg to -mmcu.", "atmega103")
+vars.Add("F_CPU", "Operating frequency of the AVR device.", "4000000UL")
+vars.Add("NM", "", "avr-nm")
+vars.Add("OBJCOPY", "", "avr-objcopy")
+vars.Add("OBJDUMP", "", "avr-objdump")
+vars.Add("SIZE", "", "avr-size")
+
+CFLAGS = "-DHEAP_SIZE=$PM_HEAP_SIZE -DF_CPU=$F_CPU -DUART_BAUD=$PM_UART_BAUD" \
+         " -Wall -Wstrict-prototypes -Wimplicit -Werror" \
+         " -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums" \
+         " -mmcu=$MCU -Os -std=gnu99"
+if "DEBUG" in vars.args.keys():
+    CFLAGS = "-g -gstabs -D__DEBUG__=1 " + CFLAGS
+SOURCES = ["main.c", "plat.c"]
+PY_SOURCES = ["main.py", "mmb.py"]
+PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
+
+env = Environment(variables = vars,
+                  CPPPATH = "../../vm",
+                  CC = "avr-gcc",
+                  CCFLAGS = CFLAGS,
+                  CXX = "avr-g++",
+                  LINKFLAGS = "-mmcu=$MCU",
+                  AR = "avr-ar",
+                  ARFLAGS = "rcs",
+                  RANLIB = "avr-ranlib")
+env.AppendENVPath("PATH", "/usr/local/AVRMacPack/bin")
+
+vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
+img_sources = env.Command(["main_img.c", "main_nat.c"], [PY_SOURCES],
+    "src/tools/pmImgCreator.py -c -u -o src/platform/mmb103/main_img.c" \
+    " --native-file=src/platform/mmb103/main_nat.c $SOURCES")
+elf = env.Program("main.elf", SOURCES + img_sources,
+                  LIBS = ["mmb103", PM_LIB_ROOT], LIBPATH = [".", "../../vm"])
+
+hex = env.Command("main.hex", "main.elf",
+                  "$OBJCOPY -O ihex -R .eeprom $SOURCE $TARGET")
+#eep = env.Command("main.eep", "main.elf", '-$OBJCOPY -j .eeprom' \
+#                  ' --set-section-flags=.eeprom="alloc,load"' \
+#                  ' --change-section-lma .eeprom=0 -O ihex $SOURCE $TARGET')
+#lss = env.Command("main.lss", "main.elf", "$OBJDUMP -h -S $SOURCE > $TARGET")
+#sym = env.Command("main.sym", "main.elf", "$NM -n $SOURCE > $TARGET")

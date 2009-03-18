@@ -1,0 +1,51 @@
+import os
+
+Import("vars")
+
+vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x3000)
+vars.Add("PM_UART_BAUD", "Baud rate of the ipm serial connection.", 19200)
+vars.Add("IPM", "Add the interactive library to the standard lib", True)
+vars.Add("MCU", "Type of ARM device; the arg to -mmcu.", "arm7tdmi")
+vars.Add("SUBMDL", "The sub-model of ARM device.", "AT91SAM7S64")
+vars.Add("NM", "", "arm-elf-nm")
+vars.Add("OBJCOPY", "", "arm-elf-objcopy")
+vars.Add("OBJDUMP", "", "arm-elf-objdump")
+vars.Add("SIZE", "", "arm-elf-size")
+
+CFLAGS = "-DHEAP_SIZE=$PM_HEAP_SIZE -DUART_BAUD=$PM_UART_BAUD -DROM_RUN" \
+         " -Wall -Wimplicit -Wpointer-arith -Wswitch" \
+         " -Wredundant-decls -Wreturn-type -Wshadow -Wunused" \
+         " -mcpu=$MCU -Os -std=gnu99 -Wall -gstabs -Werror"
+if "DEBUG" in vars.args.keys():
+    CFLAGS = "-g -gstabs -D__DEBUG__=1 " + CFLAGS
+SOURCES = ["main.c", "plat.c"]
+PY_SOURCES = ["main.py"]
+PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
+
+envarm = Environment(variables = vars,
+                     CPPPATH = "../../vm",
+                     CC = "arm-elf-gcc",
+                     CCFLAGS = CFLAGS,
+                     CXX = "arm-elf-g++",
+#                     LINKCOM = "arm-elf-ld",
+                     LINKFLAGS = "-nostartfiles -lc -lgcc" \
+                                 " -Tsrc/platform/at91sam7s-ek/$SUBMDL-ROM.ld",
+                     AR = "arm-elf-ar",
+                     ARFLAGS = "rcs",
+                     RANLIB = "arm-elf-ranlib")
+envarm.AppendENVPath("PATH", "/opt/local/bin")
+aobj1 = envarm.Object("Cstartup_SAM7.o", "Cstartup_SAM7.c")
+aobj2 = envarm.Object("Cstartup.o", "Cstartup.S")
+
+env = envarm.Clone(CCFLAGS = "-mthumb " + CFLAGS)
+vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
+img_sources = Command(["main_img.c", "main_nat.c"], [PY_SOURCES],
+    "src/tools/pmImgCreator.py -c -u -o src/platform/at91sam7s-ek/main_img.c" \
+    " --native-file=src/platform/at91sam7s-ek/main_nat.c $SOURCES")
+elf = env.Program("main.elf", SOURCES + img_sources + aobj1 + aobj2,
+                  LIBS = PM_LIB_ROOT, LIBPATH = ["../../vm"])
+
+hex = env.Command("main.hex", "main.elf", "$OBJCOPY -O ihex $SOURCE $TARGET")
+bin = env.Command("main.bin", "main.elf", "$OBJCOPY -O binary $SOURCE $TARGET")
+#lss = env.Command("main.lss", "main.elf", "$OBJDUMP -h -S -C $SOURCE > $TARGET")
+#sym = env.Command("main.sym", "main.elf", "$NM -n $SOURCE > $TARGET")

@@ -1,0 +1,41 @@
+#
+# NOTICE: This does not work yet.
+#
+
+
+import os
+
+vars = Variables()
+vars.args["PLATFORM"] = "check"
+vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x2000)
+vars.Add("IPM", "Add the interactive library to the standard lib", True)
+
+CFLAGS = "-g -ggdb -D__DEBUG__=1 -DHEAP_SIZE=$PM_HEAP_SIZE " \
+         "-Os -Wall -gstabs -Wstrict-prototypes -Werror"
+#PY_SOURCES = ["main.py"]
+PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
+
+env = Environment(variables = vars,
+                  CPPPATH = "../../vm",
+                  CCFLAGS = CFLAGS)
+
+vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
+
+plat = env.Object("plat.c")
+check = []
+for fn in Glob("t*.c"):
+    fn = str(fn)
+    fnroot = os.path.splitext(fn)[0]
+    img_sources = Command([fnroot+"_img.c", fnroot+"_nat.c"], [fnroot+".py"],
+        "src/tools/pmImgCreator.py -c -u -o src/tests/system/%s_img.c" \
+        " --native-file=src/tests/system/%s_nat.c $SOURCES" % (fnroot, fnroot))
+    check.append(env.Program(fnroot+".out",
+                             [fn, plat] + img_sources,
+                             LIBS = PM_LIB_ROOT, LIBPATH = ["../../vm"]))
+    
+    # Execute the test
+    exe= Builder(action="./$SOURCE")
+    env.Append(BUILDERS = {'Exe' : exe})
+    env.Exe(fnroot+".exe", fnroot+".out")
+
+Alias("check", check)

@@ -12,6 +12,7 @@ The PyMite Build System
 :Author:    Dean Hall
 :Id:        $Id$
 
+
 Purpose
 -------
 
@@ -19,17 +20,27 @@ This document describes the build system for the PyMite project.
 In doing so, it serves both as a design document for the PyMite
 developer and a user manual for the PyMite user.
 
+
 Overview
 --------
 
-PyMite use a makefile-based build system with an allowance for
+PyMite has two build systems available.  The first system is based on Make
+and is the most complete.  The second system is based on Scons_.
+
+.. _Scons: http://www.scons.org
+
+
+The Make Build System
+---------------------
+
+PyMite uses a makefile-based build system with an allowance for
 using features of `GNU make`_.  The project has a ``Makefile`` in the project
 root directory that, when called by typing ``make`` at the command prompt,
 compiles for the desktop platform:
 
     - the PyMite standard library ``src/lib/`` image file,
       ``src/vm/pmstdlib_img.c``, and native code file, ``src/vm/pmstdlib_nat.c``
-    - the PyMite VM archive, ``libpmvm.desktop.a``
+    - the PyMite VM archive, ``libpmvm_desktop.a``
     - the PyMite executable, ``src/platform/desktop/main.out``
 
 More options for building the project are available by using the available
@@ -47,14 +58,8 @@ source code which are used to build the standard library.
 .. _`GNU make`: http://www.gnu.org/software/make/
 
 
-Requirements
-------------
-
-The PyMite interpreter requires bytecodes created by Python version 2.5 or 2.6.
-
-
 Available Targets
------------------
+~~~~~~~~~~~~~~~~~
 
 GNU projects have, by convention, a set of typical targets that can be built.
 The PyMite build system shall support the following set of targets
@@ -84,7 +89,7 @@ by typing ``make`` `<target>` at the command prompt:
 
 
 Build Options
--------------
+~~~~~~~~~~~~~
 
 There are a handful of build options that one can provide to ``make`` that
 alter PyMite's behavior or set its configuration in some way.  The following
@@ -102,15 +107,14 @@ is a list of the build options and their possible values.
     of 4.  The default value is defined in the platform's Makefile.
     Example: ``make HEAP_SIZE=0x1000``
 
-``PLATFORM``:
-    Specifies the intended target platform.  Possible values are the names
-    of the subdirectories in ``src/platform``: ``at91sam7s-ek``,
-    ``avr``, ``mmb103`` and ``desktop``.  The default is ``desktop``.
+``PLATFORM=<platform>``:
+    Builds PyMite for the desired platform.  The given platform must be the
+    name of a subdirectory of ``src/platform/``.  The default is ``desktop``.
     Example: ``make PLATFORM=avr``
 
 
 Self Testing
-------------
+~~~~~~~~~~~~
 
 PyMite has both unit tests and system tests to provide some amount of
 code validity.  Running ``make check`` will build the VM if needed and all self
@@ -128,8 +132,9 @@ either painstakingly step through the program using a debugger or devise a
 way to determine the exit code of the VM.  Perhaps running on a device simulator
 is a better option.
 
+
 Distribution
-------------
+~~~~~~~~~~~~
 
 The PyMite release manager should be the only one who uses the
 distribution target.  The makefiles shall be configured so that
@@ -138,5 +143,56 @@ all the release manager must do is run ``make dist PYMITE_RELEASE=RR``
 release file, ``pymite-RR.tar.gz``.
 
 The html documentation shall be pre-built and included in the release file.
+
+
+The Scons Build System
+----------------------
+
+The Scons build system attempts to perform the same operations as the Make
+build system.  However, the Scons build only supports a subset of the targets
+of the Make build.  The reason for including a Scons build system is two-fold:
+First, Scons uses the familiar Python syntax in its build definition files.
+Second, a variety of build systems may help others port PyMite to new platforms.
+
+
+Available Targets
+~~~~~~~~~~~~~~~~~
+
+The Scons build uses the same target names as the Make build.
+However, there are a couple syntactic changes:
+
+=================   ==================================
+Instead of...       Type...
+=================   ==================================
+``make all``        ``scons``
+``make clean``      ``scons <target> -c``
+=================   ==================================
+
+Here are the Scons targets:
+
+``<None>``:
+    Compiles PyMite for the desktop platform.  This is the default target.
+
+``-c``:
+    Deletes the files in this and other directories that are created by
+    building the target.
+
+``TAGS`` or ``tags``:
+    Updates a tags index file for this project.
+    Also updates cscope databases for the VM and pmstdlib source code.
+
+``html`` or ``docs``:
+    Generates the documentation files from ``docs/src/`` and
+    places the output HTML files in ``docs/html/``.
+
+``dist``:
+    Create a distribution tar file for this program.
+    *This target should only be used by the PyMite release manager.*
+
+``PLATFORM=<platform>``:
+    Builds PyMite for the desired platform.  The given platform must be the
+    name of a subdirectory of ``src/platform/``.  The default is ``desktop``.
+    Example: ``make PLATFORM=avr``
+
 
 .. :mode=rest:
