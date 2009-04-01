@@ -6,6 +6,7 @@ PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py
 PM_HEAP_SIZE = 0x2000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+IPM = true
 
 TARGET = main
 SOURCES = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
@@ -17,17 +18,15 @@ ifeq ($(DEBUG),true)
 endif
 CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -I../../vm $(CDEFS)
 
-%.out : %*_nat.c %*_img.c %.c
-	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../../vm/libpmvm.a
+export CFLAGS IPM HEAP_SIZE PM_LIB_FN
+
 
 .PHONY: all clean
-
-export CFLAGS IPM HEAP_SIZE PM_LIB_FN
 
 all : $(TARGET).out
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
-	make -C ../../vm IPM=true
+	make -C ../../vm
 
 $(TARGET).out : $(OBJS) $(PM_LIB_PATH)
 	$(CC) -o $@ $(OBJS) $(PM_LIB_PATH)

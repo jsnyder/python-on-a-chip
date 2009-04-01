@@ -76,7 +76,7 @@ PM_FEATURES = {
 EX_USAGE = 64
 
 # remove documentation string from const pool
-REMOVE_DOC_STR = 0
+REMOVE_DOC_STR = False
 
 # Pm obj descriptor type constants
 # Must match PmType_e in pm.h
@@ -606,11 +606,17 @@ class PmImgCreator:
             ## Consts filter
             # if want to remove __doc__ string
             # WARNING: this heuristic is not always accurate
-            elif REMOVE_DOC_STR and co.co_names[0] == "__doc__":
+            elif (REMOVE_DOC_STR and len(co.co_names) > 0
+                  and co.co_names[0] == "__doc__"):
                 consts[0] = None
 
         ## Names filter
         names = list(co.co_names)
+
+        # Remove __doc__ name if requested
+        if REMOVE_DOC_STR and len(names) > 0 and names[0] == "__doc__":
+            names[0] = ''
+
         # if co_name is the module identifier change it to module name
         if co.co_name == MODULE_IDENTIFIER:
             names.append(mn)

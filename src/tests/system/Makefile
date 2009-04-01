@@ -2,7 +2,7 @@ SHELL = /bin/sh
 
 # PyMite Configuration
 PLATFORM ?= desktop
-PM_LIB_ROOT = pmvm.$(PLATFORM)
+PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = $(SOURCES:.c=.py)
