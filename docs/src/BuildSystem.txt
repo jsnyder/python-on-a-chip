@@ -100,12 +100,12 @@ is a list of the build options and their possible values.
     Possible values: ``true``, ``false``.  The default is ``false``.
     Example: ``make DEBUG=true``
 
-``HEAP_SIZE``:
+``PM_HEAP_SIZE``:
     Specifies the desired size of the PyMite heap in bytes.
     Possible values can be any positive integer.  To avoid errors, the size
     should be less than the size of physical memory and an integer multiple
     of 4.  The default value is defined in the platform's Makefile.
-    Example: ``make HEAP_SIZE=0x1000``
+    Example: ``make PM_HEAP_SIZE=0x8000``
 
 ``PLATFORM=<platform>``:
     Builds PyMite for the desired platform.  The given platform must be the

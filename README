@@ -23,7 +23,7 @@ PyMite can also be compiled, tested and executed on a desktop computer.
 License
 -------
 
-PyMite is offered through one of two licenses: commercial or open-source.
+PyMite is offered through one of two licenses: commercial or GPL v2.
 See the LICENSE_ file at the root of this package for licensing details.
 
 All of the documentation and images for PyMite are
@@ -43,31 +43,40 @@ licensed under the GNU Free Documentation License.
 Build
 -----
 
-Perform the following steps to build PyMite and the included
-system tests on the desktop:
+You must build PyMite on a system with a POSIX-like terminal:
+Mac OS X, Linux or Cygwin.  GNU Make should be installed.
+The development system should have installed the
+`GNU Compiler Collection`_ version 3.4 or later and `Python`_ 2.5 or 2.6.
+The SCons build system is experimental.
+Please read ``docs/src/BuildSystem.txt`` for more details.
 
-    1. In the project root, run ``make`` to create ``libpmvm.a``
-    2. In the project root, run ``make check`` to build and run
-       the unit tests and the system tests.
+To build PyMite for the desktop platform and run the interactive prompt 
+(press Control+D when done)::
 
-To build for AVR targets like the ATmega103 (refer to the Makefile for others):
+    $ make ipm
+    ...
+    ipm> print "Hello world."
+    Hello world.
+    ipm> ^D
 
-    1. In the project root, run ``make clean; make TARGET=AVR``
-    2. In ``src/sample/avr`` run ``make`` to build a sample program for the AVR.
+To run the system tests on the desktop::
 
-The development system should have installed the GNU Compiler
-Collection version 3.4 or later and Python 2.5 or 2.6.
-The author also uses avr-gcc to target Atmel AVR microcontrollers
-and arm-elf-gcc to target ARM7TDMI microcontrollers.
+    $ make check
 
-PyMite is developed on Mac OS X and should also compile on
-GNU/Linux and Cygwin operating systems.  Since PyMite is so
-deeply embedded, it does not rely on many libraries.
+To cross-compile for a different platform, type ``make PLATFORM=<plat>``
+where ``<plat>`` is the name of a subdirectory in ``src/platform/``.
+For example::
+
+    $ make PLATFORM=avr
+
+The author uses avr-gcc to compile for Atmel AVR microcontrollers
+and arm-elf-gcc to compile for ARM7TDMI microcontrollers.
+
+Since PyMite is so deeply embedded, it does not rely on many libraries.
 When compiling for the AVR, it will need avr-libc.
 
-PyMite builds as an archive.  The user should then build his
-own main() function following examples in ``src/sample/`` and link to
-``libpmvm.a`` and the appropriate PyMite native libraries.
+.. _`GNU Compiler Collection`: http://gcc.gnu.org/
+.. _`Python`: http://www.python.org/download
 
 
 Discussion
@@ -75,12 +84,15 @@ Discussion
 
 Please review the `PyMite Trac`_ project management space
 space for up-to-date information about PyMite.
-Please join the `PyMite maillist`_ for all communications concerning PyMite.
+Please join the `PyMite maillist`_ for discussion about PyMite VM development.
 This will ensure that FAQs can be found in the list archives and
 all issues are captured and available for public inspection.
+Also, the `Python-on-a-chip`_ maillist is for people using PyMite on
+microcontrollers.
 
 .. _`PyMite Trac`: http://pymite.python-hosting.com/
 .. _`PyMite maillist`: http://groups.google.com/group/pymite
+.. _`Python-on-a-chip`: http://groups.google.com/group/python-on-a-chip
 
 
 Thanks
