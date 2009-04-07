@@ -17,6 +17,10 @@
  */
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -29,6 +33,15 @@
  * and line number.
  */
 #define PM_RELEASE 7
+
+/** Static initial size of the heap. */
+#ifndef HEAP_SIZE
+#warning HEAP_SIZE not defined by the build environment, defaulting to 0x7000
+#define HEAP_SIZE 0x7000
+#endif
+#if HEAP_SIZE & 3
+#error HEAP_SIZE is not a multiple of four
+#endif
 
 
 /** null for C code */
@@ -228,3 +241,8 @@ PmReturn_t pm_run(uint8_t const *modstr);
 PmReturn_t pm_vmPeriodic(uint16_t usecsSinceLastCall);
 
 #endif /* __PM_H__ */
+
+
+#ifdef __cplusplus
+}
+#endif

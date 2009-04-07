@@ -52,7 +52,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
         *paddr = imgtop + CI_NAMES_FIELD;
 
         /* Ensure it's a tuple */
-        type = mem_getByte(memspace, paddr);
+        type = (PmType_t)mem_getByte(memspace, paddr);
         C_ASSERT(type == OBJ_TYPE_TUP);
 
         /* Scan to last name in tuple (it's the module's name) */
@@ -60,7 +60,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
         for (; i > 0; i--)
         {
             /* Ensure obj is a string */
-            type = mem_getByte(memspace, paddr);
+            type = (PmType_t)mem_getByte(memspace, paddr);
             C_ASSERT(type == OBJ_TYPE_STR);
 
             /* Skip the length of the string */
@@ -69,7 +69,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
         }
 
         /* Ensure it's a string */
-        type = mem_getByte(memspace, paddr);
+        type = (PmType_t)mem_getByte(memspace, paddr);
         C_ASSERT(type == OBJ_TYPE_STR);
 
         /* If strings match, return the address of this image */
@@ -87,7 +87,7 @@ img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
         *paddr = imgtop;
 
         /* Check if another img follows this one */
-        type = mem_getByte(memspace, paddr);
+        type = (PmType_t)mem_getByte(memspace, paddr);
     }
     return PM_RET_NO;
 }

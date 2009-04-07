@@ -96,7 +96,7 @@ def chr(n):
     }
 
     /* Create char string from  integer value */
-    retval = string_newFromChar((uint8_t const)n, &ps);
+    retval = string_newFromChar((uint8_t)n, &ps);
     NATIVE_SET_TOS(ps);
     return retval;
     """

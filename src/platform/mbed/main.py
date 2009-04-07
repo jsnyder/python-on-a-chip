@@ -5,10 +5,5 @@
 # See the LICENSE file at the root of this package for licensing details.
 #
 
-#
-# Runs the interactive interpreter
-#
-
-
 import ipm
-ipm.ipm()
+ipm.ipm(globals())

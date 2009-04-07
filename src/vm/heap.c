@@ -23,17 +23,6 @@
 
 
 /**
- * Static initial size of the heap.
- * A value should be provided by the makefile
- */
-#ifndef HEAP_SIZE
-#error HEAP_SIZE not defined by the build environment
-#endif
-#if HEAP_SIZE & 3
-#error HEAP_SIZE is not a multiple of four
-#endif
-
-/**
  * The maximum size a live chunk can be (a live chunk is one that is in use).
  * The live chunk size is limited by the size field in the *object* descriptor.
  * That field is nine bits with two assumed least significant bits (zeros):
@@ -512,7 +501,7 @@ heap_gcMarkObj(pPmObj_t pobj)
     /* The object must not already be free */
     C_ASSERT(OBJ_GET_FREE(pobj) == 0);
 
-    type = OBJ_GET_TYPE(pobj);
+    type = (PmType_t)OBJ_GET_TYPE(pobj);
     switch (type)
     {
             /* Objects with no references to other objects */
@@ -964,9 +953,9 @@ heap_gcRun(void)
 
 /* Enables or disables automatic garbage collection */
 PmReturn_t
-heap_gcSetAuto(uint8_t bool)
+heap_gcSetAuto(uint8_t auto_gc)
 {
-    pmHeap.auto_gc = bool;
+    pmHeap.auto_gc = auto_gc;
     return PM_RET_OK;
 }
 #endif /* HAVE_GC */

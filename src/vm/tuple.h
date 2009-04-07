@@ -35,7 +35,7 @@ typedef struct PmTuple_s
     int16_t length;
 
     /** Array of ptrs to objs */
-    pPmObj_t val[0];
+    pPmObj_t val[1];
 } PmTuple_t,
  *pPmTuple_t;
 

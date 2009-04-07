@@ -1,0 +1,28 @@
+=========================
+The Mbed Platform Project
+=========================
+
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This is a sample project that demonstrates running interactive PyMite (ipm)
+on the Mbed-002_ board, which is an NXP LPC2368_ in a stamp configuration.
+
+.. _`Mbed-002`: http://mbed.co.uk
+.. _`LPC2368`: http://www.standardics.nxp.com/products/lpc2000/lpc23xx/
+
+
+Building the Project
+--------------------
+
+Building this project is not currently supported.
+You must be a beta-tester of the Mbed system to build this project.
+All this will change soon when the Mbed is released to the public.
+
+
+.. :mode=rest:

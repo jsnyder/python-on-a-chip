@@ -141,7 +141,7 @@ int_print(pPmObj_t pint)
      * included for compiles without strict-ansi.
      */
     bytesWritten =
-        sprintf((void *)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
+        sprintf((char *)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
 
 
     /* Sanity check */

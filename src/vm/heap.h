@@ -81,7 +81,7 @@ PmReturn_t heap_gcRun(void);
  * @param   bool Value to enable or disable auto GC
  * @return  Return code
  */
-PmReturn_t heap_gcSetAuto(uint8_t bool);
+PmReturn_t heap_gcSetAuto(uint8_t auto_gc);
 #endif /* HAVE_GC */
 
 #endif /* __HEAP_H__ */

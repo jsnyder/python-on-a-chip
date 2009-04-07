@@ -1133,7 +1133,7 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))
                 {
-                    retval = float_compare(TOS1, TOS, &pobj3, t16);
+                    retval = float_compare(TOS1, TOS, &pobj3, (PmCompare_t)t16);
                     SP--;
                     TOS = pobj3;
                     continue;
