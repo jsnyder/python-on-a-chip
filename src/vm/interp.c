@@ -1452,18 +1452,11 @@ interpret(const uint8_t returnOnNoThreads)
                      */
 
 #ifdef HAVE_DEFAULTARGS
-                    /* If this func has no default arguments */
-                    if (((pPmFunc_t)pobj1)->f_defaultargs == C_NULL)
-                    {
-                        t8 = 0;
-                    }
-
                     /* Num required args := argcount - num default args */
-                    else
+                    t8 = ((pPmFunc_t)pobj1)->f_co->co_argcount;
+                    if (((pPmFunc_t)pobj1)->f_defaultargs != C_NULL)
                     {
-                        t8 = ((pPmFunc_t)pobj1)->f_co->co_argcount
-                            -
-                            ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)->
+                        t8 -= ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)->
                             length;
                     }
 
