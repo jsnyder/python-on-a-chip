@@ -21,7 +21,7 @@
  * The threshold of heap.avail under which the interpreter will run the GC
  * just before starting a native session.
  */
-#define HEAP_GC_NF_THRESHOLD (1024)
+#define HEAP_GC_NF_THRESHOLD (512)
 
 
 #ifdef __DEBUG__

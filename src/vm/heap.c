@@ -152,6 +152,50 @@ heap_gcPrintFreelist(void)
 #endif
 
 
+#if 0
+/** DEBUG: dumps the heap and roots list to a file */
+static void
+heap_dump(void)
+{
+    static int n = 0;
+    int i;
+    char filename[32];
+    FILE *fp;
+
+    snprintf(filename, 32, "pmheapdump%02d.bin", n++);
+    fp = fopen(filename, "wb");
+
+    /* Write size of heap */
+    i = HEAP_SIZE;
+    fwrite(&i, sizeof(int), 1, fp);
+
+    /* Write base address of heap */
+    i = (int)&pmHeap.base;
+    fwrite(&i, sizeof(int *), 1, fp);
+
+    /* Write contents of heap */
+    fwrite(&pmHeap.base, 1, HEAP_SIZE, fp);
+
+    /* Write num roots*/
+    i = 10;
+    fwrite(&i, sizeof(int), 1, fp);
+
+    /* Write heap root ptrs */
+    fwrite((void *)&gVmGlobal.pnone, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.pfalse, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.ptrue, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.pzero, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.pone, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.pnegone, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.pcodeStr, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.builtins, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.nativeframe, sizeof(intptr_t), 1, fp);
+    fwrite((void *)&gVmGlobal.threadList, sizeof(intptr_t), 1, fp);
+    fclose(fp);
+}
+#endif
+
+
 /* Removes the given chunk from the free list; leaves list in sorted order */
 static PmReturn_t
 heap_unlinkFromFreelist(pPmHeapDesc_t pchunk)
@@ -511,6 +555,7 @@ heap_gcMarkObj(pPmObj_t pobj)
         case OBJ_TYPE_STR:
         case OBJ_TYPE_NOB:
         case OBJ_TYPE_BOOL:
+        case OBJ_TYPE_CIO:
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
             break;
 
@@ -564,10 +609,8 @@ heap_gcMarkObj(pPmObj_t pobj)
             /* #122: Mark the code image if it is in RAM */
             if (((pPmCo_t)pobj)->co_memspace == MEMSPACE_RAM)
             {
-                /* Special case: The image is contained in a string object */
                 retval = heap_gcMarkObj((pPmObj_t)
-                                        (((pPmCo_t)pobj)->co_codeimgaddr
-                                         - sizeof(PmObjDesc_t)));
+                                        (((pPmCo_t)pobj)->co_codeimgaddr));
             }
             break;
 
@@ -942,11 +985,13 @@ heap_gcRun(void)
     PmReturn_t retval;
 
     C_DEBUG_PRINT(VERBOSITY_LOW, "heap_gcRun()\n");
+    /*heap_dump();*/
 
     retval = heap_gcMarkRoots();
     PM_RETURN_IF_ERROR(retval);
 
     retval = heap_gcSweep();
+    /*heap_dump();*/
     return retval;
 }
 

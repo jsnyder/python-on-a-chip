@@ -78,6 +78,25 @@ obj_loadFromImg(PmMemSpace_t memspace,
 }
 
 
+PmReturn_t
+obj_loadFromImgObj(pPmObj_t pimg, pPmObj_t *r_pobj)
+{
+    uint8_t const *imgaddr;
+    PmReturn_t retval;
+
+    C_ASSERT(OBJ_GET_TYPE(pimg) == OBJ_TYPE_CIO);
+    imgaddr = (uint8_t const *)&(((pPmCodeImgObj_t)pimg)->val);
+
+    retval = obj_loadFromImg(MEMSPACE_RAM, &imgaddr, r_pobj);
+    C_ASSERT(OBJ_GET_TYPE(*r_pobj) == OBJ_TYPE_COB);
+
+    /* The CO must reference the top of the code img obj */
+    ((pPmCo_t)*r_pobj)->co_codeimgaddr = (uint8_t const *)pimg;
+
+    return retval;
+}
+
+
 /* Returns true if the obj is false */
 int8_t
 obj_isFalse(pPmObj_t pobj)

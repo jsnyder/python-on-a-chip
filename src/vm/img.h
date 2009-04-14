@@ -32,6 +32,25 @@ PmImgPaths_t, *pPmImgPaths_t;
 
 
 /**
+ * Code image object
+ *
+ * A type to hold code images in the heap.
+ * A code image with an object descriptor at the front.
+ * Used for storing image objects during ipm;
+ * the code object keeps a reference to this object.
+ */
+typedef struct PmCodeImgObj_s
+{
+    /** Object descriptor */
+    PmObjDesc_t od;
+
+    /** Null-term? char array */
+    uint8_t val[1];
+} PmCodeImgObj_t,
+ *pPmCodeImgObj_t;
+
+
+/**
  * Iterates over all paths in the paths array until the named module is found.
  * Returns the memspace,address of the head of the module.
  *

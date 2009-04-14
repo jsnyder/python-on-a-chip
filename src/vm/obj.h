@@ -171,14 +171,17 @@ typedef enum PmType_e
     /** Boolean object */
     OBJ_TYPE_BOOL = 0x0F,
 
+    /** Code image object */
+    OBJ_TYPE_CIO = 0x10,
+    
     /* All types after this are not hashable */
-    OBJ_TYPE_HASHABLE_MAX = 0x0F,
+    OBJ_TYPE_HASHABLE_MAX = 0x10,
 
     /** List (mutable sequence) */
-    OBJ_TYPE_LST = 0x10,
+    OBJ_TYPE_LST = 0x11,
 
     /** Dictionary (hash table) */
-    OBJ_TYPE_DIC = 0x11,
+    OBJ_TYPE_DIC = 0x12,
 
     /* All types after this are not accessible to the user */
     OBJ_TYPE_ACCESSIBLE_MAX = 0x19,
@@ -286,6 +289,15 @@ PmBoolean_t, *pPmBoolean_t;
  */
 PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
                            uint8_t const **paddr, pPmObj_t *r_pobj);
+
+/** 
+ * Loads a code object from a code image object
+ *
+ * @param pimg Ptr to a code image object
+ * @param r_pobj Return arg, the loaded object
+ * @return  Returns status
+ */
+PmReturn_t obj_loadFromImgObj(pPmObj_t pimg, pPmObj_t *r_pobj);
 
 /**
  * Finds the boolean value of the given object.

@@ -42,7 +42,7 @@ typedef struct PmCo_s
     PmObjDesc_t od;
     /** memory space selector */
     PmMemSpace_t co_memspace:8;
-    /** address in memspace of code image */
+    /** address in progmem of the code image, or of code img obj in heap */
     uint8_t const *co_codeimgaddr;
     /** address in RAM of names tuple */
     pPmTuple_t co_names;

@@ -45,7 +45,7 @@ TAGS :
 	$(TAGS) -R *
 	$(CSCOPE) -b -c -R
 	cd src/tools && $(PYCSCOPE) *.py
-	cd src/lib && $(PYCSCOPE) *.py
+#	cd src/lib && $(PYCSCOPE) *.py
 
 dist :
 ifndef PM_RELEASE

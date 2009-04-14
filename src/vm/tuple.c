@@ -65,8 +65,8 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
         return retval;
     }
 
-    /* Calc size of struct to hold tuple */
-    size = sizeof(PmTuple_t) + (n * sizeof(pPmObj_t));
+    /* Calc size of struct to hold tuple; (n-1) because PmTuple_t has val[1] */
+    size = sizeof(PmTuple_t) + ((n - 1) * sizeof(pPmObj_t));
 
     /* Allocate a tuple */
     retval = heap_getChunk(size, (uint8_t **)r_ptuple);

@@ -673,7 +673,7 @@ def Co(i):
 
     /* Raise ValueError if arg is not a string */
     pimg = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(pimg) != OBJ_TYPE_STR)
+    if (OBJ_GET_TYPE(pimg) != OBJ_TYPE_CIO)
     {
         PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
@@ -681,7 +681,7 @@ def Co(i):
 
     /* Create a code object from the image */
     imgaddr = (uint8_t *)&((pPmString_t)pimg)->val;
-    retval = obj_loadFromImg(MEMSPACE_RAM, &imgaddr, &pco);
+    retval = obj_loadFromImgObj(pimg, &pco);
     PM_RETURN_IF_ERROR(retval);
 
     /* Return the code object */

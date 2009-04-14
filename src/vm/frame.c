@@ -43,7 +43,14 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     }
 
     /* Get sizes needed to calc frame size */
-    paddr = pco->co_codeimgaddr + CI_STACKSIZE_FIELD;
+    if (pco->co_memspace == MEMSPACE_RAM)
+    {
+        paddr = (uint8_t *)((pPmCodeImgObj_t)pco->co_codeimgaddr)->val + CI_STACKSIZE_FIELD;
+    }
+    else
+    {
+        paddr = pco->co_codeimgaddr + CI_STACKSIZE_FIELD;
+    }
     stacksz = mem_getByte(pco->co_memspace, &paddr);
 
     /* Now paddr points to CI_NLOCALS_FIELD */

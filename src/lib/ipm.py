@@ -20,7 +20,7 @@ def _getImg():
     uint8_t imgType;
     uint16_t imgSize;
     uint8_t *pchunk;
-    pPmString_t pimg;
+    pPmCodeImgObj_t pimg;
     uint16_t i;
     uint8_t b;
 
@@ -43,14 +43,11 @@ def _getImg():
     PM_RETURN_IF_ERROR(retval);
     imgSize |= (b << 8);
 
-    /* Get space for String obj */
-    retval = heap_getChunk(sizeof(PmString_t) + imgSize, &pchunk);
+    /* Get space for CodeImgObj */
+    retval = heap_getChunk(sizeof(PmCodeImgObj_t) + imgSize, &pchunk);
     PM_RETURN_IF_ERROR(retval);
-    pimg = (pPmString_t)pchunk;
-
-    /* Set the string object's fields */
-    OBJ_SET_TYPE(pimg, OBJ_TYPE_STR);
-    pimg->length = imgSize;
+    pimg = (pPmCodeImgObj_t)pchunk;
+    OBJ_SET_TYPE(pimg, OBJ_TYPE_CIO);
 
     /* Start the image with the bytes that have already been received */
     i = 0;
@@ -81,9 +78,12 @@ def ipm(g={}):
     while 1:
         # Wait for a code image, make a code object from it
         # and evaluate the code object.
-        rv = eval(Co(_getImg()), g)
+        # #180: One-liner turned into 3 so that objects get bound to roots
+        s = _getImg()
+        co = Co(s)
+        rv = eval(co, g)
 
         # Send a byte to indicate completion of evaluation
         print '\x04',
 
-#:mode=c:
+# :mode=c:
