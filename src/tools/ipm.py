@@ -33,12 +33,19 @@ __usage__ = """USAGE:
     --desktop   to/from the target, which is the vm also running on the desktop.
                 ipm spawns the vm and runs ipm-desktop as a subprocess.
 
-    -s <d> [<r>]  Specifies a serial connection over character device, <d>;
-                  optional argument baud rate, <r> (default=19200)
+    -s <port> [<baud>] Specifies the port (device) for a serial connection.
+                <port> resembles `com5` on Win32 or `/dev/cu.usbmodem1912`.
+                Optional argument, <baud>, defaults to 19200.
 
-    --serial=<d> Specifies a serial connection over character device, <d>.
+    --serial=<port> Specifies the port (device) for a serial connection.
 
-    --baud=<r>  Specifies the baud rate for a serial connection (default=19200)
+    --baud=<baud>   Specifies the baud rate for a serial connection.
+
+REQUIREMENTS:
+
+    - pySerial package from http://pyserial.wiki.sourceforge.net/pySerial
+    - Win32 platforms require pywin32 package from
+      http://sourceforge.net/projects/pywin32/
     """
 
 PMVM_EXE = "../platform/desktop/main.out"
@@ -269,7 +276,7 @@ def parse_cmdline():
     baud = 19200
     Conn = PipeConnection
     serdev = None
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ds",
             ["desktop", "serial=", "baud="])

@@ -89,9 +89,20 @@ Using ipm-host
 PyMite includes the Python program, ``src/tools/ipm.py``, that is a
 cross-platform implementation of ipm-host that runs from a command prompt.
 
+``src/tools/ipm.py`` requires the `pySerial package`_ that can be installed
+like this::
 
-Runnin ipm on the Desktop
--------------------------
+    easy_install pyserial
+
+If you are running on a Win32 host, pySerial, in turn, requires the
+`pywin32 package`_.
+
+.. _`pySerial package`: http://pyserial.wiki.sourceforge.net/pySerial
+.. _`pywin32 package`: http://sourceforge.net/projects/pywin32/
+
+
+Running ipm on the Desktop
+--------------------------
 
 The sample project in ``src/platform/desktop/`` was created to build PyMite
 for the desktop target. The output of this project is used by ipm-host when it
@@ -119,6 +130,24 @@ you are done.  The following is a sample interactive session::
     ipm> [chr(x+0x30) for x in range(50) if x%4 == 3]
     ['3', '7', ';', '?', 'C', 'G', 'K', 'O', 'S', 'W', '[', '_']
     ipm> ^D
+
+To manually start ipm-host, first cd to ``src/tools``.
+To run both ipm-host and ipm-target on the desktop::
+
+    $ ./ipm -d
+
+Or to connect to a target device runing ipm via a serial port::
+
+    $ ./ipm -s <port> <baud>
+
+or, more verbosely::
+
+    $ ./ipm --serial=<port> --baud=<baud>
+
+where *<port>* is ``comX`` (and X is a number of the com port) on a Cygwin host
+or the serial device filename on a Mac or Linux host (e.g. ``/dev/cu.usbmodem1912``);
+and *<baud>* should correspond to the target's configured baud rate for the
+serial port you are connecting to, 19200 by default.
 
 
 Running ipm on an embedded target
