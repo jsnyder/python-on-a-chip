@@ -29,6 +29,9 @@ import pmImgCreator
 __usage__ = """USAGE:
     ipm.py -[d|s /dev/tty] --[desktop | serial=/dev/tty [baud=19200]]
 
+    -h          Prints this usage message.
+    --help
+    
     -d          Specifies a desktop connection; uses pipes to send/receive bytes
     --desktop   to/from the target, which is the vm also running on the desktop.
                 ipm spawns the vm and runs ipm-desktop as a subprocess.
@@ -52,9 +55,10 @@ PMVM_EXE = "../platform/desktop/main.out"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
-HELP_MESSAGE = """PyMite is Copyright 2002 Dean Hall.  See LICENSE for details.
+INIT_MESSAGE = """PyMite is Copyright 2002 Dean Hall.  See LICENSE for details.
 This software is licensed under the GNU GPL Version 2 with NO WARRANTY.
-Type the Python code that you want to run on the target device.
+"""
+HELP_MESSAGE = """Type the Python code that you want to run on the target device.
 If you see no prompt, type two consecutive returns to exit multiline mode.
 Type Ctrl+C to interrupt and Ctrl+D to quit (or Ctrl+Z <enter> on Win32).
 """
@@ -262,6 +266,7 @@ class Interactive(cmd.Cmd):
         The command loop is what calls self.onecmd().
         """
 
+        print INIT_MESSAGE,
         print HELP_MESSAGE,
 
         self.stop = False
@@ -281,16 +286,15 @@ def parse_cmdline():
     serdev = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ds",
-            ["desktop", "serial=", "baud="])
+        opts, args = getopt.getopt(sys.argv[1:], "dhs",
+            ["desktop", "help", "serial=", "baud="])
     except Exception, e:
-        raise e
         print __usage__
-        sys.exit(os.EX_USAGE)
+        sys.exit()
 
     if not opts:
         print __usage__
-        sys.exit(os.EX_USAGE)
+        sys.exit()
 
     for opt in opts:
         if opt[0] == "-d" or opt[0] == "--desktop":
@@ -306,6 +310,9 @@ def parse_cmdline():
         elif opt[0] == "--baud":
             assert serdev, "--serial must be specified before --baud."
             baud = int(opt[1])
+        else:
+            print __usage__
+            sys.exit(0)
 
     if Conn == SerialConnection:
         c = Conn(serdev, baud)
