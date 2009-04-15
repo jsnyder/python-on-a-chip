@@ -17,6 +17,7 @@
  */
 
 
+#include <math.h>
 #include "pm.h"
 
 
