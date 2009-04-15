@@ -137,11 +137,9 @@ int_print(pPmObj_t pint)
         return retval;
     }
 
-    /* This does not use snprintf because glibc's snprintf is only
-     * included for compiles without strict-ansi.
-     */
+    /* #196: Changed to use snprintf */
     bytesWritten =
-        sprintf((char *)&tBuffer, "%li", (long int)((pPmInt_t)pint)->val);
+        snprintf((char *)&tBuffer, 12, "%li", (long int)((pPmInt_t)pint)->val);
 
 
     /* Sanity check */

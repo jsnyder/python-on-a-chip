@@ -59,10 +59,8 @@ float_print(pPmObj_t pf)
         return retval;
     }
 
-    /* This does not use snprintf because glibc's snprintf is only
-     * included for compiles without strict-ansi.
-     */
-    bytesWritten = sprintf((char *)&tBuffer, "%f", ((pPmFloat_t) pf)->val);
+    /* #196: Changed to use snprintf */
+    bytesWritten = snprintf((char *)&tBuffer, 32, "%f", ((pPmFloat_t) pf)->val);
 
     /* Sanity check */
     C_ASSERT(bytesWritten != 0);
