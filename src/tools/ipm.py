@@ -52,10 +52,13 @@ PMVM_EXE = "../platform/desktop/main.out"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
-HELP_MESSAGE = "This is the interactive PyMite command line.\n" \
-               "Just type the code that you want the target device to run.\n" \
-               "Type another return if you see no prompt to exit multiline mode.\n" \
-               "Type Ctrl+C to interrupt and Ctrl+D to quit.\n"
+HELP_MESSAGE = """PyMite is Copyright 2002 Dean Hall.  See LICENSE for details.
+This software is licensed under the GNU GPL Version 2 with NO WARRANTY.
+Type the Python code that you want to run on the target device.
+If you see no prompt, type two consecutive returns to exit multiline mode.
+Type Ctrl+C to interrupt and Ctrl+D to quit (or Ctrl+Z <enter> on Win32).
+"""
+
 REPLY_TERMINATOR = '\x04'
 
 
