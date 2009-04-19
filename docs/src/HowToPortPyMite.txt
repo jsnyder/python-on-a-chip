@@ -68,6 +68,8 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       PMIMGCREATOR := ../../tools/pmImgCreator.py
       TARGET = main
       SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
+      # If you want to be able to run ipm, uncomment the following line
+      #IPM = true
 
       # PyMite: CFLAGS
       ifeq ($(DEBUG),true)
