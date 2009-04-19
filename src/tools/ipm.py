@@ -22,7 +22,6 @@ and the host computer prints the result.
 
 
 import cmd, dis, getopt, os, subprocess, sys
-import serial
 import pmImgCreator
 
 
@@ -31,7 +30,7 @@ __usage__ = """USAGE:
 
     -h          Prints this usage message.
     --help
-    
+
     -d          Specifies a desktop connection; uses pipes to send/receive bytes
     --desktop   to/from the target, which is the vm also running on the desktop.
                 ipm spawns the vm and runs ipm-desktop as a subprocess.
@@ -51,6 +50,7 @@ REQUIREMENTS:
       http://sourceforge.net/projects/pywin32/
     """
 
+NEED_PYSERIAL = "Install the pySerial module from http://pyserial.wiki.sourceforge.net/pySerial"
 PMVM_EXE = "../platform/desktop/main.out"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
@@ -125,7 +125,14 @@ class SerialConnection(Connection):
     This connection should work on any platform that PySerial supports.
     The ipm-device must be running at the same baud rate (19200 default).
     """
+
     def __init__(self, serdev="/dev/cu.SLAB_USBtoUART", baud=19200):
+        try:
+            import serial
+        except Exception, e:
+            print NEED_PYSERIAL
+            raise e
+
         self.s = serial.Serial(serdev, baud)
         self.s.setTimeout(4)
 
@@ -331,6 +338,12 @@ def main():
 def ser_test():
     """Test ipm over serial connection directly.
     """
+    try:
+        import serial
+    except Exception, e:
+        print NEED_PYSERIAL
+        raise e
+
     pic = pmImgCreator.PmImgCreator()
     serconn = serial.Serial("/dev/cu.SLAB_USBtoUART", 19200)
     serconn.setTimeout(2)
