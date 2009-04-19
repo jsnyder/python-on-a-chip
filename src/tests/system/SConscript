@@ -7,7 +7,6 @@ import os
 
 vars = Variables()
 vars.args["PLATFORM"] = "check"
-vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x2000)
 vars.Add("IPM", "Add the interactive library to the standard lib", True)
 
 CFLAGS = "-g -ggdb -D__DEBUG__=1 -DHEAP_SIZE=$PM_HEAP_SIZE " \
@@ -16,7 +15,7 @@ CFLAGS = "-g -ggdb -D__DEBUG__=1 -DHEAP_SIZE=$PM_HEAP_SIZE " \
 PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
 
 env = Environment(variables = vars,
-                  CPPPATH = "../../vm",
+                  CPPPATH = ["#src/vm", "#src/tests/system/"],
                   CCFLAGS = CFLAGS)
 
 vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])

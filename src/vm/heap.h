@@ -60,7 +60,7 @@ PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
 PmReturn_t heap_freeChunk(pPmObj_t ptr);
 
 /** @return  Return number of bytes available in the heap */
-#if HEAP_SIZE > 65535
+#if PM_HEAP_SIZE > 65535
 uint32_t
 #else
 uint16_t

@@ -2,8 +2,6 @@ import os
 
 Import("vars")
 
-vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x3000)
-vars.Add("PM_UART_BAUD", "Baud rate of the ipm serial connection.", 19200)
 vars.Add("IPM", "Add the interactive library to the standard lib", True)
 vars.Add("MCU", "Type of ARM device; the arg to -mmcu.", "arm7tdmi")
 vars.Add("SUBMDL", "The sub-model of ARM device.", "AT91SAM7S64")
@@ -12,7 +10,7 @@ vars.Add("OBJCOPY", "", "arm-elf-objcopy")
 vars.Add("OBJDUMP", "", "arm-elf-objdump")
 vars.Add("SIZE", "", "arm-elf-size")
 
-CFLAGS = "-DHEAP_SIZE=$PM_HEAP_SIZE -DUART_BAUD=$PM_UART_BAUD -DROM_RUN" \
+CFLAGS = "-DROM_RUN" \
          " -Wall -Wimplicit -Wpointer-arith -Wswitch" \
          " -Wredundant-decls -Wreturn-type -Wshadow -Wunused" \
          " -mcpu=$MCU -Os -std=gnu99 -Wall -gstabs -Werror"
@@ -23,7 +21,7 @@ PY_SOURCES = ["main.py"]
 PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
 
 envarm = Environment(variables = vars,
-                     CPPPATH = "../../vm",
+                     CPPPATH = ["#src/vm", "#src/platform/at91sam7s-ek"],
                      CC = "arm-elf-gcc",
                      CCFLAGS = CFLAGS,
                      CXX = "arm-elf-g++",

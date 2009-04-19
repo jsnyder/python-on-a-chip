@@ -1,10 +1,8 @@
 Import("vars")
 
-vars.Add("HEAP_SIZE", "Size of the VM's heap.", 0x2000)
 vars.Add("IPM", "Add the interactive library to the standard lib", True)
 
-CFLAGS = "-DHEAP_SIZE=$HEAP_SIZE " \
-         "-Os -Wall -gstabs -Wstrict-prototypes -Werror"
+CFLAGS = "-Os -Wall -gstabs -Wstrict-prototypes -Werror"
 if "DEBUG" in vars.args.keys():
     CFLAGS = "-g -ggdb -D__DEBUG__=1 " + CFLAGS
 SOURCES = ["main.c", "plat.c"]
@@ -12,7 +10,7 @@ PY_SOURCES = ["main.py"]
 PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
 
 env = Environment(variables = vars,
-                  CPPPATH = "../../vm",
+                  CPPPATH = ["#src/vm", "#src/platform/desktop"],
                   CCFLAGS = CFLAGS)
 
 vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])

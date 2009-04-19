@@ -105,7 +105,7 @@ def heap():
     PM_RETURN_IF_ERROR(retval);
 
     /* Get the maximum heap size */
-    retval = int_new(HEAP_SIZE, &pmax);
+    retval = int_new(PM_HEAP_SIZE, &pmax);
     PM_RETURN_IF_ERROR(retval);
 
     /* Allocate an int to hold the amount of heap available */

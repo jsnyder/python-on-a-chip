@@ -25,6 +25,9 @@
 /** 200 ms for 48 MHz */
 #define PIV_200_MS 600000
 
+/** Baud rate of serial port */
+#define UART_BAUD 19200
+
 
 static AT91S_USART * pusart0 = AT91C_BASE_US0;
 

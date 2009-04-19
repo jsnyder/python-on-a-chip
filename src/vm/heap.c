@@ -22,6 +22,14 @@
 #include "pm.h"
 
 
+/** Checks for heap size definition. */
+#ifndef PM_HEAP_SIZE
+#warning PM_HEAP_SIZE not defined in src/platform/<yourplatform>/pmfeatures.h
+#elif PM_HEAP_SIZE & 3
+#error PM_HEAP_SIZE is not a multiple of four
+#endif
+
+
 /**
  * The maximum size a live chunk can be (a live chunk is one that is in use).
  * The live chunk size is limited by the size field in the *object* descriptor.
@@ -106,13 +114,13 @@ typedef struct PmHeap_s
      * which is specific to GCC
      */
     /** Global declaration of heap. */
-    uint8_t base[HEAP_SIZE];
+    uint8_t base[PM_HEAP_SIZE];
 
     /** Ptr to list of free chunks; sorted smallest to largest. */
     pPmHeapDesc_t pfreelist;
 
     /** The amount of heap space available in free list */
-#if HEAP_SIZE > 65535
+#if PM_HEAP_SIZE > 65535
     uint32_t avail;
 #else
     uint16_t avail;
@@ -166,7 +174,7 @@ heap_dump(void)
     fp = fopen(filename, "wb");
 
     /* Write size of heap */
-    i = HEAP_SIZE;
+    i = PM_HEAP_SIZE;
     fwrite(&i, sizeof(int), 1, fp);
 
     /* Write base address of heap */
@@ -174,7 +182,7 @@ heap_dump(void)
     fwrite(&i, sizeof(int *), 1, fp);
 
     /* Write contents of heap */
-    fwrite(&pmHeap.base, 1, HEAP_SIZE, fp);
+    fwrite(&pmHeap.base, 1, PM_HEAP_SIZE, fp);
 
     /* Write num roots*/
     i = 10;
@@ -295,7 +303,7 @@ heap_init(void)
 {
     pPmHeapDesc_t pchunk;
 
-#if HEAP_SIZE > 65535
+#if PM_HEAP_SIZE > 65535
     uint32_t hs;
 #else
     uint16_t hs;
@@ -310,7 +318,7 @@ heap_init(void)
 #endif /* HAVE_GC */
 
     /* Create as many max-sized chunks as possible in the freelist */
-    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = HEAP_SIZE;
+    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = PM_HEAP_SIZE;
          hs >= HEAP_MAX_FREE_CHUNK_SIZE; hs -= HEAP_MAX_FREE_CHUNK_SIZE)
     {
         OBJ_SET_FREE(pchunk, 1);
@@ -491,7 +499,7 @@ heap_freeChunk(pPmObj_t ptr)
 
     /* Ensure the chunk falls within the heap */
     C_ASSERT(((uint8_t *)ptr >= pmHeap.base)
-             && ((uint8_t *)ptr < pmHeap.base + HEAP_SIZE));
+             && ((uint8_t *)ptr < pmHeap.base + PM_HEAP_SIZE));
 
     /* Insert the chunk into the freelist */
     OBJ_SET_FREE(ptr, 1);
@@ -506,7 +514,7 @@ heap_freeChunk(pPmObj_t ptr)
 
 
 /* Returns, by reference, the number of bytes available in the heap */
-#if HEAP_SIZE > 65535
+#if PM_HEAP_SIZE > 65535
 uint32_t
 #else
 uint16_t
@@ -539,7 +547,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 
     /* The pointer must be within the heap (native frame is special case) */
     C_ASSERT((((uint8_t *)pobj >= &pmHeap.base[0])
-              && ((uint8_t *)pobj <= &pmHeap.base[HEAP_SIZE]))
+              && ((uint8_t *)pobj <= &pmHeap.base[PM_HEAP_SIZE]))
              || ((uint8_t *)pobj == (uint8_t *)&gVmGlobal.nativeframe));
 
     /* The object must not already be free */
@@ -899,18 +907,18 @@ heap_gcSweep(void)
 
     /* Start at the base of the heap */
     pobj = (pPmObj_t)pmHeap.base;
-    while ((uint8_t *)pobj < &pmHeap.base[HEAP_SIZE])
+    while ((uint8_t *)pobj < &pmHeap.base[PM_HEAP_SIZE])
     {
         /* Skip to the next unmarked or free chunk within the heap */
         while (!OBJ_GET_FREE(pobj)
                && (OBJ_GET_GCVAL(pobj) == pmHeap.gcval)
-               && ((uint8_t *)pobj < &pmHeap.base[HEAP_SIZE]))
+               && ((uint8_t *)pobj < &pmHeap.base[PM_HEAP_SIZE]))
         {
             pobj = (pPmObj_t)((uint8_t *)pobj + OBJ_GET_SIZE(pobj));
         }
 
         /* Stop if reached the end of the heap */
-        if ((uint8_t *)pobj >= &pmHeap.base[HEAP_SIZE])
+        if ((uint8_t *)pobj >= &pmHeap.base[PM_HEAP_SIZE])
         {
             break;
         }
@@ -956,7 +964,7 @@ heap_gcSweep(void)
                 ((uint8_t *)pchunk + OBJ_GET_SIZE(pchunk));
 
             /* Stop if it's past the end of the heap */
-            if ((uint8_t *)pchunk >= &pmHeap.base[HEAP_SIZE])
+            if ((uint8_t *)pchunk >= &pmHeap.base[PM_HEAP_SIZE])
             {
                 break;
             }

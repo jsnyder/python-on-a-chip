@@ -2,8 +2,6 @@ import os
 
 Import("vars")
 
-vars.Add("PM_HEAP_SIZE", "Size of the VM's heap.", 0x0D00)
-vars.Add("PM_UART_BAUD", "Baud rate of the ipm serial connection.", "19200UL")
 vars.Add("IPM", "Add the interactive library to the standard lib", True)
 vars.Add("MCU", "Type of AVR device; the arg to -mmcu.", "atmega103")
 vars.Add("F_CPU", "Operating frequency of the AVR device.", "4000000UL")
@@ -12,7 +10,7 @@ vars.Add("OBJCOPY", "", "avr-objcopy")
 vars.Add("OBJDUMP", "", "avr-objdump")
 vars.Add("SIZE", "", "avr-size")
 
-CFLAGS = "-DHEAP_SIZE=$PM_HEAP_SIZE -DF_CPU=$F_CPU -DUART_BAUD=$PM_UART_BAUD" \
+CFLAGS = "-DF_CPU=$F_CPU" \
          " -Wall -Wstrict-prototypes -Wimplicit -Werror" \
          " -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums" \
          " -mmcu=$MCU -Os -std=gnu99"
@@ -23,7 +21,7 @@ PY_SOURCES = ["main.py"]
 PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
 
 env = Environment(variables = vars,
-                  CPPPATH = "../../vm",
+                  CPPPATH = ["#src/vm", "#src/platform/avr"],
                   CC = "avr-gcc",
                   CCFLAGS = CFLAGS,
                   CXX = "avr-g++",

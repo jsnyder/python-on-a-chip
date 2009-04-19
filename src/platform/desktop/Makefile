@@ -12,13 +12,13 @@ TARGET = main
 SOURCES = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 OBJS = $(SOURCES:.c=.o)
 
-CDEFS = -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -I../../vm $(CDEFS)
+CINCS = -I$(abspath .)
+CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -I../../vm $(CDEFS) $(CINCS)
 
-export CFLAGS IPM HEAP_SIZE PM_LIB_FN
+export CFLAGS IPM PM_LIB_FN
 
 
 .PHONY: all clean

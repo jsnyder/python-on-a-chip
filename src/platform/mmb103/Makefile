@@ -11,7 +11,6 @@ PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py mmb.py
-PM_HEAP_SIZE = 0x0D00
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 IPM=false
 
@@ -21,7 +20,6 @@ MCU = atmega103
 FORMAT = ihex
 TARGET = main
 F_CPU = 4000000UL
-UART_BAUD = 19200UL
 SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 ASRC =
 OPT = s
@@ -39,15 +37,14 @@ DEBUG_FMT = stabs
 CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
-CDEFS = -DF_CPU=$(F_CPU) -DUART_BAUD=$(UART_BAUD)
+CDEFS = -DF_CPU=$(F_CPU)
 # PyMite CDEFS
-CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -g$(DEBUG_FMT) -D__DEBUG__=1
 endif
 
 # Place -I options here
-CINCS = -I../../vm
+CINCS = -I../../vm -I$(abspath .)
 
 
 CDEBUG = -g$(DEBUG_FMT)
@@ -236,6 +233,7 @@ $(TARGET).elf: $(OBJ)
 
 # Target: clean project.
 clean:
+	$(MAKE) -C ../../vm clean
 	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
 	$(TARGET).map $(TARGET).sym $(TARGET).lss \
 	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)
@@ -255,4 +253,4 @@ depend:
 
 .PHONY:	all build elf hex eep lss sym program coff extcoff clean depend pmvm
 
-export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN
+export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_LIB_FN

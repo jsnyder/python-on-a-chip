@@ -305,9 +305,10 @@ class PmImgCreator:
 
 
     def _float_to_str(self, f):
-        """Convert the float object, f, to a string of four bytes.
+        """Convert the float object, f, to a string of four bytes
+        in little-endian order.
         """
-        return struct.pack("f", f)
+        return struct.pack("<f", f)
 
 
     def _seq_to_str(self, seq):

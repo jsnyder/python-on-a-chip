@@ -22,6 +22,9 @@
 #include "pm.h"
 
 
+#define UART_BAUD 19200UL
+
+
 /**
  * When defined, the AVR target configures Timer/Counter0 to generate an
  * overflow interrupt to call pm_vmPeriodic().

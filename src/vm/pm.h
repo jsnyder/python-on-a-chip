@@ -34,15 +34,6 @@ extern "C" {
  */
 #define PM_RELEASE 7
 
-/** Static initial size of the heap. */
-#ifndef HEAP_SIZE
-#warning HEAP_SIZE not defined by the build environment, defaulting to 0x7000
-#define HEAP_SIZE 0x7000
-#endif
-#if HEAP_SIZE & 3
-#error HEAP_SIZE is not a multiple of four
-#endif
-
 
 /** null for C code */
 #define C_NULL 0

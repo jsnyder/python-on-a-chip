@@ -39,9 +39,7 @@ PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py
-PM_HEAP_SIZE = 0x3000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
-PM_UART_BAUD = 19200
 
 FLASH_TOOL = SAM7UTILS
 #FLASH_TOOL = UVISION
@@ -141,13 +139,12 @@ CSTANDARD = -std=gnu99
 # Place -D or -U options here
 CDEFS =  -D$(RUN_MODE)
 # PyMite CDEFS
-CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE) -DUART_BAUD=$(PM_UART_BAUD)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -g$(DEBUG_FMT) -D__DEBUG__=1
 endif
 
 # Place -I options here
-CINCS =
+CINCS = -I$(abspath .)
 
 # Place -D or -U options for ASM here
 ADEFS =  -D$(RUN_MODE)
@@ -556,4 +553,4 @@ clean_list :
 build elf hex bin lss sym clean clean_list program pmvm
 
 
-export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN
+export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_LIB_FN

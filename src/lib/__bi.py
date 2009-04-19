@@ -662,7 +662,6 @@ def Co(i):
     PmReturn_t retval;
     pPmObj_t pimg;
     pPmObj_t pco;
-    uint8_t const *imgaddr;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 1)
@@ -680,7 +679,6 @@ def Co(i):
     }
 
     /* Create a code object from the image */
-    imgaddr = (uint8_t *)&((pPmString_t)pimg)->val;
     retval = obj_loadFromImgObj(pimg, &pco);
     PM_RETURN_IF_ERROR(retval);
 

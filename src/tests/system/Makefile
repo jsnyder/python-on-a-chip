@@ -6,7 +6,6 @@ PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = $(SOURCES:.c=.py)
-PM_HEAP_SIZE = 0x2000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 DEBUG = false
 
@@ -15,11 +14,11 @@ EXECS = $(SOURCES:.c=.out)
 IMG_SOURCES = $(subst .py,_img.c, $(PM_USR_SOURCES))
 NAT_SOURCES = $(subst .py,_nat.c, $(PM_USR_SOURCES))
 
-CDEFS = -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) -I../../vm
+CINCS = -I../../vm -I$(abspath .)
+CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) $(CINCS) 
 
 
 # Build an executable from the C sources
@@ -37,7 +36,7 @@ endif
 
 .PHONY: all check clean
 
-export CFLAGS HEAP_SIZE PM_LIB_FN
+export CFLAGS PM_LIB_FN
 
 # Default action is to build tests; run tests if target is desktop
 all : check

@@ -3,7 +3,7 @@
 # This Makefile is not meant to be invoked directly.
 # This Makefile is meant to be invoked by a Makefile in src/platform/<plat>/
 # and requires the following environment variables to be exported by the caller:
-#   CC OBJCOPY NM CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN
+#   CC OBJCOPY NM CFLAGS AR IPM PM_LIB_FN
 #
 # The primary function of this makefile is to:
 #

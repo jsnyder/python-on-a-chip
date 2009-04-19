@@ -45,9 +45,13 @@ Here is a step-by-step guide to porting PyMite to a new platform.
 
 - Copy an existing platform directory that most closely resembles the new target
   platform.  For the rest of this document, the new directory is referred to as
-  ``<plat>``.  The core files needed for the port are ``main.c``, ``plat.c``
-  and ``Makefile``.  Other files that might be useful are `` main.py`` and
-  ``SConscript``.  Remove all the extraneous files.
+  ``<plat>``.  The core files needed for the port are ``main.c``, ``plat.c``,
+  ``pmfeatures.h`` and ``Makefile``.  Other files that might be useful are
+  `` main.py`` and ``SConscript``.  Remove all the extraneous files.
+
+- Edit ``pmfeatures.h`` to include the features that you want the VM to have.
+  Set the size of the platform's heap in ``PM_HEAP_SIZE`` and be sure
+  to leave enough RAM for the C stack.
 
 - Edit the build environment so that it builds the PyMite library,
   ``../../vm/libpmvm_<plat>.a``, and links it to ``main.c``, ``plat.c``
@@ -61,17 +65,16 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       PM_LIB_FN = lib$(PM_LIB_ROOT).a
       PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
       PM_USR_SOURCES = main.py
-      PM_HEAP_SIZE = 0x3000
       PMIMGCREATOR := ../../tools/pmImgCreator.py
-      PM_UART_BAUD = 19200
       TARGET = main
       SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 
-      # PyMite: CDEFS
-      CDEFS += -DHEAP_SIZE=$(PM_HEAP_SIZE) -DUART_BAUD=$(PM_UART_BAUD)
+      # PyMite: CFLAGS
       ifeq ($(DEBUG),true)
           CDEFS += -g -gstabs -D__DEBUG__=1
       endif
+      CINCS += -I$(abspath .)
+      CFLAGS += $(CDEFS) $(CINCS)
 
       # Define the toolchain
       CC = arm-elf-gcc
@@ -100,7 +103,7 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       .PHONY : pmvm
 
       # PyMite: Export these env variables so the Makefile in ../../vm gets them
-      export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_HEAP_SIZE PM_LIB_FN
+      export CC OBJCOPY NM CFLAGS ALL_CFLAGS AR IPM PM_LIB_FN
 
       # PyMite: Append these intermediate files to the list of things to clean
       clean :

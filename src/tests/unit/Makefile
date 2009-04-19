@@ -5,7 +5,6 @@ PLATFORM ?= desktop
 PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
-PM_HEAP_SIZE = 0x2000
 DEBUG = true
 
 UT_SOURCES = $(wildcard ut*.c)
@@ -13,15 +12,15 @@ ALL_SOURCES = runTests.c plat.c CuTest.c $(UT_SOURCES)
 OBJS = $(ALL_SOURCES:.c=.o)
 PRODUCT = runTests.out
 
-CDEFS = -DHEAP_SIZE=$(PM_HEAP_SIZE)
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CFLAGS = -I../../vm $(CDEFS)
+CINCS = -I../../vm -I$(abspath .)
+CFLAGS = $(CDEFS) $(CINCS) 
 
 .PHONY: all check clean $(PRODUCT)
 
-export CFLAGS IPM HEAP_SIZE PM_LIB_FN
+export CFLAGS IPM PM_LIB_FN
 
 # Default action is to build and run tests
 all : check
