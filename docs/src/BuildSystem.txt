@@ -187,5 +187,9 @@ Here are the Scons targets:
     name of a subdirectory of ``src/platform/``.  The default is ``desktop``.
     Example: ``make PLATFORM=avr``
 
+A useful argument to Scons is ``-u`` which makes Scons search all parent
+directories for the SConstruct file.  So, when you are in 
+``src/platform/<plat>`` you can type "``scons -u``" to build for that platform.
+
 
 .. :mode=rest:
