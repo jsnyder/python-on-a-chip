@@ -65,6 +65,11 @@ Type Ctrl+C to interrupt and Ctrl+D to quit (or Ctrl+Z <enter> on Win32).
 
 REPLY_TERMINATOR = '\x04'
 
+if sys.platform.lower().startswith("win"):
+    EOF_KEY = 'Z'
+else:
+    EOF_KEY = 'D'
+
 
 class Connection(object):
     def open(self,): raise NotImplementedError
@@ -259,11 +264,13 @@ class Interactive(cmd.Cmd):
             try:
                 self.conn.write(codeimg)
             except Exception, e:
-                self.stdout.write("Connection write error, type Ctrl+D to quit.\n")
+                self.stdout.write(
+                    "Connection write error, type Ctrl+%s to quit.\n" % EOF_KEY)
 
             rv = self.conn.read()
             if rv == '':
-                self.stdout.write("Connection read error, type Ctrl+D to quit.\n")
+                self.stdout.write(
+                    "Connection read error, type Ctrl+%s to quit.\n" % EOF_KEY)
             else:
                 self.stdout.write(rv)
 
