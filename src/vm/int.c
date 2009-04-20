@@ -16,6 +16,8 @@
  * Integer object type operations.
  */
 
+#include <stdint.h>
+#include <limits.h>
 
 #include "pm.h"
 
@@ -176,18 +178,17 @@ int_printHexByte(uint8_t b)
 
 
 PmReturn_t
-_int_printHex(int32_t n)
+_int_printHex(intptr_t n)
 {
     PmReturn_t retval;
+    int8_t i;
 
     /* Print the hex value, most significant byte first */
-    retval = int_printHexByte((n >> (uint8_t)24) & (uint8_t)0xFF);
-    PM_RETURN_IF_ERROR(retval);
-    retval = int_printHexByte((n >> (uint8_t)16) & (uint8_t)0xFF);
-    PM_RETURN_IF_ERROR(retval);
-    retval = int_printHexByte((n >> (uint8_t)8) & (uint8_t)0xFF);
-    PM_RETURN_IF_ERROR(retval);
-    retval = int_printHexByte(n & (uint8_t)0xFF);
+    for (i = CHAR_BIT * sizeof(intptr_t) - 8; i >= 0; i -= 8)
+    {
+        retval = int_printHexByte((n >> i) & 0xFF);
+        PM_BREAK_IF_ERROR(retval);
+    }
 
     return retval;
 }

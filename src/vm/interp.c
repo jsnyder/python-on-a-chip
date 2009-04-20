@@ -20,10 +20,6 @@
 #include "pm.h"
 
 
-/** if retval is not OK, break from the interpreter */
-#define PM_BREAK_IF_ERROR(retval) if((retval) != PM_RET_OK)break
-
-
 extern PmReturn_t (*std_nat_fxn_table[]) (pPmFrame_t *);
 extern PmReturn_t (*usr_nat_fxn_table[]) (pPmFrame_t *);
 

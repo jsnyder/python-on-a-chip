@@ -105,7 +105,7 @@ PmReturn_t int_printHexByte(uint8_t b);
  *
  * @param n Integer to print
  */
-PmReturn_t _int_printHex(int32_t n);
+PmReturn_t _int_printHex(intptr_t n);
 
 /**
  * Prints the Int object in ascii-coded hexadecimal out the platform output

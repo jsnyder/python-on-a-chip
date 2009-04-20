@@ -76,9 +76,13 @@ int
 sli_strlen(char const *s)
 {
     char const *si = s;
+    int len = 0;
 
-    while (*si++);
-    return (unsigned int)si - (unsigned int)s - 1;
+    while (*si++)
+    {
+        len++;
+    }
+    return len;
 }
 
 

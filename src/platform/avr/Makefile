@@ -48,7 +48,7 @@ CINCS = -I../../vm -I$(abspath .)
 
 
 CDEBUG = -g$(DEBUG_FMT)
-CWARN = -Wall -Wstrict-prototypes
+CWARN = -Wall -Wstrict-prototypes -Werror
 CTUNING = -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CEXTRA = -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS = $(CDEBUG) $(CDEFS) $(CINCS) -O$(OPT) $(CWARN) $(CSTANDARD) $(CTUNING) $(CEXTRA)
