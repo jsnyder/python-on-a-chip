@@ -103,26 +103,23 @@ in the prescribed order:
     - Mainline the branch
     - Tag the mainline::
 
-        % svn cp -m "Creating release RR" https://svn.pymite.python-hosting.com/trunk https://svn.pymite.python-hosting.com/tags/pymite-RR
-
+        $ svn cp -m "Creating release RR" https://python-on-a-chip.googlecode.com/svn/trunk/ https://python-on-a-chip.googlecode.com/svn/tags/pymite-RR
+        
     - Make the distribution file::
 
-        % make dist PM_RELEASE=RR
+        $ make dist PM_RELEASE=RR
 
-    - Upload the tar file to a public file server and link to it from the
-      PyMite wiki front page.  Get the MD5 hash so people can check the
-      authenticity::
-
-        % md5 pymite-RR.tar.gz
+    - Upload the tar.gz file to the `Python-on-a-chip downloads`_ page.
 
     - Announce the release on:
 
-        - The `PyMite wiki`_ front page
-        - The `PyMite maillist`_
+        - The Python-on-a-chip_ Project front page
+        - The `Python-on-a-chip maillist`_
         - `comp.lang.python.announce`_
 
-.. _`PyMite wiki`: http://pymite.python-hosting.com/
-.. _`PyMite maillist`: pymite@googlegroups.com
+.. _`Python-on-a-chip downloads`: http://code.google.com/p/python-on-a-chip/downloads/list
+.. _Python-on-a-chip: http://code.google.com/p/python-on-a-chip
+.. _`Python-on-a-chip maillist`: python-on-a-chip@googlegroups.com
 .. _`comp.lang.python.announce`: http://groups.google.com/group/comp.lang.python.announce/post
 
 .. :mode=rest:
