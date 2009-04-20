@@ -233,6 +233,7 @@ $(TARGET).elf: $(OBJ)
 
 # Target: clean project.
 clean:
+	$(MAKE) -C ../../vm clean
 	$(REMOVE) $(TARGET).hex $(TARGET).eep $(TARGET).cof $(TARGET).elf \
 	$(TARGET).map $(TARGET).sym $(TARGET).lss \
 	$(OBJ) $(LST) $(SRC:.c=.s) $(SRC:.c=.d)

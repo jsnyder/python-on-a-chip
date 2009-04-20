@@ -103,7 +103,7 @@ in the prescribed order:
     - Mainline the branch
     - Tag the mainline::
 
-        $ svn cp -m "Creating release RR" https://python-on-a-chip.googlecode.com/svn/trunk/ https://python-on-a-chip.googlecode.com/svn/tags/pymite-RR
+        $ svn cp -m "issue #nn Creating release RR" https://python-on-a-chip.googlecode.com/svn/trunk/ https://python-on-a-chip.googlecode.com/svn/tags/pymite-RR
         
     - Make the distribution file::
 

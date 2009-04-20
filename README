@@ -5,8 +5,8 @@ PyMite
 :Author:    Dean Hall
 :Copyright: Copyright 2002 Dean Hall.
             See `License`_ for details.
-:Release:   07
-:Site:      http://pymite.python-hosting.com/
+:Release:   08
+:Site:      http://www.pythononachip.org
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
 
@@ -50,7 +50,7 @@ The development system should have installed the
 The SCons build system is experimental.
 Please read ``docs/src/BuildSystem.txt`` for more details.
 
-To build PyMite for the desktop platform and run the interactive prompt 
+To build PyMite for the desktop platform and run the interactive prompt
 (press Control+D when done)::
 
     $ make ipm
@@ -82,17 +82,12 @@ When compiling for the AVR, it will need avr-libc.
 Discussion
 ----------
 
-Please review the `PyMite Trac`_ project management space
-space for up-to-date information about PyMite.
-Please join the `PyMite maillist`_ for discussion about PyMite VM development.
-This will ensure that FAQs can be found in the list archives and
-all issues are captured and available for public inspection.
-Also, the `Python-on-a-chip`_ maillist is for people using PyMite on
-microcontrollers.
+Please browse the `Python-on-a-chip project`_ site for up-to-date information.
+and join the `Python-on-a-chip maillist`_ for discussion about the project and
+the PyMite virtual machine.
 
-.. _`PyMite Trac`: http://pymite.python-hosting.com/
-.. _`PyMite maillist`: http://groups.google.com/group/pymite
-.. _`Python-on-a-chip`: http://groups.google.com/group/python-on-a-chip
+.. _`Python-on-a-chip project`: http://code.google.com/p/python-on-a-chip/
+.. _`Python-on-a-chip maillist`: http://groups.google.com/group/python-on-a-chip
 
 
 Thanks
@@ -100,213 +95,55 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
-- Diego Martins: Reporting a build break (#173) and including a patch.
+- Diego Martins: Reporting a build break and including a patch.
 - Mark Eichin: Feedback on system tests and Makefile
-- Philipp Adelt: Threading, enhancements to pmImgCreator.py, issues,
-  fixes and tests.
-- Josh Lifton: Donated many code fixes and tests.
-- www.webfaction.com: for providing quality, free project hosting on
-  www.python-hosting.com
 
 
 Release Notes
 -------------
 
-This is PyMite release 07
+This is PyMite release 08
+
+* Release 08, 2009/04/20
+
+    New issue tracker:
+
+	- 9  Add "IPM=true" to the Makefile mods in docs/src/HowToPortPyMite.txt
+	- 11 Create a sizeof module
+	- 12 Fix float endian issue   float
+	- 16 Fix 64-bit FTBFS
+	- 17 Make pyserial module optional for ipm-host
+	- 18 Make ipm help messages cross-platform
+	- 19 Document a useful scons option
+	- 24 Update DevelopmentProcess.txt for new repos and issue tracker
+	- 25 Create release 08
+	- 26 Update HowToReleasePyMite.txt
+
+    Old Trac system:
+
+    - #196 Use snprintf() in float_print() and int_print() since -ansi was lifted
+    - #195 Restored #include <math.h> to float.c
+    - #194 Added -h/--help args to ipm
+    - #193 Updated ipm usage message to comply with GPL
+    - #192 Updated ipm docs with pyserial dependency and win32 args
+    - #180 Fixed gc bug during ipm
+    - #190 Fixed segfault when num args is fewer than expected
+    - #189 Updated README with correct build instructions
+    - #72  Implemented plat module for other targets
+    - #182 Created I/O funcs so plat_reportError can be removed from plat interface
+    - #187 Allowed removal of __doc__ from co_names
+    - #185 Created porting document
+    - #184 Added scons build capability
+    - #179 Unified plat and samples directories
+    - #183 Updated the FAQ
+    - #181 Fixed AT91SAM7 demo
 
 * Release 07, 2009/03/08
-
-    - #166:   Created release 07
-    - #97:    Implemented plat_reportError for AVR
-    - #176:   Improved ipm host to accept serial device and baudrate arguments
-    - #175:   Removed src/tests/interactive
-    - #168:   Updated file header copyright
-    - #171:   Removed platform-specific code from src/vm/
-    - #174:   Added support for keyword lambda
-    - #173:   Fixed type-punned pointer warning in interp.c
-    - #167:   Updated the MMB103 sample project
-    - #169:   Removed rarely used builtins to save heap
-    - #164:   Added support for list comprehensions
-    - #163:   Fixed sys.runInThread()
-    - #162:   Implemented builtin function dir()
-    - #161:   Improved filter for unsupported code
-    - #160:   Added support for string and tuple replication
-    - #159:   Created a make target for ipm
-    - #158:   Fixed builtin sum() to support float
-    - #155:   Fixed bytecodes that POP an object
-    - #157:   Added support for funcs with default args
-    - #52:    Investigated GPL issues with respect to the user's application
-      code
-    - #146:   Found and made some existing features configurable
-    - #154:   Reduced heap memory used during global_loadBuiltins()
-    - #149:   Supported the keyword del
-    - #151:   t090 runs too fast and fails on some systems
-    - #66:    Created doc explaining requirements for using PyMite on device
-    - #106:   Documented in the code when to use HAVE_STRING_H
-    - #153:   Fixed dict.clear() which fails to free the seglists
-    - #5:     Created script to automate dist process
-    - #44:    Updated DevelopmentProcess.txt for short and long branches
-    - #152:   Changed image terminator
-    - #121:   Fixed type-punned compiler warnings
-    - #150:   Replaced PmImgInfo_t to save RAM
-    - #148:   Created configurable Float datatype
-    - #147:   Supported Boolean type and True/False constants
-    - #47:    Designed and implement method for basic types to access their
-      respective class methods
-    - #144:   Maked GC a configurable option
-    - #142:   list.append left a remnant on the stack
-    - #143:   ipm can't import sys
-    - #145:   System test t110.py fails during make check
-    - #126:   Fixed GC so it works properly during ipm
-    - #125:   Unreachable chunks not collected
-    - #127:   SEGV or Error 0xFC in endless loop
-    - #141:   String cache not handled by GC
-    - #140:   Created func module with introspection functions
-    - #55:    Created index doc
-    - #119:   Printed Python traceback on exception
-    - #139:   Allow heap larger than 64 KB
-    - #110:   Prevent IMPORT_NAME from reloading existing module
-    - #138:   globals namespace isn't right
-
 * Release 06, 2009/01/30
-
-    - #13:  Implement the equivalent of '__name__ == "__main__"' in module attrs
-    - #39:  Absorb changes from SnarfVM
-    - #101: Backport core objects' new methods from SnarfVM
-    - #104: Design and implement garbage collection
-    - #111: Remove bytecodes that aren't used in Python 2.5 and later
-    - #115: Optimize Dict type's memory use
-    - #120: Update the document on how to release PyMite
-    - #122: Make GC mark CodeObj's image if it is in RAM
-    - #123: Fix GC so it marks native function arguments properly
-    - #124: Fix name space for recursive function call
-    - #132: VM doesn't throw TypeError when function has wrong number of
-      arguments
-    - #134: ipm instructions lead to an exception
-    - #135: Code "if None" executes the positive case
-    - #136: Create module interface for compound datatypes
-    - #137: Create release 06
-
 * Release 05, 2007/05/10
-
-    - #116: Created Release 05 package
-    - #109: Created check to ensure stack is empty after RETURN_VALUE pops last
-      item
-    - #114: Created platform file for Atmel's ARM7
-    - #112: Forced Dict keys to be of hashable type
-    - #105: Moved OBJ_TYPE_THR to some value before OBJ_TYPE_HASHABLE_MAX
-    - #108: Cleaned up \*_POWER bytecodes
-    - #113: Fixed the implementation of builtin map()
-    - #68:  Cleaned up code to meet standards
-    - #102: Implemented the remaining IMPORT_* bytecodes
-    - #46:  Finalized design of string objects
-    - #69:  Fixed bitwise operators to prevent automatic promotion
-    - #32:  Used GNU indent for code formatting
-    - #64:  Renamed MEMSPACE_FLASH to MEMSPACE_PROGMEM
-    - #85:  Created new avr sample project
-    - #100: Removed od_const bit from object descriptor
-    - #103: Implemented obj_print() for other object types
-    - #98:  Fixed writing image file for win32 target
-    - #99:  Designed a way for ipm to be able to receive images larger than
-      HEAP_MAX_CHUNK_SIZE
-    - #90:  Created new lib function to return system time
-    - #63:  Created mmb sample project
-    - #91:  Fixed vm so that error codes are returned by the main() function
-    - #93:  Changed ifdef from TARGET_DESKTOP to a debug-oriented definition
-      where it is appropriate
-    - #70:  Fixed incorrect exception for chr('a')
-    - #96:  Created library function to spawn a new thread
-    - #82:  Fixed namespace issue
-    - #95:  Fixed sys.heap() so it doesn't overwrite the static const 0 integer
-      obj
-    - #94:  Fixed integer loading from image so it re-uses static ints (-1,0,1).
-    - #89:  Moved plat module functions into sys module
-    - #88:  Created library function to return heap stats
-    - #84:  Fixed bus error when using ipm
-    - #87:  Redesigned the heap
-    - #86:  Moved as much platform-specific code to the platform implementation
-      file
-    - #83:  Updated documentation to reflect new size requirement
-    - #74:  Added to pmImgCreator a filter to catch constants of unsupported
-      types
-    - #65:  Created plat module with put and get routines
-    - #71:  Added support for builtin function eval()
-    - #80:  Fixed DUP_TOPX bytecode
-    - #81:  Implemented list_setItem()
-    - #67:  Created interactive interface
-    - #78:  Fixed import module yields None
-    - #76:  Printed always escapes special characters and puts quotes around it
-    - #75:  Supported multiple (green) threads inside PyMite
-
 * Release 04, 2006/12/14
-
-    - #62:  Created Release 04 package
-    - #51:  Updated to Python 2.5 bytecodes
-    - #57:  Created doc showing what PyMite does [not] support
-    - #60:  Implemented heap_sweep
-    - #59:  Improved bytecode UNPACK_SEQUENCE
-    - #58:  Added support for keyword "in"
-    - #26:  Implemented more builtin functions
-    - #49:  Removed null check from object methods
-    - #56:  Implemented \*_POWER bytecodes
-    - #17:  Completed the implementation of obj_isEqual()
-    - #54:  Changed seglist API so segnum/segindx are encapsulated
-    - #10:  Created sequence_getSubscript()
-    - #33:  Created new ARM target
-    - #36:  Deprecated dwh_types.h
-    - #53:  Fixed Win32/x86 build break
-    - #38:  Made use of pycscope.py conditional in Makefile
-    - #37:  Created PM_RAISE()
-    - #34:  Converted all "Py" to "Pm"
-    - #50:  Integrated __LINE__ into PM_RAISE
-    - #48:  Organized and deploy unit tests
-    - #45:  Finished interpret loop edits
-    - #35:  Macroized all operations on object descriptors
-    - #42:  Fixed misuse of PM_RAISE
-    - #43:  Fixed mem_getInt()
-    - #40:  Fixed heap chunk transfer
-
 * Release 03, 2006/09/17
-
-    - #30:  Created Release 03 package
-    - #4:   Enabled compiler warnings as errors
-    - #7:   Unified licensing and copyright info in all files
-    - #16:  Created pm_init() that does the initial housekeeping
-    - #29:  Corrected function call in mmb.py's sleepms()
-    - #28:  Fixed loader to modules with root-level __NATIVE__ docstring load
-    - #2:   Separated stdlib from user app
-    - #27:  Made S16/U16 really be 16-bits on DESKTOP
-    - #20:  Added support for the assert statement
-    - #25:  Created slide-compatible illustration for build process
-    - #24:  Removed consts[0] == docstring assumption from pmImgCreator
-    - #3:   Made src/tests/Makefile clean better
-    - #23:  Removed absolute paths to allow building with WinAVR
-    - #18:  Removed "-ansi" compiler option from AVR builds
-    - #19:  Broadened target from ATMEGA103 to AVR
-    - #11:  Made src/tests/ build module images as C files, not header files
-    - #9:   Fixed BINARY_SUBSCR for case stringobj[intobj]
-    - #14:  Documented the development process
-    - #6:   Made pmImgCreator append a null terminator to image list
-    - #8:   Removed leftover uses of ``HOST_``
-    - #12:  Made mem_* funcs always use RAM memspace when target is DESKTOP
-    - #15:  All mem_*() funcs and pointers in the vm should use unsigned not
-      signed or void
-    - #1:   Transfered PyMite repository to http://pymite.python-hosting.com
-
 * Release 02, 2006/08/11
-
-    - N/A:  Create Release v 02 package.
-    - N/A:  VM funcs modified so that return objects are by
-      reference and funcs return a PyReturn_t for internal
-      error checking.  Library modules are broken until they
-      are modified similarly.
-    - N/A:  The pmImgCreator.py script was modified to work via
-      the command line. pmImgCreator GUI is deprecated.
-    - N/A:  Converted many files' EOLs to Unix.
-
 * Release 01, 2003/03/18
-
-    - N/A:  Initial release made for PyCon 2003.
-    - N/A:  Compiles for desktop and Atmel ATmega103.
 
 .. :mode=rest:

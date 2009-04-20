@@ -32,7 +32,7 @@ extern "C" {
  * It helps locate a defect when used in conjunction with a fileID
  * and line number.
  */
-#define PM_RELEASE 7
+#define PM_RELEASE 8
 
 
 /** null for C code */
