@@ -17,8 +17,6 @@
  */
 
 
-#ifdef HAVE_FLOAT
-
 /**
  * Float obj
  *
@@ -33,6 +31,8 @@ typedef struct PmFloat_s
     float val;
 } PmFloat_t, *pPmFloat_t;
 
+
+#ifdef HAVE_FLOAT
 
 /**
  * Creates a new Float object
