@@ -46,10 +46,11 @@ Here is a brief description of the process:
 Creating a Ticket
 -----------------
 
-Submit all enhancements, defects, issues and tickets to PyMite's Trac at:
-http://pymite.python-hosting.com.  Or go straight to `create a new ticket`_.
+Submit all enhancements, defects, issues and tickets to the 
+`Python-on-a-chip Google Code`_ site.  Or go straight to `create a new ticket`_.
 
-.. _`create a new ticket`: http://pymite.python-hosting.com/newticket
+.. _`Python-on-a-chip Google Code`: http://code.google.com/p/python-on-a-chip
+.. _`create a new ticket`: http://code.google.com/p/python-on-a-chip/issues/entry
 
 The following table explains what to enter in the fields when creating a ticket:
 
@@ -61,27 +62,21 @@ Summary     Short sentence starting with verb   Enable compiler warnings as
 Description A longer explanation of the problem
             possibly with example code that
             exercises or exposes the issue.
-Component   Select the best option from the     pmvm
-            list
-Version     Leave blank.
-Severity    Leave at normal unless it deserves  Normal
-            more attention
-Keywords    Fill in keywords in singular noun   make compiler warning error
-            form
-Priority    Select one of the options from the  Standard
-            list
-Milestone   Leave blank.  Project manager
-            selects this
-Assign to   If you want it, take it.  Otherwise dwhall
+Status      If you want it, leave it as         Accepted
+            Accepted.  Otherwise clear the box.
+Owner       If you want it, take it.  Otherwise dwhall256
             leave it blank.
+Labels      Select the proper label-type from   Type-Defect
+            the three that are given: Type,     Priority-Medium
+            Priority and Component.             Component-pmvm
 =========== =================================== ================================
 
 The `Summary` field is often copied into the release notes' change log, with
 the opening verb changed to the past tense.  Conceive your `Summary` from that
-point of view.  The `Milestone` field is used by the project manager to know
-what issues should be resolved for what releases.  Leave the `Milestone` field
-blank unless you've been told to do otherwise.  Select the most appropriate
-component from the `Component` list.  Even if the resolution touches more
+point of view.  The `Milestone-` label is used by the project manager to know
+what issues should be resolved for what releases.  Leave out the `Milestone` 
+label unless you've been told to do otherwise.  Select the most appropriate
+component from the `Component-` list.  Even if the resolution touches more
 than one component, select the one that applies best.
 
 
@@ -104,14 +99,14 @@ many files, then the work can be done on a working copy of the project
 
 If there are more than a few changes, make a branch to work in::
 
-    svn cp https://svn.pymite.python-hosting.com/trunk \
-           https://svn.pymite.python-hosting.com/branches/issue_0NNN_userid_brief_description \
-           -m "#NNN: - creating branch for work"
+    svn cp https://python-on-a-chip.googlecode.com/svn/trunk/ \
+           https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description \
+           -m "issue #NNN: creating branch for work"
 
 If you've already made changes to a working copy that isn't the new branch,
 it's easy to switch to the new branch and keep your changes::
 
-    svn switch https://svn.pymite.python-hosting.com/branches/issue_0NNN_userid_brief_description
+    svn switch https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description
 
 During this phase, if the trunk is updated, you should merge those changes into
 your branch so that your working copy is always up-to-date.  Doing this
@@ -158,7 +153,7 @@ that the developer kept up-to-date with the current code and gives the proper
 change-set to merge the branch into the trunk.  The following command line will
 create a diff between the head of the branch and the head of the trunk::
 
-    svn diff . https://svn.pymite.python-hosting.com/trunk
+    svn diff . https://python-on-a-chip.googlecode.com/svn/trunk/
 
 Reviewers give feedback to the developer, possibly in the form of a patch file--
 if the volume of feedback is large--that would be applied to the head of the
@@ -180,18 +175,18 @@ to the trunk since the branch was created::
 
 Switch the working copy of the branch to the project trunk::
 
-    svn switch https://svn.pymite.python-hosting.com/trunk
+    svn switch https://python-on-a-chip.googlecode.com/svn/trunk/
 
 Merge the differences between trunk and the branch into your working copy::
 
-    svn merge https://svn.pymite.python-hosting.com/trunk \
-        https://svn.pymite.python-hosting.com/branches/issue_0NNN_userid_brief_description .
+    svn merge https://python-on-a-chip.googlecode.com/svn/trunk/ \
+        https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description .
 
 Inspect and test the working copy, then commit it to the trunk::
 
-    svn ci -m "#NNN: mainlining branch issue_0NNN_userid_brief_description"
+    svn ci -m "issue #NNN: mainlining branch issue_0NNN_userid_brief_description"
 
-Finally, update the ticket to set the `Action` to Resolved as Fixed.
+Finally, update the ticket to set the `Status` to Fixed.
 
 
 .. :mode=rest:
