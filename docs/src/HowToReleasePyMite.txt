@@ -101,15 +101,12 @@ in the prescribed order:
 
     - Check-in the branch and review
     - Mainline the branch
-    - Tag the mainline::
 
-        $ svn cp -m "issue #nn Creating release RR" https://python-on-a-chip.googlecode.com/svn/trunk/ https://python-on-a-chip.googlecode.com/svn/tags/pymite-RR
-        
-    - Make the distribution file::
+    - Tag the release in the repository and make the distribution file::
 
         $ make dist PM_RELEASE=RR
 
-    - Upload the tar.gz file to the `Python-on-a-chip downloads`_ page.
+    - Upload the distribution file to the `Python-on-a-chip downloads`_ page.
 
     - Announce the release on:
 
