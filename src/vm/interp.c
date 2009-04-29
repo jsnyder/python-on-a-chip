@@ -728,6 +728,22 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Otherwise return to previous frame */
                 FP = FP->fo_back;
 
+#ifdef HAVE_CLASSES
+                /*
+                 * If returning function was class initializer
+                 * do not push a return object
+                 */
+                if (((pPmFrame_t)pobj1)->fo_isInit)
+                {
+                    /* Raise TypeError if __init__ did not return None */
+                    if (pobj2 != PM_NONE)
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                    }
+                }
+                else
+#endif /* HAVE_CLASSES */
+
                 /*
                  * Push frame's return val, except if the expiring frame
                  * was due to an import statement
@@ -773,6 +789,17 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
                 continue;
             }
+
+#ifdef HAVE_CLASSES
+            case BUILD_CLASS:
+                /* Create and push new class */
+                retval = class_new(TOS, TOS1, TOS2, &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+                SP -= 2;
+                TOS = pobj2;
+                continue;
+#endif /* HAVE_CLASSES */
+
 
             /***************************************************
              * All bytecodes after 90 (0x5A) have a 2-byte arg
@@ -872,9 +899,23 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj2 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
+
+#ifdef HAVE_CLASSES
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                {
+                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                {
+                    pobj2 = (pPmObj_t)((pPmInstance_t)TOS)->cli_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MTH)
+                {
+                    pobj2 = (pPmObj_t)((pPmMethod_t)TOS)->m_attrs;
+                }
+#endif /* HAVE_CLASSES */
+
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
                 {
                     pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
@@ -914,9 +955,23 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj2 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
+
+#ifdef HAVE_CLASSES
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                {
+                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                {
+                    pobj2 = (pPmObj_t)((pPmInstance_t)TOS)->cli_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MTH)
+                {
+                    pobj2 = (pPmObj_t)((pPmMethod_t)TOS)->m_attrs;
+                }
+#endif /* HAVE_CLASSES */
+
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
                 {
                     pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
@@ -1083,9 +1138,23 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     pobj1 = (pPmObj_t)((pPmFunc_t)TOS)->f_attrs;
                 }
-                else if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
-                         || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN))
+
+#ifdef HAVE_CLASSES
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                {
+                    pobj1 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                {
+                    pobj1 = (pPmObj_t)((pPmInstance_t)TOS)->cli_attrs;
+                }
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_MTH)
+                {
+                    pobj1 = (pPmObj_t)((pPmMethod_t)TOS)->m_attrs;
+                }
+#endif /* HAVE_CLASSES */
+
+                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
                 {
                     pobj1 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
                 }
@@ -1110,12 +1179,36 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get attr with given name */
                 retval = dict_getItem(pobj1, pobj2, &pobj3);
 
+#ifdef HAVE_CLASSES
+                /*
+                 * If attr is not found and object is a class or instance,
+                 * try to get the attribute from the class attrs or parent(s)
+                 */
+                if ((retval == PM_RET_EX_KEY) &&
+                    ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLO)
+                        || (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)))
+                {
+                    retval = class_getAttr(TOS, pobj2, &pobj3);
+                }
+#endif /* HAVE_CLASSES */
+
                 /* Raise an AttributeError if key is not found */
                 if (retval == PM_RET_EX_KEY)
                 {
                     PM_RAISE(retval, PM_RET_EX_ATTR);
                 }
                 PM_BREAK_IF_ERROR(retval);
+
+#ifdef HAVE_CLASSES
+                /* If obj is an instance and attr is a func, create method */
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI) &&
+                    (OBJ_GET_TYPE(pobj3) == OBJ_TYPE_FXN))
+                {
+                    pobj2 = pobj3;
+                    retval = class_method(pobj1, TOS, pobj2, &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                }
+#endif /* HAVE_CLASSES */
 
                 /* Put attr on the stack */
                 TOS = pobj3;
@@ -1434,12 +1527,81 @@ interpret(const uint8_t returnOnNoThreads)
                     break;
                 }
 
-                /* Get the func */
+                /* Get the callable */
                 pobj1 = STACK(t16);
+
+                C_DEBUG_PRINT(VERBOSITY_LOW,
+                    "interpret(), CALL_FUNCTION on <obj type=%d @ %p>\n",
+                    OBJ_GET_TYPE(pobj1), pobj1);
+
+#ifdef HAVE_CLASSES
+                /* If the callable is a class, create an instance of it */
+                if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
+                {
+                    /* This marks that the original callable was a class */
+                    bc = 0;
+
+                    /* Replace class with new instance */
+                    retval = class_instantiate(pobj1, &pobj2);
+                    STACK(t16) = pobj2;
+
+                    /* If __init__ does not exist */
+                    pobj3 = C_NULL;
+                    retval = class_getAttr(pobj1, PM_INIT_STR, &pobj3);
+                    if (retval == PM_RET_EX_KEY)
+                    {
+                        /* Raise TypeError if there are args */
+                        if (t16 > 0)
+                        {
+                            PM_RAISE(retval, PM_RET_EX_TYPE);
+                            return retval;
+                        }
+
+                        /* Otherwise, continue with instance */
+                        continue;
+                    }
+                    else if (retval != PM_RET_OK)
+                    {
+                        PM_BREAK_IF_ERROR(retval);
+                    }
+
+                    /* Slide the arguments up 1 slot in the stack */
+                    SP++;
+                    for (t8 = 0; t8 < t16; t8++)
+                    {
+                        STACK(t8) = STACK(t8 + 1);
+                    }
+
+                    /* Convert __init__ to method, insert it as the callable */
+                    retval = class_method(pobj1, pobj2, pobj3, &pobj1);
+                    PM_BREAK_IF_ERROR(retval);
+                    STACK(t16) = pobj1;
+                    /* Fall through to call the method */
+                }
+
+                if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_MTH)
+                {
+                    /* Set the method's func to be the callable */
+                    STACK(t16) = (pPmObj_t)((pPmMethod_t)pobj1)->m_func;
+
+                    /* Slide the arguments up 1 slot in the stack */
+                    SP++;
+                    for (t8 = 0; t8 < t16; t8++)
+                    {
+                        STACK(t8) = STACK(t8 + 1);
+                    }
+
+                    /* Insert instance as "self" arg to the method */
+                    STACK(t16++) = (pPmObj_t)((pPmMethod_t)pobj1)->m_instance;
+
+                    /* Refresh the callable */
+                    pobj1 = (pPmObj_t)((pPmMethod_t)pobj1)->m_func;
+                }
+#endif /* HAVE_CLASSES */
 
                 C_ASSERT(OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN);
 
-                /* If it's regular func (not native) */
+                /* If it is a regular func (not native) */
                 if (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
                 {
                     /*
@@ -1475,6 +1637,18 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
+
+#ifdef HAVE_CLASSES
+                    /*
+                     * If the original callable was a class, indicate that
+                     * the frame is running the initializer so that
+                     * its return object is checked for None and ignored.
+                     */
+                    if (bc == 0)
+                    {
+                        ((pPmFrame_t)pobj2)->fo_isInit = C_TRUE;
+                    }
+#endif /* HAVE_CLASSES */
 
 #ifdef HAVE_DEFAULTARGS
                     /* If this func has default arguments, put them in place */

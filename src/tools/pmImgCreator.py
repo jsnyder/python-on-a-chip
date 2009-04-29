@@ -48,7 +48,7 @@ __usage__ = """USAGE:
     """
 
 
-import exceptions, string, sys, types, dis, os, time, getopt, struct
+import exceptions, string, sys, types, dis, os, time, getopt, struct, types
 
 
 #
@@ -65,6 +65,7 @@ PM_FEATURES = {
     "HAVE_ASSERT": True,
     "HAVE_DEFAULTARGS": True,
     "HAVE_REPLICATION": True, # This flag currently has no effect in this file
+    "HAVE_CLASSES": True,
 }
 
 
@@ -150,7 +151,7 @@ UNIMPLEMENTED_BCODES = [
     "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
     "WITH_CLEANUP",
     "EXEC_STMT", "YIELD_VALUE",
-    "END_FINALLY", "BUILD_CLASS",
+    "END_FINALLY",
     "SETUP_EXCEPT", "SETUP_FINALLY",
     "BUILD_SLICE",
     "MAKE_CLOSURE", "LOAD_CLOSURE",
@@ -179,6 +180,10 @@ if not PM_FEATURES["HAVE_ASSERT"]:
         "RAISE_VARARGS",
         ])
 
+if not PM_FEATURES["HAVE_CLASSES"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "BUILD_CLASS",
+        ])
 
 # #152: Byte to append after the last image in the list
 IMG_LIST_TERMINATOR = "\xFF"
@@ -356,7 +361,7 @@ class PmImgCreator:
             elif objtype == types.CodeType:
                 #determine if it's native or regular
                 if (len(obj.co_consts) > 0 and
-                    (obj.co_consts[0] != None) and
+                    (type(obj.co_consts[0]) == types.StringType) and
                     (obj.co_consts[0][0:NATIVE_INDICATOR_LENGTH] ==
                     NATIVE_INDICATOR)):
                     imgstr += self.no_to_str(obj)

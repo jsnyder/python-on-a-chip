@@ -57,17 +57,4 @@ typedef struct PmFunc_s
  */
 PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
 
-/**
- * Creates a new Class object from the methods dict, bases tuple,
- * and name string.
- *
- * @param   pmeths ptr to methods dict.
- * @param   pbases ptr to bases tuple.
- * @param   pname ptr to name string.
- * @param   r_pclass Return by ref, ptr to new class
- * @return  ptr to new class obj.
- */
-PmReturn_t class_new(pPmObj_t pmeths,
-                     pPmObj_t pbases, pPmObj_t pname, pPmObj_t *r_pclass);
-
 #endif /* __FUNC_H__ */

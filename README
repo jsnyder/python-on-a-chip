@@ -95,6 +95,9 @@ Thanks
 
 My personal thanks go out to these people for their contribution to PyMite:
 
+- Tyler Wilson: Porting PyMite to the Windows platform.
+- Thomas Fenzl: Patching and testing for 64-bit systems.
+- Alex Clausen: Reporting a build break and including a patch for 64-bit systems.
 - Diego Martins: Reporting a build break and including a patch.
 - Mark Eichin: Feedback on system tests and Makefile
 

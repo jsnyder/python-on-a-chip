@@ -130,6 +130,22 @@ def dir(o):
         {
             po = (pPmObj_t)((pPmFunc_t)po)->f_attrs;
         }
+        
+#ifdef HAVE_CLASSES
+        else if (OBJ_GET_TYPE(po) == OBJ_TYPE_CLO)
+        {
+            po = (pPmObj_t)((pPmClass_t)po)->cl_attrs;
+        }
+        else if (OBJ_GET_TYPE(po) == OBJ_TYPE_CLI)
+        {
+            po = (pPmObj_t)((pPmInstance_t)po)->cli_attrs;
+        }        
+        else if (OBJ_GET_TYPE(po) == OBJ_TYPE_MTH)
+        {
+            po = (pPmObj_t)((pPmMethod_t)po)->m_attrs;
+        }        
+#endif /* HAVE_CLASSES */
+
         else
         {
             po = C_NULL;
@@ -293,25 +309,25 @@ def globals():
     pass
 
 
-#def id(o):
-#    """__NATIVE__
-#    PmReturn_t retval;
-#    pPmObj_t pr = C_NULL;
-#
-#    /* If wrong number of args, raise TypeError */
-#    if (NATIVE_GET_NUM_ARGS() != 1)
-#    {
-#        PM_RAISE(retval, PM_RET_EX_TYPE);
-#        return retval;
-#    }
-#
-#    /* Return object's address as an int on the stack */
-#    retval = int_new((int)NATIVE_GET_LOCAL(0), &pr);
-#    NATIVE_SET_TOS(pr);
-#
-#    return retval;
-#    """
-#    pass
+def id(o):
+    """__NATIVE__
+    PmReturn_t retval;
+    pPmObj_t pr = C_NULL;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Return object's address as an int on the stack */
+    retval = int_new((int)NATIVE_GET_LOCAL(0), &pr);
+    NATIVE_SET_TOS(pr);
+
+    return retval;
+    """
+    pass
 
 
 def len(s):
@@ -713,6 +729,45 @@ def _exn():
     return retval;
     """
     pass
+
+#
+# Creates a class object - only meant to be used for "object" below.
+#
+def _clo(attrs, bases, name):
+    """__NATIVE__
+    PmReturn_t retval;
+    pPmObj_t pobj;
+    pPmObj_t pattrs;
+    pPmObj_t pbases;
+    pPmObj_t pname;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 3)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    pattrs = NATIVE_GET_LOCAL(0);
+    pbases = NATIVE_GET_LOCAL(1);
+    pname = NATIVE_GET_LOCAL(2);
+
+    retval = class_new(pattrs, pbases, pname, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+
+    NATIVE_SET_TOS(pobj);
+
+    return retval;
+    """
+    pass
+
+    
+#
+# Root object
+#
+object = _clo({}, (), "object")
+
+__name__ = "TBD"
 
 
 #

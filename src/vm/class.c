@@ -1,0 +1,158 @@
+/*
+ * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
+ * Copyright 2002 Dean Hall.  All rights reserved.
+ * PyMite is offered through one of two licenses: commercial or open-source.
+ * See the LICENSE file at the root of this package for licensing details.
+ */
+
+
+#undef __FILE_ID__
+#define __FILE_ID__ 0x04
+
+
+/**
+ * Class Object Type
+ *
+ * Class object type operations.
+ */
+
+
+#include "pm.h"
+
+
+PmReturn_t
+class_new(pPmObj_t pattrs, pPmObj_t pbases, pPmObj_t pname, pPmObj_t *r_pclass)
+{
+    PmReturn_t retval = PM_RET_OK;
+    uint8_t *pchunk;
+    pPmObj_t pobj;
+
+    /* Ensure types */
+    if ((OBJ_GET_TYPE(pattrs) != OBJ_TYPE_DIC)
+        || (OBJ_GET_TYPE(pbases) != OBJ_TYPE_TUP)
+        || (OBJ_GET_TYPE(pname) != OBJ_TYPE_STR))
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Allocate a class obj */
+    retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_CLO);
+
+    /* Class has no access to its CO */
+    ((pPmClass_t)pobj)->cl_attrs = (pPmDict_t)pattrs;
+    ((pPmClass_t)pobj)->cl_bases = (pPmTuple_t)pbases;
+
+    *r_pclass = pobj;
+
+    return retval;
+}
+
+
+/* Returns an instance of the class by reference */
+PmReturn_t
+class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj)
+{
+    PmReturn_t retval = PM_RET_OK;
+    uint8_t *pchunk;
+    pPmObj_t pobj;
+    pPmObj_t pattrs;
+
+    /* Allocate a class instance */
+    retval = heap_getChunk(sizeof(PmInstance_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pobj = (pPmObj_t)pchunk;
+    OBJ_SET_TYPE(pobj, OBJ_TYPE_CLI);
+
+    /* Set the instance's class */
+    ((pPmInstance_t)pobj)->cli_class = (pPmClass_t)pclass;
+
+    /* Create the attributes dict */
+    retval = dict_new(&pattrs);
+    ((pPmInstance_t)pobj)->cli_attrs = (pPmDict_t)pattrs;
+
+    /* TODO: Store pclass in __class__ attr */
+
+    *r_pobj = pobj;
+    return retval;
+}
+
+
+/*
+ * NOTE: Due to interp.c's CALL_FUNCTION bytecode, r_pmeth must not be set
+ * until the very end so it doesn't clobber pclass.
+ */
+PmReturn_t
+class_method(pPmObj_t pclass, pPmObj_t pinstance, pPmObj_t pfunc,
+             pPmObj_t *r_pmeth)
+{
+    PmReturn_t retval = PM_RET_OK;
+    uint8_t *pchunk;
+    pPmMethod_t pmeth;
+    pPmObj_t pattrs;
+
+    /* Allocate a method */
+    retval = heap_getChunk(sizeof(PmMethod_t), &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    OBJ_SET_TYPE(pchunk, OBJ_TYPE_MTH);
+
+    /* Set method fields */
+    pmeth = (pPmMethod_t)pchunk;
+    pmeth->m_class = (pPmClass_t)pclass;
+    pmeth->m_instance = (pPmInstance_t)pinstance;
+    pmeth->m_func = (pPmFunc_t)pfunc;
+
+    /* Create the attributes dict */
+    retval = dict_new(&pattrs);
+    pmeth->m_attrs = (pPmDict_t)pattrs;
+
+    *r_pmeth = (pPmObj_t)pmeth;
+    return retval;
+}
+
+
+PmReturn_t
+class_getAttr(pPmObj_t pobj, pPmObj_t pname, pPmObj_t *r_pobj)
+{
+    PmReturn_t retval;
+    uint16_t i;
+    pPmObj_t pparent;
+
+    /* If the given obj is an instance, check its attrs */
+    if (OBJ_GET_TYPE(pobj) == OBJ_TYPE_CLI)
+    {
+        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj)->cli_attrs, pname,
+                              r_pobj);
+        if (retval == PM_RET_OK)
+        {
+            return retval;
+        }
+
+        /* Otherwise, check the instance's class */
+        pobj = (pPmObj_t)((pPmInstance_t)pobj)->cli_class;
+    }
+
+    C_ASSERT(OBJ_GET_TYPE(pobj) == OBJ_TYPE_CLO);
+
+    retval = dict_getItem((pPmObj_t)((pPmClass_t)pobj)->cl_attrs, pname,
+                          r_pobj);
+
+    /* If attr is not found, search parent(s) */
+    if ((retval == PM_RET_EX_KEY) && (((pPmClass_t)pobj)->cl_bases != C_NULL))
+    {
+        for (i = 0; i < ((pPmClass_t)pobj)->cl_bases->length; i++)
+        {
+            pparent = ((pPmClass_t)pobj)->cl_bases->val[i];
+            retval = class_getAttr(pparent, pname, r_pobj);
+            if (retval == PM_RET_OK)
+            {
+                break;
+            }
+        }
+    }
+
+    return retval;
+}

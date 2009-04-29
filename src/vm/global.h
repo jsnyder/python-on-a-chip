@@ -41,6 +41,11 @@
 /** The global string "code" */
 #define PM_CODE_STR     (pPmObj_t)(gVmGlobal.pcodeStr)
 
+#ifdef HAVE_CLASSES
+/** The global string "__init__" */
+#define PM_INIT_STR     (pPmObj_t)(gVmGlobal.pinitStr)
+#endif /* HAVE_CLASSES */
+
 
 /**
  * This struct contains ALL of PyMite's globals
@@ -91,6 +96,12 @@ typedef struct PmVmGlobal_s
 
     /** Ptr to current thread */
     pPmThread_t pthread;
+
+#ifdef HAVE_CLASSES
+    /* NOTE: placing this field before the nativeframe field causes errors */
+    /** The string "__init__", used in interp.c CALL_FUNCTION */
+    pPmString_t pinitStr;
+#endif /* HAVE_CLASSES */
 
     /** Flag to trigger rescheduling */
     uint8_t reschedule;

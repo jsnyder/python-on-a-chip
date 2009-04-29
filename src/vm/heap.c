@@ -643,8 +643,45 @@ heap_gcMarkObj(pPmObj_t pobj)
 #endif /* HAVE_DEFAULTARGS */
             break;
 
-        case OBJ_TYPE_CLO:
+#ifdef HAVE_CLASSES
         case OBJ_TYPE_CLI:
+            /* Mark the obj head */
+            OBJ_SET_GCVAL(pobj, pmHeap.gcval);
+
+            /* Mark the class */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmInstance_t)pobj)->cli_class);
+            PM_RETURN_IF_ERROR(retval);
+
+            /* Mark the attrs dict */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmInstance_t)pobj)->cli_attrs);
+            PM_RETURN_IF_ERROR(retval);
+            break;
+
+        case OBJ_TYPE_MTH:
+            /* Mark the obj head */
+            OBJ_SET_GCVAL(pobj, pmHeap.gcval);
+
+            /* Mark the class */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_class);
+            PM_RETURN_IF_ERROR(retval);
+
+            /* Mark the instance */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_instance);
+            PM_RETURN_IF_ERROR(retval);
+
+            /* Mark the func */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_func);
+            PM_RETURN_IF_ERROR(retval);
+
+            /* Mark the attrs dict */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_attrs);
+            PM_RETURN_IF_ERROR(retval);
+            break;
+
+        case OBJ_TYPE_CLO:
+            /* Fallthrough to OBJ_TYPE_EXN */
+#endif /* HAVE_CLASSES */
+
         case OBJ_TYPE_EXN:
             /* Mark the obj head */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);

@@ -7,6 +7,7 @@ PM_USR_SOURCES = main.py
 PM_HEAP_SIZE = 0x2000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 IPM = true
+DEBUG = true
 
 TARGET = main
 SOURCES = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c

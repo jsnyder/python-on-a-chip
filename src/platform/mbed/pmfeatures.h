@@ -84,4 +84,11 @@
  */
 #define HAVE_REPLICATION
 
+/* #202 Implement classes in the vm */
+/**
+ * When defined, the code to support classes, instances, methods, etc.
+ * is included in the build.
+ */
+#define HAVE_CLASSES
+
 #endif /* FEATURES_H_ */

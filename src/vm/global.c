@@ -37,6 +37,9 @@ global_init(void)
     uint8_t *codestr = (uint8_t *)"code";
     uint8_t *pchunk;
     pPmObj_t pobj;
+#ifdef HAVE_CLASSES
+    uint8_t const *initstr = (uint8_t const *)"__init__"; 
+#endif /* HAVE_CLASSES */
 
     /* Clear the global struct */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
@@ -95,6 +98,13 @@ global_init(void)
     retval = string_new((uint8_t const **)&codestr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     gVmGlobal.pcodeStr = (pPmString_t)pobj;
+
+#ifdef HAVE_CLASSES
+    /* Init "__init__" string obj */
+    retval = string_new((uint8_t const **)&initstr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.pinitStr = (pPmString_t)pobj;
+#endif /* HAVE_CLASSES */
 
     /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;

@@ -79,8 +79,11 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     /* Empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
 
-    /* By default, this is a normal frame, not an import call one */
+    /* By default, this is a normal frame, not an import or __init__ one */
     pframe->fo_isImport = 0;
+#ifdef HAVE_CLASSES
+    pframe->fo_isInit = 0;
+#endif
 
     /* Return ptr to frame */
     *r_pobj = (pPmObj_t)pframe;

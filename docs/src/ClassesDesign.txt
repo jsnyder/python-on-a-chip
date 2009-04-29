@@ -1,0 +1,152 @@
+.. Copyright 2009 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+   
+===================
+PyMite Class Design
+===================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This document describes the PyMite virtual machine (VM) support for classes.
+In doing so, it serves as a design document for the PyMite developer.
+
+
+Overview
+--------
+
+The PyMite VM has the simplest possible implementation of classes that allows
+it to operate without changing the output from the Python compiler.  
+What this means is that the PyMite programmer will write code to create classes
+just as he would for Python.  The code will be run through pmImgCreator.py
+just like all other PyMite code.
+
+
+Python Classes Walk-through
+---------------------------
+
+This section discusses the design of PyMite classes by reverse-engineering
+Python classes, leaving out irrelevant details and honing the simplest solution.
+The study of classes begins by disassembling the following code::
+
+    class Foo(object):
+        a=42
+        def bar(self,):
+            pass
+
+    foo = Foo()
+    foo.bar()
+
+Use ``src/tools/dismantle.py`` to disassemble the code above.  The rest of
+this discussion will study snippets of the output from dismantle.
+The first thing to observe is that compiling the code above results in
+three code objects: the module, the class ``Foo`` and the function ``bar``
+(``bar`` is not a method yet).
+
+Examining the bytecode of the module's code object, we see that it builds
+the class ``Foo``, creates the instance ``foo`` and then calls the method
+``bar`` and discards the result.  Here is the bytecode that builds the class::
+
+     0 LOAD_CONST               0 ('Foo')
+     3 LOAD_NAME                0 (object)
+     6 BUILD_TUPLE              1
+     9 LOAD_CONST               1 (<code object Foo at 0x779b0, file "t202.py", line 13>)
+    12 MAKE_FUNCTION            0
+    15 CALL_FUNCTION            0
+    18 BUILD_CLASS         
+    19 STORE_NAME               1 (Foo)
+
+As of PyMite release 08, every bytecode in the listing above is supported
+with the exception of ``BUILD_CLASS``.  By studying the bytecode above
+and also looking inside the `CPython implementation`_ of the ``BUILD_CLASS`` 
+bytecode, we see that ``BUILD_CLASS`` takes three items from the stack:
+
+1. locals dict from executing Foo() as a function.  Its contents are:
+   ``{"__module__" : "__name__", a : 42, bar : <function>}``
+2. tuple: (object,)
+3. string: "Foo"
+
+This will be a good place to implement the function
+``class_new(attrs, bases, name, r_pobj)`` and make a call to it.
+
+.. _`CPython implementation`: http://svn.python.org/view/python/trunk/Python/ceval.c?view=markup
+
+The next block of the disassembly seems redundant, but there's a subtle
+difference::
+    
+    22 LOAD_NAME                1 (Foo)
+    25 CALL_FUNCTION            0
+    28 STORE_NAME               2 (foo)
+
+Didn't we just execute ``Foo`` in the previous block?  Yes, but it was a *code*
+object back then.  In this block, ``Foo`` is the *class* object that was created 
+by ``BUILD_CLASS``.   This code is responsible for creating an instance of 
+class ``Foo``.  Which means the ``CALL_FUNCTION`` bytecode implementation 
+is going to need a special case to:
+
+1. detect when the called item is a class
+2. create an instance of the class
+3. create the method from ``__init__()`` if it exists and run it
+
+That's a lot to do, so the helper function, ``class_instatiate(class, r_pobj)``
+will be created.
+
+The final block of code is where a little bit of magic happens::
+    
+    31 LOAD_NAME                2 (foo)
+    34 LOAD_ATTR                3 (bar)
+    37 CALL_FUNCTION            0
+    40 POP_TOP             
+    41 LOAD_CONST               2 (None)
+    44 RETURN_VALUE        
+    
+At this point ``foo`` is an instance, but it does not have any attributes,
+methods, nada.  The bytecode ``LOAD_ATTR`` needs a special case to look into
+an instance's parental tree to find the attribute ``bar``.  If ``bar`` is
+a function, then a method needs to be created from the function.  The structure
+used to represent a method contains three important things: the instance 
+which becomes the "*self*" parameter later on, the function and the class.
+
+Next, the ``CALL_FUNCTION`` bytecode implementation will need a special case
+to detect a method and insert the instance object as the "*self*" parameter
+on the stack before calling the instance's function.
+
+
+A Little Bit of Efficiency
+--------------------------
+
+In the section above, I mentioned two special cases that needed to be added
+to the implementation of the bytecode ``CALL_FUNCTION``.  One to detect
+a class and create an instance; another to detect a method and call its
+function.  While implementing these two special cases, I discovered that 
+by ordering them appropriately, one case naturally followed the other.
+
+The first case creates an instance of a class and, if the ``__init__``
+function exists, must call it as a method.  The second case detects a method,
+does the all-important insertion of the ``self`` parameter and calls the
+function.  So, by adding the proper logic, these two special cases naturally
+coexist even when methods other than ``__init__()`` are called.
+
+
+Design Decisions
+----------------
+
+In a Python class, the instance intializer function is named 
+``__init__(self,...)``.  In PyMite, it would be possible to allow a differently 
+named function to serve as the initializer, such as one with a shorter name 
+that would conserve memory.  However, the name should be kept ``__init__`` 
+so that the same source code can run properly in CPython.
+
+At this point, all the meta-classes and meta-methods are not going to be part
+of the design.  This is to keep the design simple and small.
+
+.. :mode=rest:

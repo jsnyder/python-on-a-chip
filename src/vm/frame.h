@@ -111,6 +111,11 @@ typedef struct PmFrame_s
     /** Frame can be an import-frame that handles RETURN differently */
     uint8_t fo_isImport:1;
 
+#ifdef HAVE_CLASSES
+    /** Flag to indicate class initailzer frame; handle RETURN differently */
+    uint8_t fo_isInit:1;
+#endif /* HAVE_CLASSES */
+
     /** Array of local vars and stack (space appended at alloc) */
     pPmObj_t fo_locals[1];
     /* WARNING: Do not put new fields below fo_locals */

@@ -25,18 +25,20 @@ dict_new(pPmObj_t *r_pdict)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmDict_t pdict = C_NULL;
-
+    uint8_t *pchunk;
+    
     /* Allocate a dict */
-    retval = heap_getChunk(sizeof(PmDict_t), (uint8_t **)r_pdict);
+    retval = heap_getChunk(sizeof(PmDict_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
 
     /* Init dict fields */
-    pdict = (pPmDict_t)*r_pdict;
+    pdict = (pPmDict_t)pchunk;
     OBJ_SET_TYPE(pdict, OBJ_TYPE_DIC);
     pdict->length = 0;
     pdict->d_keys = C_NULL;
     pdict->d_vals = C_NULL;
 
+    *r_pdict = (pPmObj_t)pchunk;
     return retval;
 }
 
@@ -158,7 +160,7 @@ dict_getItem(pPmObj_t pdict, pPmObj_t pkey, pPmObj_t *r_pobj)
     PmReturn_t retval = PM_RET_OK;
     int16_t indx = 0;
 
-    C_ASSERT(pdict != C_NULL);
+/*    C_ASSERT(pdict != C_NULL);*/
 
     /* if it's not a dict, raise TypeError */
     if (OBJ_GET_TYPE(pdict) != OBJ_TYPE_DIC)

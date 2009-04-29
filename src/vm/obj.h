@@ -173,15 +173,18 @@ typedef enum PmType_e
 
     /** Code image object */
     OBJ_TYPE_CIO = 0x10,
+  
+    /** Method object */
+    OBJ_TYPE_MTH = 0x11,
     
     /* All types after this are not hashable */
-    OBJ_TYPE_HASHABLE_MAX = 0x10,
+    OBJ_TYPE_HASHABLE_MAX = 0x11,
 
     /** List (mutable sequence) */
-    OBJ_TYPE_LST = 0x11,
+    OBJ_TYPE_LST = 0x12,
 
     /** Dictionary (hash table) */
-    OBJ_TYPE_DIC = 0x12,
+    OBJ_TYPE_DIC = 0x13,
 
     /* All types after this are not accessible to the user */
     OBJ_TYPE_ACCESSIBLE_MAX = 0x19,
