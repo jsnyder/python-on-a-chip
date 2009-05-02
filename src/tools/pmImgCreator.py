@@ -271,6 +271,9 @@ class PmImgCreator:
                                     "    PM_RAISE(retval, PM_RET_EX_SYS);\n"
                                     "    return retval;\n"
                                    ))
+            self.nfcount = 1
+        else:
+            self.nfcount = 0
 
         # for each src file, convert and format
         for fn in self.infiles:
@@ -605,9 +608,11 @@ class PmImgCreator:
                     # native function name is
                     # "nat_<modname>_<pyfuncname>".
                     # append (nat func name, nat code) to table
-                    self.nativetable.append((NATIVE_FUNC_PREFIX +
-                                             mn + "_" + co.co_name,
-                                            nativecode))
+                    self.nativetable.append(
+                        ("%s%02d_%s_%s"
+                         % (NATIVE_FUNC_PREFIX, self.nfcount, mn, co.co_name),
+                         nativecode))
+                    self.nfcount += 1
 
             ## Consts filter
             # if want to remove __doc__ string
