@@ -55,3 +55,4 @@ clean :
 	$(RM) $(IMG_SOURCES)
 	$(RM) $(NAT_SOURCES)
 	$(RM) plat.o
+	$(RM) zem

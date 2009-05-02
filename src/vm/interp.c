@@ -716,6 +716,7 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Keep ref of expiring frame */
                 pobj1 = (pPmObj_t)FP;
+                C_ASSERT(OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FRM);
 
                 /* If no previous frame, quit thread */
                 if (FP->fo_back == C_NULL)
@@ -739,6 +740,7 @@ interpret(const uint8_t returnOnNoThreads)
                     if (pobj2 != PM_NONE)
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
                     }
                 }
                 else
@@ -1554,7 +1556,7 @@ interpret(const uint8_t returnOnNoThreads)
                         if (t16 > 0)
                         {
                             PM_RAISE(retval, PM_RET_EX_TYPE);
-                            return retval;
+                            break;
                         }
 
                         /* Otherwise, continue with instance */
@@ -1747,6 +1749,21 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Clear flag, so frame will not be marked by the GC */
                     gVmGlobal.nativeframe.nf_active = C_FALSE;
+
+#ifdef HAVE_CLASSES
+                    /* If class's __init__ called, do not push a return obj */
+                    if (bc == 0)
+                    {
+                        /* Raise TypeError if returned obj was not None */
+                        if ((retval == PM_RET_OK)
+                            && (gVmGlobal.nativeframe.nf_stack != PM_NONE))
+                        {
+                            PM_RAISE(retval, PM_RET_EX_TYPE);
+                            break;
+                        }
+                    }
+                    else
+#endif /* HAVE_CLASSES */
 
                     /* If the frame pointer was switched, do nothing to TOS */
                     if (retval == PM_RET_FRAME_SWITCH)

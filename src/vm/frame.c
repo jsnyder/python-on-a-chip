@@ -55,7 +55,13 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 
     /* Now paddr points to CI_NLOCALS_FIELD */
     nlocals = mem_getByte(pco->co_memspace, &paddr);
+
+#ifdef HAVE_CLASSES
+    /* #230: Calling a class's __init__() takes two extra spaces on the stack */
+    fsize = sizeof(PmFrame_t) + (stacksz + nlocals + 1) * sizeof(pPmObj_t);
+#else
     fsize = sizeof(PmFrame_t) + (stacksz + nlocals - 1) * sizeof(pPmObj_t);
+#endif /* HAVE_CLASSES */
 
     /* Allocate a frame */
     retval = heap_getChunk(fsize, &pchunk);
