@@ -59,7 +59,7 @@ import exceptions, string, sys, types, dis, os, time, getopt, struct, types
 PM_FEATURES = {
     "HAVE_PRINT": True, # This flag currently has no effect in this file
     "HAVE_GC": True, # This flag currently has no effect in this file
-    "HAVE_FLOAT": False,
+    "HAVE_FLOAT": True,
     "HAVE_DEL": True,
     "HAVE_IMPORTS": True,
     "HAVE_ASSERT": True,

@@ -362,9 +362,11 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_CIM:
         case OBJ_TYPE_NIM:
         case OBJ_TYPE_NOB:
-        case OBJ_TYPE_EXN:
-        case OBJ_TYPE_SQI:
         case OBJ_TYPE_THR:
+        case OBJ_TYPE_EXN:
+        case OBJ_TYPE_CIO:
+        case OBJ_TYPE_MTH:
+        case OBJ_TYPE_SQI:
             if (marshallString)
             {
                 retval = plat_putByte('\'');

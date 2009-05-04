@@ -43,7 +43,7 @@ PLATFORM := $(notdir $(CURDIR))
 PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
-PM_USR_SOURCES = main.py plat.py
+PM_USR_SOURCES = main.py mbed.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 IPM := true
 
