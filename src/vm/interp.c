@@ -234,6 +234,10 @@ interpret(const uint8_t returnOnNoThreads)
                          && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_LST))
                 {
                     t16 = (int16_t)((pPmInt_t)TOS)->val;
+                    if (t16 < 0)
+                    {
+                        t16 = 0;
+                    }
 
                     retval = list_replicate(TOS1, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
@@ -270,8 +274,9 @@ interpret(const uint8_t returnOnNoThreads)
                     }
 
                     pobj2 = TOS1;
-                    retval = string_replicate((uint8_t const **)(uint8_t *)
-                                              &pobj2, t16, &pobj3);
+                    pobj2 = (pPmObj_t)&((pPmString_t)pobj2)->val;
+                    retval = string_replicate((uint8_t const **)&pobj2,
+                                              t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                     TOS = pobj3;
