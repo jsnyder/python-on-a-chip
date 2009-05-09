@@ -282,8 +282,8 @@ interpret(const uint8_t returnOnNoThreads)
 
                     pobj2 = TOS1;
                     pobj2 = (pPmObj_t)&((pPmString_t)pobj2)->val;
-                    retval = string_replicate((uint8_t const **)&pobj2,
-                                              t16, &pobj3);
+                    retval = string_replicate(
+                        (uint8_t const **)(uint8_t *)&pobj2, t16, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                     TOS = pobj3;
