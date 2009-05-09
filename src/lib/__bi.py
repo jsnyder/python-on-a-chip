@@ -3,7 +3,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -21,53 +21,8 @@
 #
 
 
-#### CONSTS
-
-#
-# Commented out to conserve memory
-#
-# C = "C 2002 Dean Hall. All rights reserved."
-
-
-#### FUNCS
-
-#def abs(n):
-#    """__NATIVE__
-#    pPmObj_t pn;
-#    pPmObj_t pm;
-#    int32_t n;
-#    PmReturn_t retval = PM_RET_OK;
-#
-#    /* If wrong number of args, raise TypeError */
-#    if (NATIVE_GET_NUM_ARGS() != 1)
-#    {
-#        PM_RAISE(retval, PM_RET_EX_TYPE);
-#        return retval;
-#    }
-#
-#    /* Raise ValueError if arg is not int */
-#    pn = NATIVE_GET_LOCAL(0);
-#    if (OBJ_GET_TYPE(pn) != OBJ_TYPE_INT)
-#    {
-#        PM_RAISE(retval, PM_RET_EX_VAL);
-#        return retval;
-#    }
-#
-#    /* Push the absolute value onto the stack */
-#    n = ((pPmInt_t)pn)->val;
-#    if (n >= 0)
-#    {
-#        NATIVE_SET_TOS(pn);
-#    }
-#    else
-#    {
-#        retval = int_new(-n, &pm);
-#        NATIVE_SET_TOS(pm);
-#    }
-#
-#    return retval;
-#    """
-#    pass
+def abs(n): 
+    return (n, -n)[n < 0]
 
 
 def chr(n):
@@ -135,7 +90,7 @@ def dir(o):
         {
             po = (pPmObj_t)((pPmFunc_t)po)->f_attrs;
         }
-        
+
 #ifdef HAVE_CLASSES
         else if (OBJ_GET_TYPE(po) == OBJ_TYPE_CLO)
         {
@@ -144,11 +99,11 @@ def dir(o):
         else if (OBJ_GET_TYPE(po) == OBJ_TYPE_CLI)
         {
             po = (pPmObj_t)((pPmInstance_t)po)->cli_attrs;
-        }        
+        }
         else if (OBJ_GET_TYPE(po) == OBJ_TYPE_MTH)
         {
             po = (pPmObj_t)((pPmMethod_t)po)->m_attrs;
-        }        
+        }
 #endif /* HAVE_CLASSES */
 
         else
@@ -381,25 +336,25 @@ def len(s):
     pass
 
 
-#def locals():
-#    """__NATIVE__
-#    pPmObj_t pr = C_NULL;
-#    PmReturn_t retval;
-#
-#    /* If wrong number of args, raise TypeError */
-#    if (NATIVE_GET_NUM_ARGS() != 0)
-#    {
-#        PM_RAISE(retval, PM_RET_EX_TYPE);
-#        return retval;
-#    }
-#
-#    /* Return calling frame's local attrs dict on the stack */
-#    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_attrs;
-#    NATIVE_SET_TOS(pr);
-#
-#    return PM_RET_OK;
-#    """
-#    pass
+def locals():
+    """__NATIVE__
+    pPmObj_t pr = C_NULL;
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Return calling frame's local attrs dict on the stack */
+    pr = (pPmObj_t)NATIVE_GET_PFRAME()->fo_attrs;
+    NATIVE_SET_TOS(pr);
+
+    return PM_RET_OK;
+    """
+    pass
 
 
 def map(f, s):
@@ -450,33 +405,8 @@ def ord(s):
     pass
 
 
-#def pow(x, y):
-#    """__NATIVE__
-#    pPmObj_t px;
-#    pPmObj_t py;
-#    pPmObj_t pn;
-#    PmReturn_t retval;
-#
-#    /* If wrong number of args, raise TypeError */
-#    if (NATIVE_GET_NUM_ARGS() != 2)
-#    {
-#        PM_RAISE(retval, PM_RET_EX_TYPE);
-#        return retval;
-#    }
-#
-#    px = NATIVE_GET_LOCAL(0);
-#    py = NATIVE_GET_LOCAL(1);
-#
-#    /* Calculate integer power */
-#    retval = int_pow(px, py, &pn);
-#    PM_RETURN_IF_ERROR(retval);
-#
-#    /* Push result on stack */
-#    NATIVE_SET_TOS(pn);
-#
-#    return retval;
-#    """
-#    pass
+def pow(x, y):
+    return x ** y
 
 
 def range(a, b, c):
@@ -766,7 +696,7 @@ def _clo(attrs, bases, name):
     """
     pass
 
-    
+
 #
 # Root object
 #
