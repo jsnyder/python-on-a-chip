@@ -1,9 +1,12 @@
-======
-PyMite
-======
+================
+Python-on-a-Chip
+================
+featuring PyMite
+================
+
 
 :Author:    Dean Hall
-:Copyright: Copyright 2002 Dean Hall.
+:Copyright: Copyright 2003, 2006, 2007, 2009 Dean Hall.
             See `License`_ for details.
 :Release:   08
 :Site:      http://www.pythononachip.org
@@ -13,29 +16,23 @@ PyMite
 Purpose
 -------
 
-PyMite is a flyweight Python interpreter written from scratch to execute
-on 8-bit and larger microcontrollers with resources as limited as 64 KiB
-of program memory (flash) and 4 KiB of RAM. PyMite supports a subset of
-the Python 2.5 syntax and can execute a subset of the Python 2.5 bytecodes.
-PyMite can also be compiled, tested and executed on a desktop computer.
+The Python-on-a-Chip program consists of the PyMite virtual machine,
+ports to specific platforms, libraries, tests, tools and documentation.
+PyMite is a flyweight Python bytecode interpreter written from scratch
+to execute in little memory on microcontrollers without an operating system.
+PyMite supports a subset of Python 2.5 and can also be compiled, tested
+and executed on a desktop computer.
 
 
 License
 -------
 
-PyMite is offered through one of two licenses: commercial or GPL v2.
-See the LICENSE_ file at the root of this package for licensing details.
+See the LICENSE_ file to understand the terms of licensing
+for each component of the Python-on-a-Chip program.
 
-All of the documentation and images for PyMite are
-licensed under the GNU Free Documentation License.
-
-    Copyright 2006 Dean Hall
-
-    Permission is granted to copy, distribute and/or modify this document
-    under the terms of the GNU Free Documentation License, Version 1.2
-    or any later version published by the Free Software Foundation;
-    with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
-    Texts.  A copy of the license is in the file ``docs/LICENSE``.
+The Python-on-a-Chip program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 .. _LICENSE: LICENSE
 

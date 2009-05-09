@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 
+# This file is Copyright 2007, 2009 Dean Hall.
 #
-# PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
-# Copyright 2002 Dean Hall.  All rights reserved.
-# PyMite is offered through one of two licenses: commercial or open-source.
-# See the LICENSE file at the root of this package for licensing details.
-#
+# This file is part of the Python-on-a-Chip program.
+# Python-on-a-Chip is free software: you can redistribute it and/or modify
+# it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
+# 
+# Python-on-a-Chip is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
+# is seen in the file COPYING in this directory.
 
 """
 ==================
@@ -55,8 +60,11 @@ PMVM_EXE = "../platform/desktop/main.out"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
-INIT_MESSAGE = """PyMite is Copyright 2002 Dean Hall.  See LICENSE for details.
-This software is licensed under the GNU GPL Version 2 with NO WARRANTY.
+INIT_MESSAGE = """Python-on-a-Chip is Copyright 2003, 2006, 2007, 2009 Dean Hall and others.
+Python-on-a-Chip is licensed under the GNU LESSER GENERAL PUBLIC LICENSE V 2.1
+PyMite is Copyright 2003, 2006, 2007, 2009 Dean Hall.  
+PyMite is licensed under the GNU GENERAL PUBLIC LICENSE V 2.
+This software is offered with NO WARRANTY.  See LICENSE for details.
 """
 HELP_MESSAGE = """Type the Python code that you want to run on the target device.
 If you see no prompt, type two consecutive returns to exit multiline mode.
