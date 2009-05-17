@@ -47,6 +47,10 @@ global_init(void)
 #ifdef HAVE_CLASSES
     uint8_t const *initstr = (uint8_t const *)"__init__"; 
 #endif /* HAVE_CLASSES */
+#ifdef HAVE_GENERATORS
+    uint8_t const *genstr = (uint8_t const *)"Generator";
+    uint8_t const *nextstr = (uint8_t const *)"next";
+#endif /* HAVE_GENERATORS */
 
     /* Clear the global struct */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
@@ -112,6 +116,18 @@ global_init(void)
     PM_RETURN_IF_ERROR(retval);
     gVmGlobal.pinitStr = (pPmString_t)pobj;
 #endif /* HAVE_CLASSES */
+
+#ifdef HAVE_GENERATORS
+    /* Init "Generator" string obj */
+    retval = string_new((uint8_t const **)&genstr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.pgenStr = (pPmString_t)pobj;
+    
+    /* Init "next" string obj */
+    retval = string_new((uint8_t const **)&nextstr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.pnextStr = (pPmString_t)pobj;
+#endif /* HAVE_GENERATORS */
 
     /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;

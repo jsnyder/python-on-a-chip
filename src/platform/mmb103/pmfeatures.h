@@ -98,5 +98,15 @@
  */
 /*#define HAVE_CLASSES*/
 
+/* #207 Add support for the yield keyword */
+/**
+ * When defined, the code to support the yield keyword's use for 
+ * generator-iterators is included in the build.
+ */
+/*#define HAVE_GENERATORS*/
+#if defined(HAVE_GENERATORS) && !defined(HAVE_CLASSES)
+#error HAVE_GENERATORS requires HAVE_CLASSES
+#endif
+
 
 #endif /* FEATURES_H_ */

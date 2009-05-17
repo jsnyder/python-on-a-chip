@@ -63,7 +63,10 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     /* Now paddr points to CI_NLOCALS_FIELD */
     nlocals = mem_getByte(pco->co_memspace, &paddr);
 
-#ifdef HAVE_CLASSES
+#ifdef HAVE_GENERATORS
+    /* #207: Initializing a Generator using CALL_FUNC needs extra stack slot */
+    fsize = sizeof(PmFrame_t) + (stacksz + nlocals + 2) * sizeof(pPmObj_t);
+#elif defined(HAVE_CLASSES)
     /* #230: Calling a class's __init__() takes two extra spaces on the stack */
     fsize = sizeof(PmFrame_t) + (stacksz + nlocals + 1) * sizeof(pPmObj_t);
 #else

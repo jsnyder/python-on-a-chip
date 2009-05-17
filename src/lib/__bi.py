@@ -21,7 +21,8 @@
 #
 
 
-def abs(n): 
+def abs(n):
+#    return n > 0 and n or -n
     return (n, -n)[n < 0]
 
 
@@ -710,6 +711,166 @@ __name__ = "TBD"
 #
 AssertionError = _exn()
 AssertionError.code = 0xE4
+
+
+#
+# Generator class - used by the vm for generator-iterators, 
+# generator-expressions and generator-coroutines
+#
+# #207: Add support for the yield keyword
+#
+# WARNING: unsupported methods: throw, close, __del__
+#
+class Generator(object):
+
+    def __init__(self, fa):
+        """__NATIVE__
+        PmReturn_t retval;
+        pPmObj_t pself;
+        pPmObj_t pfa;
+        pPmObj_t pfunc;
+        pPmObj_t pframe;
+        uint8_t i;
+
+        /* Raise TypeError if wrong number of args */
+        if (NATIVE_GET_NUM_ARGS() != 2)
+        {
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            return retval;
+        }
+
+        /* Raise ValueError if first args are not: instance, tuple */
+        pself = NATIVE_GET_LOCAL(0);
+        pfa = NATIVE_GET_LOCAL(1);
+        if ((OBJ_GET_TYPE(pself) != OBJ_TYPE_CLI)
+            || (OBJ_GET_TYPE(pfa) != OBJ_TYPE_TUP))
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+
+        /* Create a new frame for the function */
+        pfunc = ((pPmTuple_t)pfa)->val[0];
+        retval = frame_new(pfunc, &pframe);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Copy args into frame's locals */
+        for (i = 0; i < ((pPmTuple_t)pfa)->length - 1; i++)
+        {
+            /* The pfa tuple is (func, [arg0, ... argN]) */
+            ((pPmFrame_t)pframe)->fo_locals[i] = ((pPmTuple_t)pfa)->val[i + 1];
+        }
+
+        /* Store frame in None attr of instance */
+        retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+                              PM_NONE, pframe);
+
+        NATIVE_SET_TOS(PM_NONE);
+        return retval;
+        """
+        pass
+
+
+    def next(self,):
+        return self.send(None)
+
+
+    def send(self, arg):
+        """__NATIVE__
+        PmReturn_t retval;
+        pPmObj_t pself;
+        pPmObj_t parg;
+        pPmObj_t pgenframe;
+
+        /* Raise TypeError if wrong number of args */
+        if (NATIVE_GET_NUM_ARGS() != 2)
+        {
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            return retval;
+        }
+
+        /* Raise ValueError if first arg is not an instance */
+        pself = NATIVE_GET_LOCAL(0);
+        parg = NATIVE_GET_LOCAL(1);
+        if (OBJ_GET_TYPE(pself) != OBJ_TYPE_CLI)
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+
+        /* Get the generator's frame */
+        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+                              PM_NONE, &pgenframe);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Push argument onto generator's frame's stack */
+        *(((pPmFrame_t)pgenframe)->fo_sp) = parg;
+        ((pPmFrame_t)pgenframe)->fo_sp++;
+
+        /* Set generator's frame's fo_back so yielded value goes to caller */
+        ((pPmFrame_t)pgenframe)->fo_back = NATIVE_GET_PFRAME();
+
+        /* Set active frame to run generator */
+        NATIVE_GET_PFRAME() = (pPmFrame_t)pgenframe;
+
+        return PM_RET_FRAME_SWITCH;
+        """
+        pass
+
+
+# WARNING: Untested.  Awaiting implementation of try/except/finally
+#
+#    def close(self,):
+#        """__NATIVE__
+#        PmReturn_t retval;
+#        pPmObj_t pself;
+#        pPmObj_t pgenframe;
+#
+#        /* Raise TypeError if wrong number of args */
+#        if (NATIVE_GET_NUM_ARGS() != 1)
+#        {
+#            PM_RAISE(retval, PM_RET_EX_TYPE);
+#            return retval;
+#        }
+#
+#        /* Raise ValueError if first arg is not an instance */
+#        pself = NATIVE_GET_LOCAL(0);
+#        if (OBJ_GET_TYPE(pself) != OBJ_TYPE_CLI)
+#        {
+#            PM_RAISE(retval, PM_RET_EX_VAL);
+#            return retval;
+#        }
+#
+#        /* Get the generator's frame */
+#        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+#                              PM_NONE, &pgenframe);
+#        PM_RETURN_IF_ERROR(retval);
+#
+#        /* If there was no frame, assume generator already closed, do nothing */
+#        if (OBJ_GET_TYPE(pgenframe) != OBJ_TYPE_FRM)
+#        {
+#            return PM_RET_OK;
+#        }
+#
+#        /* Unbind the frame from the generator instance */
+#        retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+#                              PM_NONE, PM_NONE);
+#
+#        /* Push argument onto generator's frame's stack */
+#        *(((pPmFrame_t)pgenframe)->fo_sp) = PM_NONE;
+#        ((pPmFrame_t)pgenframe)->fo_sp++;
+#
+#        /* Set generator's frame's fo_back so yielded value goes to caller */
+#        ((pPmFrame_t)pgenframe)->fo_back = NATIVE_GET_PFRAME();
+#
+#        /* Set active frame to run generator */
+#        NATIVE_GET_PFRAME() = (pPmFrame_t)pgenframe;
+#
+#        /* Raise a GeneratorExit where the generator function was paused */
+#        PM_RAISE(retval, PM_RET_EX_GEN);
+#        return retval;
+#        """
+#        pass
 
 
 #

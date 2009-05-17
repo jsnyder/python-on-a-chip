@@ -1,0 +1,197 @@
+.. Copyright 2009 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+
+=======================
+PyMite Generator Design
+=======================
+Supporting the keyword yield
+============================
+
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This document describes the PyMite virtual machine (VM) support for the
+yield keyword's use to create generators.
+In doing so, it serves as a design document for the PyMite developer.
+
+
+Overview
+--------
+
+The PyMite VM shall support the three forms of generators: iterator functions,
+generator expressions and coroutines.
+Background information on simple generators in Python is found in `PEP 255`_
+while coroutines via enhanced generators is found in `PEP 342`_.
+Generators in PyMite follow the designs in these PEPs, but may not implement
+them in their entirety.  Furthermore, the implementation of generators in PyMite
+is done by reverse engineering output from the Python compiler.
+What this means is that the PyMite programmer will write code to create a
+generator just as he would for Python.  The code will be run through
+pmImgCreator.py, which uses Python's compiler, just like all other PyMite code.
+
+.. _`PEP 255`: http://www.python.org/dev/peps/pep-0255/
+.. _`PEP 342`: http://www.python.org/dev/peps/pep-0342/
+
+
+Python Generator-iterators Walk-through
+---------------------------------------
+
+This section discusses the design of PyMite generator-iterators by
+reverse-engineering Python, leaving out irrelevant details and honing the
+simplest solution. The study of iterators begins by disassembling the following
+code, an infinite iterator that generates the Fibonacci sequence and a simple
+for loop that requests values from the iterator::
+
+    def fib():
+        a, b = 0, 1
+        while True:
+            yield a
+            a, b = b, a+b
+
+    for i in fib():
+        print i,
+        if i > 256:
+            break
+
+Use ``src/tools/dismantle.py`` to disassemble the code above.  The rest of
+this discussion will study snippets of the output from dismantle.
+The first thing to observe is that compiling the code above results in
+two code objects: the module and the function ``fib``.
+
+Examining the bytecode of the module's code object, we see that it builds
+the function ``fib`` just as it would any other function.  ``fib`` becomes
+a generator-iterator function.  Below is the bytecode that shows how the
+generator-iterator function is used::
+
+ 24           9 SETUP_LOOP              39 (to 51)
+             12 LOAD_NAME                0 (fib)
+             15 CALL_FUNCTION            0
+             18 GET_ITER
+        >>   19 FOR_ITER                28 (to 50)
+             22 STORE_NAME               1 (i)
+
+As of PyMite release 08, every bytecode in the listing above is supported.
+However, the ``CALL_FUNCTION`` bytecode needs to be changed to detect when
+the function is a generator and to create a generator instance as needed.
+This is done by inspecting a flag that is set in the code object by
+the compiler.  The generator is going to be an instance of a new Generator
+class that is declared in PyMite's buildins, src/lib/__bi.py.
+Next, the ``GET_ITER`` bytecode needs  to be changed
+to ignore the top-of-stack when it is a generator.  The ``FOR_ITER`` bytecode
+then needs to detect a generator object and call its next method.
+The next method is responsible for executing the generator
+function until it yields a result.  The yielded result is put on the stack
+and used by the next bytecode, STORE_NAME.
+
+Inside the function ``fib``, the only new thing is the yield statement that
+results in the following bytecode::
+
+ 21          22 LOAD_FAST                0 (a)
+             25 YIELD_VALUE
+             26 POP_TOP
+
+The ``YIELD_VALUE`` bytecode needs to be implemented.  It is resposible
+for placing the item on this function's top-of-stack on the caller's
+top-of-stack, where "the caller" is whomever called the generator's ``next()``
+or ``send()`` method.  This differs from ``RETURN_VALUE`` in that the
+generator's function is not disposed of; it is kept in the generator instance
+so it can be called again, resuming execution one instruction after
+``YIELD_VALUE``.
+
+
+Generator Expressions
+---------------------
+
+A generator expression is an expression that looks like a list-comprehension
+wrapped in parentheses rather than brackets.  The following is an example
+generator expression::
+
+    b = (2*x for x in a)
+
+The Python compiler creates the following bytecode for the generator
+expression::
+
+ 24          18 LOAD_CONST               4 (<code object <genexpr> at 0x75a...>)
+             21 MAKE_FUNCTION            0
+             24 LOAD_NAME                0 (a)
+             27 GET_ITER
+             28 CALL_FUNCTION            1
+             31 STORE_NAME               1 (b)
+
+This disassembly reveals the the Python compiler turned the generator expression
+into an anonymous generator function.  So, the behavior of a generator
+expression is identical to a generator function and no extra changes to the VM
+are necessary to support generator expressions.
+
+
+Generator Coroutines
+--------------------
+
+A generator coroutine is created by defining a function and using a yield
+expression inside the function.  The yield expression can accept an argument
+as well as return a value.  A demonstration coroutine and how to use
+it is seen below (line numbers are added for discussion)::
+
+    0 def coro(n):
+    1     outgoing = 0
+    2     while True:
+    3         incoming = (yield outgoing)
+    4         print "I shall print the incoming message", n, "times:", incoming * n
+    5         outgoing += 1
+    6
+    7 c3 = coro(3)
+    8 print "Priming coro:", c3.next()
+    9 print "Sending 'moo':", c3.send("moo")
+
+Inside the function, the line with the yield expression, line 3, is the only
+thing special in the source code.  However, because it is a coroutine (and not
+a function) it is used in a special manner.  Line 7 shows that ``coro()`` is
+called with an argument and its output is stored in ``c3``.  But because it is
+a coroutine, it returns a generator object, so ``c3`` is an instance of class
+``Generator``.  It is important to note that the call to ``coro()`` did not
+execute any code inside the coroutine, it simply created an instance of
+coroutine and an execution frame which will be used to run the code and
+save execution state later on.  The first call to a coroutine must be the
+``next()`` method.  The first call to ``next()`` executes the code inside the
+coroutine from the start to the first yield statement.  Now, the coroutine
+is ready to accept input via the ``send()`` method.
+
+Despite the long-winded explanation, there is very little about
+generator-coroutines that differs from generator-iterators.  The one difference
+is that arguments can now be sent to the generator via the ``send()`` method.
+This is done by a simple stack push operation.
+
+One issue not encountered in the example code above is what happens when a 
+coroutine returns.  According to PEP 342, a GeneratorExit exception should
+be raised.  So a special case is added to ``RETURN_VALUE`` to detect when
+returning from a coroutine.  PyMite does not support exceptions at the time
+of this writing, so instead of raising the exception, an attempt is made to
+jump to a handler in the block stack.  If no handler is found, the VM exits
+with an error.  This behavior is not ideal, but it works compactly for now.
+A change to this behavior may be needed in the future.
+
+
+Design Decisions
+----------------
+
+PEP 342 states that a generator object has these methods: ``__init__, next, send,
+throw, close`` and ``__del__``.  This implementation supports the first three 
+methods, but not the latter three.  Methods ``throw`` and ``close`` make use
+of the ability to catch exceptions which is not yet supported in PyMite.
+And ``__del__`` requires the ability to run code during a garbage collection
+which is not support by the current infrastructure.  The author decided to
+go ahead with this incomplete implementation since it supports the most common
+uses of generators and will provide a great new feature with a small increase
+in code size.  Completing the implementation may performed in the future.
+
+.. :mode=rest:

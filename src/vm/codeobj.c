@@ -44,6 +44,9 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     /* Get number of args to the function */
     uint8_t argcount = mem_getByte(memspace, paddr);
 
+    /* Get compiler flags */
+    uint8_t flags = mem_getByte(memspace, paddr);
+
     /* Allocate a code obj */
     retval = heap_getChunk(sizeof(PmCo_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
@@ -54,6 +57,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
     pco->co_argcount = argcount;
+    pco->co_flags = flags;
 
     /* Load names (tuple obj) */
     *paddr = pci + CI_NAMES_FIELD;

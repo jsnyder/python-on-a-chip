@@ -71,6 +71,7 @@ PM_FEATURES = {
     "HAVE_DEFAULTARGS": True,
     "HAVE_REPLICATION": True, # This flag currently has no effect in this file
     "HAVE_CLASSES": True,
+    "HAVE_GENERATORS": True,
 }
 
 
@@ -101,8 +102,9 @@ OBJ_TYPE_NIM = 0x0B     # Native func img
 OBJ_TYPE_NOB = 0x0C     # Native func obj
 # All types after this never appear in an image
 
-# Number of bytes from top of code img to start of consts
-CO_IMG_FIXEDPART_SIZE = 6
+# Number of bytes from top of code img to start of consts:
+# sizelo, sizehi, type, co_argcount, co_flags, co_stacksize, co_nlocals
+CO_IMG_FIXEDPART_SIZE = 7
 
 # Number of bytes in a native image (constant)
 NATIVE_IMG_SIZE = 4
@@ -155,7 +157,7 @@ UNIMPLEMENTED_BCODES = [
     "BINARY_TRUE_DIVIDE", "INPLACE_TRUE_DIVIDE",
     "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
     "WITH_CLEANUP",
-    "EXEC_STMT", "YIELD_VALUE",
+    "EXEC_STMT",
     "END_FINALLY",
     "SETUP_EXCEPT", "SETUP_FINALLY",
     "BUILD_SLICE",
@@ -188,6 +190,12 @@ if not PM_FEATURES["HAVE_ASSERT"]:
 if not PM_FEATURES["HAVE_CLASSES"]:
     UNIMPLEMENTED_BCODES.extend([
         "BUILD_CLASS",
+        ])
+
+# #207: Add support for the yield keyword
+if not PM_FEATURES["HAVE_GENERATORS"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "YIELD_VALUE",
         ])
 
 # #152: Byte to append after the last image in the list
@@ -414,6 +422,8 @@ class PmImgCreator:
         # skip co_type and size
         # co_argcount
         imgstr = self._U8_to_str(co.co_argcount)
+        # co_flags
+        imgstr += self._U8_to_str(co.co_flags & 0xFF)
         # co_stacksize
         imgstr += self._U8_to_str(co.co_stacksize)
         # co_nlocals
@@ -488,8 +498,9 @@ class PmImgCreator:
 
         Flags filter:
             Check co_flags for flags that indicate an unsupported feature
-            Supported flags: CO_NOFREE, CO_OPTIMIZED, CO_NEWLOCALS, CO_NESTED
-            Unsupported flags: CO_VARARGS, CO_VARKEYWORDS, CO_GENERATOR
+            Supported flags: CO_NOFREE, CO_OPTIMIZED, CO_NEWLOCALS, CO_NESTED, 
+            Unsupported flags: CO_VARARGS, CO_VARKEYWORDS
+            Conditionally supported flags: CO_GENERATOR if HAVE_GENERATORS
 
         Native code filter:
             If this function has a native indicator,
@@ -523,9 +534,11 @@ class PmImgCreator:
         consts = list(co.co_consts)
 
         # Check co_flags
-        assert co.co_flags \
-               & (CO_VARARGS | CO_VARKEYWORDS | CO_GENERATOR) == 0,\
-               "Unsupported code identified by co_flags (%s)." % hex(co.co_flags)
+        unsupported_flags = CO_VARARGS | CO_VARKEYWORDS
+        if not PM_FEATURES["HAVE_GENERATORS"]:
+            unsupported_flags |= CO_GENERATOR
+        assert co.co_flags & unsupported_flags == 0,\
+            "Unsupported code identified by co_flags (%s)." % hex(co.co_flags)
 
         # get trimmed src file name and module name
         fn = os.path.basename(co.co_filename)

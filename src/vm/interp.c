@@ -47,7 +47,7 @@ interpret(const uint8_t returnOnNoThreads)
     PM_RETURN_IF_ERROR(retval);
 
     /* Interpret loop */
-    while (1)
+    for (;;)
     {
         if (gVmGlobal.pthread == C_NULL)
         {
@@ -198,15 +198,18 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 
             case GET_ITER:
-                /* Get the sequence from the top of stack */
-                pobj1 = TOS;
+#ifdef HAVE_GENERATORS
+                /* If TOS is instance, leave as TOS, expect it has a .next() */
+                if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_CLI)
+#endif /* HAVE_GENERATORS */
+                {
+                    /* Convert sequence to sequence-iterator */
+                    retval = seqiter_new(TOS, &pobj1);
+                    PM_BREAK_IF_ERROR(retval);
 
-                /* Convert sequence to sequence-iterator */
-                retval = seqiter_new(pobj1, &pobj2);
-                PM_BREAK_IF_ERROR(retval);
-
-                /* Put sequence-iterator on top of stack */
-                TOS = pobj2;
+                    /* Put sequence-iterator on top of stack */
+                    TOS = pobj1;
+                }
                 continue;
 
             case BINARY_MULTIPLY:
@@ -663,6 +666,8 @@ interpret(const uint8_t returnOnNoThreads)
                 SP--;
                 if (bc != PRINT_EXPR)
                 {
+                    retval = plat_putByte(' ');
+                    PM_BREAK_IF_ERROR(retval);
                     continue;
                 }
                 /* If PRINT_EXPR, Fallthrough to print a newline */
@@ -741,6 +746,29 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Otherwise return to previous frame */
                 FP = FP->fo_back;
 
+#ifdef HAVE_GENERATORS
+                /* If returning function was a generator */
+                if (((pPmFrame_t)pobj1)->fo_func->f_co->co_flags & CO_GENERATOR)
+                {
+                    /* If a loop handler is in-place, use it and pop it */
+                    if ((FP->fo_blockstack != C_NULL)
+                        && (FP->fo_blockstack->b_type == B_LOOP))
+                    {
+                        SP = ((pPmBlock_t)pobj1)->b_sp;
+                        IP = ((pPmBlock_t)pobj1)->b_handler;
+                        FP->fo_blockstack = FP->fo_blockstack->next;
+                    }
+
+                    /* Otherwise, raise a StopIteration exception */
+                    else
+                    {
+                        PM_RAISE(retval, PM_RET_EX_STOP);
+                        break;
+                    }
+                }
+                PM_BREAK_IF_ERROR(retval);
+#endif /* HAVE_GENERATORS */
+
 #ifdef HAVE_CLASSES
                 /*
                  * If returning function was class initializer
@@ -785,24 +813,44 @@ interpret(const uint8_t returnOnNoThreads)
                 continue;
 #endif /* HAVE_IMPORTS */
 
+#ifdef HAVE_GENERATORS
+            case YIELD_VALUE:
+                /* #207: Add support for the yield keyword */
+                /* Get expiring frame's TOS */
+                pobj1 = PM_POP();
+
+                /* Raise TypeError if __init__ did not return None */
+                /* (Yield means this is a generator) */
+                if ((FP)->fo_isInit)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    break;
+                }
+
+                /* Return to previous frame */
+                FP = FP->fo_back;
+
+                /* Push yield value onto caller's TOS */
+                PM_PUSH(pobj1);
+                continue;
+#endif /* HAVE_GENERATORS */
+
             case POP_BLOCK:
-            {
                 /* Get ptr to top block */
-                pPmBlock_t pb = FP->fo_blockstack;
+                pobj1 = (pPmObj_t)FP->fo_blockstack;
 
                 /* If there's no block, raise SystemError */
-                C_ASSERT(pb != C_NULL);
+                C_ASSERT(pobj1 != C_NULL);
 
                 /* Pop block */
-                FP->fo_blockstack = pb->next;
+                FP->fo_blockstack = FP->fo_blockstack->next;
 
-                /* Set stack to previous level */
-                SP = pb->b_sp;
+                /* Set stack to previous level, jump to code outside block */
+                SP = ((pPmBlock_t)pobj1)->b_sp;
+                IP = ((pPmBlock_t)pobj1)->b_handler;
 
-                /* Delete block */
-                PM_BREAK_IF_ERROR(heap_freeChunk((pPmObj_t)pb));
+                PM_BREAK_IF_ERROR(heap_freeChunk(pobj1));
                 continue;
-            }
 
 #ifdef HAVE_CLASSES
             case BUILD_CLASS:
@@ -886,10 +934,31 @@ interpret(const uint8_t returnOnNoThreads)
             case FOR_ITER:
                 t16 = GET_ARG();
 
-                /* Get the next item in the sequence iterator */
-                retval = seqiter_getNext(TOS, &pobj2);
+#ifdef HAVE_GENERATORS
+                /* If TOS is an instance, call next method */
+                if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                {
+                    /* Get the next() func */
+                    retval = class_getAttr(TOS, PM_NEXT_STR, &pobj1);
+                    PM_BREAK_IF_ERROR(retval);
 
-                /* If StopIteration, pop iterator and jump outside loop */
+                    /* Push the func and instance as an arg */
+                    pobj2 = TOS;
+                    PM_PUSH(pobj1);
+                    PM_PUSH(pobj2);
+                    t16 = 1;
+
+                    /* Ensure pobj1 is the func */
+                    goto CALL_FUNC_FOR_ITER;
+                }
+                else
+#endif /* HAVE_GENERATORS */
+                {
+                    /* Get the next item in the sequence iterator */
+                    retval = seqiter_getNext(TOS, &pobj2);
+                }
+
+                /* Catch StopIteration early: pop iterator and break loop */
                 if (retval == PM_RET_EX_STOP)
                 {
                     SP--;
@@ -897,6 +966,7 @@ interpret(const uint8_t returnOnNoThreads)
                     IP += t16;
                     continue;
                 }
+                PM_BREAK_IF_ERROR(retval);
 
                 /* Push the next item onto the stack */
                 PM_PUSH(pobj2);
@@ -1548,6 +1618,32 @@ interpret(const uint8_t returnOnNoThreads)
                     "interpret(), CALL_FUNCTION on <obj type=%d @ %p>\n",
                     OBJ_GET_TYPE(pobj1), pobj1);
 
+#ifdef HAVE_GENERATORS
+                /* If the callable is a generator function (can't be native) */
+                if ((OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN)
+                    && (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
+                    && (((pPmFunc_t)pobj1)->f_co->co_flags & CO_GENERATOR))
+                {
+                    /* Collect the function and arguments into a tuple */
+                    retval = tuple_new(t16 + 1, &pobj2);
+                    PM_BREAK_IF_ERROR(retval);
+                    sli_memcpy((uint8_t *)&((pPmTuple_t)pobj2)->val,
+                               (uint8_t *)&STACK(t16),
+                               (t16 + 1) * sizeof(pPmObj_t));
+
+                    /* Remove old args, push func/args tuple as one arg */
+                    SP -= t16;
+                    PM_PUSH(pobj2);
+                    t16 = 1;
+
+                    /* Set pobj1 and stack to create an instance of Generator */
+                    retval = dict_getItem(PM_PBUILTINS, PM_GENERATOR_STR,
+                                          &pobj1);
+                    PM_RETURN_IF_ERROR(retval);
+                    STACK(t16) = pobj1;
+                }
+#endif /* HAVE_GENERATORS */
+
 #ifdef HAVE_CLASSES
                 /* If the callable is a class, create an instance of it */
                 if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLO)
@@ -1613,6 +1709,9 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 #endif /* HAVE_CLASSES */
 
+#ifdef HAVE_GENERATORS
+CALL_FUNC_FOR_ITER:
+#endif /* HAVE_GENERATORS */
                 C_ASSERT(OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN);
 
                 /* If it is a regular func (not native) */
@@ -1840,6 +1939,40 @@ interpret(const uint8_t returnOnNoThreads)
                 PM_RAISE(retval, PM_RET_EX_SYS);
                 break;
         }
+
+#ifdef HAVE_GENERATORS
+        /* If got a StopIteration exception, check for a B_LOOP block */
+        if (retval == PM_RET_EX_STOP)
+        {
+            pobj1 = (pPmObj_t)FP;
+            while (pobj1 != C_NULL)
+            {
+                pobj2 = (pPmObj_t)((pPmFrame_t)pobj1)->fo_blockstack;
+                while (pobj2 != C_NULL)
+                {
+                    if (((pPmBlock_t)pobj2)->b_type == B_LOOP)
+                    {
+                        /* Resume execution where the block handler says */
+                        /* Set FP first, so SP and IP are set in the frame */
+                        FP = (pPmFrame_t)pobj1;
+                        SP = ((pPmBlock_t)pobj2)->b_sp;
+                        IP = ((pPmBlock_t)pobj2)->b_handler;
+                        ((pPmFrame_t)pobj1)->fo_blockstack =
+                            ((pPmFrame_t)pobj1)->fo_blockstack->next;
+                        retval = PM_RET_OK;
+                        break;
+                    }
+
+                    pobj2 = (pPmObj_t)((pPmBlock_t)pobj2)->next;
+                }
+                pobj1 = (pPmObj_t)((pPmFrame_t)pobj1)->fo_back;
+            }
+            if (retval == PM_RET_OK)
+            {
+                continue;
+            }
+        }
+#endif /* HAVE_GENERATORS */
 
         /*
          * If execution reaches this point, it is because

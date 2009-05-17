@@ -19,7 +19,7 @@ Purpose
 The Python-on-a-Chip program consists of the PyMite virtual machine,
 ports to specific platforms, libraries, tests, tools and documentation.
 PyMite is a flyweight Python bytecode interpreter written from scratch
-to execute in little memory on microcontrollers without an operating system.
+to execute in low memory on microcontrollers without an operating system.
 PyMite supports a subset of Python 2.5 and can also be compiled, tested
 and executed on a desktop computer.
 

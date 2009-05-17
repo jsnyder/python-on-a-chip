@@ -28,13 +28,22 @@
 #define CI_TYPE_FIELD       0
 #define CI_SIZE_FIELD       1
 #define CI_ARGCOUNT_FIELD   3
-#define CI_STACKSIZE_FIELD  4
-#define CI_NLOCALS_FIELD    5
-#define CI_NAMES_FIELD      6
+#define CI_FLAGS_FIELD      4
+#define CI_STACKSIZE_FIELD  5
+#define CI_NLOCALS_FIELD    6
+#define CI_NAMES_FIELD      7
 
 /** Native code image size */
 #define NATIVE_IMAGE_SIZE   4
 
+/* Masks for co_flags (from Python's code.h) */
+#define CO_OPTIMIZED 0x01
+#define CO_NEWLOCALS 0x02
+#define CO_VARARGS 0x04
+#define CO_VARKEYWORDS 0x08
+#define CO_NESTED 0x10
+#define CO_GENERATOR 0x20
+#define CO_NOFREE 0x40
 
 /**
  * Code Object
@@ -59,6 +68,8 @@ typedef struct PmCo_s
     uint8_t const *co_codeaddr;
     /** number of positional arguments the function expects */
     uint8_t co_argcount;
+    /** compiler flags */
+    uint8_t co_flags;
 } PmCo_t,
  *pPmCo_t;
 

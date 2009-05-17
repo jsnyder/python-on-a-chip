@@ -30,7 +30,7 @@
 PmReturn_t
 list_append(pPmObj_t plist, pPmObj_t pobj)
 {
-    PmReturn_t retval = PM_RET_STUB;
+    PmReturn_t retval;
 
     C_ASSERT(plist != C_NULL);
     C_ASSERT(pobj != C_NULL);

@@ -53,6 +53,12 @@
 #define PM_INIT_STR     (pPmObj_t)(gVmGlobal.pinitStr)
 #endif /* HAVE_CLASSES */
 
+#ifdef HAVE_GENERATORS
+/** The global string "Generator" */
+#define PM_GENERATOR_STR (pPmObj_t)(gVmGlobal.pgenStr)
+/** The global string "next" */
+#define PM_NEXT_STR (pPmObj_t)(gVmGlobal.pnextStr)
+#endif /* HAVE_GENERATORS */
 
 /**
  * This struct contains ALL of PyMite's globals
@@ -109,6 +115,13 @@ typedef struct PmVmGlobal_s
     /** The string "__init__", used in interp.c CALL_FUNCTION */
     pPmString_t pinitStr;
 #endif /* HAVE_CLASSES */
+
+#ifdef HAVE_GENERATORS
+    /** The string "Generator", used in interp.c CALL_FUNCTION */
+    pPmString_t pgenStr;
+    /** The string "next", used in interp.c FOR_ITER */
+    pPmString_t pnextStr;
+#endif /* HAVE_GENERATORS */
 
     /** Flag to trigger rescheduling */
     uint8_t reschedule;
