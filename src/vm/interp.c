@@ -723,13 +723,14 @@ interpret(const uint8_t returnOnNoThreads)
 #if __DEBUG__
                 /* #109: Check that stack should now be empty */
                 /* Get the number of local variables for this code obj */
-                uint8_t const *paddr = FP->fo_func->f_co->co_codeimgaddr
-                    + CI_STACKSIZE_FIELD + 1;
-                t8 = mem_getByte(FP->fo_func->f_co->co_memspace, &paddr);
+                pobj3 = (pPmObj_t)FP->fo_func->f_co->co_codeimgaddr
+                        + CI_STACKSIZE_FIELD + 1;
+                t8 = mem_getByte(FP->fo_func->f_co->co_memspace, 
+                                 (uint8_t const **)&pobj3);
 
                 /* SP should point to one past the end of the locals */
 /*                C_ASSERT(SP == &(FP->fo_locals[t8]));*/
-#endif
+#endif /* __DEBUG__ */
 
                 /* Keep ref of expiring frame */
                 pobj1 = (pPmObj_t)FP;

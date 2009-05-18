@@ -1,3 +1,6 @@
+import sys
+
+
 Import("env", "vars")
 
 SOURCES = Glob("*.c")
@@ -11,10 +14,11 @@ if env["IPM"] == True:
 
 
 img_sources = Command(["pmstdlib_img.c", "pmstdlib_nat.c"], [PMSTDLIB_SOURCES],
-    "src/tools/pmImgCreator.py -c -s -o src/vm/pmstdlib_img.c" \
-    " --native-file=src/vm/pmstdlib_nat.c $SOURCES")
-lib = env.Library("pmvm_%s" % vars.args["PLATFORM"],
-                  SOURCES + img_sources, ARFLAGS = "rcs")
+    "%s src/tools/pmImgCreator.py -c -s -o src/vm/pmstdlib_img.c" \
+    " --native-file=src/vm/pmstdlib_nat.c $SOURCES" %s (sys.executable))
+if sys.platform != "win32":
+    env['ARFLAGS'] = "rcs"
+lib = env.Library("pmvm_%s" % vars.args["PLATFORM"], SOURCES + img_sources)
 env.Precious(lib)
 
 

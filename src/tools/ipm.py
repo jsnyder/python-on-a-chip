@@ -56,7 +56,10 @@ REQUIREMENTS:
     """
 
 NEED_PYSERIAL = "Install the pySerial module from http://pyserial.wiki.sourceforge.net/pySerial"
-PMVM_EXE = "../platform/desktop/main.out"
+if not sys.platform.lower().startswith("win"):
+    PMVM_EXE = "../platform/desktop/main.out"
+else:
+    PMVM_EXE = "../platform/windows/Debug/pymite.exe"
 IPM_PROMPT = "ipm> "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
@@ -90,7 +93,7 @@ class PipeConnection(Connection):
     """Provides ipm-host to target connection over stdio pipes on the desktop.
     This connection should work on any POSIX-compliant OS.
     The ipm-device must be spawned as a subprocess
-    (the executable created when PyMite was built with TARGET=DESKTOP).
+    (the executable created when PyMite was built with PLATFORM=desktop).
     """
     def __init__(self, target=PMVM_EXE):
         self.open(target)

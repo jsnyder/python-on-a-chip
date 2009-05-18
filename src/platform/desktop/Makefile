@@ -17,7 +17,7 @@ ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
 CINCS = -I$(abspath .)
-CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Werror -I../../vm $(CDEFS) $(CINCS)
+CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Wdeclaration-after-statement -Werror -I../../vm $(CDEFS) $(CINCS)
 
 export CFLAGS IPM PM_LIB_FN
 
