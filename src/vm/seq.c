@@ -49,7 +49,7 @@ seq_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     }
     else if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_LST)
     {
-        l1 = ((pPmList_t)pobj2)->length;
+        l1 = ((pPmList_t)pobj1)->length;
         l2 = ((pPmList_t)pobj2)->length;
     }
     else
