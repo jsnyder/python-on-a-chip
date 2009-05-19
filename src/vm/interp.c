@@ -469,36 +469,24 @@ interpret(const uint8_t returnOnNoThreads)
             case SLICE_0:
                 /* Implements TOS = TOS[:], push a copy of the sequence */
 
-                /* If it's a string */
-                if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_STR)
-                {
-                    /* Just copy the pointer, since Strings are immutable */
-                    pobj2 = TOS;
-                }
-
-                /* If it's a tuple */
-                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_TUP)
-                {
-                    retval = tuple_copy(TOS, &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
-                }
-
-                /* If it's a list */
-                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_LST)
+                /* Create a copy if it is a list */
+                if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_LST)
                 {
                     retval = list_copy(TOS, &pobj2);
                     PM_BREAK_IF_ERROR(retval);
+
+                    TOS = pobj2;
                 }
 
-                /* TypeError; unhashable type */
-                else
+                /* If TOS is an immutable sequence leave it (no op) */
+
+                /* Raise a TypeError for types that can not be sliced */
+                else if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_STR)
+                         && (OBJ_GET_TYPE(TOS) != OBJ_TYPE_TUP))
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;
                 }
-
-                SP--;
-                TOS = pobj2;
                 continue;
 
             case STORE_SUBSCR:
@@ -725,7 +713,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get the number of local variables for this code obj */
                 pobj3 = (pPmObj_t)FP->fo_func->f_co->co_codeimgaddr
                         + CI_STACKSIZE_FIELD + 1;
-                t8 = mem_getByte(FP->fo_func->f_co->co_memspace, 
+                t8 = mem_getByte(FP->fo_func->f_co->co_memspace,
                                  (uint8_t const **)&pobj3);
 
                 /* SP should point to one past the end of the locals */
