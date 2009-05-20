@@ -26,6 +26,9 @@
  */
 PmReturn_t plat_init(void);
 
+/** De-initializes the platform after the VM is done running. */
+PmReturn_t plat_deinit(void);
+
 /**
  * Returns the byte at the given address in memspace.
  *

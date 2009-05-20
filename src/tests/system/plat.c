@@ -28,7 +28,13 @@
 #include "pm.h"
 
 
-void plat_sigalrm_handler(int signal);
+void
+plat_sigalrm_handler(int signal)
+{
+    PmReturn_t retval;
+    retval = pm_vmPeriodic(1000);
+    PM_REPORT_IF_ERROR(retval);
+}
 
 
 /* Desktop target shall use stdio for I/O routines. */
@@ -47,12 +53,15 @@ plat_init(void)
 }
 
 
-void
-plat_sigalrm_handler(int signal)
+/* Disables the peripherals and interrupts */
+PmReturn_t
+plat_deinit(void)
 {
-    PmReturn_t retval;
-    retval = pm_vmPeriodic(1000);
-    PM_REPORT_IF_ERROR(retval);
+    /* Cancel alarm and set the alarm handler to the default */
+    ualarm(0, 0);
+    signal(SIGALRM, SIG_DFL);
+
+    return PM_RET_OK;
 }
 
 

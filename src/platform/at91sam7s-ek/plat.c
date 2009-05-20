@@ -95,6 +95,14 @@ plat_init(void)
 }
 
 
+/* TODO: disable the peripherals and interrupts */
+PmReturn_t 
+plat_deinit(void)
+{
+    return PM_RET_OK;
+}
+
+
 /*
  * Gets a byte from the address in the designated memory space
  * Post-increments *paddr.

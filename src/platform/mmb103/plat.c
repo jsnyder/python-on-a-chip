@@ -94,6 +94,15 @@ plat_init(void)
     return PM_RET_OK;
 }
 
+
+/* TODO: disable the peripherals and interrupts */
+PmReturn_t 
+plat_deinit(void)
+{
+    return PM_RET_OK;
+}
+
+
 #ifdef AVR_DEFAULT_TIMER_SOURCE
 ISR(TIMER0_OVF_vect)
 {

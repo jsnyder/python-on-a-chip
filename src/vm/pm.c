@@ -87,6 +87,12 @@ pm_run(uint8_t const *modstr)
     PM_RETURN_IF_ERROR(retval);
     retval = interpret(INTERP_RETURN_ON_NO_THREADS);
 
+    /*
+     * De-initialize the hardware platform.
+     * Ignore plat_deinit's retval so interpret's retval returns to caller.
+     */
+    plat_deinit();
+
     return retval;
 }
 

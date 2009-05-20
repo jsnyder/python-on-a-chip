@@ -4,7 +4,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -94,6 +94,26 @@ plat_init(void)
 
     return PM_RET_OK;
 }
+
+
+PmReturn_t
+plat_deinit(void)
+{
+    /* Disable UART */
+    UCR &= ~(_BV(TXEN) | _BV(RXEN));
+
+#ifdef AVR_DEFAULT_TIMER_SOURCE
+#if (TARGET_MCU == atmega103) || (TARGET_MCU == atmega128)
+    /* Disable Timer */
+    TCCR0 = 0;
+#else
+#error No timer configuration is implemented for this AVR.
+#endif
+#endif /* AVR_DEFAULT_TIMER_SOURCE */
+
+    return PM_RET_OK;
+}
+
 
 #ifdef AVR_DEFAULT_TIMER_SOURCE
 ISR(TIMER0_OVF_vect)

@@ -4,7 +4,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -48,6 +48,16 @@ plat_init(void)
     serial.format(8, serial.None, 1);
 
     ticker.attach_us(ticker_callback, CALLBACK_MS * 1000);
+
+    return PM_RET_OK;
+}
+
+
+PmReturn_t
+plat_deinit(void)
+{
+    /* Detach the callback from the ticker */
+    ticker.detach();
 
     return PM_RET_OK;
 }
