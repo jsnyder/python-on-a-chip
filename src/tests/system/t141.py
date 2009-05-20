@@ -25,14 +25,14 @@ import sys
 print "Heap =", sys.heap()
 
 start = ord('a')
-r = map(chr, range(start, start+35))
+r = map(chr, range(start, start+36))
 t = map(type, r)
 print "r = ", r
 print "t = ", t
 print "Heap =", sys.heap()
 
 start = ord('A')
-r = map(chr, range(start, start+35))
+r = map(chr, range(start, start+36))
 print "r = ", r
 print "Heap =", sys.heap()
 

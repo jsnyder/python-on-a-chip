@@ -1144,7 +1144,9 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Get val from globals */
                     retval = dict_getItem((pPmObj_t)FP->fo_globals,
                                           pobj1, &pobj2);
-                    if (retval == PM_RET_EX_KEY)
+
+                    /* Check for name in the builtins module if it is loaded */
+                    if ((retval == PM_RET_EX_KEY) && (PM_PBUILTINS != C_NULL))
                     {
                         /* Get val from builtins */
                         retval = dict_getItem(PM_PBUILTINS, pobj1, &pobj2);

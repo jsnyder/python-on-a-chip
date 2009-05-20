@@ -641,80 +641,32 @@ def Co(i):
     pass
 
 
-#
-# Allocates an exception class object
-#
-def _exn():
-    """__NATIVE__
-    PmReturn_t retval;
-    pPmClass_t pexn;
-    uint8_t *pchunk;
-    pPmObj_t pobj;
-
-    /* Alloc a class object with attributes dict */
-    retval = heap_getChunk(sizeof(PmClass_t), &pchunk);
-    PM_RETURN_IF_ERROR(retval);
-
-    pexn = (pPmClass_t)pchunk;
-    OBJ_SET_TYPE(pexn, OBJ_TYPE_EXN);
-    retval = dict_new(&pobj);
-    pexn->cl_attrs = (pPmDict_t)pobj;
-
-    NATIVE_SET_TOS((pPmObj_t)pexn);
-
-    return retval;
-    """
-    pass
-
-#
-# Creates a class object - only meant to be used for "object" below.
-#
-def _clo(attrs, bases, name):
-    """__NATIVE__
-    PmReturn_t retval;
-    pPmObj_t pobj;
-    pPmObj_t pattrs;
-    pPmObj_t pbases;
-    pPmObj_t pname;
-
-    /* If wrong number of args, raise TypeError */
-    if (NATIVE_GET_NUM_ARGS() != 3)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
-
-    pattrs = NATIVE_GET_LOCAL(0);
-    pbases = NATIVE_GET_LOCAL(1);
-    pname = NATIVE_GET_LOCAL(2);
-
-    retval = class_new(pattrs, pbases, pname, &pobj);
-    PM_RETURN_IF_ERROR(retval);
-
-    NATIVE_SET_TOS(pobj);
-
-    return retval;
-    """
-    pass
+# This must be declared before any classes because LOAD_NAME(__name__) is
+# part of every class-declaration, so __name__ must exist.
+# This is a temporary workaround until __name__ is properly handled.
+__name__ = "TBD"
 
 
 #
 # Root object
 #
-object = _clo({}, (), "object")
-
-__name__ = "TBD"
+class object():
+    pass
 
 
 #
 # Exception classes
 #
-AssertionError = _exn()
+class Exception(object):
+    pass
+
+class AssertionError(Exception):
+    pass
 AssertionError.code = 0xE4
 
 
 #
-# Generator class - used by the vm for generator-iterators, 
+# Generator class - used by the vm for generator-iterators,
 # generator-expressions and generator-coroutines
 #
 # #207: Add support for the yield keyword
