@@ -522,7 +522,7 @@ $(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
 
 zip: pymite_mbed.zip
 
-pymite_mbed.zip: pmvm $(TARGET)_nat.c $(TARGET)_img.c ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c
+pymite_mbed.zip: $(TARGET)_nat.c $(TARGET)_img.c ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c
 	$(RM) $@
 	cd ../../.. && zip src/platform/mbed/$@ src/vm/*.c src/vm/*.h src/platform/mbed/* -x src/platform/mbed/Makefile -x src/platform/mbed/README -x src/platform/mbed/*.py
 
