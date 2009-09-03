@@ -403,6 +403,19 @@ interpret(const uint8_t returnOnNoThreads)
                     continue;
                 }
 
+                /* If both objs are strings, perform string concatenation */
+                if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_STR)
+                    && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_STR))
+                {
+                    retval = string_concat((pPmString_t)TOS1,
+                                           (pPmString_t)TOS,
+                                           &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    SP--;
+                    TOS = pobj3;
+                    continue;
+                }
+
                 /* Otherwise raise a TypeError */
                 PM_RAISE(retval, PM_RET_EX_TYPE);
                 break;

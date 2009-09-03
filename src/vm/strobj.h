@@ -166,4 +166,16 @@ PmReturn_t string_cacheInit(void);
 /** Returns a pointer to the base of the string cache */
 PmReturn_t string_getCache(pPmString_t **r_ppstrcache);
 
+/**
+ * Returns a new string object that is the concatenation 
+ * of the two given strings.
+ *
+ * @param pstr1 First source string
+ * @param pstr2 Second source string
+ * @param r_pstring Return arg; ptr to new string object
+ * @return Return status
+ */
+PmReturn_t
+string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring);
+
 #endif /* __STRING_H__ */

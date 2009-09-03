@@ -247,3 +247,26 @@ string_getCache(pPmString_t **r_ppstrcache)
 #endif
     return PM_RET_OK;
 }
+
+
+PmReturn_t
+string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring)
+{
+    char buf[pstr1->length + pstr2->length + 2];
+    uint8_t const * pcstr = (uint8_t*) buf;
+    unsigned char *pbuf;
+    PmReturn_t retval;
+
+    /* Copy the two strings into the buffer */
+    pbuf = (unsigned char *)buf;
+    sli_memcpy(pbuf, pstr1->val, pstr1->length);
+    pbuf = (unsigned char *)buf + pstr1->length;
+    sli_memcpy(pbuf, pstr2->val, pstr2->length);
+    pbuf = (unsigned char *)buf + pstr1->length + pstr2->length;
+    *pbuf = '\0';
+
+    /* Create a new string object from the buffer */
+    retval = string_new(&pcstr, r_pstring);
+    return retval;
+}
+
