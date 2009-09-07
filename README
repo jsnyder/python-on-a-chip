@@ -90,8 +90,9 @@ the PyMite virtual machine.
 Thanks
 ------
 
-My personal thanks go out to these people for their contribution to PyMite:
+My personal thanks go out to these people for their recent contribution to PyMite:
 
+- Trammell Hudson: Patches for string concatenation and backtick operator (UNARY_CONVERT).
 - Duncan McGreggor: Creating an excellent Python-on-a-Chip logo.
 - Tyler Wilson: Porting PyMite to the Windows platform and making good VM improvement suggestions.
 - Thomas Fenzl: Patching and testing for 64-bit systems.

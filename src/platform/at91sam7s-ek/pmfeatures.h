@@ -36,6 +36,7 @@
  * When defined, bytecodes PRINT_ITEM and PRINT_NEWLINE are supported. Along
  * with these, helper routines in the object type are compiled in that allow
  * printing of the object.
+ * REQUIRES stdio.h to have snprintf()
  */
 #define HAVE_PRINT
 
@@ -107,6 +108,14 @@
 #if defined(HAVE_GENERATORS) && !defined(HAVE_CLASSES)
 #error HAVE_GENERATORS requires HAVE_CLASSES
 #endif
+
+/* #244 Add support for the backtick operation (UNARY_CONVERT) */
+/**
+ * When defined, the code to support the backtick operation (`x`) is included
+ * in the build.
+ * REQUIRES stdio.h to have snprintf()
+ */
+#define HAVE_BACKTICK
 
 
 #endif /* FEATURES_H_ */

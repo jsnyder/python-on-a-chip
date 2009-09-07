@@ -346,4 +346,16 @@ int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
  */
 PmReturn_t obj_print(pPmObj_t pobj, uint8_t marshallString);
 
+#ifdef HAVE_BACKTICK
+/**
+ * Returns by reference a string object that is the human-readable
+ * representation of the object. Used by the backtick operation (UNARY_CONVERT). 
+ *
+ * @param pobj Ptr to object to represent
+ * @param r_pstr Return arg, the string object
+ * @return Return status
+ */
+PmReturn_t obj_repr(pPmObj_t pobj, pPmObj_t *r_pstr);
+#endif /* HAVE_BACKTICK */
+
 #endif /* __OBJ_H__ */

@@ -72,6 +72,7 @@ PM_FEATURES = {
     "HAVE_REPLICATION": True, # This flag currently has no effect in this file
     "HAVE_CLASSES": True,
     "HAVE_GENERATORS": True,
+    "HAVE_BACKTICK": True,
 }
 
 
@@ -150,7 +151,6 @@ else:
 
 # PyMite's unimplemented bytecodes (from Python 2.0 through 2.5)
 UNIMPLEMENTED_BCODES = [
-    "UNARY_CONVERT",
     "SLICE+1", "SLICE+2", "SLICE+3",
     "STORE_SLICE+0", "STORE_SLICE+1", "STORE_SLICE+2", "STORE_SLICE+3",
     "DELETE_SLICE+0", "DELETE_SLICE+1", "DELETE_SLICE+2", "DELETE_SLICE+3",
@@ -196,6 +196,12 @@ if not PM_FEATURES["HAVE_CLASSES"]:
 if not PM_FEATURES["HAVE_GENERATORS"]:
     UNIMPLEMENTED_BCODES.extend([
         "YIELD_VALUE",
+        ])
+
+# #244: Add support for the backtick operation (UNARY_CONVERT)
+if not PM_FEATURES["HAVE_BACKTICK"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "UNARY_CONVERT",
         ])
 
 # #152: Byte to append after the last image in the list

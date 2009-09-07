@@ -413,3 +413,44 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
     return retval;
 }
 #endif /* HAVE_PRINT */
+
+
+#ifdef HAVE_BACKTICK
+PmReturn_t
+obj_repr(pPmObj_t pobj, pPmObj_t *r_pstr)
+{
+    uint8_t tBuffer[32];
+    uint8_t bytesWritten = 0;
+    PmReturn_t retval = PM_RET_OK;
+    uint8_t const *pcstr = (uint8_t *)tBuffer;;
+
+    C_ASSERT(pobj != C_NULL);
+
+    switch (OBJ_GET_TYPE(pobj))
+    {
+        case OBJ_TYPE_INT:
+            bytesWritten = snprintf((char *)&tBuffer, sizeof(tBuffer), "%li",
+                                    (long)((pPmInt_t)pobj)->val);
+            retval = string_new(&pcstr, r_pstr);
+            break;
+
+#ifdef HAVE_FLOAT
+        case OBJ_TYPE_FLT:
+            bytesWritten = snprintf((char *)&tBuffer, sizeof(tBuffer), "%f",
+                                    ((pPmFloat_t)pobj)->val);
+            retval = string_new(&pcstr, r_pstr);
+            break;
+#endif HAVE_FLOAT
+
+        default:
+            /* Otherwise raise a TypeError */
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            break;
+    }
+
+    /* Sanity check */
+    C_ASSERT(bytesWritten < sizeof(tBuffer));
+
+    return retval;
+}
+#endif /* HAVE_BACKTICK */

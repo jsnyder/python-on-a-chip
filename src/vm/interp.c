@@ -152,6 +152,15 @@ interpret(const uint8_t returnOnNoThreads)
                 }
                 continue;
 
+#ifdef HAVE_BACKTICK
+            /* #244 Add support for the backtick operation (UNARY_CONVERT) */
+            case UNARY_CONVERT:
+                retval = obj_repr(TOS, &pobj3);
+                PM_BREAK_IF_ERROR(retval);
+                TOS = pobj3;
+                continue;
+#endif /* HAVE_BACKTICK */
+
             case UNARY_INVERT:
                 /* Raise TypeError if it's not an int */
                 if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
@@ -403,7 +412,7 @@ interpret(const uint8_t returnOnNoThreads)
                     continue;
                 }
 
-                /* If both objs are strings, perform string concatenation */
+                /* #242: If both objs are strings, perform concatenation */
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_STR)
                     && (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_STR))
                 {
