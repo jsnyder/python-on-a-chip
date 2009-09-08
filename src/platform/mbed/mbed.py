@@ -3,7 +3,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -15,10 +15,18 @@
 #include "mbed.h"
 #include "TextLCD.h"
 
-DigitalOut led1(LED1);
-DigitalOut led2(LED2);
-DigitalOut led3(LED3);
-DigitalOut led4(LED4);
+static DigitalOut led1(LED1);
+static DigitalOut led2(LED2);
+static DigitalOut led3(LED3);
+static DigitalOut led4(LED4);
+
+/* PinName lookup table.  Converts pin number to PinName. */
+static PinName const pinNumToName[] = {
+    NC, NC, NC, NC, NC, p5, p6, p7, p8, p9,
+    p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+    p20, p21, p22, p23, p24, p25, p26, p27, p28, p29,
+    p30
+};
 """
 
 
@@ -49,7 +57,7 @@ class AnalogIn(object):
         }
 
         /* Instantiate the C++ object */
-        adc = new AnalogIn(((pPmInt_t)pn)->val);
+        adc = new AnalogIn(pinNumToName[((pPmInt_t)pn)->val]);
 
         /* Save the pointer to adc as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -158,7 +166,7 @@ class AnalogOut(object):
         }
 
         /* Instantiate the object */
-        dac = new AnalogOut(((pPmInt_t)pn)->val);
+        dac = new AnalogOut(pinNumToName[((pPmInt_t)pn)->val]);
 
         /* Save the pointer to adc as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -323,7 +331,7 @@ class DigitalIn(object):
         }
 
         /* Instantiate the C++ object */
-        din = new DigitalIn(((pPmInt_t)pn)->val);
+        din = new DigitalIn(pinNumToName[((pPmInt_t)pn)->val]);
 
         /* Save the pointer to adc as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -398,7 +406,7 @@ class DigitalOut(object):
         }
 
         /* Instantiate the C++ object */
-        dout = new DigitalOut(((pPmInt_t)pn)->val);
+        dout = new DigitalOut(pinNumToName[((pPmInt_t)pn)->val]);
 
         /* Save the pointer to adc as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -513,7 +521,7 @@ class PwmOut(object):
         }
 
         /* Instantiate the C++ object */
-        pwm = new PwmOut(((pPmInt_t)pn)->val);
+        pwm = new PwmOut(pinNumToName[((pPmInt_t)pn)->val]);
 
         /* Save the pointer to pwm as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -832,7 +840,8 @@ class Serial(object):
         }
 
         /* Instantiate the C++ object */
-        ser = new Serial(((pPmInt_t)ptx)->val, ((pPmInt_t)prx)->val);
+        ser = new Serial(pinNumToName[((pPmInt_t)ptx)->val],
+                         pinNumToName[((pPmInt_t)prx)->val]);
 
         /* Save the pointer to ser as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -994,8 +1003,9 @@ class SPI(object):
         }
 
         /* Instantiate the C++ object */
-        spi = new SPI(((pPmInt_t)pmosi)->val, ((pPmInt_t)pmiso)->val,
-                      ((pPmInt_t)psclk)->val);
+        spi = new SPI(pinNumToName[((pPmInt_t)pmosi)->val],
+                      pinNumToName[((pPmInt_t)pmiso)->val],
+                      pinNumToName[((pPmInt_t)psclk)->val]);
 
         /* Save the pointer to ser as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -1170,7 +1180,8 @@ class I2C(object):
         }
 
         /* Instantiate the C++ object */
-        i2c = new I2C(((pPmInt_t)psda)->val, ((pPmInt_t)pscl)->val);
+        i2c = new I2C(pinNumToName[((pPmInt_t)psda)->val],
+                      pinNumToName[((pPmInt_t)pscl)->val]);
 
         /* Save the pointer to ser as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
@@ -1339,7 +1350,13 @@ class TextLCD(object):
         pself = NATIVE_GET_LOCAL(0);
 
         /* Instantiate the C++ object */
-        lcd = new TextLCD(24, 25, 26, 27, 28, 29, 30);
+        lcd = new TextLCD(pinNumToName[24],
+                          pinNumToName[25],
+                          pinNumToName[26],
+                          pinNumToName[27],
+                          pinNumToName[28],
+                          pinNumToName[29],
+                          pinNumToName[30]);
 
         /* Save the pointer to pwm as an inaccessible attribute */
         pattrs = (pPmObj_t)((pPmInstance_t)pself)->cli_attrs;
