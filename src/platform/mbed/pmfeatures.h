@@ -56,7 +56,7 @@
  * in the build.
  */
 #define HAVE_FLOAT
-#define PM_FLOAT_BIG_ENDIAN
+#define PM_FLOAT_LITTLE_ENDIAN
 
 /**
  * When defined, the code to support the keyword del is included in the build.

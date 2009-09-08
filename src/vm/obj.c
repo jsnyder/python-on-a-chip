@@ -440,7 +440,7 @@ obj_repr(pPmObj_t pobj, pPmObj_t *r_pstr)
                                     ((pPmFloat_t)pobj)->val);
             retval = string_new(&pcstr, r_pstr);
             break;
-#endif HAVE_FLOAT
+#endif /* HAVE_FLOAT */
 
         default:
             /* Otherwise raise a TypeError */

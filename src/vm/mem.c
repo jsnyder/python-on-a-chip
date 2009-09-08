@@ -63,16 +63,17 @@ mem_getFloat(PmMemSpace_t memspace, uint8_t const **paddr)
     v;
 
 #ifdef PM_FLOAT_BIG_ENDIAN
-    v.c[0] = mem_getByte(memspace, paddr);
-    v.c[1] = mem_getByte(memspace, paddr);
-    v.c[2] = mem_getByte(memspace, paddr);
+    /* If the architecture is Big Endian, reverse the bytes of the float */
     v.c[3] = mem_getByte(memspace, paddr);
+    v.c[2] = mem_getByte(memspace, paddr);
+    v.c[1] = mem_getByte(memspace, paddr);
+    v.c[0] = mem_getByte(memspace, paddr);
 
 #else
-    v.c[3] = mem_getByte(memspace, paddr);
-    v.c[2] = mem_getByte(memspace, paddr);
-    v.c[1] = mem_getByte(memspace, paddr);
     v.c[0] = mem_getByte(memspace, paddr);
+    v.c[1] = mem_getByte(memspace, paddr);
+    v.c[2] = mem_getByte(memspace, paddr);
+    v.c[3] = mem_getByte(memspace, paddr);
 
 #ifndef PM_FLOAT_LITTLE_ENDIAN
 #warning Neither PM_FLOAT_LITTLE_ENDIAN nor PM_FLOAT_BIG_ENDIAN is defined \

@@ -11,17 +11,12 @@
 # is seen in the file COPYING up one directory from this.
 
 #
-# System Test 244
-# Add support for backtick operation (UNARY_CONVERT)
+# System Test 245
+# Fix endian issue (again)
 #
 
-x = 4
-filename = "A:/log" + `x` + ".log"
-assert filename == "A:/log4.log"
+x = 1.1
+print "1.1 = ", x
 
-y = 3.14
-saying = `y` + " is not PI."
-print saying
-assert saying == "3.140000 is not PI."
-
-print "Backtick passes"
+assert x + x == 2.2
+print "1.1 + 1.1 == ", x+x, "  Endian test passes."

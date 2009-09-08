@@ -1,3 +1,4 @@
+/*
 # This file is Copyright 2009 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
@@ -9,19 +10,26 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING up one directory from this.
+*/
 
-#
-# System Test 244
-# Add support for backtick operation (UNARY_CONVERT)
-#
+/**
+ * System Test 245
+ * Fix endian issue (again)
+ */
 
-x = 4
-filename = "A:/log" + `x` + ".log"
-assert filename == "A:/log4.log"
+#include "pm.h"
 
-y = 3.14
-saying = `y` + " is not PI."
-print saying
-assert saying == "3.140000 is not PI."
 
-print "Backtick passes"
+extern unsigned char usrlib_img[];
+
+
+int main(void)
+{
+    PmReturn_t retval;
+
+    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    PM_RETURN_IF_ERROR(retval);
+
+    retval = pm_run((uint8_t *)"t245");
+    return (int)retval;
+}
