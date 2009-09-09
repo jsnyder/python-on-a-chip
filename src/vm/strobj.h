@@ -35,7 +35,7 @@
  * @param paddr address in memoryspace of source string
  */
 #define string_loadFromImg(ms, paddr, r_pstring) \
-    string_create((ms), (paddr), (uint8_t)1, (int16_t)1, (r_pstring))
+    string_create((ms), (paddr), (int16_t)-1, (int16_t)1, (r_pstring))
 
 /**
  * Creates String object from character array in RAM
@@ -44,7 +44,19 @@
  * @param r_pstring Return arg; addr of ptr to string
  */
 #define string_new(paddr, r_pstring) \
-    string_create(MEMSPACE_RAM, (paddr), (uint8_t)0, (int16_t)1, (r_pstring))
+    string_create(MEMSPACE_RAM, (uint8_t const **)(paddr), 0, (int16_t)1, (r_pstring))
+
+/**
+ * Creates String object from character array in RAM which may contain
+ * embedded null characters.
+ *
+ * @param paddr pointer to address of source string
+ * @param len length of source string
+ * @param r_pstring Return arg; addr of ptr to string
+ */
+#define string_newWithLen(paddr, len, r_pstring) \
+    string_create(MEMSPACE_RAM, (uint8_t const **)(paddr), (len), (int16_t)1, \
+                  (r_pstring))
 
 /**
  * Creates String object by replicating an existing C string, n times
@@ -95,13 +107,14 @@ typedef struct PmString_s
 
 /**
  * Creates a new String obj.
- * If isimg is zero, load from a String image.
+ * If len is less than zero, load from a String image.
+ * If len is zero, copy from a C string (which has a null terminator)
+ * If len is positive, copy as many chars as given in the len argument
  *      A string image has the following structure:
  *          -type:      int8 - OBJ_TYPE_STRING
  *          -length:    uint16 - number of bytes in the string
  *          -val:       uint8[] - array of chars with null term
  *
- * If isimg is not zero, create from a C string.
  * Returns by reference a ptr to String obj.
  *
  * Obtain space for String from the heap.
@@ -114,13 +127,13 @@ typedef struct PmString_s
  *
  * @param   memspace memory space where *paddr points
  * @param   paddr ptr to ptr to null term character array or image.
- * @param   isimg if 0, create from C string;
- *          else load from image.
+ * @param   len length of the C character array 
+ *          (use -1 for string images, 0 for C strings)
  * @param   Return arg; ptr to String obj
  * @return  Return status
  */
 PmReturn_t string_create(PmMemSpace_t memspace, uint8_t const **paddr,
-                         uint8_t isimg, int16_t n, pPmObj_t *r_pstring);
+                         int16_t len, int16_t n, pPmObj_t *r_pstring);
 ;
 
 /**

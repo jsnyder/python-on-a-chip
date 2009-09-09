@@ -39,11 +39,10 @@ static pPmString_t pstrcache = C_NULL;
  * into the cache.
  */
 PmReturn_t
-string_create(PmMemSpace_t memspace, uint8_t const **paddr, uint8_t isimg,
+string_create(PmMemSpace_t memspace, uint8_t const **paddr, int16_t len,
               int16_t n, pPmObj_t *r_pstring)
 {
     PmReturn_t retval = PM_RET_OK;
-    uint16_t len = 0;
     pPmString_t pstr = C_NULL;
     uint8_t *pdst = C_NULL;
     uint8_t const *psrc = C_NULL;
@@ -53,18 +52,16 @@ string_create(PmMemSpace_t memspace, uint8_t const **paddr, uint8_t isimg,
 #endif /* USE_STRING_CACHE */
     uint8_t *pchunk;
 
-    /* If not loading from image */
-    if (isimg == (uint8_t)0)
+    /* If loading from an image, get length from the image */
+    if (len < 0)
     {
-        /* Get length of string */
-        len = mem_getStringLength(memspace, *paddr);
-    }
-
-    /* If loading from an img */
-    else
-    {
-        /* Get length of string */
         len = mem_getWord(memspace, paddr);
+    }
+    
+    /* If loading from a C string, get its strlen (first null) */
+    else if (len == 0)
+    {
+        len = sli_strlen((char const *)*paddr);
     }
 
     /* Get space for String obj */
@@ -266,7 +263,7 @@ string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring)
     *pbuf = '\0';
 
     /* Create a new string object from the buffer */
-    retval = string_new(&pcstr, r_pstring);
+    retval = string_newWithLen(&pcstr, pstr1->length + pstr2->length, r_pstring);
     return retval;
 }
 

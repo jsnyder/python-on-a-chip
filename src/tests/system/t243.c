@@ -1,3 +1,4 @@
+/*
 # This file is Copyright 2009 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
@@ -9,21 +10,26 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING up one directory from this.
+*/
 
-#
-# System Test 242
-# Add support for string concatenation
-#
+/**
+ * System Test 243
+ * Fix cases where string contains an embedded null
+ */
 
-s1 = "test"
-s2 = "this"
-assert s1 + s2 == "testthis"
+#include "pm.h"
 
-s3 = ""
-assert s1 + s3 == s1
-assert s3 + s1 == s1
 
-assert s1 + "\0" == "test\0"
-assert "\0" + s1 == "\0test"
+extern unsigned char usrlib_img[];
 
-print "String concatenation " + s1 + " passes"
+
+int main(void)
+{
+    PmReturn_t retval;
+
+    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    PM_RETURN_IF_ERROR(retval);
+
+    retval = pm_run((uint8_t *)"t243");
+    return (int)retval;
+}

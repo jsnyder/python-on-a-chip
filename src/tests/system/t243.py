@@ -11,19 +11,22 @@
 # is seen in the file COPYING up one directory from this.
 
 #
-# System Test 242
-# Add support for string concatenation
+# System Test 243
+# Fix cases where string contains an embedded null
 #
 
-s1 = "test"
-s2 = "this"
-assert s1 + s2 == "testthis"
+s1 = "\0"
+s2 = "a" + s1
+s3 = s2 + "a"
 
-s3 = ""
-assert s1 + s3 == s1
-assert s3 + s1 == s1
+assert s2 == "a\0"
+assert s3 == "a\0a"
 
-assert s1 + "\0" == "test\0"
-assert "\0" + s1 == "\0test"
+s2 = s1 + "a"
+s3 = s2 + "\0"
 
-print "String concatenation " + s1 + " passes"
+assert s2 == "\0a"
+assert s3 == "\0a\0"
+
+s2 = "let's \0 try" + s1 + "something else\0"
+assert s2 == "let's \0 try\0something else\0"
