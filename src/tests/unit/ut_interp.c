@@ -29,7 +29,7 @@
  * from svn revision [193] using this command line:
  *
  *      ../../tools/pmImgCreator.py  -c -s -o utco.img.c utco.py
- * 
+ *
 
 def main():
 
@@ -66,8 +66,7 @@ ut_interp_interpret_000(CuTest *tc)
     uint8_t const *pimg = test_code_image0;
     pPmObj_t pcodeobject;
     pPmObj_t pmodule;
-    uint16_t size;
-    
+
     pm_init(MEMSPACE_RAM, C_NULL);
 
     /* Check the return value of the load function */
@@ -77,7 +76,7 @@ ut_interp_interpret_000(CuTest *tc)
     CuAssertTrue(tc, retval == PM_RET_OK);
     retval = interp_addThread((pPmFunc_t)pmodule);
     CuAssertTrue(tc, retval == PM_RET_OK);
-    
+
     /* Check that the module is interpreted and its return value is ok */
     retval = interpret(C_TRUE);
     CuAssertTrue(tc, retval == PM_RET_OK);

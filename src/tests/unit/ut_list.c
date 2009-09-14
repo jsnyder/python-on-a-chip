@@ -451,7 +451,6 @@ ut_list_replicate_001(CuTest *tc)
     pPmObj_t pobj0;
     pPmObj_t pobj1;
     pPmObj_t pobj2;
-    pPmObj_t pget;
     PmReturn_t retval;
 
     retval = pm_init(MEMSPACE_RAM, C_NULL);
@@ -569,7 +568,6 @@ ut_list_index_000(CuTest *tc)
     pPmObj_t pobj0;
     pPmObj_t pobj1;
     pPmObj_t pobj2;
-    pPmObj_t pget;
     uint16_t index;
     PmReturn_t retval;
 

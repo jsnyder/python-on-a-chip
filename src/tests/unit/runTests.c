@@ -13,6 +13,7 @@
 */
 
 
+#include <stdio.h>
 #include "CuTest.h"
 
 

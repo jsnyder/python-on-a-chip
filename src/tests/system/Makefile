@@ -17,13 +17,13 @@ NAT_SOURCES = $(subst .py,_nat.c, $(PM_USR_SOURCES))
 ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
-CINCS = -I../../vm -I$(abspath .)
+CINCS = -I../../vm -I../../platform/desktop
 CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) $(CINCS) 
 
 
 # Build an executable from the C sources
-%.out : %*_nat.c %*_img.c %.c plat.o
-	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c plat.o $(PM_LIB_PATH)
+%.out : %*_nat.c %*_img.c %.c ../../platform/$(PLATFORM)/plat.o
+	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../../platform/$(PLATFORM)/plat.o $(PM_LIB_PATH)
 ifeq ($(PLATFORM), desktop)
 	$(addprefix ./,$@)
 endif
@@ -44,15 +44,11 @@ all : check
 check : $(PM_LIB_PATH) $(EXECS)
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
-	make -C ../../vm
-
-plat.o : plat.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+	make -C ../../platform/$(PLATFORM)
 
 # Removes files made by default make
 clean :
 	$(RM) $(EXECS)
 	$(RM) $(IMG_SOURCES)
 	$(RM) $(NAT_SOURCES)
-	$(RM) plat.o
 	$(RM) zem

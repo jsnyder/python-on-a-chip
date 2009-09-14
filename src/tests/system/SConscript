@@ -6,7 +6,7 @@
 import os
 
 vars = Variables()
-vars.args["PLATFORM"] = "check"
+vars.args["PLATFORM"] = "desktop"
 vars.Add("IPM", "Add the interactive library to the standard lib", True)
 
 CFLAGS = "-g -ggdb -D__DEBUG__=1 -DHEAP_SIZE=$PM_HEAP_SIZE " \
@@ -15,25 +15,27 @@ CFLAGS = "-g -ggdb -D__DEBUG__=1 -DHEAP_SIZE=$PM_HEAP_SIZE " \
 PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
 
 env = Environment(variables = vars,
-                  CPPPATH = ["#src/vm", "#src/tests/system/"],
+                  CPPPATH = ["#src/vm", "#src/platform/%s/" % (vars.args["PLATFORM"])],
                   CCFLAGS = CFLAGS)
 
 vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
 
-plat = env.Object("plat.c")
 check = []
-for fn in Glob("t*.c"):
+testfiles = map(str, Glob("t???.c"))
+testfiles.remove("t075.c") # this test has t075a.py and t075b.py
+testfiles.sort()
+for fn in testfiles:
     fn = str(fn)
     fnroot = os.path.splitext(fn)[0]
     img_sources = Command([fnroot+"_img.c", fnroot+"_nat.c"], [fnroot+".py"],
         "src/tools/pmImgCreator.py -c -u -o src/tests/system/%s_img.c" \
         " --native-file=src/tests/system/%s_nat.c $SOURCES" % (fnroot, fnroot))
     check.append(env.Program(fnroot+".out",
-                             [fn, plat] + img_sources,
+                             [fn, "../../platform/%s/plat.o" % vars.args["PLATFORM"]] + img_sources,
                              LIBS = PM_LIB_ROOT, LIBPATH = ["../../vm"]))
-    
+
     # Execute the test
-    exe= Builder(action="./$SOURCE")
+    exe= Builder(action=fnroot+".out")
     env.Append(BUILDERS = {'Exe' : exe})
     env.Exe(fnroot+".exe", fnroot+".out")
 

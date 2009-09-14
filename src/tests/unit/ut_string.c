@@ -32,7 +32,6 @@ void
 ut_string_new_000(CuTest *tc)
 {
     pPmObj_t pstring;
-    uint16_t length;
     uint8_t cstring[] = "forty-two";
     uint8_t const *pcstring = cstring;
     PmReturn_t retval;
@@ -55,7 +54,6 @@ void
 ut_string_newFromChar_000(CuTest *tc)
 {
     pPmObj_t pstring;
-    uint16_t length;
     uint8_t cchar = 'Z';
     PmReturn_t retval;
 

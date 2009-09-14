@@ -29,7 +29,7 @@
  * from svn revision [193] using this command line:
  *
  *      ../../tools/pmImgCreator.py  -c -s -o utco.img.c utco.py
- * 
+ *
 
 def main():
 
@@ -68,12 +68,11 @@ ut_func_new_000(CuTest *tc)
     pPmObj_t pcodeobject;
     pPmObj_t pfuncobject;
     pPmObj_t pglobals;
-    uint16_t size;
-    
+
     pm_init(MEMSPACE_RAM, C_NULL);
     retval = obj_loadFromImg(MEMSPACE_PROG, &pimg, &pcodeobject);
     retval = dict_new(&pglobals);
-    
+
     /* Check the return value of the function */
     retval = func_new(pcodeobject, pglobals, &pfuncobject);
     CuAssertTrue(tc, retval == PM_RET_OK);

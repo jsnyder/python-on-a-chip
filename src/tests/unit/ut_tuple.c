@@ -32,7 +32,6 @@ void
 ut_tuple_new_000(CuTest *tc)
 {
     pPmObj_t ptuple;
-    uint16_t length;
     PmReturn_t retval;
     
     pm_init(MEMSPACE_RAM, C_NULL);
@@ -91,7 +90,6 @@ void
 ut_tuple_getItem_000(CuTest *tc)
 {
     pPmObj_t ptuple;
-    pPmObj_t ptuplecopy;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
     pPmObj_t pobj2;
