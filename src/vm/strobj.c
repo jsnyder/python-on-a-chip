@@ -57,7 +57,7 @@ string_create(PmMemSpace_t memspace, uint8_t const **paddr, int16_t len,
     {
         len = mem_getWord(memspace, paddr);
     }
-    
+
     /* If loading from a C string, get its strlen (first null) */
     else if (len == 0)
     {
@@ -267,3 +267,226 @@ string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring)
     return retval;
 }
 
+
+#ifdef HAVE_STRING_FORMAT
+
+#define SIZEOF_FMTDBUF 42
+#define SIZEOF_SMALLFMT 8
+
+PmReturn_t
+string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring)
+{
+    PmReturn_t retval;
+    uint16_t strsize = 0;
+    uint16_t strindex;
+    uint8_t *fmtcstr;
+    uint8_t smallfmtcstr[SIZEOF_SMALLFMT];
+    uint8_t fmtdbuf[SIZEOF_FMTDBUF];
+    uint8_t i;
+    uint8_t j;
+    uint8_t argtupleindex = 0;
+    pPmObj_t pobj;
+    int snprintretval;
+    uint8_t expectedargcount = 0;
+    pPmString_t pnewstr;
+    uint8_t *pchunk;
+#if USE_STRING_CACHE
+    pPmString_t pcacheentry = C_NULL;
+#endif /* USE_STRING_CACHE */
+
+    /* Get the first arg */
+    pobj = parg;
+
+    /* Calculate the size of the resulting string */
+    fmtcstr = pstr->val;
+    for (i = 0; i < pstr->length; i++)
+    {
+        /* Count non-format chars */
+        if (fmtcstr[i] != '%') { strsize++; continue; }
+
+        /* If double percents, count one percent */
+        if (fmtcstr[++i] == '%') { strsize++; continue; }
+
+        /* Get arg from the tuple */
+        if (OBJ_GET_TYPE(parg) == OBJ_TYPE_TUP)
+        {
+            pobj = ((pPmTuple_t)parg)->val[argtupleindex++];
+        }
+
+        snprintretval = -1;
+
+        /* Format one arg to get its length */
+        smallfmtcstr[0] = '%';
+        for(j = 1; (i < pstr->length) && (j < SIZEOF_SMALLFMT); i++)
+        {
+            smallfmtcstr[j] = fmtcstr[i];
+            j++;
+
+            if (fmtcstr[i] == 'd')
+            {
+                if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_INT)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    return retval;
+                }
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmInt_t)pobj)->val);
+                break;
+            }
+
+#ifdef HAVE_FLOAT
+            else if (fmtcstr[i] == 'f')
+            {
+                if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_FLT)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    return retval;
+                }
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmFloat_t)pobj)->val);
+                break;
+            }
+#endif /* HAVE_FLOAT */
+
+            else if (fmtcstr[i] == 's')
+            {
+                if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_STR)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    return retval;
+                }
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmString_t)pobj)->val);
+                break;
+            }
+        }
+
+        /* Raise ValueError if the format string was bad */
+        if (snprintretval < 0)
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+
+        expectedargcount++;
+        strsize += snprintretval;
+    }
+
+    /* TypeError wrong number args */
+    if (((OBJ_GET_TYPE(parg) != OBJ_TYPE_TUP) && (expectedargcount != 1))
+        || ((OBJ_GET_TYPE(parg) == OBJ_TYPE_TUP)
+            && (expectedargcount != ((pPmTuple_t)parg)->length)))
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Allocate and initialize String obj */
+    retval = heap_getChunk(sizeof(PmString_t) + strsize, &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pnewstr = (pPmString_t)pchunk;
+    OBJ_SET_TYPE(pnewstr, OBJ_TYPE_STR);
+    pnewstr->length = strsize;
+
+
+    /* Fill contents of String obj */
+    strindex = 0;
+    argtupleindex = 0;
+    pobj = parg;
+
+    for (i = 0; i < pstr->length; i++)
+    {
+        /* Copy non-format chars */
+        if (fmtcstr[i] != '%')
+        {
+            pnewstr->val[strindex++] = fmtcstr[i];
+            continue;
+        }
+
+        /* If double percents, copy one percent */
+        if (fmtcstr[++i] == '%')
+        {
+            pnewstr->val[strindex++] = '%';
+            continue;
+        }
+
+        /* Get arg from the tuple */
+        if (OBJ_GET_TYPE(parg) == OBJ_TYPE_TUP)
+        {
+            pobj = ((pPmTuple_t)parg)->val[argtupleindex++];
+        }
+
+        snprintretval = -1;
+
+        /* Format one arg to get its length */
+        smallfmtcstr[0] = '%';
+        for(j = 1; (i < pstr->length) && (j < SIZEOF_SMALLFMT); i++)
+        {
+            smallfmtcstr[j] = fmtcstr[i];
+            j++;
+
+            if (fmtcstr[i] == 'd')
+            {
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmInt_t)pobj)->val);
+                break;
+            }
+
+#ifdef HAVE_FLOAT
+            else if (fmtcstr[i] == 'f')
+            {
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmFloat_t)pobj)->val);
+                break;
+            }
+#endif /* HAVE_FLOAT */
+
+            else if (fmtcstr[i] == 's')
+            {
+                smallfmtcstr[j] = '\0';
+                snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
+                    (char *)smallfmtcstr, ((pPmString_t)pobj)->val);
+                break;
+            }
+        }
+
+        /* Copy formatted C string into new string object */
+        for (j = 0; j < snprintretval; j++)
+        {
+            pnewstr->val[strindex++] = fmtdbuf[j];
+        }
+    }
+    pnewstr->val[strindex] = '\0';
+
+#if USE_STRING_CACHE
+    /* Check for twin string in cache */
+    for (pcacheentry = pstrcache;
+         pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
+    {
+        /* If string already exists */
+        if (string_compare(pcacheentry, pnewstr) == C_SAME)
+        {
+            /* Free the string */
+            retval = heap_freeChunk((pPmObj_t)pnewstr);
+
+            /* Return ptr to old */
+            *r_pstring = (pPmObj_t)pcacheentry;
+            return retval;
+        }
+    }
+
+    /* Insert string obj into cache */
+    pnewstr->next = pstrcache;
+    pstrcache = pnewstr;
+
+#endif /* USE_STRING_CACHE */
+
+    *r_pstring = (pPmObj_t)pnewstr;
+    return PM_RET_OK;
+}
+#endif /* HAVE_STRING_FORMAT */

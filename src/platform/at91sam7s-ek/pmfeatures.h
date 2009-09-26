@@ -117,5 +117,13 @@
  */
 #define HAVE_BACKTICK
 
+/* #205 Add support for string format operation */
+/**
+ * When defined, the code to perform string formatting using the binary modulo
+ * operator is included in the build.
+ * REQUIRES stdio.h to have snprintf()
+ */
+#define HAVE_STRING_FORMAT
+
 
 #endif /* FEATURES_H_ */

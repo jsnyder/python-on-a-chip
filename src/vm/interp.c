@@ -350,6 +350,18 @@ interpret(const uint8_t returnOnNoThreads)
             case BINARY_MODULO:
             case INPLACE_MODULO:
 
+#ifdef HAVE_STRING_FORMAT
+                /* If it's a string, perform string format */
+                if (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_STR)
+                {
+                    retval = string_format((pPmString_t)TOS1, TOS, &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+                    SP--;
+                    TOS = pobj3;
+                    continue;
+                }
+#endif /* HAVE_STRING_FORMAT */
+
 #ifdef HAVE_FLOAT
                 if ((OBJ_GET_TYPE(TOS) == OBJ_TYPE_FLT)
                     || (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_FLT))

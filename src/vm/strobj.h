@@ -191,4 +191,17 @@ PmReturn_t string_getCache(pPmString_t **r_ppstrcache);
 PmReturn_t
 string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring);
 
+#ifdef HAVE_STRING_FORMAT
+/**
+ * Returns a new string object that is created from the given format string
+ * and the argument(s).
+ *
+ * @param pstr Format string object
+ * @param parg Single argument or tuple of arguments
+ * @param r_pstring Return arg; ptr to new string object
+ * @return Return status
+ */
+PmReturn_t string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring);
+#endif /* HAVE_STRING_FORMAT */
+
 #endif /* __STRING_H__ */
