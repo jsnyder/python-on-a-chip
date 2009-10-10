@@ -1314,7 +1314,7 @@ interpret(const uint8_t returnOnNoThreads)
                     (OBJ_GET_TYPE(pobj3) == OBJ_TYPE_FXN))
                 {
                     pobj2 = pobj3;
-                    retval = class_method(pobj1, TOS, pobj2, &pobj3);
+                    retval = class_method(TOS, pobj2, &pobj3);
                     PM_BREAK_IF_ERROR(retval);
                 }
 #endif /* HAVE_CLASSES */
@@ -1708,7 +1708,7 @@ interpret(const uint8_t returnOnNoThreads)
                     }
 
                     /* Convert __init__ to method, insert it as the callable */
-                    retval = class_method(pobj1, pobj2, pobj3, &pobj1);
+                    retval = class_method(pobj2, pobj3, &pobj1);
                     PM_BREAK_IF_ERROR(retval);
                     STACK(t16) = pobj1;
                     /* Fall through to call the method */

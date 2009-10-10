@@ -88,13 +88,8 @@ class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj)
 }
 
 
-/*
- * NOTE: Due to interp.c's CALL_FUNCTION bytecode, r_pmeth must not be set
- * until the very end so it doesn't clobber pclass.
- */
 PmReturn_t
-class_method(pPmObj_t pclass, pPmObj_t pinstance, pPmObj_t pfunc,
-             pPmObj_t *r_pmeth)
+class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth)
 {
     PmReturn_t retval = PM_RET_OK;
     uint8_t *pchunk;
@@ -108,7 +103,6 @@ class_method(pPmObj_t pclass, pPmObj_t pinstance, pPmObj_t pfunc,
 
     /* Set method fields */
     pmeth = (pPmMethod_t)pchunk;
-    pmeth->m_class = (pPmClass_t)pclass;
     pmeth->m_instance = (pPmInstance_t)pinstance;
     pmeth->m_func = (pPmFunc_t)pfunc;
 

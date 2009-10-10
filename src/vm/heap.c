@@ -668,10 +668,6 @@ heap_gcMarkObj(pPmObj_t pobj)
             /* Mark the obj head */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
 
-            /* Mark the class */
-            retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_class);
-            PM_RETURN_IF_ERROR(retval);
-
             /* Mark the instance */
             retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_instance);
             PM_RETURN_IF_ERROR(retval);

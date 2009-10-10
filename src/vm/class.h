@@ -58,10 +58,7 @@ typedef struct PmMethod_s
     /** Object descriptor */
     PmObjDesc_t od;
 
-    /** Class of this method */
-    pPmClass_t m_class;
-    
-    /** Instance of this method */
+    /** Class instance of this method */
     pPmInstance_t m_instance;
     
     /** Func of this method */
@@ -95,16 +92,14 @@ PmReturn_t class_new(pPmObj_t pmeths, pPmObj_t pbases, pPmObj_t pname,
 PmReturn_t class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj);
 
 /**
- * Returns an unbound method based on the given inputs
+ * Returns a method based on the given inputs
  *
- * @param   pclass ptr to class
  * @param   pinstance ptr to instance
  * @param   pfunc ptr to func
  * @param   r_pmeth Return by ref, ptr to new method
  * @return  Return status
  */
-PmReturn_t class_method(pPmObj_t pclass, pPmObj_t pinstance, pPmObj_t pfunc,
-                        pPmObj_t *r_pmeth);
+PmReturn_t class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth);
 
 /**
  * Returns the first attribute named __init__ in the class' inheritance tree
