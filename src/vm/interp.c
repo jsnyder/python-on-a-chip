@@ -744,14 +744,20 @@ interpret(const uint8_t returnOnNoThreads)
 
 #if __DEBUG__
                 /* #109: Check that stack should now be empty */
-                /* Get the number of local variables for this code obj */
-                pobj3 = (pPmObj_t)FP->fo_func->f_co->co_codeimgaddr
-                        + CI_STACKSIZE_FIELD + 1;
-                t8 = mem_getByte(FP->fo_func->f_co->co_memspace,
-                                 (uint8_t const **)&pobj3);
+                /* If this is regular frame (not native and not a generator) */
+                if ((FP != (pPmFrame_t)(&gVmGlobal.nativeframe)) &&
+                    !(FP->fo_func->f_co->co_flags & CO_GENERATOR))
+                {
+                    /* Get this func's number of locals */
+                    pobj3 = (pPmObj_t)(((uint8_t *)
+                            (FP->fo_func->f_co->co_codeimgaddr))
+                            + CI_NLOCALS_FIELD);
+                    t8 = mem_getByte(FP->fo_func->f_co->co_memspace,
+                                     (uint8_t const **)&pobj3);
 
-                /* SP should point to one past the end of the locals */
-/*                C_ASSERT(SP == &(FP->fo_locals[t8]));*/
+                    /* An empty stack points one past end of locals */
+                    C_ASSERT(SP == &(FP->fo_locals[t8]));
+                }
 #endif /* __DEBUG__ */
 
                 /* Keep ref of expiring frame */
@@ -1110,7 +1116,7 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 
                 PM_BREAK_IF_ERROR(retval);
-                SP -= 2;
+                SP--;
                 continue;
 #endif /* HAVE_DEL */
 
