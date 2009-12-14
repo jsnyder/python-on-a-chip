@@ -1,0 +1,30 @@
+==========================
+The STM32 Platform Project
+==========================
+
+
+:Author:    James Snyder
+
+
+Purpose
+-------
+
+This is a sample project that demonstrates running interactive PyMite (ipm)
+on the `ET-STM32 Stamp Module`_, which is an STM32 processor on a stamp-type
+board.  The STM32 has an ARM Cortex M3 core.
+
+.. _`ET-STM32 Stamp Module`: http://www.futurlec.com/ET-STM32_Stamp.shtml
+
+
+Building the Project
+--------------------
+
+:Note: This platform does not have Makefile build support.
+
+Follow `this explanation`_ to build ARM EABI GCC tools, then run 
+``scons PLATFORM=stm32`` from the trunk directory.  
+
+.. _`this explanation`: http://fanplastic.org/gcc-for-arm-eabi/
+
+
+.. :mode=rest:

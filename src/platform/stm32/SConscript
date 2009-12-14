@@ -1,0 +1,59 @@
+import os
+import glob
+
+Import("vars")
+
+vars.Add("PM_UART_BAUD", "Baud rate of the ipm serial connection.", "19200")
+vars.Add("IPM", "Add the interactive library to the standard lib", True)
+vars.Add("MCU", "Type of ARM device; the arg to -mcpu.", "cortex-m3")
+vars.Add("NM", "", "arm-eabi-nm")
+vars.Add("OBJCOPY", "", "arm-eabi-objcopy")
+vars.Add("OBJDUMP", "", "arm-eabi-objdump")
+vars.Add("SIZE", "", "arm-eabi-size")
+#vars.Add("DEBUG","", True)
+         
+CFLAGS = " -DUART_BAUD=$PM_UART_BAUD -Dgcc" \
+         " -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD" \
+         " -Wall -Wimplicit" \
+         " -mcpu=$MCU -mthumb -Os -fomit-frame-pointer -mlittle-endian" \
+         " -ffunction-sections -fdata-sections -fno-strict-aliasing"
+         
+LDFLAGS = "-mcpu=$MCU -mthumb -Wl,-T -Xlinker src/platform/stm32/stm32f10x.ld" \
+          " -u _start-Wl,-e,Reset_Handler -Wl,-static -Wl,--gc-sections" \
+          " -nostartfiles -Wl,--allow-multiple-definition"
+          
+AFLAGS = "-x assembler-with-cpp $_CPPINCFLAGS -mcpu=$MCU -mthumb -Wall -c"
+
+if "DEBUG" in vars.args.keys():
+    CFLAGS = "-g -gstabs -D__DEBUG__=1 " + CFLAGS
+
+SOURCES = ["main.c", "plat.c", "stm32f10x_it.c", "syscalls.c"]
+SOURCES += glob.glob("FWLib/src/*.c")
+SOURCES += glob.glob("FWLib/src/*.s")
+
+PY_SOURCES = ["main.py"]
+PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"]]
+
+env = Environment(variables = vars,
+                  CPPPATH = ["#src/vm", "#src/platform/stm32", "#src/platform/stm32/FWlib/inc"],
+                  CC = "arm-eabi-gcc",
+                  AS = "arm-eabi-gcc",
+                  ASFLAGS = AFLAGS,
+                  CCFLAGS = CFLAGS,
+                  CXX = "arm-eabi-g++",
+                  AR = "arm-eabi-ar",
+                  ARFLAGS = "rcs",
+                  RANLIB = "arm-eabi-ranlib",
+                  LINKFLAGS = LDFLAGS,
+                  ENV = os.environ)
+                
+vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
+img_sources = env.Command(["main_img.c", "main_nat.c"], [PY_SOURCES],
+    "src/tools/pmImgCreator.py -c -u -o src/platform/stm32/main_img.c" \
+    " --native-file=src/platform/stm32/main_nat.c $SOURCES")
+
+elf = env.Program("main.elf", SOURCES + img_sources + vmlib,
+                  LIBS = [PM_LIB_ROOT,"c","gcc","m"], LIBPATH = ["../../vm"])
+
+
+bin = env.Command("main.bin", "main.elf", "$OBJCOPY -O binary $SOURCE $TARGET")
