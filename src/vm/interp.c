@@ -742,7 +742,7 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get expiring frame's TOS */
                 pobj2 = PM_POP();
 
-#if __DEBUG__
+#if 0 /*__DEBUG__*//* #251: This safety check is disabled because it breaks ipm */
                 /* #109: Check that stack should now be empty */
                 /* If this is regular frame (not native and not a generator) */
                 if ((FP != (pPmFrame_t)(&gVmGlobal.nativeframe)) &&
