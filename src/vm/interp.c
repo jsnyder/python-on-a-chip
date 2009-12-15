@@ -397,6 +397,14 @@ interpret(const uint8_t returnOnNoThreads)
                 TOS = pobj3;
                 continue;
 
+            case STORE_MAP:
+                /* #213: Add support for Python 2.6 bytecodes */
+                C_ASSERT(OBJ_GET_TYPE(TOS2) == OBJ_TYPE_DIC);
+                retval = dict_setItem(TOS2, TOS, TOS1);
+                PM_BREAK_IF_ERROR(retval);
+                SP -= 2;
+                continue;
+
             case BINARY_ADD:
             case INPLACE_ADD:
 
@@ -499,6 +507,19 @@ interpret(const uint8_t returnOnNoThreads)
                 SP--;
                 TOS = pobj3;
                 continue;
+
+#ifdef HAVE_FLOAT
+            /* #213: Add support for Python 2.6 bytecodes */
+            case BINARY_TRUE_DIVIDE:
+            case INPLACE_TRUE_DIVIDE:
+
+                /* Perform division; float_op() checks for types and zero-div */
+                retval = float_op(TOS1, TOS, &pobj3, '/');
+                PM_BREAK_IF_ERROR(retval);
+                SP--;
+                TOS = pobj3;
+                continue;
+#endif /* HAVE_FLOAT */
 
             case SLICE_0:
                 /* Implements TOS = TOS[:], push a copy of the sequence */

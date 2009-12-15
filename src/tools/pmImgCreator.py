@@ -5,7 +5,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -154,7 +154,6 @@ UNIMPLEMENTED_BCODES = [
     "SLICE+1", "SLICE+2", "SLICE+3",
     "STORE_SLICE+0", "STORE_SLICE+1", "STORE_SLICE+2", "STORE_SLICE+3",
     "DELETE_SLICE+0", "DELETE_SLICE+1", "DELETE_SLICE+2", "DELETE_SLICE+3",
-    "BINARY_TRUE_DIVIDE", "INPLACE_TRUE_DIVIDE",
     "PRINT_ITEM_TO", "PRINT_NEWLINE_TO",
     "WITH_CLEANUP",
     "EXEC_STMT",
@@ -202,6 +201,14 @@ if not PM_FEATURES["HAVE_GENERATORS"]:
 if not PM_FEATURES["HAVE_BACKTICK"]:
     UNIMPLEMENTED_BCODES.extend([
         "UNARY_CONVERT",
+        ])
+
+# #213: Add support for Python 2.6 bytecodes.
+# The *_TRUE_DIVIDE bytecodes require support for float type
+if not PM_FEATURES["HAVE_FLOAT"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "BINARY_TRUE_DIVIDE",
+        "INPLACE_TRUE_DIVIDE",
         ])
 
 # #152: Byte to append after the last image in the list
@@ -504,7 +511,7 @@ class PmImgCreator:
 
         Flags filter:
             Check co_flags for flags that indicate an unsupported feature
-            Supported flags: CO_NOFREE, CO_OPTIMIZED, CO_NEWLOCALS, CO_NESTED, 
+            Supported flags: CO_NOFREE, CO_OPTIMIZED, CO_NEWLOCALS, CO_NESTED,
             Unsupported flags: CO_VARARGS, CO_VARKEYWORDS
             Conditionally supported flags: CO_GENERATOR if HAVE_GENERATORS
 
