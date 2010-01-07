@@ -208,8 +208,17 @@ interpret(const uint8_t returnOnNoThreads)
 
             case GET_ITER:
 #ifdef HAVE_GENERATORS
-                /* If TOS is instance, leave as TOS, expect it has a .next() */
-                if (OBJ_GET_TYPE(TOS) != OBJ_TYPE_CLI)
+                /* Raise TypeError if TOS is an instance, but not iterable */
+                if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_CLI)
+                {
+                    retval = class_getAttr(TOS, PM_NEXT_STR, &pobj1);
+                    if (retval != PM_RET_OK)
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+                }
+                else
 #endif /* HAVE_GENERATORS */
                 {
                     /* Convert sequence to sequence-iterator */
