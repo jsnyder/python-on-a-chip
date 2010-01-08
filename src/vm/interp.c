@@ -772,7 +772,8 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get expiring frame's TOS */
                 pobj2 = PM_POP();
 
-#if 0 /*__DEBUG__*//* #251: This safety check is disabled because it breaks ipm */
+#if 0 /*__DEBUG__*/
+                /* #251: This safety check is disabled because it breaks ipm */
                 /* #109: Check that stack should now be empty */
                 /* If this is regular frame (not native and not a generator) */
                 if ((FP != (pPmFrame_t)(&gVmGlobal.nativeframe)) &&
@@ -1851,6 +1852,38 @@ CALL_FUNC_FOR_ITER:
                         ((pPmFrame_t)pobj2)->fo_locals[t16] = PM_POP();
                     }
 
+#ifdef HAVE_CLOSURES
+                    /* #256: Add support for closures */
+                    /* Copy arguments that become cellvars */
+                    for (t8 = 0;
+                         t8 < ((pPmFunc_t)pobj1)->f_co->co_cellvars->length;
+                         t8++)
+                    {
+                        if (((pPmInt_t)((pPmFunc_t)pobj1)->
+                            f_co->co_cellvars->val[t8])->val >= 0)
+                        {
+                            ((pPmFrame_t)pobj2)->fo_locals[
+                                ((pPmFunc_t)pobj1)->f_co->co_nlocals + t8] =
+                                ((pPmFrame_t)pobj2)->fo_locals[
+                                    ((pPmInt_t)(((pPmFunc_t)pobj1)->
+                                        f_co->co_cellvars->val[t8]))->val
+                                ];
+                        }
+                    }
+
+                    /* Fill frame's freevars with references from closure */
+                    for (t8 = 0;
+                         t8 < ((pPmFunc_t)pobj1)->f_co->co_nfreevars;
+                         t8++)
+                    {
+                        C_ASSERT(((pPmFunc_t)pobj1)->f_closure != C_NULL);
+                        ((pPmFrame_t)pobj2)->fo_locals[
+                            ((pPmFunc_t)pobj1)->f_co->co_nlocals
+                            + ((pPmFunc_t)pobj1)->f_co->co_cellvars->length
+                            + t8] = ((pPmFunc_t)pobj1)->f_closure->val[t8];
+                    }
+#endif /* HAVE_CLOSURES */
+
                     /* Pop func obj */
                     pobj3 = PM_POP();
 
@@ -1994,6 +2027,55 @@ CALL_FUNC_FOR_ITER:
                 /* Push func obj */
                 PM_PUSH(pobj2);
                 continue;
+
+#ifdef HAVE_CLOSURES
+            case MAKE_CLOSURE:
+                /* Get number of default args */
+                t16 = GET_ARG();
+                retval = func_new(TOS, (pPmObj_t)FP->fo_globals, &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+
+                /* Set closure of the new function */
+                ((pPmFunc_t)pobj2)->f_closure = (pPmTuple_t)TOS1;
+                SP -= 2;
+
+                /* Collect any default arguments into tuple */
+                if (t16 > 0)
+                {
+                    retval = tuple_new(t16, &pobj3);
+                    PM_BREAK_IF_ERROR(retval);
+
+                    while (--t16 >= 0)
+                    {
+                        ((pPmTuple_t)pobj3)->val[t16] = PM_POP();
+                    }
+                    ((pPmFunc_t)pobj2)->f_defaultargs = (pPmTuple_t)pobj3;
+                }
+
+                /* Push new func with closure */
+                PM_PUSH(pobj2);
+                continue;
+
+            case LOAD_CLOSURE:
+            case LOAD_DEREF:
+                /* Loads the i'th cell of free variable storage onto TOS */
+                t16 = GET_ARG();
+                pobj1 = FP->fo_locals[FP->fo_func->f_co->co_nlocals + t16];
+                if (pobj1 == C_NULL)
+                {
+                    PM_RAISE(retval, PM_RET_EX_SYS);
+                    break;
+                }
+                PM_PUSH(pobj1);
+                continue;
+
+            case STORE_DEREF:
+                /* Stores TOS into the i'th cell of free variable storage */
+                t16 = GET_ARG();
+                FP->fo_locals[FP->fo_func->f_co->co_nlocals + t16] = PM_POP();
+                continue;
+#endif /* HAVE_CLOSURES */
+
 
             default:
                 /* SystemError, unknown or unimplemented opcode */

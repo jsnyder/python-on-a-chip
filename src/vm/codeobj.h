@@ -31,7 +31,12 @@
 #define CI_FLAGS_FIELD      4
 #define CI_STACKSIZE_FIELD  5
 #define CI_NLOCALS_FIELD    6
+#ifdef HAVE_CLOSURES
+#define CI_FREEVARS_FIELD   7
+#define CI_NAMES_FIELD      8
+#else
 #define CI_NAMES_FIELD      7
+#endif /* HAVE_CLOSURES */
 
 /** Native code image size */
 #define NATIVE_IMAGE_SIZE   4
@@ -64,6 +69,14 @@ typedef struct PmCo_s
     pPmTuple_t co_names;
     /** address in RAM of constants tuple */
     pPmTuple_t co_consts;
+#ifdef HAVE_CLOSURES
+    /** Number of freevars */
+    uint8_t co_nfreevars;
+    /** address in RAM of cellvars tuple */
+    pPmTuple_t co_cellvars;
+    /** Number of local variables */
+    uint16_t co_nlocals;
+#endif /* HAVE_CLOSURES */
     /** address in memspace of bytecode (or native function) */
     uint8_t const *co_codeaddr;
     /** number of positional arguments the function expects */

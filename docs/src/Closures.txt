@@ -1,0 +1,141 @@
+.. Copyright 2010 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+===============
+PyMite Closures
+===============
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+Purpose
+-------
+
+This document describes the design and implementation of closures used in the
+PyMite virtual machine (VM).  In doing so, it serves as a design document for
+the PyMite developer and a reference for the PyMite user.
+
+Overview
+--------
+
+Simply put, a closure_ allows you to define a function with "free" variables
+that are not a part of the function's local scope, but instead reference
+variables from a surrounding namespace.  The CPython implementation
+introduced closures in version 2.2 via `PEP 227`_.  `Issue #256`_ implements
+closures in the PyMite VM.  This implementation involves changes to the code
+image structure as well has some internal VM structures and the addition of
+four new bytecodes.
+
+.. _closure: http://en.wikipedia.org/wiki/Closure_(computer_science)
+.. _`PEP 227`: http://www.python.org/dev/peps/pep-0227/
+.. _`Issue #256`: http://code.google.com/p/python-on-a-chip/issues/detail?id=56
+
+
+Details
+-------
+
+The following paragraphs describe how closures work in chronological order of
+the lifetime of a program.
+
+Source code containing a nested function with free variables is detected by
+the CPython compiler.  A function containing variables referenced by nested
+functions is given a tuple of strings that name the **cellvars**.  A nested
+function with free variables is given a tuple of strings that name the
+**freevars**.  The CPython compiler also uses the appropriate bytecodes
+to manipulate freevars and cellvars.
+
+When the resulting program is executed and the outer function is executed
+via the ``CALL_FUNCTION`` bytecode, the VM copies variables from the function's
+locals (including function arguments) into extra space in the frame designed
+to hold the callvars.  This extra space is located between the local variables
+and the stack in the frames "locals plus" field.  The ``LOAD_DEREF`` and
+``STORE_DEREF`` bytecodes load and store stack references from/in cellvars.
+
+The outer function then uses the ``LOAD_CLOSURE`` bytecodes to load cellvars
+onto the stack where they are bundled into a tuple.  Then the ``MAKE_CLOSURE``
+bytecode builds a function from the code object on the stack and gives the
+function a reference to the tuple of cellvars, thus creating a closure.
+The outer function may finish executing and its frame may be destroyed,
+but the references to the closure variables is maintained by the closure tuple.
+
+Later in the program when the inner function (the closure) is called, the
+``CALL_FUNCTION`` bytecode detects that the function is a closure and copies
+the object references from the tuple into the function's new frame's
+freevars (which is also located after the local variables and before the stack).
+
+
+Design Decisions
+----------------
+
+The PyMite VM always tries to find smaller ways of implementing Python.
+As such, the following paragraphs explain some changes to the way CPython
+implements closures.
+
+The first hurdle to overcome is that the **cellvars** and **freevars** tuples
+of strings would greatly increase the size of the code images.  So, instead
+of doing variable lookup by name, variable lookup is done by index.
+When the ``pmImgCreator.py`` script processes Python source code to turn it
+into an image, the **cellvars** tuple of strings is turned into a tuple of
+integers.  Those integers let the ``CALL_FUNCTION`` bytecode know where to
+find the variable to copy into the cellvar.
+
+The **freevars** tuple is a different matter.  It turns out, the strings in
+the freevars tuple aren't necessary, only the number of freevars is needed
+by ``CALL_FUNCTION`` to know how many closures to copy from the closure tuple.
+So, instead of a **freevars** tuple, the code image has a **nfreevars** byte
+to indicate the number of freevars.
+
+The other way to reduce memory consuption was to eliminate the extra "cell"
+datatype that CPython uses to hold a reference to an object.  The design of
+the PyMite VM just did not require such a container for the reference.  Instead,
+regular object references are used.  This has the additional beneficial side
+effect of making the ``LOAD_CLOSURE`` and ``LOAD_DEREF`` bytecode
+implementations identical (saving code space).
+
+The result of the above changes is an implementation of statically nested
+functions with the ability to reference variables that are in the scope
+of the enclosing namespace.  The resulting ability to make closures creates
+a powerful tool for the programmer.
+
+
+Example Use
+-----------
+
+The following Python source code demonstrates the utility of a closure.
+In this example, we imagine that the programmer wants to define a function
+that is called as a callback function by the system.  In this imaginary example,
+the ``callback_table`` holds a reference to all the callback functions.
+
+::
+
+    callback_table = {}
+    HOOK_ADC = 1003
+
+    def setHook(event):
+        def _sh(f):
+            callback_table[event] = f
+            return f
+        return _sh
+
+    @setHook(HOOK_ADC)
+    def onAdcReady():
+        pass
+
+The setHook function accepts an event argument which tells in what slot the
+callback function should be stored.  Inside setHook we se a nested function,
+_sh, which stores the function in the callback table and returns the function.
+This lets setHook behave as a decorator.  The last three lines show setHook
+being used as a decorator with a parameter and the definition of the callback
+function.  In this example, the body is empty; the programmer may replace the
+pass statement with whatever code he needs to process the results of an
+analog-to-digital conversion.
+
+In the code example above, setHook has one cellvar named event and _sh has one
+freevar named event.
+
+
+.. :mode=rest:

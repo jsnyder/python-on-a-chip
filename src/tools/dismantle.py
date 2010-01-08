@@ -115,6 +115,8 @@ def rdismantle(co, parent = None):
     print " co_lnotab:     \t", repr(co.co_lnotab[:8]), "..."
     print " co_argcount:   \t", co.co_argcount
     print " co_nlocals:    \t", co.co_nlocals
+    print " co_freevars:   \t", co.co_freevars
+    print " co_cellvars:   \t", co.co_cellvars
 
     #print vital compound components
     tabspacing = "\t\t"

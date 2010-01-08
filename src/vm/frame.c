@@ -73,6 +73,11 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     fsize = sizeof(PmFrame_t) + (stacksz + nlocals - 1) * sizeof(pPmObj_t);
 #endif /* HAVE_CLASSES */
 
+#ifdef HAVE_CLOSURES
+    /* #256: Add support for closures */
+    fsize = fsize + pco->co_nfreevars + pco->co_cellvars->length;
+#endif /* HAVE_CLOSURES */
+
     /* Allocate a frame */
     retval = heap_getChunk(fsize, &pchunk);
     PM_RETURN_IF_ERROR(retval);
@@ -92,14 +97,24 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pframe->fo_globals = ((pPmFunc_t)pfunc)->f_globals;
     pframe->fo_attrs = ((pPmFunc_t)pfunc)->f_attrs;
 
+#ifndef HAVE_CLOSURES
     /* Empty stack points to one past locals */
     pframe->fo_sp = &(pframe->fo_locals[nlocals]);
+#else
+    /* #256: Add support for closures */
+    pframe->fo_sp = &(pframe->fo_locals[nlocals + pco->co_nfreevars
+                                        + pco->co_cellvars->length]);
+#endif /* HAVE_CLOSURES */
 
     /* By default, this is a normal frame, not an import or __init__ one */
     pframe->fo_isImport = 0;
 #ifdef HAVE_CLASSES
     pframe->fo_isInit = 0;
 #endif
+
+    /* Clear the stack */
+    sli_memset((unsigned char *)&(pframe->fo_locals), (char const)0, 
+               (unsigned int)fsize - sizeof(PmFrame_t));
 
     /* Return ptr to frame */
     *r_pobj = (pPmObj_t)pframe;

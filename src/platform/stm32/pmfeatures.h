@@ -125,5 +125,14 @@
  */
 #define HAVE_STRING_FORMAT
 
+/* #256 Add support for closures */
+/**
+ * When defined, the code to support function closures is included in the 
+ * build.
+ */
+/*#define HAVE_CLOSURES*/
+#if defined(HAVE_CLOSURES) && !defined(HAVE_DEFAULTARGS)
+#error HAVE_CLOSURES requires HAVE_DEFAULTARGS
+#endif
 
 #endif /* FEATURES_H_ */

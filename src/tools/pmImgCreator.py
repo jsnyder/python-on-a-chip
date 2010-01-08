@@ -73,6 +73,7 @@ PM_FEATURES = {
     "HAVE_CLASSES": True,
     "HAVE_GENERATORS": True,
     "HAVE_BACKTICK": True,
+    "HAVE_CLOSURES": True,
 }
 
 
@@ -106,6 +107,8 @@ OBJ_TYPE_NOB = 0x0C     # Native func obj
 # Number of bytes from top of code img to start of consts:
 # sizelo, sizehi, type, co_argcount, co_flags, co_stacksize, co_nlocals
 CO_IMG_FIXEDPART_SIZE = 7
+if PM_FEATURES["HAVE_CLOSURES"]:
+    CO_IMG_FIXEDPART_SIZE += 1  # [co_nfreevars]
 
 # Number of bytes in a native image (constant)
 NATIVE_IMG_SIZE = 4
@@ -160,8 +163,6 @@ UNIMPLEMENTED_BCODES = [
     "END_FINALLY",
     "SETUP_EXCEPT", "SETUP_FINALLY",
     "BUILD_SLICE",
-    "MAKE_CLOSURE", "LOAD_CLOSURE",
-    "LOAD_DEREF", "STORE_DEREF",
     "CALL_FUNCTION_VAR", "CALL_FUNCTION_KW", "CALL_FUNCTION_VAR_KW",
     "EXTENDED_ARG",
     ]
@@ -214,6 +215,14 @@ if not PM_FEATURES["HAVE_FLOAT"]:
 # #152: Byte to append after the last image in the list
 IMG_LIST_TERMINATOR = "\xFF"
 
+# #256: Add support for decorators
+if not PM_FEATURES["HAVE_CLOSURES"]:
+    UNIMPLEMENTED_BCODES.extend([
+        "MAKE_CLOSURE",
+        "LOAD_CLOSURE",
+        "LOAD_DEREF",
+        "STORE_DEREF",
+        ])
 
 ################################################################
 # GLOBALS
@@ -441,6 +450,9 @@ class PmImgCreator:
         imgstr += self._U8_to_str(co.co_stacksize)
         # co_nlocals
         imgstr += self._U8_to_str(co.co_nlocals)
+        # #256: Add support for closures
+        if PM_FEATURES["HAVE_CLOSURES"]:
+            imgstr += self._U8_to_str(len(co.co_freevars))
 
         # variable length objects
         # co_names
@@ -451,6 +463,17 @@ class PmImgCreator:
         s = self._seq_to_str(consts)
         lenconsts = len(s)
         imgstr += s
+
+        # #256: Add support for closures
+        if PM_FEATURES["HAVE_CLOSURES"]:
+            # Lookup the index of the cellvar name in co_varnames; -1 if not in
+            l = [-1,] * len(co.co_cellvars)
+            for i,name in enumerate(co.co_cellvars):
+                if name in co.co_varnames:
+                    l[i] = co.co_varnames.index(name)
+            s = self._seq_to_str(tuple(l))
+            lenconsts += len(s)
+            imgstr += s
 
         # add code (or native index) to image
         imgstr += code

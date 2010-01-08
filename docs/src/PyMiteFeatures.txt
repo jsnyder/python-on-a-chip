@@ -50,15 +50,15 @@ Keywords
 
 PyMite supports the following subset of Python's keywords::
 
-    and         assert      break       continue    def
-    del         elif        else        for         from
-    global      if          import      in          is
-    lambda      not         or          pass        print
-    raise       return      while
+    and         assert      break       class       continue
+    def         del         elif        else        for
+    from        global      if          import      in
+    is          lambda      not         or          pass
+    print       raise       return      while       yield
 
 PyMite DOES NOT support these keywords::
 
-    class       except      exec        finally     try         yield
+    except      exec        finally     try
 
 Identifiers
 ~~~~~~~~~~~
@@ -242,8 +242,8 @@ Statement               Result
 ======================  ========================================================
 
 PyMite implementes all of Python's ``control flow`` statements
-(``if/elif/else``, ``while/else``, ``for/in/else``, ``break, continue, return``)
-with the exception of the ``yield`` statement.
+(``if/elif/else``, ``while/else``, ``for/in/else``, ``break, continue, return``,
+and when ``HAVE_GENERATORS`` is enabled, the ``yield`` statement is supported)
 PyMite DOES NOT implement exceptions(``try/except/else/finally``).
 PyMite supports these forms of the ``import`` statement::
 

@@ -41,12 +41,6 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     /* Get size of code img */
     uint16_t size = mem_getWord(memspace, paddr);
 
-    /* Get number of args to the function */
-    uint8_t argcount = mem_getByte(memspace, paddr);
-
-    /* Get compiler flags */
-    uint8_t flags = mem_getByte(memspace, paddr);
-
     /* Allocate a code obj */
     retval = heap_getChunk(sizeof(PmCo_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
@@ -56,11 +50,19 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     OBJ_SET_TYPE(pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
-    pco->co_argcount = argcount;
-    pco->co_flags = flags;
+    pco->co_argcount = mem_getByte(memspace, paddr);;
+    pco->co_flags = mem_getByte(memspace, paddr);;
+
+#ifdef HAVE_CLOSURES
+    /* Get number of local and free variables */
+    *paddr = pci + CI_NLOCALS_FIELD;
+    pco->co_nlocals = mem_getByte(memspace, paddr);
+    pco->co_nfreevars = mem_getByte(memspace, paddr);
+#else
+    *paddr = pci + CI_NAMES_FIELD;
+#endif /* HAVE_CLOSURES */
 
     /* Load names (tuple obj) */
-    *paddr = pci + CI_NAMES_FIELD;
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco->co_names = (pPmTuple_t)pobj;
@@ -69,6 +71,12 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
     pco->co_consts = (pPmTuple_t)pobj;
+
+#ifdef HAVE_CLOSURES
+    retval = obj_loadFromImg(memspace, paddr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    pco->co_cellvars = (pPmTuple_t)pobj;
+#endif /* HAVE_CLOSURES */
 
     /* Start of bcode always follows consts */
     pco->co_codeaddr = *paddr;

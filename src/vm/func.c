@@ -68,6 +68,11 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
     pfunc->f_defaultargs = C_NULL;
 #endif /* HAVE_DEFAULTARGS */
 
+#ifdef HAVE_CLOSURES
+    /* Clear field for closure tuple */
+    pfunc->f_closure = C_NULL;
+#endif /* HAVE_CLOSURES */
+
     *r_pfunc = (pPmObj_t)pfunc;
     return PM_RET_OK;
 }

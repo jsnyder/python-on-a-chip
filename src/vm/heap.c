@@ -627,6 +627,12 @@ heap_gcMarkObj(pPmObj_t pobj)
                 retval = heap_gcMarkObj((pPmObj_t)
                                         (((pPmCo_t)pobj)->co_codeimgaddr));
             }
+
+#ifdef HAVE_CLOSURES
+            /* #256: Add support for closures */
+            /* Mark the cellvars tuple */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmCo_t)pobj)->co_cellvars);
+#endif /* HAVE_CLOSURES */
             break;
 
         case OBJ_TYPE_MOD:
@@ -645,9 +651,13 @@ heap_gcMarkObj(pPmObj_t pobj)
 
 #ifdef HAVE_DEFAULTARGS
             /* Mark the default args tuple */
-            retval = heap_gcMarkObj((pPmObj_t)
-                                    ((pPmFunc_t)pobj)->f_defaultargs);
+            retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_defaultargs);
 #endif /* HAVE_DEFAULTARGS */
+
+#ifdef HAVE_CLOSURES
+            /* #256: Mark the closure tuple */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_closure);
+#endif /* HAVE_CLOSURES */
             break;
 
 #ifdef HAVE_CLASSES
