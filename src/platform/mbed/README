@@ -10,19 +10,62 @@ The Mbed Platform Project
 Purpose
 -------
 
-This is a sample project that demonstrates running interactive PyMite (ipm)
-on the Mbed-002_ board, which is an NXP LPC2368_ in a stamp configuration.
+This is a port of Python-on-a-Chip to the Mbed-002_ board, which features
+the NXP LPC2368_ microcontroller.  In addition to running the PyMite VM
+in interactive mode (ipm), a subset of the mbed API is made available to the
+Python programmer.
 
-.. _`Mbed-002`: http://mbed.co.uk
-.. _`LPC2368`: http://www.standardics.nxp.com/products/lpc2000/lpc23xx/
+The current mbed board that is available to the public is based on an
+NXP LPC1768_, so there may be some differences.  The PyMite VM has not been
+ported to the newer mbed board yet, but it shouldn't be a difficult process.
+
+.. _`Mbed-002`: http://mbed.org
+.. _`LPC2368`: http://ics.nxp.com/products/lpc2000/lpc23xx/
+.. _`LPC1768`: http://www.nxp.com/#/pip/pip=[pip=LPC1768_66_65_64_2]|pp=[t=pip,i=LPC1768_66_65_64_2]
 
 
 Building the Project
 --------------------
 
-Building this project is not currently supported.
-You must be a beta-tester of the Mbed system to build this project.
-All this will change soon when the Mbed is released to the public.
+At the time of this writing, building for the mbed platform on your local
+computer is not yet supported.  If you are interested in building for the mbed
+on your local computer, please monitor `Issue #22`_.  Instead, you must perform
+the build using the mbed's `on-line compiler`_.  The Makefile in this directory
+has a **zip** target to assist in this process.  Step-by-step directions to
+build for the mbed are given below.
+
+.. _`Issue #22`: http://code.google.com/p/python-on-a-chip/issues/detail?id=22
+.. _`on-line compiler`: http://mbed.org/compiler
+
+The directions below assume the following:
+
+- Python 2.5 or 2.6 installed.
+- PySerial module installed (``$ easy_install pyserial``).
+- Python-on-a-Chip tree checked-out or unzipped on your HDD
+  (``$ svn co http://python-on-a-chip.googlecode.com/svn/trunk/ pymite``).
+- Mbed device on hand and website account established at http://mbed.org
+
+Building:
+
+#. ``$ cd pymite/src/platform/mbed``
+#. ``$ make zip``
+#. Go to http://mbed.org/compiler
+#. In the left-hand "Program Workspace" panel, right click and select
+   "Import program..."
+#. In the file dialog that pops up, select
+   ``pymite/src/platform/mbed/pymite_mbed.zip``
+#. In the left-hand "Program Workspace" panel, click on the new "pymite_mbed"
+   project.
+#. Click on the "Compile" button; this should compile and download the .bin file
+   to your computer.
+#. Plug the mbed device into your computer's USB port; it should mount as USB
+   mass storage device.
+#. Copy the ``pymite_mbed.bin`` file to the mbed USB mass storage space.
+#. Unmount the mbed USB mass storage.
+#. Reset the mbed (it will re-flash itself with the new binary).
+#. Visit the `Cookbook page`_ to see the things that you can do.
+
+.. _`Cookbook page`: http://mbed.org/projects/cookbook/wiki/PyMite
 
 
 .. :mode=rest:

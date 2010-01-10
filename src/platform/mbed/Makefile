@@ -341,7 +341,8 @@ ALL_ASFLAGS = -mcpu=$(MCU) $(THUMB) $(THUMB_IW) -I. -x assembler-with-cpp $(ASFL
 
 
 # Default target.
-all: begin gccversion pmvm sizebefore build sizeafter finished end
+#all: begin gccversion pmvm sizebefore build sizeafter finished end
+all: zip
 
 ifeq ($(FORMAT),ihex)
 build: elf hex bin lss sym
@@ -562,6 +563,7 @@ clean_list :
 	$(REMOVE) $(CPPSRCARM:.cpp=.d)
 	$(REMOVE) $(TARGET)_img.c
 	$(REMOVE) $(TARGET)_nat.c
+	$(REMOVE) pymite_mbed.zip
 	$(REMOVEDIR) .dep | exit 0
 
 
