@@ -488,7 +488,7 @@ heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk)
     /* Ensure that the pointer is 4-byte aligned */
     if (retval == PM_RET_OK)
     {
-        C_ASSERT(((int)*r_pchunk & 3) == 0);
+        C_ASSERT(((intptr_t)*r_pchunk & 3) == 0);
     }
 
     return retval;
