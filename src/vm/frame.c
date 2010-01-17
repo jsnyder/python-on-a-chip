@@ -75,7 +75,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 
 #ifdef HAVE_CLOSURES
     /* #256: Add support for closures */
-    fsize = fsize + pco->co_nfreevars + pco->co_cellvars->length;
+    fsize = fsize + pco->co_nfreevars
+            + ((pco->co_cellvars == C_NULL) ? 0 : pco->co_cellvars->length);
 #endif /* HAVE_CLOSURES */
 
     /* Allocate a frame */
@@ -103,7 +104,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 #else
     /* #256: Add support for closures */
     pframe->fo_sp = &(pframe->fo_locals[nlocals + pco->co_nfreevars
-                                        + pco->co_cellvars->length]);
+        + ((pco->co_cellvars == C_NULL) ? 0 : pco->co_cellvars->length)]);
 #endif /* HAVE_CLOSURES */
 
     /* By default, this is a normal frame, not an import or __init__ one */
@@ -113,7 +114,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 #endif
 
     /* Clear the stack */
-    sli_memset((unsigned char *)&(pframe->fo_locals), (char const)0, 
+    sli_memset((unsigned char *)&(pframe->fo_locals), (char const)0,
                (unsigned int)fsize - sizeof(PmFrame_t));
 
     /* Return ptr to frame */

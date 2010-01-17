@@ -75,7 +75,17 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
 #ifdef HAVE_CLOSURES
     retval = obj_loadFromImg(memspace, paddr, &pobj);
     PM_RETURN_IF_ERROR(retval);
-    pco->co_cellvars = (pPmTuple_t)pobj;
+
+    /* Save RAM, don't keep empty tuple */
+    if (((pPmTuple_t)pobj)->length == 0)
+    {
+        heap_freeChunk(pobj);
+        pco->co_cellvars = C_NULL;
+    }
+    else
+    {
+        pco->co_cellvars = (pPmTuple_t)pobj;
+    }
 #endif /* HAVE_CLOSURES */
 
     /* Start of bcode always follows consts */

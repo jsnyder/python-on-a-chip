@@ -1855,19 +1855,22 @@ CALL_FUNC_FOR_ITER:
 #ifdef HAVE_CLOSURES
                     /* #256: Add support for closures */
                     /* Copy arguments that become cellvars */
-                    for (t8 = 0;
-                         t8 < ((pPmFunc_t)pobj1)->f_co->co_cellvars->length;
-                         t8++)
+                    if (((pPmFunc_t)pobj1)->f_co->co_cellvars != C_NULL)
                     {
-                        if (((pPmInt_t)((pPmFunc_t)pobj1)->
-                            f_co->co_cellvars->val[t8])->val >= 0)
+                        for (t8 = 0;
+                             t8 < ((pPmFunc_t)pobj1)->f_co->co_cellvars->length;
+                             t8++)
                         {
-                            ((pPmFrame_t)pobj2)->fo_locals[
-                                ((pPmFunc_t)pobj1)->f_co->co_nlocals + t8] =
+                            if (((pPmInt_t)((pPmFunc_t)pobj1)->
+                                f_co->co_cellvars->val[t8])->val >= 0)
+                            {
                                 ((pPmFrame_t)pobj2)->fo_locals[
-                                    ((pPmInt_t)(((pPmFunc_t)pobj1)->
-                                        f_co->co_cellvars->val[t8]))->val
-                                ];
+                                    ((pPmFunc_t)pobj1)->f_co->co_nlocals + t8] =
+                                    ((pPmFrame_t)pobj2)->fo_locals[
+                                        ((pPmInt_t)(((pPmFunc_t)pobj1)->
+                                            f_co->co_cellvars->val[t8]))->val
+                                    ];
+                            }
                         }
                     }
 
@@ -1879,7 +1882,7 @@ CALL_FUNC_FOR_ITER:
                         C_ASSERT(((pPmFunc_t)pobj1)->f_closure != C_NULL);
                         ((pPmFrame_t)pobj2)->fo_locals[
                             ((pPmFunc_t)pobj1)->f_co->co_nlocals
-                            + ((pPmFunc_t)pobj1)->f_co->co_cellvars->length
+                            + ((((pPmFunc_t)pobj1)->f_co->co_cellvars == C_NULL) ? 0 : ((pPmFunc_t)pobj1)->f_co->co_cellvars->length)
                             + t8] = ((pPmFunc_t)pobj1)->f_closure->val[t8];
                     }
 #endif /* HAVE_CLOSURES */
@@ -1898,6 +1901,7 @@ CALL_FUNC_FOR_ITER:
                 else if (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) ==
                          OBJ_TYPE_NOB)
                 {
+
                     /* Ensure num args fits in native frame */
                     if (t16 > NATIVE_MAX_NUM_LOCALS)
                     {
