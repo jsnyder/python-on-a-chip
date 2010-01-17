@@ -1774,7 +1774,12 @@ interpret(const uint8_t returnOnNoThreads)
 #ifdef HAVE_GENERATORS
 CALL_FUNC_FOR_ITER:
 #endif /* HAVE_GENERATORS */
-                C_ASSERT(OBJ_GET_TYPE(pobj1) == OBJ_TYPE_FXN);
+                /* Raise a TypeError if object is not callable */
+                if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_FXN)
+                {
+                    PM_RAISE(retval, PM_RET_EX_TYPE);
+                    break;
+                }
 
                 /* If it is a regular func (not native) */
                 if (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)

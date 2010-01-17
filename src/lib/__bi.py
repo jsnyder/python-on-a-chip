@@ -249,6 +249,10 @@ def eval(co, g, l):
     pass
 
 
+def filter(f, s):
+    return [x for x in s if f(x)]
+
+
 def globals():
     """__NATIVE__
     pPmObj_t pr = C_NULL;
