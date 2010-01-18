@@ -60,6 +60,11 @@
 #define PM_NEXT_STR (pPmObj_t)(gVmGlobal.pnextStr)
 #endif /* HAVE_GENERATORS */
 
+#ifdef HAVE_ASSERT
+/** The global string "Exception" */
+#define PM_EXCEPTION_STR (pPmObj_t)(gVmGlobal.pexnStr)
+#endif /* HAVE_ASSERT */
+
 /**
  * This struct contains ALL of PyMite's globals
  */
@@ -122,6 +127,11 @@ typedef struct PmVmGlobal_s
     /** The string "next", used in interp.c FOR_ITER */
     pPmString_t pnextStr;
 #endif /* HAVE_GENERATORS */
+
+#ifdef HAVE_ASSERT
+    /** The string "Exception", used in RAISE_VARARGS */
+    pPmString_t pexnStr;
+#endif /* HAVE_ASSERT */
 
     /** Flag to trigger rescheduling */
     uint8_t reschedule;

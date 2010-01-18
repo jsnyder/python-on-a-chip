@@ -71,12 +71,6 @@
  */
 #define HAVE_IMPORTS
 
-/**
- * When defined, the code to support the assert statement is included
- * in the build.
- */
-#define HAVE_ASSERT
-
 /* #157 Support default args */
 /**
  * When defined, the code to support default arguments to functions is included
@@ -98,6 +92,15 @@
  * is included in the build.
  */
 /*#define HAVE_CLASSES*/
+
+/**
+ * When defined, the code to support the assert statement is included
+ * in the build.
+ */
+/*#define HAVE_ASSERT*/
+#if defined(HAVE_ASSERT) && !defined(HAVE_CLASSES)
+#error HAVE_ASSERT requires HAVE_CLASSES
+#endif
 
 /* #207 Add support for the yield keyword */
 /**

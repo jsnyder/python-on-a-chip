@@ -157,3 +157,33 @@ class_getAttr(pPmObj_t pobj, pPmObj_t pname, pPmObj_t *r_pobj)
 
     return retval;
 }
+
+
+uint8_t /* boolean */
+class_isSubclass(pPmObj_t ptest_class, pPmObj_t pbase_class)
+{
+    uint8_t i;
+    uint8_t retval;
+
+    retval = C_FALSE;
+
+    if (ptest_class == pbase_class)
+    {
+        return C_TRUE;
+    }
+
+    /* Recursively check if test class has a matching base class */
+    if (((pPmClass_t)ptest_class)->cl_bases != C_NULL)
+    {
+        for (i = 0; i < ((pPmClass_t)ptest_class)->cl_bases->length; i++)
+        {
+            retval = class_isSubclass(((pPmClass_t)ptest_class)->cl_bases->val[i],
+                                        pbase_class);
+            if (retval)
+            {
+                break;
+            }
+        }
+    }
+    return retval;
+}

@@ -116,7 +116,7 @@ def print_sizes():
         'NIM',
         'NOB',
         'THR',
-        'EXN',
+        0,
         'BOL',
         'CIO',
         'LST',

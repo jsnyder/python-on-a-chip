@@ -30,7 +30,7 @@ an ``AssertionError`` exception is raised.  To read about exceptions in
 PyMite, see `ErrorsAndExceptions`_.
 
 .. _`assert statements`: http://docs.python.org/ref/assert.html
-.. _`ErrorsAndExceptions`: TBD
+.. _`ErrorsAndExceptions`: ErrorsAndExceptions.html
 
 
 Background
@@ -81,15 +81,16 @@ assert statement, using Python 2.4 or later shall be a requirement for
 building PyMite.
 
 To support the ``assert`` statement a built-in named ``AssertionError`` must
-exist and the ``RAISE_VARARGS`` (1) bytecode must be implemented.  To create
-``AssertionError``, a native function, ``_exn()``, will be created in
-``__bi.py`` that allocates an exception object (OBJ_TYPE_EXN).  The
-``AssertionError`` object will also have an integer attribute, ``code``, that
-corresponds to the value of the PmReturn_t code that represents that exception.
-In this case, ``PM_RET_EX_ASSRT``.  So, the code added to ``__bi.py`` will
-look like this::
+exist and the ``RAISE_VARARGS`` (1) bytecode must be implemented.  Since
+revision 369 (2009/05/20), ``AssertionError`` is an actual class that inherits
+from the Exception class.  Prior to r369, ``AssertionError`` was its own
+exception datatype.  The ``AssertionError`` object also has an integer
+attribute, ``code``, that corresponds to the value of the PmReturn_t code that
+represents  that exception.  In this case, ``PM_RET_EX_ASSRT``.  So, the code
+added to ``__bi.py`` looks like this::
 
-    AssertionError = _exn()
+    class AssertionError(Exception):
+        pass
     AssertionError.code = 0xE4
 
 The first step to support ``RAISE_VARARGS`` is to make ``pmImgCreator.py``

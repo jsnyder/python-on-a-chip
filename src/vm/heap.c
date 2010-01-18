@@ -692,16 +692,13 @@ heap_gcMarkObj(pPmObj_t pobj)
             break;
 
         case OBJ_TYPE_CLO:
-            /* Fallthrough to OBJ_TYPE_EXN */
-#endif /* HAVE_CLASSES */
-
-        case OBJ_TYPE_EXN:
             /* Mark the obj head */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
 
             /* Mark the attrs dict */
             retval = heap_gcMarkObj((pPmObj_t)((pPmClass_t)pobj)->cl_attrs);
             break;
+#endif /* HAVE_CLASSES */
 
             /*
              * An obj in ram should not be of these types.

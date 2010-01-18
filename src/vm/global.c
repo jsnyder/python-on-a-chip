@@ -51,6 +51,9 @@ global_init(void)
     uint8_t const *genstr = (uint8_t const *)"Generator";
     uint8_t const *nextstr = (uint8_t const *)"next";
 #endif /* HAVE_GENERATORS */
+#ifdef HAVE_ASSERT
+    uint8_t const *exnstr = (uint8_t const *)"Exception";
+#endif /* HAVE_ASSERT */
 
     /* Clear the global struct */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
@@ -128,6 +131,13 @@ global_init(void)
     PM_RETURN_IF_ERROR(retval);
     gVmGlobal.pnextStr = (pPmString_t)pobj;
 #endif /* HAVE_GENERATORS */
+
+#ifdef HAVE_ASSERT
+    /* Init "Exception" string obj */
+    retval = string_new((uint8_t const **)&exnstr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.pexnStr = (pPmString_t)pobj;
+#endif /* HAVE_ASSERT */
 
     /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;

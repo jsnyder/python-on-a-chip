@@ -1059,11 +1059,6 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 #endif /* HAVE_CLASSES */
 
-                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
-                {
-                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
-                }
-
                 /* Other types result in an AttributeError */
                 else
                 {
@@ -1114,11 +1109,6 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj2 = (pPmObj_t)((pPmMethod_t)TOS)->m_attrs;
                 }
 #endif /* HAVE_CLASSES */
-
-                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
-                {
-                    pobj2 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
-                }
 
                 /* Other types result in an AttributeError */
                 else
@@ -1299,11 +1289,6 @@ interpret(const uint8_t returnOnNoThreads)
                     pobj1 = (pPmObj_t)((pPmMethod_t)TOS)->m_attrs;
                 }
 #endif /* HAVE_CLASSES */
-
-                else if (OBJ_GET_TYPE(TOS) == OBJ_TYPE_EXN)
-                {
-                    pobj1 = (pPmObj_t)((pPmClass_t)TOS)->cl_attrs;
-                }
 
                 /* Other types result in an AttributeError */
                 else
@@ -1639,9 +1624,18 @@ interpret(const uint8_t returnOnNoThreads)
                     break;
                 }
 
-                /* Raise type error if TOS is not an exception object */
+                /* Load Exception class from builtins */
+                retval = dict_getItem(PM_PBUILTINS, PM_EXCEPTION_STR, &pobj2);
+                if (retval != PM_RET_OK)
+                {
+                    PM_RAISE(retval, PM_RET_EX_SYS);
+                    break;
+                }
+
+                /* Raise TypeError if TOS is not an instance of Exception */
                 pobj1 = TOS;
-                if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_EXN)
+                if ((OBJ_GET_TYPE(pobj1) != OBJ_TYPE_CLO)
+                    || !class_isSubclass(pobj1, pobj2))
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
                     break;

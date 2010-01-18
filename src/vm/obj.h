@@ -172,9 +172,6 @@ typedef enum PmType_e
     /** Thread */
     OBJ_TYPE_THR = 0x0D,
 
-    /** Exception object */
-    OBJ_TYPE_EXN = 0x0E,
-
     /** Boolean object */
     OBJ_TYPE_BOOL = 0x0F,
 

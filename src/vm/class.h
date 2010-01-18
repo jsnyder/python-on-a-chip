@@ -111,5 +111,15 @@ PmReturn_t class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth);
  */
 PmReturn_t class_getAttr(pPmObj_t pobj, pPmObj_t pname, pPmObj_t *r_pobj);
 
+/**
+ * Returns a C boolean if the base class is found in the inheritance tree
+ * of the test class.  NOTE: This function is recursive.
+ *
+ * @param   ptest_class ptr to class whose inheritance tree is searched
+ * @param   pbase_class ptr to class to look for
+ * @return  Returns C_TRUE if pbase_class is found in the inheritance tree;
+ *          C_FALSE otherwise.
+ */
+uint8_t class_isSubclass(pPmObj_t ptest_class, pPmObj_t pbase_class);
 
 #endif /* __CLASS_H__ */
