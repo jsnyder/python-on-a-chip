@@ -470,7 +470,7 @@ class PmImgCreator:
             l = [-1,] * len(co.co_cellvars)
             for i,name in enumerate(co.co_cellvars):
                 if name in co.co_varnames:
-                    l[i] = co.co_varnames.index(name)
+                    l[i] = list(co.co_varnames).index(name)
             s = self._seq_to_str(tuple(l))
             lenconsts += len(s)
             imgstr += s
