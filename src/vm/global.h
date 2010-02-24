@@ -18,7 +18,8 @@
 
 
 /**
- * VM Globals
+ * \file
+ * \brief VM Globals
  *
  * VM globals header.
  */

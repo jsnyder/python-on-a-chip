@@ -16,7 +16,10 @@
 #ifndef __CLASS_H__
 #define __CLASS_H__
 
-/** Class header. */
+/** 
+ * \file
+ *  \brief Class header. 
+ */
 
 
 /**

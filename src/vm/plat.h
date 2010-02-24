@@ -17,7 +17,10 @@
 #define __PLAT_H__
 
 
-/** PyMite's Porting Interface */
+/** 
+ * \file
+ * \brief PyMite's Porting Interface 
+ */
 
 
 /**

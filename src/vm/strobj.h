@@ -18,7 +18,8 @@
 
 
 /**
- * String Object Type
+ * \file
+ * \brief String Object Type
  *
  * String object type header.
  */

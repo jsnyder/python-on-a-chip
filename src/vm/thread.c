@@ -18,7 +18,8 @@
 
 
 /**
- * VM Thread
+ * \file
+ * \brief VM Thread
  *
  * Encapsulating a frame pointer, a root code object and thread state.
  */

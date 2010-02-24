@@ -18,7 +18,8 @@
 
 
 /**
- * Standard Library Interface
+ * \file
+ * \brief Standard Library Interface
  *
  * PyMite requires a few functions from a few different
  * standard C libraries (memory, string, etc).

@@ -10,15 +10,16 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
+## @file
+#  @copybrief __bi
+
+## @package __bi
+#  @brief Provides PyMite's builtins module, __bi.
 #
-# Provides PyMite's builtins module, __bi.
+#  <b>USAGE</b>
 #
-# USAGE
-# -----
-#
-# The builtins are loaded by the interpreter.
-# The user SHOULD NOT import this module directly.
-#
+#  The builtins are loaded by the interpreter.
+#  The user SHOULD NOT import this module directly.
 
 
 def abs(n):

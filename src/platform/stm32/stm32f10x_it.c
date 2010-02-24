@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    Project/Template/stm32f10x_it.c 
+  * @file    stm32f10x_it.c 
   * @author  MCD Application Team
   * @version V3.1.0
   * @date    06/19/2009
@@ -8,7 +8,7 @@
   *          This file provides template for all exceptions handler and 
   *          peripherals interrupt service routine.
   ******************************************************************************
-  * @copy
+  * @verbatim
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -17,15 +17,14 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
+  * @endverbatim
+  *
   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
   */ 
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
 #include "pm.h"
-/** @addtogroup Template_Project
-  * @{
-  */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -40,7 +39,6 @@
 
 /**
   * @brief  This function handles NMI exception.
-  * @param  None
   * @retval None
   */
 void NMI_Handler(void)
@@ -49,7 +47,6 @@ void NMI_Handler(void)
 
 /**
   * @brief  This function handles Hard Fault exception.
-  * @param  None
   * @retval None
   */
 void HardFault_Handler(void)
@@ -61,7 +58,6 @@ void HardFault_Handler(void)
 
 /**
   * @brief  This function handles Memory Manage exception.
-  * @param  None
   * @retval None
   */
 void MemManage_Handler(void)
@@ -73,7 +69,6 @@ void MemManage_Handler(void)
 
 /**
   * @brief  This function handles Bus Fault exception.
-  * @param  None
   * @retval None
   */
 void BusFault_Handler(void)
@@ -85,7 +80,6 @@ void BusFault_Handler(void)
 
 /**
   * @brief  This function handles Usage Fault exception.
-  * @param  None
   * @retval None
   */
 void UsageFault_Handler(void)
@@ -97,7 +91,6 @@ void UsageFault_Handler(void)
 
 /**
   * @brief  This function handles Debug Monitor exception.
-  * @param  None
   * @retval None
   */
 void DebugMon_Handler(void)
@@ -106,7 +99,6 @@ void DebugMon_Handler(void)
 
 /**
   * @brief  This function handles SVCall exception.
-  * @param  None
   * @retval None
   */
 void SVC_Handler(void)
@@ -115,7 +107,6 @@ void SVC_Handler(void)
 
 /**
   * @brief  This function handles PendSV_Handler exception.
-  * @param  None
   * @retval None
   */
 void PendSV_Handler(void)
@@ -124,7 +115,6 @@ void PendSV_Handler(void)
 
 /**
   * @brief  This function handles SysTick Handler.
-  * @param  None
   * @retval None
   */
 void SysTick_Handler(void)

@@ -18,7 +18,8 @@
 
 
 /**
- * List Object Type
+ * \file
+ * \brief List Object Type
  *
  * List object type operations.
  */

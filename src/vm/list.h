@@ -17,7 +17,8 @@
 #define __LIST_H__
 
 /**
- * List Object Type
+ * \file
+ * \brief List Object Type
  *
  * List object type header.
  */

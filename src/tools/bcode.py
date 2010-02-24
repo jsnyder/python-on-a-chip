@@ -19,6 +19,16 @@ count(fn) - count the number of times each byte code
             appears in a code object.
 """
 
+## @file
+#  @copybrief bcode
+
+## @package bcode
+#  @brief Python Byte Code utility functions.
+#
+#  count(fn) - count the number of times each byte code
+#              appears in a code object.
+
+
 
 import dis, types
 

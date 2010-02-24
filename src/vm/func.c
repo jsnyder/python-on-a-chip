@@ -18,7 +18,8 @@
 
 
 /**
- * Function Object Type
+ * \file
+ * \brief Function Object Type
  *
  * Function object type operations.
  */

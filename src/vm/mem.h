@@ -18,7 +18,8 @@
 
 
 /**
- * VM Memory
+ * \file
+ * \brief VM Memory
  *
  * VM memory header.
  */

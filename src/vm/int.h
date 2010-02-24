@@ -18,7 +18,8 @@
 
 
 /**
- * Integer Object Type
+ * \file
+ * \brief Integer Object Type
  *
  * Integer object type header.
  */

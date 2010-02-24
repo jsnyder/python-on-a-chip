@@ -18,7 +18,8 @@
 
 
 /**
- * VM Globals
+ * \file
+ * \brief VM Globals
  *
  * VM globals operations.
  * PyMite's global struct def and initial values.

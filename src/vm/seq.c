@@ -18,7 +18,8 @@
 
 
 /**
- * Sequence
+ * \file
+ * \brief Sequence
  *
  * Functions that operate on sequences
  */

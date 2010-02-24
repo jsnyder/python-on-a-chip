@@ -18,7 +18,8 @@
 
 
 /**
- * Class Object Type
+ * \file
+ * \brief Class Object Type
  *
  * Class object type operations.
  */

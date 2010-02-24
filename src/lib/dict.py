@@ -10,9 +10,11 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# Provides PyMite's dict module.
-#
+## @file
+#  @copybrief dict
+
+## @package dict
+#  @brief Provides PyMite's dict module.
 
 def clear(d):
     """__NATIVE__

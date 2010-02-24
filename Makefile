@@ -25,7 +25,7 @@ VPATH := . src/vm src/lib docs/src
 PLATFORM ?= desktop
 
 
-.PHONY: all vm ipm html indent TAGS dist check clean
+.PHONY: all vm ipm html dox indent TAGS dist check clean
 
 all :
 	$(MAKE) -C src/platform/$(PLATFORM)
@@ -34,9 +34,13 @@ ipm :
 	$(MAKE) -C src/platform/desktop
 	cd src/tools && ./ipm.py -d
 
-html : docs/src/*.txt
+html : docs/src/*.txt dox
 	$(MKDIR) docs/html
 	$(MAKE) -C docs/src
+
+dox :
+	$(MKDIR) docs/html
+	doxygen
 
 indent :
 	$(MAKE) -C src/vm indent
@@ -71,3 +75,6 @@ check-clean :
 ipm-clean :
 	$(MAKE) -C src/sample/desktop-ipm clean
 
+# Remove files made by html / dox
+html-clean :
+	$(RM) -rf docs/html

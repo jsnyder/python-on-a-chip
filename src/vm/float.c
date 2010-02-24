@@ -18,7 +18,8 @@
 
 
 /**
- * Float Object Type
+ * \file
+ * \brief Float Object Type
  *
  * Float object type operations.
  */

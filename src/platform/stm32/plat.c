@@ -1,4 +1,4 @@
-/*
+/** @file
  * PyMite - A flyweight Python interpreter for 8-bit and larger microcontrollers.
  * Copyright 2002 Dean Hall.  All rights reserved.
  * PyMite is offered through one of two licenses: commercial or open-source.

@@ -18,7 +18,8 @@
 
 
 /**
- * Tuple Object Type
+ * \file
+ * \brief Tuple Object Type
  *
  * Tuple object type operations.
  */

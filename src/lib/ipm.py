@@ -10,12 +10,14 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# Provides PyMite's interactive interface for the target.
-#
+## @file
+#  @copybrief ipmMite
+
+## @package ipmMite
+#  @brief Provides PyMite's interactive interface for the target.
 
 
-#
+##
 # Receives an image over the platform's standard connection.
 # Returns the image in a string object
 #
@@ -76,7 +78,7 @@ def _getImg():
     pass
 
 
-#
+##
 # Runs the target device-side interactive session.
 #
 def ipm(g={}):

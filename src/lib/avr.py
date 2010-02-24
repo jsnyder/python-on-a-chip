@@ -10,18 +10,21 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# AVR Access Module
+## @file
+#  @copybrief avr
+
+## @package avr
+#  @brief AVR Access Module
 #
 # Provides generic access to the AVR microcontroller
 #
-# USAGE
-# -----
+# <b>USAGE</b>
 #
+# \code
 # import avr
 # a = avr.portA()
 # avr.portA(42)
-#
+# \endcode
 
 
 """__NATIVE__

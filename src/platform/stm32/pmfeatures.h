@@ -13,8 +13,8 @@
 */
 
 
-/**
- * VM feature configuration
+/** @file
+ * @brief VM feature configuration
  *
  * Compile time switches to include features or save space.
  *

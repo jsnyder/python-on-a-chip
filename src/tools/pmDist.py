@@ -18,6 +18,11 @@ Makes fresh export (no .svn folders), builds the docs, makes pymite-RR.tar.gz
 and creates release tag in the svn repository
 """
 
+## @file
+#  @brief Creates a release package for PyMite
+#
+#  Makes fresh export (no .svn folders), builds the docs, makes pymite-RR.tar.gz
+#  and creates release tag in the svn repository
 
 import os, string, subprocess, sys, tempfile
 

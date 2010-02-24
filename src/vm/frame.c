@@ -18,7 +18,8 @@
 
 
 /**
- * VM Frame
+ * \file
+ * \brief VM Frame
  *
  * VM frame operations.
  */

@@ -18,7 +18,8 @@
 
 
 /**
- * Dict Object Type
+ * \file
+ * \brief Dict Object Type
  *
  * Dict object type header.
  */

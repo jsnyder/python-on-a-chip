@@ -18,7 +18,8 @@
 
 
 /**
- * Image routines
+ * \file
+ * \brief Image routines
  *
  * Created to eliminate a circular include
  * among mem, string and obj.

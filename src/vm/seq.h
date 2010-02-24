@@ -18,7 +18,8 @@
 
 
 /**
- * Sequence Header
+ * \file
+ * \brief Sequence Header
  */
 
 

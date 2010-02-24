@@ -17,7 +17,8 @@
 #define __FUNC_H__
 
 /**
- * Function Object Type
+ * \file
+ * \brief Function Object Type
  *
  * Function object type header.
  */

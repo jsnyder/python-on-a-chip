@@ -18,7 +18,8 @@
 
 
 /**
- * Segmented list data type and operations
+ * \file
+ * \brief Segmented list data type and operations
  *
  * The segmented list is used to implement the Python
  * List and Dict data types.

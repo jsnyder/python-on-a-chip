@@ -18,7 +18,8 @@
 
 
 /**
- * VM Interpreter
+ * \file
+ * \brief VM Interpreter
  *
  * VM interpreter header.
  */

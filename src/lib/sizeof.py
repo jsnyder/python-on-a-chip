@@ -10,17 +10,19 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
+## @file
+#  @copybrief sizeof
+
+## @package sizeof
+#  @brief Provides PyMite's sizeof module.
 #
-# Provides PyMite's sizeof module.
+# <b>USAGE</b>
 #
-# USAGE
-# -----
-#
-# sizeof.sizeof(obj)
+# \code sizeof.sizeof(obj) \endcode
 #
 # Prints the size of the given object.  If obj is an integer from 0..31,
 # the size of the object type represented by that integer will be returned.
-#
+
 """__NATIVE__
 #include "pm.h"
 """

@@ -10,11 +10,14 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# Provides PyMite's func module.
-#
+## @file
+#  @copybrief func
 
-#
+## @package func
+#  @brief Provides PyMite's func module.
+
+
+##
 # Returns the names tuple of the function/module object
 #
 def co_names(f):
@@ -37,7 +40,7 @@ def co_names(f):
     pass
 
 
-#
+##
 # Returns the constants tuple of the function/module object
 #
 def co_consts(f):

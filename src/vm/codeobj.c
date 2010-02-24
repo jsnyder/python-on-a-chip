@@ -18,7 +18,8 @@
 
 
 /**
- * CodeObj Type
+ * \file
+ * \brief CodeObj Type
  *
  * CodeObj type operations.
  */

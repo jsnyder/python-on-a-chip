@@ -10,12 +10,14 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# Provides PyMite's list module.
+## @file
+#  @copybrief list
+
+## @package list
+#  @brief Provides PyMite's list module.
 #
 # Notes:
-#   index(l, o) does not offer start and stop arguments.
-#
+# - index(l, o) does not offer start and stop arguments.
 
 
 def append(l, o):

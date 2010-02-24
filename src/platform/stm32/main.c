@@ -1,4 +1,4 @@
-/*
+/** \file
 # This file is Copyright 2009 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.

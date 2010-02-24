@@ -18,7 +18,11 @@ PyCscope
 PyCscope creates a Cscope-like index file for a tree of Python source.
 """
 
+## @file
+#  @copybrief pycscope
 
+## @package pycscope
+#  @brief PyCscope creates a Cscope-like index file for a tree of Python source.
 #
 # 2007/12/25:
 #   Improvements contributed by K. Rader of Google:

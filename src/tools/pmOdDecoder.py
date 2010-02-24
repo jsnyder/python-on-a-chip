@@ -19,6 +19,14 @@ PyMite Object Descriptor Decoder
 Decodes an object descriptor value into its bit fields.
 """
 
+## @file
+#  @copybrief pmOldDecoder
+
+## @package pmOldDecoder
+#  @brief PyMite Object Descriptor Decoder
+#
+#  Decodes an object descriptor value into its bit fields.
+
 
 import sys, pprint
 

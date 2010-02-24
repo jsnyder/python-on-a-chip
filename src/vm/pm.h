@@ -18,7 +18,8 @@
 
 
 /**
- * PyMite Header
+ * \file
+ * \brief PyMite Header
  *
  * Include things that are needed by nearly everything.
  */

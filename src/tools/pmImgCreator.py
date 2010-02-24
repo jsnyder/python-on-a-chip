@@ -35,6 +35,13 @@ standard library or the user library--using the argument -s or -u,
 respectively.
 """
 
+## @file
+#  @copybrief pmImgCreator
+
+## @package pmImgCreator
+#  @brief PyMite Image Creator
+#
+#  See the source docstring for more details.
 
 __usage__ = """USAGE:
     pmImgCreator.py [-b|c] [-s|u] [OPTIONS] -o imgfilename file0.py [files...]

@@ -18,7 +18,8 @@
 
 
 /**
- * Module Object Type
+ * \file
+ * \brief Module Object Type
  *
  * Module object type operations.
  */

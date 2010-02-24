@@ -10,13 +10,13 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
+## @package sys
+#  @brief Provides PyMite's system module, sys
 #
-# Provides PyMite's system module, sys
+#  USAGE
+#  -----
 #
-# USAGE
-# -----
-#
-# import sys
+#  import sys
 #
 
 #### TODO

@@ -25,6 +25,19 @@ The target device then packages any result, sends it to the host computer
 and the host computer prints the result.
 """
 
+## @file
+#  @copybrief ipm
+
+## @package ipm
+#  @brief Interactive PyMite
+#
+#
+#  An interactive command line that runs on a host computer that is connected
+#  to a target device that is running PyMite.  The host computer compiles the
+#  interactive statement and converts it to a form that PyMite can handle,
+#  sends that over the connection where the target device loads and interprets it.
+#  The target device then packages any result, sends it to the host computer
+#  and the host computer prints the result.
 
 import cmd, dis, getopt, os, subprocess, sys
 import pmImgCreator

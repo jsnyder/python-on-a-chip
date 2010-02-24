@@ -18,7 +18,8 @@
 
 
 /**
- * Object Type
+ * \file
+ * \brief Object Type
  *
  * Object type operations.
  */

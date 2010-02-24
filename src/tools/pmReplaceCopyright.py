@@ -10,9 +10,14 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING up one directory from this.
 
-# This program naively replaces the copyright header of a c, h or py file.
-# Once this program is used on the source tree, it will no longer work
-# because the copyright header will have changed size.
+## @file
+#  @copydoc pmReplaceCopyright
+
+## @package pmReplaceCopyright
+#  @brief This program naively replaces the copyright header of a c, h or py file.
+#
+#  Once this program is used on the source tree, it will no longer work
+#  because the copyright header will have changed size.
 
 
 import os, sys

@@ -18,7 +18,8 @@
 
 
 /**
- * Image header
+ * \file
+ * \brief Image header
  *
  * Created to eliminate a circular include
  * among mem, string and obj.

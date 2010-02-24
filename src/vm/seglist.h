@@ -18,7 +18,8 @@
 
 
 /**
- * Segmented List data structure
+ * \file
+ * \brief Segmented List data structure
  *
  * A seglist is a linked list of segments.
  * A segment is an array of ptrs to objects

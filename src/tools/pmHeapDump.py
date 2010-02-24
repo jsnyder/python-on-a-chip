@@ -41,6 +41,13 @@ The heap_dump() function names files incrementally starting from:
     pmheapdumpNN.bin
 """
 
+## @file
+#  @copybrief pmHeapDump
+
+## @package pmHeapDump
+#  @brief PyMite Heap Dump
+#
+#  See the source docstring for details.
 
 __usage__ = """USAGE:
     pmHeapDiff.py filename

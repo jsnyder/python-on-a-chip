@@ -18,7 +18,8 @@
 
 
 /**
- * VM Heap
+ * \file
+ * \brief VM Heap
  *
  * VM heap operations.
  * All of PyMite's dynamic memory is obtained from this heap.

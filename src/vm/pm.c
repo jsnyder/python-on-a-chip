@@ -18,7 +18,8 @@
 
 
 /**
- * PyMite User API
+ * \file
+ * \brief PyMite User API
  *
  * High-level functions to initialize and run PyMite
  */

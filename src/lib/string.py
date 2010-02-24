@@ -10,8 +10,10 @@
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING in this directory.
 
-#
-# Provides PyMite's string module.
+## @file
+
+## @package string
+#  @brief Provides PyMite's string module.
 #
 
 

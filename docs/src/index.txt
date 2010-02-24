@@ -28,6 +28,8 @@ File                                Useful to . . .     Explains . . .
 ----------------------------------- ------------------  ------------------------
 \                                   User    Developer   \
 ----------------------------------- ------  ----------  ------------------------
+`Doxygen API Documentation`_        N       Y           Structure of the source
+                                                        code for PyMite                                                        
 AssertStatement.html_               N       Y           the software design
                                                         for the assert statement
 BuildSystem.html_                   Y       Y           the details on
@@ -76,5 +78,6 @@ Testing.html_                       N       Y           the unit and system
 .. _PyMiteOverview.html: PyMiteOverview.html
 .. _StringObjects.html: StringObjects.html
 .. _Testing.html: Testing.html
+.. _`Doxygen API Documentation`: dox/index.html
 
 .. :mode=rest:

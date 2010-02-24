@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file    Project/Template/stm32f10x_conf.h 
+  * @file    stm32f10x_conf.h 
   * @author  MCD Application Team
   * @version V3.1.0
   * @date    06/19/2009
   * @brief   Library configuration file.
   ******************************************************************************
-  * @copy
+  * @verbatim
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -14,6 +14,8 @@
   * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  *
+  * @endverbatim
   *
   * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
   */ 

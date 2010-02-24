@@ -22,6 +22,14 @@ __usage__ = """Usage:
     dismantle.py sourcefilename.py
 """
 
+## @file
+#  @copybrief dismantle
+
+## @package dismantle
+#  @brief Dismantles a .py file by compiling it
+#  into a code object and recursively dismantling
+#  and disassembling the code object.
+
 #### CONSTS ####
 STRINGTOOLONG = 32
 
