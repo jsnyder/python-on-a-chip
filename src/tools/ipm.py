@@ -63,12 +63,10 @@ __usage__ = """USAGE:
 
 REQUIREMENTS:
 
-    - pySerial package from http://pyserial.wiki.sourceforge.net/pySerial
-    - Win32 platforms require pywin32 package from
-      http://sourceforge.net/projects/pywin32/
+    - pySerial package from http://pyserial.sourceforge.net/
     """
 
-NEED_PYSERIAL = "Install the pySerial module from http://pyserial.wiki.sourceforge.net/pySerial"
+NEED_PYSERIAL = "Install the pySerial module from http://pyserial.sourceforge.net/"
 if not sys.platform.lower().startswith("win"):
     PMVM_EXE = "../platform/desktop/main.out"
 else:

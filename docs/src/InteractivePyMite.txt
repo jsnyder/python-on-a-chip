@@ -94,11 +94,7 @@ like this::
 
     easy_install pyserial
 
-If you are running on a Win32 host, pySerial, in turn, requires the
-`pywin32 package`_.
-
-.. _`pySerial package`: http://pyserial.wiki.sourceforge.net/pySerial
-.. _`pywin32 package`: http://sourceforge.net/projects/pywin32/
+.. _`pySerial package`: http://pyserial.sourceforge.net/
 
 
 Running ipm on the Desktop
