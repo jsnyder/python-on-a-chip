@@ -1,0 +1,43 @@
+
+# for the INCLUDE, LIB and PATH additions
+import os, sys
+
+Import("vars")
+
+# test for reading from the Windows Registry. Wanted to use to find python.exe path. Of course,
+# there turns out to be a simpler solution: sys.executable!
+#if sys.platform == "win32":
+#	import SCons.Util
+#	JDK_VERSION = SCons.Util.RegGetValue(SCons.Util.HKEY_LOCAL_MACHINE, r'SOFTWARE\JavaSoft\Java Development Kit\CurrentVersion')
+#	print JDK_VERSION
+	
+
+vars.Add("HEAP_SIZE", "Size of the VM's heap.", 0x2000)
+vars.Add("IPM", "Add the interactive library to the standard lib", True)
+
+CFLAGS = "/DHEAP_SIZE=$HEAP_SIZE /D_CONSOLE"
+if "DEBUG" in vars.args.keys():
+    CFLAGS = "-D_DEBUG=1 " + CFLAGS
+SOURCES = ["main.c", "plat.c"]
+PY_SOURCES = ["main.py"]
+PM_LIB_ROOT = ["pmvm_%s" % vars.args["PLATFORM"], "user32"]
+
+env = Environment(variables = vars,
+                  CPPPATH = ["#src/vm", "#src/platform/%s" % vars.args["PLATFORM"]],
+                  CCFLAGS = CFLAGS)
+
+# add the include search path from the external environment
+env.AppendUnique(CPPPATH = os.environ['INCLUDE'].split(';'))
+#env.AppendUnique(LIBPATH = os.environ['LIB'].split(';'))
+
+# debug
+print env['ENV']
+
+vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
+
+img_sources = env.Command(["main_img.c", "main_nat.c"], [PY_SOURCES],
+    "%s src/tools/pmImgCreator.py -c -u -o src/platform/windows/main_img.c" \
+    " --native-file=src/platform/windows/main_nat.c $SOURCES" % (sys.executable))
+
+main = env.Program("main", SOURCES + img_sources,
+                   LIBS = PM_LIB_ROOT, LIBPATH = ["../../vm", os.environ['LIB'].split(';')])
