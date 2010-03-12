@@ -250,22 +250,56 @@ string_getCache(pPmString_t **r_ppstrcache)
 PmReturn_t
 string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring)
 {
-    char buf[pstr1->length + pstr2->length + 2];
-    uint8_t const * pcstr = (uint8_t*) buf;
-    unsigned char *pbuf;
-    PmReturn_t retval;
+    PmReturn_t retval = PM_RET_OK;
+    pPmString_t pstr = C_NULL;
+    uint8_t *pdst = C_NULL;
+    uint8_t const *psrc = C_NULL;
+#if USE_STRING_CACHE
+    pPmString_t pcacheentry = C_NULL;
+#endif /* USE_STRING_CACHE */
+    uint8_t *pchunk;
+    uint16_t len;
 
-    /* Copy the two strings into the buffer */
-    pbuf = (unsigned char *)buf;
-    sli_memcpy(pbuf, pstr1->val, pstr1->length);
-    pbuf = (unsigned char *)buf + pstr1->length;
-    sli_memcpy(pbuf, pstr2->val, pstr2->length);
-    pbuf = (unsigned char *)buf + pstr1->length + pstr2->length;
-    *pbuf = '\0';
+    /* Create the String obj */
+    len = pstr1->length + pstr2->length;
+    retval = heap_getChunk(sizeof(PmString_t) + len, &pchunk);
+    PM_RETURN_IF_ERROR(retval);
+    pstr = (pPmString_t)pchunk;
+    OBJ_SET_TYPE(pstr, OBJ_TYPE_STR);
+    pstr->length = len;
 
-    /* Create a new string object from the buffer */
-    retval = string_newWithLen(&pcstr, pstr1->length + pstr2->length, r_pstring);
-    return retval;
+    /* Concatenate C-strings into String obj and apply null terminator */
+    pdst = (uint8_t *)&(pstr->val);
+    psrc = (uint8_t const *)&(pstr1->val);
+    mem_copy(MEMSPACE_RAM, &pdst, &psrc, pstr1->length);
+    psrc = (uint8_t const *)&(pstr2->val);
+    mem_copy(MEMSPACE_RAM, &pdst, &psrc, pstr2->length);
+    *pdst = '\0';
+
+#if USE_STRING_CACHE
+    /* Check for twin string in cache */
+    for (pcacheentry = pstrcache;
+         pcacheentry != C_NULL; pcacheentry = pcacheentry->next)
+    {
+        /* If string already exists */
+        if (string_compare(pcacheentry, pstr) == C_SAME)
+        {
+            /* Free the string */
+            retval = heap_freeChunk((pPmObj_t)pstr);
+
+            /* Return ptr to old */
+            *r_pstring = (pPmObj_t)pcacheentry;
+            return retval;
+        }
+    }
+
+    /* Insert string obj into cache */
+    pstr->next = pstrcache;
+    pstrcache = pstr;
+#endif /* USE_STRING_CACHE */
+
+    *r_pstring = (pPmObj_t)pstr;
+    return PM_RET_OK;
 }
 
 
