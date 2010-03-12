@@ -14,7 +14,7 @@
 
 
 #undef __FILE_ID__
-#define __FILE_ID__ 0x51
+#define __FILE_ID__ 0x70
 
 
 /** PyMite platform-specific routines for AVR target */
