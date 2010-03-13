@@ -173,9 +173,8 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco);
  *
  * @param   memspace memory space containing image
  * @param   paddr ptr to ptr to code img in memspace (return)
- * @return  new code object with fields filled in.
- *          return by reference: paddr points one byte
- *          past end of code img
+ * @param   r_pno Return by reference, new code object 
+ * @return  Return status
  */
 PmReturn_t no_loadFromImg(PmMemSpace_t memspace,
                           uint8_t const **paddr, pPmObj_t *r_pno);

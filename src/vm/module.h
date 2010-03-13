@@ -33,9 +33,9 @@
  * but set the type to OBJ_TYPE_MOD so that it is
  * not otherwise callable.
  *
- * @param   pco ptr to code obj
- * @param   return parameter; ptr to new module obj
- * @return  return status
+ * @param   pco Ptr to code obj
+ * @param   pmod Return by reference; ptr to new module obj
+ * @return  Return status
  */
 PmReturn_t mod_new(pPmObj_t pco, pPmObj_t *pmod);
 
@@ -46,8 +46,8 @@ PmReturn_t mod_new(pPmObj_t pco, pPmObj_t *pmod);
  * A module obj is created for the code obj.
  *
  * @param   pstr String obj containing name of code obj to load.
- * @param   return parameter; ptr to imported module
- * @return  return status
+ * @param   pmod Return by reference; ptr to imported module
+ * @return  Return status
  */
 PmReturn_t mod_import(pPmObj_t pstr, pPmObj_t *pmod);
 

@@ -73,10 +73,10 @@ typedef struct Seglist_s
  * Puts the new object at the end of the list.
  * This is intended for the List type where
  * the List index matches the order of the Seglist index.
- * Make room if necessary by adding new segments.
+ * Makes room if necessary by adding new segments.
  *
- * @param pseglist Ptr to seglist to scan
- * @param indx Index of object to obtain
+ * @param pseglist Ptr to seglist
+ * @param pobj Pointer to object to append
  * @return Return status
  */
 PmReturn_t seglist_appendItem(pSeglist_t pseglist, pPmObj_t pobj);

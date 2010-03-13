@@ -89,7 +89,8 @@ PmReturn_t class_new(pPmObj_t pmeths, pPmObj_t pbases, pPmObj_t pname,
 /**
  * Returns an instance of the given class
  *
- * @param r_pobj The class object as input, instance object as return
+ * @param pclass Pointer to class object
+ * @param r_pobj Return by ref, instance object
  * @return  Return status
  */
 PmReturn_t class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj);

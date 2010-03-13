@@ -54,7 +54,7 @@ PmReturn_t int_dup(pPmObj_t pint, pPmObj_t *r_pint);
 /**
  * Creates a new Integer object
  *
- * @param   n Value to assign int (signed 32-bit).
+ * @param   val Value to assign int (signed 32-bit).
  * @param   r_pint Return by ref, ptr to new int
  * @return  Return status
  */
@@ -65,10 +65,11 @@ PmReturn_t int_new(int32_t val, pPmObj_t *r_pint);
  *
  * Creates a new int with the same value as the given int.
  *
- * @param   pobj Pointer to target object
- * @param   r_pint Return by ref, ptr to int
+ * @param   pobj Pointer to integer object
+ * @param   r_pint Return by reference, ptr to int
+ * @return  Return status
  */
-PmReturn_t int_positive(pPmObj_t, pPmObj_t *r_pint);
+PmReturn_t int_positive(pPmObj_t pobj, pPmObj_t *r_pint);
 
 /**
  * Implements the UNARY_NEGATIVE bcode.
@@ -87,7 +88,9 @@ PmReturn_t int_negative(pPmObj_t pobj, pPmObj_t *r_pint);
  * Creates a new int with a value that is
  * the bitwise inversion of the given int.
  *
- * @param   pobj Pointer to target object
+ * @param   pobj Pointer to integer to invert
+ * @param   r_pint Return by reference; new integer
+ * @return  Return status
  */
 PmReturn_t int_bitInvert(pPmObj_t pobj, pPmObj_t *r_pint);
 
@@ -126,9 +129,9 @@ PmReturn_t int_printHex(pPmObj_t pint);
 /**
  * Returns by reference an integer that is x raised to the power of y.
  *
- * @param x The integer base
- * @param y The integer exponent
- * @param r_pn The return value of x ** y
+ * @param px The integer base
+ * @param py The integer exponent
+ * @param r_pn Return by reference; New integer with value of x ** y
  * @return Return status
  */
 PmReturn_t int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn);

@@ -117,7 +117,7 @@ void mem_copy(PmMemSpace_t memspace,
  * Does not modify pstr
  *
  * @param   memspace memory space/type of source
- * @param   psrc  ptr to source address
+ * @param   pstr  ptr to source C string
  * @return  Number of bytes in the string.
  */
 uint16_t mem_getStringLength(PmMemSpace_t memspace,

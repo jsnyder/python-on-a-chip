@@ -85,7 +85,7 @@ PmReturn_t seqiter_getNext(pPmObj_t pobj, pPmObj_t *r_pitem);
  * Returns a new sequence iterator object
  *
  * @param   pobj Ptr to sequence.
- * @param   r_pitem Return arg, pointer to sequence iterator object.
+ * @param   r_pobj Return by reference, new sequence iterator
  * @return  Return status.
  */
 PmReturn_t seqiter_new(pPmObj_t pobj, pPmObj_t *r_pobj);

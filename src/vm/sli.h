@@ -64,26 +64,26 @@
 #else
 
 /**
- * Copy a block of memory in RAM.
+ * Copies a block of memory in RAM.
  *
- * @param   to the destination address.
- * @param   from the source address.
- * @param   n the number of bytes to copy.
+ * @param   to The destination address.
+ * @param   from The source address.
+ * @param   n The number of bytes to copy.
  * @return  The initial pointer value of the destination
  * @see     mem_copy
  */
-void *sli_memcpy(unsigned char *, unsigned char const *, unsigned int);
+void *sli_memcpy(unsigned char *to, unsigned char const *from, unsigned int n);
 
 /**
- * Compare strings.
+ * Compares two strings.
  *
- * @param   s1 ptr to string 1.
- * @param   s2 ptr to string 2.
+ * @param   s1 Ptr to string 1.
+ * @param   s2 Ptr to string 2.
  * @return  value that is less then, equal to or greater than 0
  *          depending on whether s1's encoding is
  *          less than, equal to, or greater than s2's.
  */
-int sli_strcmp(char const *, char const *);
+int sli_strcmp(char const *s1, char const *s2);
 
 /**
  * Obtain string length.

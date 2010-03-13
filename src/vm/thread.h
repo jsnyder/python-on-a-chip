@@ -80,8 +80,8 @@ typedef struct PmThread_s
  * Constructs a thread for a root frame.
  *
  * @param pframe Frame object as a basis for this thread.
- * @param r_obj Addr to th newly created thread object.
- * @returns Return status
+ * @param r_pobj Return by reference; Ptr to the newly created thread object.
+ * @return Return status
  */
 PmReturn_t thread_new(pPmObj_t pframe, pPmObj_t *r_pobj);
 

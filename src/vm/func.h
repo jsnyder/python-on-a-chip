@@ -66,7 +66,8 @@ typedef struct PmFunc_s
  *
  * @param   pco ptr to code obj
  * @param   pglobals ptr to globals dict (from containing func/module)
- * @return  ptr to new func obj
+ * @param   r_pfunc Return by reference; pointer to new function
+ * @return  Return status
  */
 PmReturn_t func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc);
 

@@ -68,7 +68,6 @@ NVIC_Configuration(void)
 
 /**
   * @brief  Configures the RTC.
-  * @param  None
   * @retval None
   */
 void RTC_Configuration(void)

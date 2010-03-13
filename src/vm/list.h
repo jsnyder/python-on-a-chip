@@ -59,9 +59,9 @@ PmReturn_t list_new(pPmObj_t *r_pobj);
 /**
  * Gets the object in the list at the index.
  *
- * @param   pobj Ptr to list obj
+ * @param   plist Ptr to list obj
  * @param   index Index into list
- * @param   r_pobj Return; ptr to return obj
+ * @param   r_pobj Return by reference; ptr to item
  * @return  Return status
  */
 PmReturn_t list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj);
@@ -69,9 +69,9 @@ PmReturn_t list_getItem(pPmObj_t plist, int16_t index, pPmObj_t *r_pobj);
 /**
  * Sets the item in the list at the index.
  *
- * @param   pobj1 Ptr to list
- * @param   index Index int
- * @param   pobj2 Ptr to obj
+ * @param   plist Ptr to list
+ * @param   index Index into list
+ * @param   pobj Ptr to obj to put into list
  * @return  Return status
  */
 PmReturn_t list_setItem(pPmObj_t plist, int16_t index, pPmObj_t pobj);
@@ -137,8 +137,8 @@ PmReturn_t list_remove(pPmObj_t plist, pPmObj_t item);
  * Returns an ValueError Exception if the item is not found.
  *
  * @param   plist Ptr to list obj
- * @param   item Ptr to object to be removed
- * @param   r_index Addr of the variable for index
+ * @param   pitem Ptr to object to be removed
+ * @param   r_index Return by reference; ptr to index (C uint16)
  * @return  Return status
  */
 PmReturn_t list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index);
@@ -167,7 +167,7 @@ PmReturn_t list_print(pPmObj_t pobj);
 /**
  * Removes all items from the list and zeroes the length.
  *
- * @param pobj List to clear
+ * @param plist List to clear
  * @return Return status
  */
 PmReturn_t list_clear(pPmObj_t plist);
