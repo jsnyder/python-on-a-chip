@@ -32,10 +32,6 @@
 #ifdef HAVE_FLOAT
 
 
-/** The value below which one float is indistinguishable from another */
-#define FLOAT_EPSILON 0.000001
-
-
 PmReturn_t
 float_new(float f, pPmObj_t *r_pf)
 {
@@ -197,8 +193,8 @@ float_compare(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pobj, PmCompare_t cmp)
         /* *INDENT-OFF* */
         case COMP_LT: t8 = (int8_t)(x <  y); break;
         case COMP_LE: t8 = (int8_t)(x <= y); break;
-        case COMP_EQ: t8 = (int8_t)((x-y) <= FLOAT_EPSILON); break;
-        case COMP_NE: t8 = (int8_t)((x-y) > FLOAT_EPSILON); break;
+        case COMP_EQ: t8 = (int8_t)(x == y); break;
+        case COMP_NE: t8 = (int8_t)(x != y); break;
         case COMP_GT: t8 = (int8_t)(x >  y); break;
         case COMP_GE: t8 = (int8_t)(x >= y); break;
         case COMP_IS: t8 = (int8_t)(px == py); break;
