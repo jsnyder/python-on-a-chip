@@ -16,9 +16,9 @@ PyMite Development Process
 Purpose
 -------
 
-This document describes the process used to make changes to the PyMite
-project.  In doing so, it serves as a how-to manual for the PyMite
-developer and can be ignored by the PyMite user.
+This document describes the process used to make changes to files in the
+Python-on-a-Chip project.  In doing so, it serves as a how-to manual for the
+developer and can be ignored by the user.
 
 This document is incomplete and subject to change.  Please suggest improvements.
 
@@ -38,26 +38,28 @@ concise as possible.
 
 Here is a brief description of the process:
 
-    1. All changes must be documented, so create a ticket in Trac.
-    2. Do the work and provide a change-set for review.
-    3. Apply feedback from review, run tests and mainline.
+    #. `Create an Issue`_
+    #. `Do the Work`_
+    #. `Link Commits and Messages`_
+    #. `Keep in Sync with Trunk`_
+    #. `Run tests`_
+    #. `Post for Review`_
+    #. `Merge to trunk`_
 
 
-Creating a Ticket
------------------
+Create an Issue
+---------------
 
-Submit all enhancements, defects, issues and tickets to the 
-`Python-on-a-chip Google Code`_ site.  Or go straight to `create a new ticket`_.
+`Create a new issue`_ to capture and document enhancments and defects.
 
-.. _`Python-on-a-chip Google Code`: http://code.google.com/p/python-on-a-chip
-.. _`create a new ticket`: http://code.google.com/p/python-on-a-chip/issues/entry
+.. _`Create a new issue`: http://code.google.com/p/python-on-a-chip/issues/entry
 
-The following table explains what to enter in the fields when creating a ticket:
+The following table explains what to enter in the fields when creating an issue:
 
 =========== =================================== ================================
 Field       What to enter                       Example
 =========== =================================== ================================
-Summary     Short sentence starting with verb   Enable compiler warnings as
+Summary     Short sentence *starting with verb* Enable compiler warnings as
             that explains the issue             errors
 Description A longer explanation of the problem
             possibly with example code that
@@ -74,119 +76,163 @@ Labels      Select the proper label-type from   Type-Defect
 The `Summary` field is often copied into the release notes' change log, with
 the opening verb changed to the past tense.  Conceive your `Summary` from that
 point of view.  The `Milestone-` label is used by the project manager to know
-what issues should be resolved for what releases.  Leave out the `Milestone` 
+what issues should be resolved for what releases.  Leave out the `Milestone`
 label unless you've been told to do otherwise.  Select the most appropriate
 component from the `Component-` list.  Even if the resolution touches more
 than one component, select the one that applies best.
 
 
-Doing the Work
---------------
+Do the Work
+-----------
 
-If the work involved is a defect, the first step is to create the smallest
-test possible that exposes the defect.  This regression test should be put
-into the project's automated test system ``src/test/system/``.
-
-If the work involved is an enhancement or a defect that requires a significant
-change, a document should be created which explains the architecture or design
-of the work.  This document should be composed in `reStructuredText`_ and
-put into the project's automated documentation build system ``docs/src/``.
-
+The developer must first obtain a local copy of the code.
 If the work only involves a small change, or a similar small change across
-many files, then the work can be done on a working copy of the project
-``trunk/`` and the code review can be performed by attaching the output of
-``svn diff`` to the ticket.
+many files, then the work can be done on a working copy of ``trunk/``::
 
-If there are more than a few changes, make a branch to work in::
+    svn co https://python-on-a-chip.googlecode.com/svn/trunk/ --userid YourUserId
+
+If there are more than a few changes, make a branch to work in and check
+out a local copy::
 
     svn cp https://python-on-a-chip.googlecode.com/svn/trunk/ \
            https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description \
-           -m "issue #NNN: creating branch for work"
+           -m "Issue #NNN: creating branch for work"
+    svn co https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description --userid YourUserId
 
-If you've already made changes to a working copy that isn't the new branch,
-it's easy to switch to the new branch and keep your changes::
+If the work involved is a defect, the developer should create the smallest
+test possible that exposes the defect.  This regression test should be added
+to the project's automated test system::
 
-    svn switch https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description
+    svn add src/test/system/tNNN.c src/test/system/tNNN.py
 
-During this phase, if the trunk is updated, you should merge those changes into
-your branch so that your working copy is always up-to-date.  Doing this
+If the work required a significant architectural change,
+a document should be created which explains the design of the work.
+This document should be composed in `reStructuredText`_ and
+added to the project's automated documentation build system ``docs/src/``::
+
+    svn add docs/src/NewDocumentTitle.txt
+
+
+.. _`reStructuredText`: http://docutils.sourceforge.net/rst.html
+
+
+Link Commits and Messages
+-------------------------
+
+Every time the developer commits code to either trunk or his branch,
+he should add a commit message such as the following which lets Google Code
+hyperlink the commit to the issue::
+
+    svn ci -m "Issue #NNN: checking in on branch"
+
+or::
+
+    svn ci -m "Issue #NNN: mainlining directly"
+
+Then, the developer should describe the changes in a new comment in the issue.
+The developer should prefix this comment with the revision number
+that resulted from the commit action, like so::
+
+    rYYY: Fixed a null pointer in src/vm/interp.c
+
+Where ``YYY`` is the number of the revision that resulted from the check-in.
+These two little text snippets create a precise two-way linkage between the
+physical changes to the code and the aggregated notes of an issue,
+resulting in a documented process that is easy for others to follow.
+
+
+Keep in Sync with Trunk
+-----------------------
+
+While doing the work, if the trunk is updated, you should merge those changes
+into your branch so that your working copy is always up-to-date.  Doing this
 merge-forward step avoids the problem of when you mainline your branch and your
-changes don't work with the modified trunk.  Use the following command to
-merge-forward changes from the trunk::
+changes don't work with the modified trunk.  If you are working on a local
+copy of trunk/, then staying synced is easy: just use the command::
 
     svn update
 
 Pay attention to the output of this command to see if there are conflicts that
 must be resolved.
 
-.. WARNING:: the `mainlining step`_ described below will merge improperly
-             if you do not keep your branch up-to-date using the merge-forward
-             process.
+If you are working on a branch, there are two ways to stay in sync with trunk/.
+Merging trunk to your local copy and then commiting your branch is recommended::
 
-.. _`reStructuredText`: http://docutils.sourceforge.net/rst.html
-.. _`mainlining step`: Mainlining_
-
-
-Testing
--------
-
-The project has an automated test system that is run by typing ``make check``.
-These tests must pass before a ticket can be mainlined,
-but passing these tests doesn't automatically mean a ticket is mainlined.
-If the work done impacted any of the project source code, then testing should
-also be performed on all targets, desktop and device.  If the ticket described
-a defect, then you should have already made a test to put in the automated
-test system, so that test will already be in the set run by ``make check``.
+    svn merge http://python-on-a-chip.googlecode.com/svn/trunk/ .
+    svn ci -m "Issue #NN merging trunk to branch"
 
 
-Reviewing
+Run Tests
 ---------
 
-After the developer does the work and runs the tests, he checks in the branch.
-When the developer goes to post the differences for review,
-the differences should be from the head of the branch to the head of the
-trunk.  It is a common mistake to take the difference from the head of the
-branch to the origin of the branch.  This is a mistake because the trunk
-may have progressed since then and the developer should have merged-forward
-throughout the lifetime of the branch.  Diffing to the head of the trunk shows
-that the developer kept up-to-date with the current code and gives the proper
-change-set to merge the branch into the trunk.  The following command line will
-create a diff between the head of the branch and the head of the trunk::
+The project has an automated test system that is run by typing the following
+from the root of the project::
 
-    svn diff . https://python-on-a-chip.googlecode.com/svn/trunk/
+    make check
 
-Reviewers give feedback to the developer, possibly in the form of a patch file--
-if the volume of feedback is large--that would be applied to the head of the
-branch.
+These tests must pass before an issue may be mainlined, but passing
+these tests is not the only qualification for mainlining.
+If the work done impacted any of the project source code, then testing should
+also be performed on the relevant desktop and target platforms.  If the issue
+describes a defect, then you should already have a test in the automated test
+system, so that test will be run by ``make check``.
+
+
+Post for Review
+---------------
+
+.. NOTE:: The Google Code review process should NOT be used.
+
+After the developer does the work, syncs to the trunk and runs the tests,
+he posts the changes for review.  If the changes were few and the developer
+made the changes on a local copy of trunk, then he should create a patch file
+like so::
+
+    svn diff > issueNNN.patch
+
+He should send an email to the `p14p developer mailling list`_ and attach
+the patch file.
+
+If the changes were many and the developer worked on a branch, then
+the developer must ensure that every commit he made is mentioned, via the
+rYYY syntax, in the issue.  This way, the developer can simply send the URL
+of his issue to the maillist for review::
+
+    http://code.google.com/p/python-on-a-chip/issues/detail?id=NNN
+
+Reviewers give polite and professional feedback to the developer within
+48 hours or provide an estimate of how much longer it will take to review
+the changes.
 
 The developer applies all the feedback and re-tests the branch.
 
+.. _`p14p developer mailling list`: http://groups.google.com/group/python-on-a-chip
 
-Mainlining
-----------
 
-Mainlining happens after the change-set is reviewed and the feedback is
-integrated and the tests pass.  Mainlining is the process of applying the
-branch to the trunk.  This is one of the few not-so-intuitive processes of
-Subversion.  Start by ensuring your branch has merged-forward all changes
-to the trunk since the branch was created::
+Merge to Trunk
+--------------
 
-    svn up
-
-Switch the working copy of the branch to the project trunk::
+Merging to ``trunk/`` happens after the change-set is reviewed, feedback is
+integrated and the tests pass.  Ensure the branch is in sync with trunk,
+per the section above.  Then revert to a clean copy of trunk::
 
     svn switch https://python-on-a-chip.googlecode.com/svn/trunk/
 
-Merge the differences between trunk and the branch into your working copy::
+Merge your branch into the working copy of trunk::
 
-    svn merge https://python-on-a-chip.googlecode.com/svn/trunk/ \
-        https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description .
+    svn merge https://python-on-a-chip.googlecode.com/svn/branches/issue_0NNN_userid_brief_description .
 
-Inspect and test the working copy, then commit it to the trunk::
+Build, test and verify the modified working copy, then commit it to the trunk::
 
-    svn ci -m "issue #NNN: mainlining branch issue_0NNN_userid_brief_description"
+    svn ci -m "Issue #NNN: mainlining branch issue_0NNN_userid_brief_description"
 
-Finally, update the ticket to set the `Status` to Fixed.
+Add a comment to the issue::
+
+    rYYY: merged branch to trunk
+
+and set the ``Status`` field to Fixed.
+
+Finally, announce that the issue is fixed on the mailling list.
 
 
 .. :mode=rest:
