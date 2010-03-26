@@ -14,13 +14,20 @@
 
 
 #include "pm.h"
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+#include "tchar.h"
 
-
+// the usr modules that were converted to C from Python
 extern unsigned char usrlib_img[];
 
 
-int main(void)
-{
+#if defined(_CONSOLE)
+    int _tmain(int argc, _TCHAR* argv[])
+#else
+    int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#endif
+ {
     PmReturn_t retval;
 
     retval = pm_init(MEMSPACE_PROG, usrlib_img);

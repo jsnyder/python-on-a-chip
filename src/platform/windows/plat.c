@@ -46,7 +46,8 @@ static const UINT uTimeOut = 200;  /* # of ms for each timer tick */
 
 
 /* Desktop target shall use stdio for I/O routines. */
-PmReturn_t plat_init(void)
+PmReturn_t
+plat_init(void)
 {
     /*
      * The *nix version used the sigalrm to generate a timer. On Windows, we
@@ -87,7 +88,8 @@ VOID CALLBACK on_timer(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
 #endif
 
 #if defined(USE_TIMESETEVENT)
-void CALLBACK on_mm_timer(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
+void
+CALLBACK on_mm_timer(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
     PmReturn_t retval = PM_RET_OK;
     DWORD dwTime = GetTickCount();
@@ -107,7 +109,8 @@ void CALLBACK on_mm_timer(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR 
 /*
  * Undo anything we may have done in the plat_init function
  */
-void plat_uninit(void)
+PmReturn_t
+plat_deinit(void)
 {
 #if defined(USE_SETTIMER)
     KillTimer(idEvent);
@@ -118,14 +121,16 @@ void plat_uninit(void)
     timeKillEvent(idEvent);
     idEvent = 0;
 #endif
+    return PM_RET_OK;
 }
 
 /*
  * Gives us time to update our clock, etc.
  */
-void plat_tick(void)
+void
+plat_tick(void)
 {
-    BOOL bRet;
+    //BOOL bRet;
     MSG msg;
 
     //if ((bRet = GetMessage(&msg, 0, 0, 0)) != 0)
@@ -140,7 +145,8 @@ void plat_tick(void)
  * Gets a byte from the address in the designated memory space
  * Post-increments *paddr.
  */
-uint8_t plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
+uint8_t
+plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
 {
     uint8_t b = 0;
 
@@ -165,7 +171,8 @@ uint8_t plat_memGetByte(PmMemSpace_t memspace, uint8_t const **paddr)
 
 
 /* Desktop target shall use stdio for I/O routines */
-PmReturn_t plat_getByte(uint8_t *b)
+PmReturn_t
+plat_getByte(uint8_t *b)
 {
     int c;
     PmReturn_t retval = PM_RET_OK;
@@ -183,7 +190,8 @@ PmReturn_t plat_getByte(uint8_t *b)
 
 
 /* Desktop target shall use stdio for I/O routines */
-PmReturn_t plat_putByte(uint8_t b)
+PmReturn_t
+plat_putByte(uint8_t b)
 {
     int i;
     PmReturn_t retval = PM_RET_OK;
@@ -200,7 +208,8 @@ PmReturn_t plat_putByte(uint8_t b)
 }
 
 
-PmReturn_t plat_getMsTicks(uint32_t *r_ticks)
+PmReturn_t
+plat_getMsTicks(uint32_t *r_ticks)
 {
     *r_ticks = pm_timerMsTicks;
 
@@ -208,7 +217,8 @@ PmReturn_t plat_getMsTicks(uint32_t *r_ticks)
 }
 
 
-void plat_reportError(PmReturn_t result)
+void
+plat_reportError(PmReturn_t result)
 {
     /* Print error */
     printf("Error:     0x%02X\n", result);
