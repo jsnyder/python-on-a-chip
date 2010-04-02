@@ -92,6 +92,7 @@ Thanks
 
 My personal thanks go out to these people for their recent contribution to PyMite:
 
+- Davide: Reported a build break.
 - Markus Gritsch: Feedback on PIC port and ipm docs.
 - Bryan Jones: Making Doxygen docs.
 - Trammell Hudson: Patches for string concatenation and backtick operator (UNARY_CONVERT).
