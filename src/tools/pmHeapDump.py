@@ -5,7 +5,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -50,8 +50,8 @@ The heap_dump() function names files incrementally starting from:
 #  See the source docstring for details.
 
 __usage__ = """USAGE:
-    pmHeapDiff.py filename
-    """
+pmHeapDump.py [filename]
+"""
 
 
 import struct, sys, types, UserDict
@@ -61,10 +61,11 @@ class PmObject(UserDict.UserDict):
     """A model of an object.
     """
 
-    PM_TYPES = ("NON", "INT", "FLT", "STR", "TUP", "COB", "MOD", "CLO", "FXN",
-        "CLI", "CIM", "NIM", "NOB", "THR", "EXN", "BOL", "CIO", "LST", "DIC",
-        "x", "x", "x", "x", "x", "x",
-        "FRM", "BLK", "SEG", "SGL", "SQI", "NFM", )
+    PM_TYPES = (
+        "NON", "INT", "FLT", "STR", "TUP", "COB", "MOD", "CLO",
+        "FXN", "CLI", "CIM", "NIM", "NOB", "THR", "EXN", "BOL",
+        "CIO", "MTH", "LST", "DIC", "x",   "x",   "x",   "x",
+        "x",   "FRM", "BLK", "SEG", "SGL", "SQI", "NFM", )
 
 
     def _parse_int(self,):

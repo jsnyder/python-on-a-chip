@@ -28,13 +28,15 @@ Overview
 
 Software quality is enhanced when the project developers consistently
 employ a defined software process.  The process should enhance the development
-of the software and not burden it.  This process takes ideas from popular
-standard processes, with specific attention to `Divmod's process`_, UQDS.
-If this document does not explain your question, refer to UQDS for the answer.
-Since long process documents often go unread, this document should be as
-concise as possible.
+of the software and not burden it.  This process is a typical branch-based
+development process that uses Subversion_ and `Google Code`_.
+If this document does not explain your question, please ask on the maillist_.
+Since long process documents often go unread, this document is as concise as 
+possible.
 
-.. _`Divmod's Process`: http://divmod.org/trac/wiki/UltimateQualityDevelopmentSystem
+.. _Subversion: http://subversion.apache.org/
+.. _`Google Code`: http://code.google.com/
+.. _maillist: http://groups.google.com/group/python-on-a-chip
 
 Here is a brief description of the process:
 
