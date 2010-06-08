@@ -204,13 +204,22 @@ class Interactive(cmd.Cmd):
 
         # Ensure the filename arg names a python source file
         fn = args[0]
+        if not os.path.exists(fn):
+            self.stdout.write('File "%s" does not exist in %s.\n' 
+                              % (fn, os.getcwd()))
+            return
         if not fn.endswith(".py"):
             self.stdout.write('Error using "load <module>": '
                               'module must be a ".py" source file.\n')
             return
 
-        print "TODO: Loading module %s" % (args[0])
-        # TODO: load module, compile to image, send to target
+        src = open(fn).read()
+        code = compile(src, fn, "exec")
+ 
+        img = self.pic.co_to_str(code)
+ 
+        self.conn.write(img)
+        self.stdout.write(self.conn.read())
 
 
     def onecmd(self, line):
@@ -294,7 +303,10 @@ class Interactive(cmd.Cmd):
                 self.stdout.write(
                     "Connection read error, type Ctrl+%s to quit.\n" % EOF_KEY)
             else:
-                self.stdout.write(rv)
+                if rv.endswith(REPLY_TERMINATOR):
+                    self.stdout.write(rv[:-1])
+                else:
+                    self.stdout.write(rv)
 
 
     def run(self,):
