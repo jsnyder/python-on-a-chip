@@ -130,7 +130,7 @@ typedef struct PmString_s
  *
  * @param   memspace memory space where *paddr points
  * @param   paddr ptr to ptr to null term character array or image.
- * @param   len length of the C character array 
+ * @param   len length of the C character array
  *          (use -1 for string images, 0 for C strings)
  * @param   n Number of times to replicate the given string argument
  * @param   r_pstring Return by reference; ptr to String obj
@@ -183,7 +183,7 @@ PmReturn_t string_cacheInit(void);
 PmReturn_t string_getCache(pPmString_t **r_ppstrcache);
 
 /**
- * Returns a new string object that is the concatenation 
+ * Returns a new string object that is the concatenation
  * of the two given strings.
  *
  * @param pstr1 First source string
@@ -205,6 +205,18 @@ string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring);
  * @return Return status
  */
 PmReturn_t string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring);
+
+/**
+ * Prints n bytes, formatting them if marshall is true
+ *
+ * @param pb Pointer to C bytes
+ * @param marshall Boolean true if bytes are to be formatted
+ * @param n Number of bytes to print
+ * @return Return status
+ */
+PmReturn_t string_printFormattedBytes(uint8_t *pb,
+                                      uint8_t marshall,
+                                      uint16_t n);
 #endif /* HAVE_STRING_FORMAT */
 
 #endif /* __STRING_H__ */

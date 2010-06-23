@@ -25,6 +25,7 @@ ID    FILE
 0x16  thread.c
 0x17  float.c
 0x18  class.c
+0x19  bytearray.c
 ----- ---------------------------------------
 0x70  RESERVED FOR PLATFORM-SPECIFIC FILES
 0x7F

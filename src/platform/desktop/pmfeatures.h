@@ -4,7 +4,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -104,7 +104,7 @@
 
 /* #207 Add support for the yield keyword */
 /**
- * When defined, the code to support the yield keyword's use for 
+ * When defined, the code to support the yield keyword's use for
  * generator-iterators is included in the build.
  */
 #define HAVE_GENERATORS
@@ -130,12 +130,22 @@
 
 /* #256 Add support for closures */
 /**
- * When defined, the code to support function closures is included in the 
+ * When defined, the code to support function closures is included in the
  * build.
  */
 #define HAVE_CLOSURES
 #if defined(HAVE_CLOSURES) && !defined(HAVE_DEFAULTARGS)
 #error HAVE_CLOSURES requires HAVE_DEFAULTARGS
+#endif
+
+/* #289 Create bytearray datatype */
+/**
+ * When defined, the code to support the bytearray type is included in the
+ * build.
+ */
+#define HAVE_BYTEARRAY
+#if defined(HAVE_BYTEARRAY) && !defined(HAVE_CLASSES)
+#error HAVE_BYTEARRAY requires HAVE_CLASSES
 #endif
 
 #endif /* FEATURES_H_ */

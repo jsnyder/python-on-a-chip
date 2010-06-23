@@ -312,6 +312,21 @@ def len(s):
     /* Get first arg */
     ps = NATIVE_GET_LOCAL(0);
 
+#ifdef HAVE_BYTEARRAY
+    /* If object is an instance, get the thing it contains */
+    if (OBJ_GET_TYPE(ps) == OBJ_TYPE_CLI)
+    {
+        retval = dict_getItem((pPmObj_t)((pPmInstance_t)ps)->cli_attrs,
+                              PM_NONE,
+                              &pr);
+
+        /* If None wasn't in attributes, obj is wrong type for len() */
+        if (retval == PM_RET_EX_KEY) retval = PM_RET_EX_TYPE;
+        PM_RETURN_IF_ERROR(retval);
+        ps = pr;
+    }
+#endif /* HAVE_BYTEARRAY */
+
     /* Get the length of the arg based on its type */
     switch (OBJ_GET_TYPE(ps))
     {
@@ -330,6 +345,12 @@ def len(s):
         case OBJ_TYPE_DIC:
             retval = int_new(((pPmDict_t)ps)->length, &pr);
             break;
+
+#ifdef HAVE_BYTEARRAY
+        case OBJ_TYPE_BYA:
+            retval = int_new(((pPmBytearray_t)ps)->length, &pr);
+            break;
+#endif /* HAVE_BYTEARRAY */
 
         default:
             /* If not a string or sequence type, raise TypeError */
@@ -842,5 +863,48 @@ def ismain():
     """
     pass
 
+
+#ifdef HAVE_BYTEARRAY
+class bytearray(object):
+    def __init__(self, o):
+        """__NATIVE__
+        PmReturn_t retval;
+        pPmObj_t pself;
+        pPmObj_t po;
+        pPmObj_t pba;
+
+        /* If only the self arg, create zero-length bytearray */
+        if (NATIVE_GET_NUM_ARGS() == 1)
+        {
+            po = PM_ZERO;
+        }
+
+        /* If two args, get the second arg */
+        else if (NATIVE_GET_NUM_ARGS() == 2)
+        {
+            po = NATIVE_GET_LOCAL(1);
+        }
+
+        /* Raise TypeError if wrong number of args */
+        else
+        {
+            PM_RAISE(retval, PM_RET_EX_TYPE);
+            return retval;
+        }
+        pself = NATIVE_GET_LOCAL(0);
+
+        /* Create new bytearray object */
+        retval = bytearray_new(po, &pba);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Store bytearray in None attr of instance */
+        retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+                              PM_NONE, pba);
+
+        NATIVE_SET_TOS(PM_NONE);
+        return retval;
+        """
+        pass
+#endif /* HAVE_BYTEARRAY */
 
 #:mode=c:

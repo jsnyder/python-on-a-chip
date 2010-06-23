@@ -160,21 +160,12 @@ string_compare(pPmString_t pstr1, pPmString_t pstr2)
 
 #ifdef HAVE_PRINT
 PmReturn_t
-string_print(pPmObj_t pstr, uint8_t marshall)
+string_printFormattedBytes(uint8_t *pb, uint8_t marshall, uint16_t n)
 {
     uint16_t i;
     uint8_t ch;
     uint8_t nibble;
     PmReturn_t retval = PM_RET_OK;
-
-    C_ASSERT(pstr != C_NULL);
-
-    /* Ensure string obj */
-    if (OBJ_GET_TYPE(pstr) != OBJ_TYPE_STR)
-    {
-        PM_RAISE(retval, PM_RET_EX_TYPE);
-        return retval;
-    }
 
     if (marshall)
     {
@@ -182,9 +173,9 @@ string_print(pPmObj_t pstr, uint8_t marshall)
         PM_RETURN_IF_ERROR(retval);
     }
 
-    for (i = 0; i < (((pPmString_t)pstr)->length); i++)
+    for (i = 0; i < n; i++)
     {
-        ch = ((pPmString_t)pstr)->val[i];
+        ch = pb[i];
         if (ch == '\\')
         {
             /* Output an additional backslash to escape it. */
@@ -219,6 +210,28 @@ string_print(pPmObj_t pstr, uint8_t marshall)
     {
         retval = plat_putByte('\'');
     }
+
+    return retval;
+}
+
+
+PmReturn_t
+string_print(pPmObj_t pstr, uint8_t marshall)
+{
+    PmReturn_t retval = PM_RET_OK;
+
+    C_ASSERT(pstr != C_NULL);
+
+    /* Ensure string obj */
+    if (OBJ_GET_TYPE(pstr) != OBJ_TYPE_STR)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    retval = string_printFormattedBytes(&(((pPmString_t)pstr)->val[0]),
+                                        marshall,
+                                        ((pPmString_t)pstr)->length);
 
     return retval;
 }

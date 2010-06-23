@@ -178,10 +178,10 @@ typedef enum PmType_e
 
     /** Code image object */
     OBJ_TYPE_CIO = 0x10,
-  
+
     /** Method object */
     OBJ_TYPE_MTH = 0x11,
-    
+
     /* All types after this are not hashable */
     OBJ_TYPE_HASHABLE_MAX = 0x11,
 
@@ -191,8 +191,18 @@ typedef enum PmType_e
     /** Dictionary (hash table) */
     OBJ_TYPE_DIC = 0x13,
 
+#ifdef HAVE_BYTEARRAY
+    /** Bytearray (mutable) */
+    OBJ_TYPE_BYA = 0x14,
+#endif /* HAVE_BYTEARRAY */
+
     /* All types after this are not accessible to the user */
-    OBJ_TYPE_ACCESSIBLE_MAX = 0x19,
+    OBJ_TYPE_ACCESSIBLE_MAX = 0x18,
+
+#ifdef HAVE_BYTEARRAY
+    /** Bytes (mutable container for Bytearray type) */
+    OBJ_TYPE_BYS = 0x18,
+#endif /* HAVE_BYTEARRAY */
 
     /** Frame type */
     OBJ_TYPE_FRM = 0x19,
@@ -298,7 +308,7 @@ PmBoolean_t, *pPmBoolean_t;
 PmReturn_t obj_loadFromImg(PmMemSpace_t memspace,
                            uint8_t const **paddr, pPmObj_t *r_pobj);
 
-/** 
+/**
  * Loads a code object from a code image object
  *
  * @param pimg Ptr to a code image object
@@ -347,7 +357,7 @@ PmReturn_t obj_print(pPmObj_t pobj, uint8_t marshallString);
 #ifdef HAVE_BACKTICK
 /**
  * Returns by reference a string object that is the human-readable
- * representation of the object. Used by the backtick operation (UNARY_CONVERT). 
+ * representation of the object. Used by the backtick operation (UNARY_CONVERT).
  *
  * @param pobj Ptr to object to represent
  * @param r_pstr Return arg, the string object

@@ -507,11 +507,24 @@ interpret(const uint8_t returnOnNoThreads)
                         break;
                     }
 
+                    pobj1 = TOS1;
+#ifdef HAVE_BYTEARRAY
+                    /* If object is an instance, get the thing it contains */
+                    if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
+                    {
+                        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj1)->cli_attrs,
+                                              PM_NONE,
+                                              &pobj2);
+                        PM_RETURN_IF_ERROR(retval);
+                        pobj1 = pobj2;
+                    }
+#endif /* HAVE_BYTEARRAY */
+
                     /* Ensure the index doesn't overflow */
                     C_ASSERT(((pPmInt_t)TOS)->val <= 0x0000FFFF);
                     t16 = (int16_t)((pPmInt_t)TOS)->val;
 
-                    retval = seq_getSubscript(TOS1, t16, &pobj3);
+                    retval = seq_getSubscript(pobj1, t16, &pobj3);
                 }
                 PM_BREAK_IF_ERROR(retval);
                 SP--;
@@ -567,6 +580,7 @@ interpret(const uint8_t returnOnNoThreads)
                         PM_RAISE(retval, PM_RET_EX_TYPE);
                         break;
                     }
+
                     /* Set the list item */
                     retval = list_setItem(TOS1,
                                           (int16_t)(((pPmInt_t)TOS)->val),
@@ -585,6 +599,40 @@ interpret(const uint8_t returnOnNoThreads)
                     SP -= 3;
                     continue;
                 }
+
+#ifdef HAVE_BYTEARRAY
+                /* If object is an instance, get the thing it contains */
+                if (OBJ_GET_TYPE(TOS1) == OBJ_TYPE_CLI)
+                {
+                    retval = dict_getItem((pPmObj_t)((pPmInstance_t)TOS1)->cli_attrs,
+                                          PM_NONE,
+                                          &pobj2);
+
+                    /* Raise TypeError if instance isn't a ByteArray */
+                    if ((retval == PM_RET_EX_KEY) 
+                        || (OBJ_GET_TYPE(pobj2) != OBJ_TYPE_BYA))
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+                    PM_BREAK_IF_ERROR(retval);
+
+                    /* Ensure subscr is an int or bool */
+                    if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
+                        && (OBJ_GET_TYPE(TOS) != OBJ_TYPE_BOOL))
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+
+                    retval = bytearray_setItem(pobj2,
+                                               (int16_t)(((pPmInt_t)TOS)->val),
+                                               TOS2);
+                    PM_BREAK_IF_ERROR(retval);
+                    SP -= 3;
+                    continue;
+                }
+#endif /* HAVE_BYTEARRAY */
 
                 /* TypeError for all else */
                 PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -959,6 +1007,18 @@ interpret(const uint8_t returnOnNoThreads)
             case UNPACK_SEQUENCE:
                 /* Get ptr to sequence */
                 pobj1 = PM_POP();
+
+#ifdef HAVE_BYTEARRAY
+                /* If object is an instance, get the thing it contains */
+                if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
+                {
+                    retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj1)->cli_attrs,
+                                          PM_NONE,
+                                          &pobj2);
+                    PM_RETURN_IF_ERROR(retval);
+                    pobj1 = pobj2;
+                }
+#endif /* HAVE_BYTEARRAY */
 
                 /*
                  * Get the length of the sequence; this will

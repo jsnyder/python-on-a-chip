@@ -50,7 +50,7 @@ extern "C" {
 #define C_FALSE 0
 
 /** true for C code */
-#define C_TRUE (!C_FALSE)
+#define C_TRUE 1
 
 /** Comparison result is that items are the same */
 #define C_SAME (int8_t)0
@@ -82,11 +82,10 @@ extern "C" {
 #endif
 
 /** if retval is not OK, break from the block */
-#define PM_BREAK_IF_ERROR(retval) if((retval) != PM_RET_OK)break
+#define PM_BREAK_IF_ERROR(retval) if ((retval) != PM_RET_OK) break
 
 /** return an error code if it is not PM_RET_OK */
-#define PM_RETURN_IF_ERROR(retval)  if((retval) != PM_RET_OK) \
-                                        return (retval)
+#define PM_RETURN_IF_ERROR(retval)  if ((retval) != PM_RET_OK) return (retval)
 
 /** print an error message if argument is not PM_RET_OK */
 #define PM_REPORT_IF_ERROR(retval)   if ((retval) != PM_RET_OK) \
@@ -209,7 +208,7 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "thread.h"
 #include "float.h"
 #include "plat.h"
-
+#include "bytearray.h"
 
 /**
  * Initializes the PyMite virtual machine and indexes the user's application

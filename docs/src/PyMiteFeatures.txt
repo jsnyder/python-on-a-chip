@@ -134,7 +134,7 @@ PyMite DOES NOT support Long or Complex numbers.
 Sequences
 ~~~~~~~~~
 
-PyMite supports String, Tuple and List sequence types
+PyMite supports String, Tuple, List and bytearray sequence types
 
     - String (type str; max length 999 chars)
       '', '1', "12", 'hello\n'
@@ -142,11 +142,14 @@ PyMite supports String, Tuple and List sequence types
       () (1,) (1,2) # parentheses are optional if len > 0
     - List (type list; max length 32767)
       [] [1] [1,2]
+    - bytearray (type class-instance)
+      b = bytearray(b"some byte string")
+      b = bytearray(42)
 
 - Indexing is 0-based. Negative indices (usually) mean count backwards from end
   of sequence.
 - Sequence slicing is NOT fully supported.  Only the sequence-copy form `seq[:]`
-  is supported.
+  is supported.  Slicing is NOT supported on the bytearray type.
 
 Dictionaries (Mappings)
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -272,30 +275,33 @@ Built-in Functions
 Built-in functions are defined in the module ``__bi`` which is automatically
 imported.
 
-=========== ====================================================================
-Function    Result
-=========== ====================================================================
-abs(x)      The absolute value of the number `x`
-chr(i)      Returns one-character string whose ASCII code is integer `i`.
-eval(co)    Evaluates a given code object (created by Co()).
-globals()   Returns a dictionary containing the current global variables.
-id(o)       Returns a unique integer identifier for object, `o`.
-len(obj)    Returns the length (the number of items) of a sequence or
-            dictionary.
-locals()    Returns a dictionary containing current local variables.
-map(f,s)    Returns a list containing the output of function, `f`, applied to
-            every item in sequence, `s`.
-ord(c)      Returns integer ASCII value of `c` (a string of len 1).
-pow(x,y)    Returns `x` to power `y`. See also ``**`` operator.
-range(...)  Returns list of ints from >= start and < end.
-            With 1 arg, list from 0..arg-1.
-            With 2 args, list from start..end-1.
-            With 3 args, list from start up to end by step.
-sum(s)      Returns the sum of a sequence of numbers, `s` (not strings).
-            Returns ``0`` when the sequence is empty.
-type(obj)   Returns an integer representing the `type` of an object.
-            See obj.h in PyMite for the value of each type.
-=========== ====================================================================
+=============== ================================================================
+Function        Result
+=============== ================================================================
+abs(x)          The absolute value of the number `x`
+bytearray(seq)  Constructs a mutable sequence of bytes. This type supports many
+bytearray(len)  of the same operations available in strs and lists. The latter
+                form  sets the size and initializes to all zero bytes.
+chr(i)          Returns one-character string whose ASCII code is integer `i`.
+eval(co)        Evaluates a given code object (created by Co()).
+globals()       Returns a dictionary containing the current global variables.
+id(o)           Returns a unique integer identifier for object, `o`.
+len(obj)        Returns the length (the number of items) of a sequence or
+                dictionary.
+locals()        Returns a dictionary containing current local variables.
+map(f,s)        Returns a list containing the output of function, `f`, applied
+                to every item in sequence, `s`.
+ord(c)          Returns integer ASCII value of `c` (a string of len 1).
+pow(x,y)        Returns `x` to power `y`. See also ``**`` operator.
+range(...)      Returns list of ints from >= start and < end.
+                With 1 arg, list from 0..arg-1.
+                With 2 args, list from start..end-1.
+                With 3 args, list from start up to end by step.
+sum(s)          Returns the sum of a sequence of numbers, `s` (not strings).
+                Returns ``0`` when the sequence is empty.
+type(obj)       Returns an integer representing the `type` of an object.
+                See obj.h in PyMite for the value of each type.
+=============== ================================================================
 
 
 Library Modules

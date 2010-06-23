@@ -252,6 +252,11 @@ obj_isIn(pPmObj_t pobj, pPmObj_t pitem)
 int8_t
 obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 {
+#ifdef HAVE_BYTEARRAY
+    PmReturn_t retval;
+    pPmObj_t pobj;
+#endif /* HAVE_BYTEARRAY */
+
     C_ASSERT(pobj1 != C_NULL);
     C_ASSERT(pobj2 != C_NULL);
 
@@ -266,6 +271,32 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
     {
         return C_DIFFER;
     }
+
+#ifdef HAVE_BYTEARRAY
+    /* If object is an instance, get the thing it contains */
+    if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_CLI)
+    {
+        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj1)->cli_attrs,
+                              PM_NONE,
+                              &pobj);
+        PM_RETURN_IF_ERROR(retval);
+        pobj1 = pobj;
+    }
+    if (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_CLI)
+    {
+        retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj2)->cli_attrs,
+                              PM_NONE,
+                              &pobj);
+        PM_RETURN_IF_ERROR(retval);
+        pobj2 = pobj;
+    }
+
+    /* If types are different, objs must differ */
+    if (OBJ_GET_TYPE(pobj1) != OBJ_GET_TYPE(pobj2))
+    {
+        return C_DIFFER;
+    }
+#endif /* HAVE_BYTEARRAY */
 
     /* Otherwise handle types individually */
     switch (OBJ_GET_TYPE(pobj1))
@@ -292,6 +323,9 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 
         case OBJ_TYPE_TUP:
         case OBJ_TYPE_LST:
+#ifdef HAVE_BYTEARRAY
+        case OBJ_TYPE_BYA:
+#endif /* HAVE_BYTEARRAY */
             return seq_compare(pobj1, pobj2);
 
         case OBJ_TYPE_DIC:
@@ -335,16 +369,15 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_STR:
             retval = string_print(pobj, marshallString);
             break;
-        case OBJ_TYPE_DIC:
-            retval = dict_print(pobj);
+        case OBJ_TYPE_TUP:
+            retval = tuple_print(pobj);
             break;
         case OBJ_TYPE_LST:
             retval = list_print(pobj);
             break;
-        case OBJ_TYPE_TUP:
-            retval = tuple_print(pobj);
+        case OBJ_TYPE_DIC:
+            retval = dict_print(pobj);
             break;
-
         case OBJ_TYPE_BOOL:
             if (((pPmBoolean_t) pobj)->val == C_TRUE)
             {
@@ -362,11 +395,27 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             retval = plat_putByte('e');
             break;
 
+        case OBJ_TYPE_CLI:
+#ifdef HAVE_BYTEARRAY
+            {
+                pPmObj_t pobj2;
+
+                retval = dict_getItem((pPmObj_t)((pPmInstance_t)pobj)->cli_attrs,
+                                      PM_NONE,
+                                      (pPmObj_t *)&pobj2);
+                if ((retval == PM_RET_OK)
+                    && (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_BYA))
+                {
+                    retval = bytearray_print(pobj2);
+                    break;
+                }
+            }
+#endif /* HAVE_BYTEARRAY */
+
         case OBJ_TYPE_COB:
         case OBJ_TYPE_MOD:
         case OBJ_TYPE_CLO:
         case OBJ_TYPE_FXN:
-        case OBJ_TYPE_CLI:
         case OBJ_TYPE_CIM:
         case OBJ_TYPE_NIM:
         case OBJ_TYPE_NOB:

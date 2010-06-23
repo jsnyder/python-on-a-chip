@@ -150,4 +150,14 @@
 #error HAVE_CLOSURES requires HAVE_DEFAULTARGS
 #endif
 
+/* #289 Create bytearray datatype */
+/**
+ * When defined, the code to support the bytearray type is included in the
+ * build.
+ */
+#define HAVE_BYTEARRAY
+#if defined(HAVE_BYTEARRAY) && !defined(HAVE_CLASSES)
+#error HAVE_BYTEARRAY requires HAVE_CLASSES
+#endif
+
 #endif /* FEATURES_H_ */

@@ -53,6 +53,25 @@ seq_compare(pPmObj_t pobj1, pPmObj_t pobj2)
         l1 = ((pPmList_t)pobj1)->length;
         l2 = ((pPmList_t)pobj2)->length;
     }
+
+#ifdef HAVE_BYTEARRAY
+    else if (OBJ_GET_TYPE(pobj1) == OBJ_TYPE_BYA)
+    {
+        /* Return if the lengths differ */
+        l1 = ((pPmBytearray_t)pobj1)->length;
+        l2 = ((pPmBytearray_t)pobj2)->length;
+        if (l1 != l2)
+        {
+            return C_DIFFER;
+        }
+
+        return sli_strncmp((char const *)&(((pPmBytes_t)((pPmBytearray_t)pobj1)->val)->val),
+                           (char const *)&(((pPmBytes_t)((pPmBytearray_t)pobj2)->val)->val),
+                           l1)
+               ? C_DIFFER : C_SAME;
+    }
+#endif /* HAVE_BYTEARRAY */
+
     else
     {
         return C_DIFFER;
@@ -108,6 +127,12 @@ seq_getLength(pPmObj_t pobj, int16_t *r_index)
             *r_index = ((pPmList_t)pobj)->length;
             break;
 
+#ifdef HAVE_BYTEARRAY
+        case OBJ_TYPE_BYA:
+            *r_index = ((pPmBytearray_t)pobj)->length;
+            break;
+#endif /* HAVE_BYTEARRAY */
+
         default:
             /* Raise TypeError, non-sequence object */
             PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -157,6 +182,12 @@ seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj)
             /* Get the list item */
             retval = list_getItem(pobj, index, r_pobj);
             break;
+
+#ifdef HAVE_BYTEARRAY
+        case OBJ_TYPE_BYA:
+            retval = bytearray_getItem(pobj, index, r_pobj);
+            break;
+#endif /* HAVE_BYTEARRAY */
 
         default:
             /* Raise TypeError, unsubscriptable object */

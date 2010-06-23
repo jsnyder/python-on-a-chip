@@ -81,6 +81,7 @@ PM_FEATURES = {
     "HAVE_GENERATORS": True,
     "HAVE_BACKTICK": True,
     "HAVE_CLOSURES": True,
+    "HAVE_BYTEARRAY": True,  # This flag currently has no effect in this file
 }
 
 
