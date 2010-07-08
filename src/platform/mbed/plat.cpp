@@ -20,8 +20,8 @@
 /** PyMite platform-specific routines for ARM7 target */
 
 
-#include "pm.h"
 #include "mbed.h"
+#include "pm.h"
 
 
 #define CALLBACK_MS 100

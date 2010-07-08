@@ -1,0 +1,6 @@
+16d15
+< #include "pm.h"
+21a21,23
+> /* Relocated via patch */
+> #include "pm.h"
+> 
