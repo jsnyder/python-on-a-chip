@@ -61,8 +61,7 @@ Building:
 #. Plug the mbed device into your computer's USB port; it should mount as USB
    mass storage device.
 #. Copy the ``pymite_mbed.bin`` file to the mbed USB mass storage space.
-#. Unmount the mbed USB mass storage.
-#. Reset the mbed (it will re-flash itself with the new binary).
+#. Press the mbed's reset button (it will re-flash itself with the new binary).
 #. Visit the `Cookbook page`_ to see the things that you can do.
 
 .. _`Cookbook page`: http://mbed.org/projects/cookbook/wiki/PyMite
