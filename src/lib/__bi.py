@@ -864,47 +864,48 @@ def ismain():
     pass
 
 
-#ifdef HAVE_BYTEARRAY
-class bytearray(object):
-    def __init__(self, o):
-        """__NATIVE__
-        PmReturn_t retval;
-        pPmObj_t pself;
-        pPmObj_t po;
-        pPmObj_t pba;
+# #96: Remove bytearray from desktop platform
+# Uncomment the following class if HAVE_BYTEARRAY is defined in pmfeatures.h
+# class bytearray(object):
+#     def __init__(self, o):
+#         """__NATIVE__
+#         PmReturn_t retval = PM_RET_OK;
+#         pPmObj_t pself;
+#         pPmObj_t po;
+#         pPmObj_t pba;
+# 
+#         /* If only the self arg, create zero-length bytearray */
+#         if (NATIVE_GET_NUM_ARGS() == 1)
+#         {
+#             po = PM_ZERO;
+#         }
+# 
+#         /* If two args, get the second arg */
+#         else if (NATIVE_GET_NUM_ARGS() == 2)
+#         {
+#             po = NATIVE_GET_LOCAL(1);
+#         }
+# 
+#         /* Raise TypeError if wrong number of args */
+#         else
+#         {
+#             PM_RAISE(retval, PM_RET_EX_TYPE);
+#             return retval;
+#         }
+#         pself = NATIVE_GET_LOCAL(0);
+# 
+#         /* Create new bytearray object */
+#         retval = bytearray_new(po, &pba);
+#         PM_RETURN_IF_ERROR(retval);
+# 
+#         /* Store bytearray in None attr of instance */
+#         retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+#                               PM_NONE, pba);
+# 
+#         NATIVE_SET_TOS(PM_NONE);
+#         return retval;
+#         """
+#         pass
 
-        /* If only the self arg, create zero-length bytearray */
-        if (NATIVE_GET_NUM_ARGS() == 1)
-        {
-            po = PM_ZERO;
-        }
-
-        /* If two args, get the second arg */
-        else if (NATIVE_GET_NUM_ARGS() == 2)
-        {
-            po = NATIVE_GET_LOCAL(1);
-        }
-
-        /* Raise TypeError if wrong number of args */
-        else
-        {
-            PM_RAISE(retval, PM_RET_EX_TYPE);
-            return retval;
-        }
-        pself = NATIVE_GET_LOCAL(0);
-
-        /* Create new bytearray object */
-        retval = bytearray_new(po, &pba);
-        PM_RETURN_IF_ERROR(retval);
-
-        /* Store bytearray in None attr of instance */
-        retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
-                              PM_NONE, pba);
-
-        NATIVE_SET_TOS(PM_NONE);
-        return retval;
-        """
-        pass
-#endif /* HAVE_BYTEARRAY */
 
 #:mode=c:
