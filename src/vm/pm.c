@@ -32,10 +32,10 @@
 #define PM_THREAD_TIMESLICE_MS  10
 
 
-/* Stores the timer millisecond-ticks since system start */
+/** Stores the timer millisecond-ticks since system start */
 volatile uint32_t pm_timerMsTicks = 0;
 
-/* Stores tick timestamp of last scheduler run */
+/** Stores tick timestamp of last scheduler run */
 volatile uint32_t pm_lastRescheduleTimestamp = 0;
 
 

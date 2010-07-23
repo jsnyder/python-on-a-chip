@@ -162,7 +162,7 @@ int8_t string_compare(pPmString_t pstr1, pPmString_t pstr2);
  * Sends out a string object bytewise. Escaping and framing is configurable
  * via marshall.
  *
- * @param pobj Ptr to string object
+ * @param pstr Ptr to string object
  * @param marshall If 0, print out string as is. Otherwise escape unprintable
  *                 characters and surround string with single quotes.
  * @return Return status

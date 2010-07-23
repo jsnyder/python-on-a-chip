@@ -83,7 +83,7 @@
 
 /**
  * The following is a diagram of the heap descriptor at the head of the chunk:
- *
+ * @verbatim
  *                MSb          LSb
  *                7 6 5 4 3 2 1 0
  *      pchunk-> +-+-+-+-+-+-+-+-+
@@ -100,6 +100,7 @@
  *               ...           ...
  *               | end chunk     |
  *               +---------------+
+ * @endverbatim
  */
 typedef struct PmHeapDesc_s
 {
@@ -147,7 +148,7 @@ typedef struct PmHeap_s
 
 
 /** The PyMite heap */
-static PmHeap_t pmHeap;
+static PmHeap_t pmHeap PM_PLAT_HEAP_ATTR;
 
 
 #if 0

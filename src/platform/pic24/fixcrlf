@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+#This batch file changes CR/LF line endings to pure LF line endings to be Unix-compliant.
+#It relies on crlf.py, taken from the Windows Python 2.5 distribution.
+python crlf.py *.c *.h *.py Makefile README common/*.c 
+python crlf.py include/*.h include/devices/*.h include/devices/*.pl
+python crlf.py unit_test/*.h unit_test/*.c
+python crlf.py system_test/*.c system_test/*.py
