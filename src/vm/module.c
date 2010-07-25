@@ -34,6 +34,7 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     PmReturn_t retval;
     uint8_t *pchunk;
     pPmObj_t pobj;
+    uint8_t objid;
 
     /* If it's not a code obj, raise TypeError */
     if (OBJ_GET_TYPE(pco) != OBJ_TYPE_COB)
@@ -50,7 +51,9 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
     /* Alloc and init attrs dict */
+    heap_gcPushTempRoot(*pmod, &objid);
     retval = dict_new(&pobj);
+    heap_gcPopTempRoot(objid);
     ((pPmFunc_t)*pmod)->f_attrs = (pPmDict_t)pobj;
 
     /* A module's globals is the same as its attrs */
@@ -73,6 +76,7 @@ mod_import(pPmObj_t pstr, pPmObj_t *pmod)
     pPmCo_t pco = C_NULL;
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pobj;
+    uint8_t objid;
 
     /* If it's not a string obj, raise SyntaxError */
     if (OBJ_GET_TYPE(pstr) != OBJ_TYPE_STR)
@@ -96,5 +100,9 @@ mod_import(pPmObj_t pstr, pPmObj_t *pmod)
     PM_RETURN_IF_ERROR(retval);
     pco = (pPmCo_t)pobj;
 
-    return mod_new((pPmObj_t)pco, pmod);
+    heap_gcPushTempRoot(pobj, &objid);
+    retval = mod_new((pPmObj_t)pco, pmod);
+    heap_gcPopTempRoot(objid);
+
+    return retval;
 }

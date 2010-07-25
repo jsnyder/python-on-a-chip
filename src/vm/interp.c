@@ -42,6 +42,7 @@ interpret(const uint8_t returnOnNoThreads)
     int16_t t16 = 0;
     int8_t t8 = 0;
     uint8_t bc;
+    uint8_t objid, objid2;
 
     /* Activate a thread the first time */
     retval = interp_reschedule();
@@ -609,7 +610,7 @@ interpret(const uint8_t returnOnNoThreads)
                                           &pobj2);
 
                     /* Raise TypeError if instance isn't a ByteArray */
-                    if ((retval == PM_RET_EX_KEY) 
+                    if ((retval == PM_RET_EX_KEY)
                         || (OBJ_GET_TYPE(pobj2) != OBJ_TYPE_BYA))
                     {
                         PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -1300,13 +1301,14 @@ interpret(const uint8_t returnOnNoThreads)
 
             case BUILD_LIST:
                 t16 = GET_ARG();
-                /* WARNING: Is list object protected from GC sweep? */
                 retval = list_new(&pobj1);
                 PM_BREAK_IF_ERROR(retval);
                 for (; --t16 >= 0;)
                 {
                     /* Insert obj into list */
+                    heap_gcPushTempRoot(pobj1, &objid);
                     retval = list_insert(pobj1, 0, TOS);
+                    heap_gcPopTempRoot(objid);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                 }
@@ -1540,7 +1542,9 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Code after here is a duplicate of CALL_FUNCTION */
                 /* Make frame object to interpret the module's root code */
+                heap_gcPushTempRoot(pobj2, &objid);
                 retval = frame_new(pobj2, &pobj3);
+                heap_gcPopTempRoot(objid);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* No arguments to pass */
@@ -1731,6 +1735,9 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Get the callable */
                 pobj1 = STACK(t16);
 
+                /* Useless push to get temp-roots stack level used in cleanup */
+                heap_gcPushTempRoot(pobj1, &objid);
+
                 C_DEBUG_PRINT(VERBOSITY_LOW,
                     "interpret(), CALL_FUNCTION on <obj type=%d @ %p>\n",
                     OBJ_GET_TYPE(pobj1), pobj1);
@@ -1743,7 +1750,8 @@ interpret(const uint8_t returnOnNoThreads)
                 {
                     /* Collect the function and arguments into a tuple */
                     retval = tuple_new(t16 + 1, &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
+                    heap_gcPushTempRoot(pobj2, &objid2);
+                    PM_GOTO_IF_ERROR(retval, CALL_FUNC_CLEANUP);
                     sli_memcpy((uint8_t *)&((pPmTuple_t)pobj2)->val,
                                (uint8_t *)&STACK(t16),
                                (t16 + 1) * sizeof(pPmObj_t));
@@ -1756,7 +1764,7 @@ interpret(const uint8_t returnOnNoThreads)
                     /* Set pobj1 and stack to create an instance of Generator */
                     retval = dict_getItem(PM_PBUILTINS, PM_GENERATOR_STR,
                                           &pobj1);
-                    PM_RETURN_IF_ERROR(retval);
+                    C_ASSERT(retval == PM_RET_OK);
                     STACK(t16) = pobj1;
                 }
 #endif /* HAVE_GENERATORS */
@@ -1770,6 +1778,7 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Replace class with new instance */
                     retval = class_instantiate(pobj1, &pobj2);
+                    heap_gcPushTempRoot(pobj2, &objid2);
                     STACK(t16) = pobj2;
 
                     /* If __init__ does not exist */
@@ -1781,15 +1790,16 @@ interpret(const uint8_t returnOnNoThreads)
                         if (t16 > 0)
                         {
                             PM_RAISE(retval, PM_RET_EX_TYPE);
-                            break;
+                            goto CALL_FUNC_CLEANUP;
                         }
 
                         /* Otherwise, continue with instance */
+                        heap_gcPopTempRoot(objid);
                         continue;
                     }
                     else if (retval != PM_RET_OK)
                     {
-                        PM_BREAK_IF_ERROR(retval);
+                        PM_GOTO_IF_ERROR(retval, CALL_FUNC_CLEANUP);
                     }
 
                     /* Slide the arguments up 1 slot in the stack */
@@ -1801,7 +1811,8 @@ interpret(const uint8_t returnOnNoThreads)
 
                     /* Convert __init__ to method, insert it as the callable */
                     retval = class_method(pobj2, pobj3, &pobj1);
-                    PM_BREAK_IF_ERROR(retval);
+                    PM_GOTO_IF_ERROR(retval, CALL_FUNC_CLEANUP);
+                    heap_gcPushTempRoot(pobj2, &objid2);
                     STACK(t16) = pobj1;
                     /* Fall through to call the method */
                 }
@@ -1833,7 +1844,7 @@ CALL_FUNC_FOR_ITER:
                 if (OBJ_GET_TYPE(pobj1) != OBJ_TYPE_FXN)
                 {
                     PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
+                    goto CALL_FUNC_CLEANUP;
                 }
 
                 /* If it is a regular func (not native) */
@@ -1871,7 +1882,8 @@ CALL_FUNC_FOR_ITER:
 
                     /* Make frame object to run the func object */
                     retval = frame_new(pobj1, &pobj2);
-                    PM_BREAK_IF_ERROR(retval);
+                    heap_gcPushTempRoot(pobj2, &objid2);
+                    PM_GOTO_IF_ERROR(retval, CALL_FUNC_CLEANUP);
 
 #ifdef HAVE_CLASSES
                     /*
@@ -1961,14 +1973,6 @@ CALL_FUNC_FOR_ITER:
                 else if (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) ==
                          OBJ_TYPE_NOB)
                 {
-
-                    /* Ensure num args fits in native frame */
-                    if (t16 > NATIVE_MAX_NUM_LOCALS)
-                    {
-                        PM_RAISE(retval, PM_RET_EX_SYS);
-                        break;
-                    }
-
                     /* Set number of locals (arguments) */
                     gVmGlobal.nativeframe.nf_numlocals = (uint8_t)t16;
 
@@ -1983,7 +1987,7 @@ CALL_FUNC_FOR_ITER:
                     if (heap_getAvail() < HEAP_GC_NF_THRESHOLD)
                     {
                         retval = heap_gcRun();
-                        PM_BREAK_IF_ERROR(retval);
+                        PM_GOTO_IF_ERROR(retval, CALL_FUNC_CLEANUP);
                     }
 #endif /* HAVE_GC */
 
@@ -2028,7 +2032,7 @@ CALL_FUNC_FOR_ITER:
                             && (gVmGlobal.nativeframe.nf_stack != PM_NONE))
                         {
                             PM_RAISE(retval, PM_RET_EX_TYPE);
-                            break;
+                            goto CALL_FUNC_CLEANUP;
                         }
                     }
                     else
@@ -2045,8 +2049,10 @@ CALL_FUNC_FOR_ITER:
                     {
                         PM_PUSH(gVmGlobal.nativeframe.nf_stack);
                     }
-                    PM_BREAK_IF_ERROR(retval);
                 }
+CALL_FUNC_CLEANUP:
+                heap_gcPopTempRoot(objid);
+                PM_BREAK_IF_ERROR(retval);
                 continue;
 
             case MAKE_FUNCTION:
@@ -2066,7 +2072,9 @@ CALL_FUNC_FOR_ITER:
                 {
 
 #ifdef HAVE_DEFAULTARGS
+                    heap_gcPushTempRoot(pobj2, &objid);
                     retval = tuple_new(t16, &pobj3);
+                    heap_gcPopTempRoot(objid);
                     PM_BREAK_IF_ERROR(retval);
                     SP--;
                     while (--t16 >= 0)
@@ -2106,7 +2114,9 @@ CALL_FUNC_FOR_ITER:
                 /* Collect any default arguments into tuple */
                 if (t16 > 0)
                 {
+                    heap_gcPushTempRoot(pobj2, &objid);
                     retval = tuple_new(t16, &pobj3);
+                    heap_gcPopTempRoot(objid);
                     PM_BREAK_IF_ERROR(retval);
 
                     while (--t16 >= 0)
@@ -2246,17 +2256,26 @@ interp_addThread(pPmFunc_t pfunc)
     PmReturn_t retval;
     pPmObj_t pframe;
     pPmObj_t pthread;
+    uint8_t objid1, objid2;
 
     /* Create a frame for the func */
     retval = frame_new((pPmObj_t)pfunc, &pframe);
     PM_RETURN_IF_ERROR(retval);
 
     /* Create a thread with this new frame */
+    heap_gcPushTempRoot(pframe, &objid1);
     retval = thread_new(pframe, &pthread);
-    PM_RETURN_IF_ERROR(retval);
+    if (retval != PM_RET_OK)
+    {
+        heap_gcPopTempRoot(objid1);
+        return retval;
+    }
 
     /* Add thread to end of list */
-    return list_append((pPmObj_t)gVmGlobal.threadList, pthread);
+    heap_gcPushTempRoot(pthread, &objid2);
+    retval = list_append((pPmObj_t)gVmGlobal.threadList, pthread);
+    heap_gcPopTempRoot(objid1);
+    return retval;
 }
 
 

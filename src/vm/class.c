@@ -68,6 +68,7 @@ class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj)
     uint8_t *pchunk;
     pPmObj_t pobj;
     pPmObj_t pattrs;
+    uint8_t objid;
 
     /* Allocate a class instance */
     retval = heap_getChunk(sizeof(PmInstance_t), &pchunk);
@@ -79,7 +80,9 @@ class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj)
     ((pPmInstance_t)pobj)->cli_class = (pPmClass_t)pclass;
 
     /* Create the attributes dict */
+    heap_gcPushTempRoot(pobj, &objid);
     retval = dict_new(&pattrs);
+    heap_gcPopTempRoot(objid);
     ((pPmInstance_t)pobj)->cli_attrs = (pPmDict_t)pattrs;
 
     /* TODO: Store pclass in __class__ attr */
@@ -96,6 +99,7 @@ class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth)
     uint8_t *pchunk;
     pPmMethod_t pmeth;
     pPmObj_t pattrs;
+    uint8_t objid;
 
     /* Allocate a method */
     retval = heap_getChunk(sizeof(PmMethod_t), &pchunk);
@@ -108,7 +112,9 @@ class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth)
     pmeth->m_func = (pPmFunc_t)pfunc;
 
     /* Create the attributes dict */
+    heap_gcPushTempRoot((pPmObj_t)pmeth, &objid);
     retval = dict_new(&pattrs);
+    heap_gcPopTempRoot(objid);
     pmeth->m_attrs = (pPmDict_t)pattrs;
 
     *r_pmeth = (pPmObj_t)pmeth;

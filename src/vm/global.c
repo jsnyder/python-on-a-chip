@@ -146,6 +146,10 @@ global_init(void)
     /* Init native frame */
     OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
     OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
+    gVmGlobal.nativeframe.nf_func = C_NULL;
+    gVmGlobal.nativeframe.nf_stack = C_NULL;
+    gVmGlobal.nativeframe.nf_active = C_FALSE;
+    gVmGlobal.nativeframe.nf_numlocals = 0;
 
     /* Create empty threadList */
     retval = list_new(&pobj);
@@ -166,6 +170,7 @@ global_setBuiltins(pPmFunc_t pmod)
     PmReturn_t retval = PM_RET_OK;
     pPmObj_t pkey = C_NULL;
     uint8_t const *pbistr = bistr;
+    uint8_t objid;
 
     if (PM_PBUILTINS == C_NULL)
     {
@@ -177,7 +182,11 @@ global_setBuiltins(pPmFunc_t pmod)
     retval = string_new(&pbistr, &pkey);
     PM_RETURN_IF_ERROR(retval);
 
-    return dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
+    heap_gcPushTempRoot(pkey, &objid);
+    retval = dict_setItem((pPmObj_t)pmod->f_attrs, pkey, PM_PBUILTINS);
+    heap_gcPopTempRoot(objid);
+
+    return retval;
 }
 
 

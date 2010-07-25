@@ -98,6 +98,7 @@ bytearray_new(pPmObj_t pobj, pPmObj_t *r_pobj)
     int32_t i;
     int16_t n;
     uint8_t b;
+    uint8_t objid;
 
     /* If object is an instance, get the thing it is containing */
     if (OBJ_GET_TYPE(pobj) == OBJ_TYPE_CLI)
@@ -148,9 +149,12 @@ bytearray_new(pPmObj_t pobj, pPmObj_t *r_pobj)
     PM_RETURN_IF_ERROR(retval);
     OBJ_SET_TYPE(pba, OBJ_TYPE_BYA);
     pba->length = n;
+    pba->val = C_NULL;
 
     /* Allocate the bytes container */
+    heap_gcPushTempRoot((pPmObj_t)pba, &objid);
     retval = bytes_new(n, (pPmObj_t *)&pb);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
     pba->val = pb;
 

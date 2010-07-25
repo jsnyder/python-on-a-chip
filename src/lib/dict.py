@@ -3,7 +3,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -48,6 +48,7 @@ def keys(d):
     pSeglist_t psl;
     uint16_t i;
     PmReturn_t retval = PM_RET_OK;
+    uint8_t objid;
 
     /* Raise TypeError if it's not a dict or wrong number of args, */
     pd = NATIVE_GET_LOCAL(0);
@@ -68,7 +69,9 @@ def keys(d):
         /* Get the key and append it to the list */
         retval = seglist_getItem(psl, i, &pk);
         PM_RETURN_IF_ERROR(retval);
+        heap_gcPushTempRoot(pl, &objid);
         retval = list_append(pl, pk);
+        heap_gcPopTempRoot(objid);
         PM_RETURN_IF_ERROR(retval);
     }
 
@@ -95,6 +98,7 @@ def values(d):
     pSeglist_t psl;
     uint16_t i;
     PmReturn_t retval = PM_RET_OK;
+    uint8_t objid;
 
     /* Raise TypeError if it's not a dict or wrong number of args, */
     pd = NATIVE_GET_LOCAL(0);
@@ -115,7 +119,9 @@ def values(d):
         /* Get the value and append it to the list */
         retval = seglist_getItem(psl, i, &pv);
         PM_RETURN_IF_ERROR(retval);
+        heap_gcPushTempRoot(pl, &objid);
         retval = list_append(pl, pv);
+        heap_gcPopTempRoot(objid);
         PM_RETURN_IF_ERROR(retval);
     }
 

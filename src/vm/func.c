@@ -35,6 +35,7 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
     pPmFunc_t pfunc = C_NULL;
     uint8_t *pchunk;
     pPmObj_t pobj;
+    uint8_t objid;
 
     C_ASSERT(OBJ_GET_TYPE(pco) != OBJ_TYPE_COB
              || OBJ_GET_TYPE(pco) != OBJ_TYPE_NOB);
@@ -48,11 +49,14 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
     /* Init func */
     OBJ_SET_TYPE(pfunc, OBJ_TYPE_FXN);
     pfunc->f_co = (pPmCo_t)pco;
+    pfunc->f_globals = C_NULL;
 
     /* Create attrs dict for regular func (not native) */
     if (OBJ_GET_TYPE(pco) == OBJ_TYPE_COB)
     {
+        heap_gcPushTempRoot((pPmObj_t)pfunc, &objid);
         retval = dict_new(&pobj);
+        heap_gcPopTempRoot(objid);
         PM_RETURN_IF_ERROR(retval);
         pfunc->f_attrs = (pPmDict_t)pobj;
 

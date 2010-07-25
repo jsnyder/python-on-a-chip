@@ -73,6 +73,7 @@ def dir(o):
     pPmObj_t pl;
     pSeglist_t psl;
     int16_t i;
+    uint8_t objid;
 
     /* Use globals if no arg given */
     if (NATIVE_GET_NUM_ARGS() == 0)
@@ -137,7 +138,9 @@ def dir(o):
         {
             retval = seglist_getItem(psl, i, &pk);
             PM_RETURN_IF_ERROR(retval);
+            heap_gcPushTempRoot(pl, &objid);
             retval = list_append(pl, pk);
+            heap_gcPopTempRoot(objid);
             PM_RETURN_IF_ERROR(retval);
         }
     }
@@ -161,6 +164,7 @@ def eval(co, g, l):
     pPmObj_t pnewframe;
     pPmObj_t pg = C_NULL;
     pPmObj_t pl = C_NULL;
+    uint8_t objid;
 
     /* If wrong number of args, raise TypeError */
     if ((NATIVE_GET_NUM_ARGS() == 0) || (NATIVE_GET_NUM_ARGS() > 3))
@@ -210,7 +214,9 @@ def eval(co, g, l):
     PM_RETURN_IF_ERROR(retval);
 
     /* Create frame from module object; globals is set to null */
+    heap_gcPushTempRoot(pfunc, &objid);
     retval = frame_new(pfunc, &pnewframe);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
 
     /* TODO: Reclaim pnewframe's attrs dict created in frame_new */
@@ -445,6 +451,7 @@ def range(a, b, c):
     pPmObj_t pi = C_NULL;
     pPmObj_t pr = C_NULL;
     int16_t i = 0;
+    uint8_t objid1, objid2;
 
     switch (NATIVE_GET_NUM_ARGS())
     {
@@ -490,10 +497,17 @@ def range(a, b, c):
              i < ((pPmInt_t)pb)->val;
              i += ((pPmInt_t)pc)->val)
         {
+            heap_gcPushTempRoot(pr, &objid1);
             retval = int_new(i, &pi);
-            PM_RETURN_IF_ERROR(retval);
+            if (retval != PM_RET_OK)
+            {
+                heap_gcPopTempRoot(objid1);
+                return retval;
+            }
 
+            heap_gcPushTempRoot(pi, &objid2);
             retval = list_append(pr, pi);
+            heap_gcPopTempRoot(objid1);
             PM_RETURN_IF_ERROR(retval);
         }
     }
@@ -503,10 +517,17 @@ def range(a, b, c):
              i > ((pPmInt_t)pb)->val;
              i += ((pPmInt_t)pc)->val)
         {
+            heap_gcPushTempRoot(pr, &objid1);
             retval = int_new(i, &pi);
-            PM_RETURN_IF_ERROR(retval);
+            if (retval != PM_RET_OK)
+            {
+                heap_gcPopTempRoot(objid1);
+                return retval;
+            }
 
+            heap_gcPushTempRoot(pi, &objid2);
             retval = list_append(pr, pi);
+            heap_gcPopTempRoot(objid1);
             PM_RETURN_IF_ERROR(retval);
         }
     }
@@ -709,6 +730,7 @@ class Generator(object):
         pPmObj_t pfunc;
         pPmObj_t pframe;
         uint8_t i;
+        uint8_t objid;
 
         /* Raise TypeError if wrong number of args */
         if (NATIVE_GET_NUM_ARGS() != 2)
@@ -720,8 +742,12 @@ class Generator(object):
         /* Raise ValueError if first args are not: instance, tuple */
         pself = NATIVE_GET_LOCAL(0);
         pfa = NATIVE_GET_LOCAL(1);
-        if ((OBJ_GET_TYPE(pself) != OBJ_TYPE_CLI)
-            || (OBJ_GET_TYPE(pfa) != OBJ_TYPE_TUP))
+        if (OBJ_GET_TYPE(pself) != OBJ_TYPE_CLI)
+        {
+            PM_RAISE(retval, PM_RET_EX_VAL);
+            return retval;
+        }
+        if (OBJ_GET_TYPE(pfa) != OBJ_TYPE_TUP)
         {
             PM_RAISE(retval, PM_RET_EX_VAL);
             return retval;
@@ -740,8 +766,10 @@ class Generator(object):
         }
 
         /* Store frame in None attr of instance */
+        heap_gcPushTempRoot(pframe, &objid);
         retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
                               PM_NONE, pframe);
+        heap_gcPopTempRoot(objid);
 
         NATIVE_SET_TOS(PM_NONE);
         return retval;
@@ -864,48 +892,50 @@ def ismain():
     pass
 
 
-# #96: Remove bytearray from desktop platform
-# Uncomment the following class if HAVE_BYTEARRAY is defined in pmfeatures.h
-# class bytearray(object):
-#     def __init__(self, o):
-#         """__NATIVE__
-#         PmReturn_t retval = PM_RET_OK;
-#         pPmObj_t pself;
-#         pPmObj_t po;
-#         pPmObj_t pba;
-# 
-#         /* If only the self arg, create zero-length bytearray */
-#         if (NATIVE_GET_NUM_ARGS() == 1)
-#         {
-#             po = PM_ZERO;
-#         }
-# 
-#         /* If two args, get the second arg */
-#         else if (NATIVE_GET_NUM_ARGS() == 2)
-#         {
-#             po = NATIVE_GET_LOCAL(1);
-#         }
-# 
-#         /* Raise TypeError if wrong number of args */
-#         else
-#         {
-#             PM_RAISE(retval, PM_RET_EX_TYPE);
-#             return retval;
-#         }
-#         pself = NATIVE_GET_LOCAL(0);
-# 
-#         /* Create new bytearray object */
-#         retval = bytearray_new(po, &pba);
-#         PM_RETURN_IF_ERROR(retval);
-# 
-#         /* Store bytearray in None attr of instance */
-#         retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
-#                               PM_NONE, pba);
-# 
-#         NATIVE_SET_TOS(PM_NONE);
-#         return retval;
-#         """
-#         pass
-
+#ifdef HAVE_BYTEARRAY
+#class bytearray(object):
+#    def __init__(self, o):
+#        """__NATIVE__
+#        PmReturn_t retval;
+#        pPmObj_t pself;
+#        pPmObj_t po;
+#        pPmObj_t pba;
+#        uint8_t objid;
+#
+#        /* If only the self arg, create zero-length bytearray */
+#        if (NATIVE_GET_NUM_ARGS() == 1)
+#        {
+#            po = PM_ZERO;
+#        }
+#
+#        /* If two args, get the second arg */
+#        else if (NATIVE_GET_NUM_ARGS() == 2)
+#        {
+#            po = NATIVE_GET_LOCAL(1);
+#        }
+#
+#        /* Raise TypeError if wrong number of args */
+#        else
+#        {
+#            PM_RAISE(retval, PM_RET_EX_TYPE);
+#            return retval;
+#        }
+#        pself = NATIVE_GET_LOCAL(0);
+#
+#        /* Create new bytearray object */
+#        retval = bytearray_new(po, &pba);
+#        PM_RETURN_IF_ERROR(retval);
+#
+#        /* Store bytearray in None attr of instance */
+#        heap_gcPushTempRoot(pba, &objid);
+#        retval = dict_setItem((pPmObj_t)((pPmInstance_t)pself)->cli_attrs,
+#                              PM_NONE, pba);
+#        heap_gcPopTempRoot(objid);
+#
+#        NATIVE_SET_TOS(PM_NONE);
+#        return retval;
+#        """
+#        pass
+#endif /* HAVE_BYTEARRAY */
 
 #:mode=c:

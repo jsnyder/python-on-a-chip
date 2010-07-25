@@ -151,8 +151,8 @@ NATIVE_TABLE_NAME = {"std": "std_nat_fxn_table",
 # String name to prefix all native functions
 NATIVE_FUNC_PREFIX = "nat_"
 
-# maximum number of locals a native func can have
-NATIVE_NUM_LOCALS = 8
+# Maximum number of locals a native func can have (frame.h)
+NATIVE_MAX_NUM_LOCALS = 8
 
 # Issue #51: In Python 2.5, the module identifier changed from '?' to '<module>'
 if float(sys.version[:3]) < 2.5:
@@ -551,7 +551,7 @@ class PmImgCreator:
             extract the native code from the doc string
             and clear the doc string.
             Ensure num args is less or equal to
-            NATIVE_NUM_LOCALS.
+            NATIVE_MAX_NUM_LOCALS.
 
         Names/varnames filter:
             Ensure num names is less than 256.
@@ -645,8 +645,8 @@ class PmImgCreator:
                 NATIVE_INDICATOR):
 
                 # ensure num args is less or equal
-                # to NATIVE_NUM_LOCALS
-                assert co.co_nlocals <= NATIVE_NUM_LOCALS
+                # to NATIVE_MAX_NUM_LOCALS
+                assert co.co_nlocals <= NATIVE_MAX_NUM_LOCALS
 
                 # extract native code and clear doc string
                 nativecode = consts[0][NATIVE_INDICATOR_LENGTH:]

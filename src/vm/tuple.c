@@ -39,23 +39,32 @@ tuple_loadFromImg(PmMemSpace_t memspace,
     PmReturn_t retval = PM_RET_OK;
     uint8_t i = (uint8_t)0;
     uint8_t n = (uint8_t)0;
+    uint8_t objid;
 
     /* Get num objs in tuple */
     n = mem_getByte(memspace, paddr);
 
     /* Create empty tuple */
     retval = tuple_new(n, r_ptuple);
+    ((pPmTuple_t)*r_ptuple)->length = 0;
     PM_RETURN_IF_ERROR(retval);
 
     /* Load the next n objs into tuple */
+    heap_gcPushTempRoot((pPmObj_t)*r_ptuple, &objid);
     for (i = (uint8_t)0; i < n; i++)
     {
         retval = obj_loadFromImg(memspace,
                                  paddr,
                                  (pPmObj_t *)&(((pPmTuple_t)*r_ptuple)->
                                                val[i]));
-        PM_RETURN_IF_ERROR(retval);
+        if (retval != PM_RET_OK)
+        {
+            heap_gcPopTempRoot(objid);
+            return retval;
+        }
+        ((pPmTuple_t)*r_ptuple)->length++;
     }
+    heap_gcPopTempRoot(objid);
     return PM_RET_OK;
 }
 

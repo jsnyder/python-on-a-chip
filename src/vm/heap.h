@@ -90,6 +90,24 @@ PmReturn_t heap_gcRun(void);
  * @return  Return code
  */
 PmReturn_t heap_gcSetAuto(uint8_t auto_gc);
+
 #endif /* HAVE_GC */
+
+/**
+ * Pushes an object onto the temporary roots stack if there is room
+ * to protect the objects from a potential garbage collection
+ *
+ * @param pobj Object to push onto the roots stack
+ * @param r_objid By reference; ID to use when popping the object from the stack
+ */
+void heap_gcPushTempRoot(pPmObj_t pobj, uint8_t *r_objid);
+
+/**
+ * Pops from the temporary roots stack all objects upto and including the one
+ * denoted by the given ID 
+ *
+ * @param objid ID of object to pop
+ */
+void heap_gcPopTempRoot(uint8_t objid);
 
 #endif /* __HEAP_H__ */

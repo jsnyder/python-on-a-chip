@@ -35,6 +35,7 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pPmObj_t pobj;
     pPmCo_t pco = C_NULL;
     uint8_t *pchunk;
+    uint8_t objid;
 
     /* Store ptr to top of code img (less type byte) */
     uint8_t const *pci = *paddr - 1;
@@ -51,8 +52,13 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     OBJ_SET_TYPE(pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
     pco->co_codeimgaddr = pci;
-    pco->co_argcount = mem_getByte(memspace, paddr);;
-    pco->co_flags = mem_getByte(memspace, paddr);;
+    pco->co_argcount = mem_getByte(memspace, paddr);
+    pco->co_flags = mem_getByte(memspace, paddr);
+    
+    /* Set these to null in case a GC occurs before their objects are alloc'd */
+    pco->co_names = C_NULL;
+    pco->co_consts = C_NULL;
+    pco->co_cellvars = C_NULL;
 
 #ifdef HAVE_CLOSURES
     /* Get number of local and free variables */
@@ -63,25 +69,31 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     *paddr = pci + CI_NAMES_FIELD;
 #endif /* HAVE_CLOSURES */
 
+
     /* Load names (tuple obj) */
+    heap_gcPushTempRoot((pPmObj_t)pco, &objid);
     retval = obj_loadFromImg(memspace, paddr, &pobj);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
     pco->co_names = (pPmTuple_t)pobj;
 
     /* Load consts (tuple obj) assume it follows names */
+    heap_gcPushTempRoot((pPmObj_t)pco, &objid);
     retval = obj_loadFromImg(memspace, paddr, &pobj);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
     pco->co_consts = (pPmTuple_t)pobj;
 
 #ifdef HAVE_CLOSURES
+    heap_gcPushTempRoot((pPmObj_t)pco, &objid);
     retval = obj_loadFromImg(memspace, paddr, &pobj);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
 
     /* Save RAM, don't keep empty tuple */
     if (((pPmTuple_t)pobj)->length == 0)
     {
         heap_freeChunk(pobj);
-        pco->co_cellvars = C_NULL;
     }
     else
     {

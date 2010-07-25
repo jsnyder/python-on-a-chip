@@ -54,7 +54,7 @@ pmHeapDump.py [filename]
 """
 
 
-import struct, sys, types, UserDict
+import os, struct, sys, types, UserDict
 
 
 class PmObject(UserDict.UserDict):
@@ -81,6 +81,12 @@ class PmObject(UserDict.UserDict):
         d['val'] = self.heap[addr + 6: addr + 6 + strlen]
 
 
+    def _parse_tup(self,):
+        d = self.data
+        addr = self.addr + 2
+        d['len'] = strlen = struct.unpack("H", self.heap[addr : addr + 2])[0]
+
+
     def _parse_lst(self,):
         addr = self.addr + 2
         self.data['len'] = struct.unpack("H", self.heap[addr : addr + 2])[0]
@@ -95,7 +101,7 @@ class PmObject(UserDict.UserDict):
 
     _parse_nul = lambda x: x
     parse = (_parse_nul, _parse_int, _parse_nul, _parse_str,
-             _parse_nul, _parse_nul, _parse_nul, _parse_nul,
+             _parse_tup, _parse_nul, _parse_nul, _parse_nul,
              _parse_nul, _parse_nul, _parse_nul, _parse_nul,
              _parse_nul, _parse_nul, _parse_nul, _parse_nul,
              _parse_lst, _parse_nul, _parse_nul, _parse_nul,
@@ -154,6 +160,9 @@ class PmObject(UserDict.UserDict):
 
         elif d['type'] == "STR":
             result.append("cache_next=%s : %s" % (hex(d['cache_next']), str(d['val'])))
+
+        elif d['type'] == "TUP":
+            result.append("len=%s" % (str(d['len'])))
 
         return "".join(result)
 

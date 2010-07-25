@@ -3,7 +3,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -62,7 +62,30 @@ def exit(val):
 
 
 #
-# Get a byte from the platform's default I/O
+# Runs the Garbage Collector
+#
+def gc():
+    """__NATIVE__
+    PmReturn_t retval = PM_RET_OK;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    retval = heap_gcRun();
+
+    NATIVE_SET_TOS(PM_NONE);
+
+    return retval;
+    """
+    pass
+
+
+#
+# Gets a byte from the platform's default I/O
 # Returns the byte in the LSB of the returned integer
 #
 def getb():
@@ -97,6 +120,7 @@ def heap():
     pPmObj_t pavail;
     pPmObj_t pmax;
     pPmObj_t ptup;
+    uint8_t objid;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
@@ -110,11 +134,17 @@ def heap():
     PM_RETURN_IF_ERROR(retval);
 
     /* Get the maximum heap size */
+    heap_gcPushTempRoot(ptup, &objid);
     retval = int_new(PM_HEAP_SIZE, &pmax);
-    PM_RETURN_IF_ERROR(retval);
+    if (retval != PM_RET_OK)
+    {
+        heap_gcPopTempRoot(objid);
+        return retval;
+    }
 
     /* Allocate an int to hold the amount of heap available */
     retval = int_new(heap_getAvail() - sizeof(PmInt_t), &pavail);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
 
     /* Put the two heap values in the tuple */

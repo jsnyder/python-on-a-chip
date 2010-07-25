@@ -131,6 +131,7 @@ list_new(pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmList_t plist = C_NULL;
+    uint8_t objid;
 
     /* Allocate a list */
     retval = heap_getChunk(sizeof(PmList_t), (uint8_t **)r_pobj);
@@ -142,7 +143,9 @@ list_new(pPmObj_t *r_pobj)
     plist->length = 0;
 
     /* Create empty seglist */
+    heap_gcPushTempRoot((pPmObj_t)plist, &objid);
     retval = seglist_new(&plist->val);
+    heap_gcPopTempRoot(objid);
     return retval;
 }
 
@@ -162,6 +165,7 @@ list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
     int16_t j = 0;
     int16_t length = 0;
     pPmObj_t pitem = C_NULL;
+    uint8_t objid;
 
     C_ASSERT(psrclist != C_NULL);
     C_ASSERT(r_pnewlist != C_NULL);
@@ -186,7 +190,9 @@ list_replicate(pPmObj_t psrclist, int16_t n, pPmObj_t *r_pnewlist)
         {
             retval = list_getItem(psrclist, j, &pitem);
             PM_RETURN_IF_ERROR(retval);
+            heap_gcPushTempRoot(*r_pnewlist, &objid);
             retval = list_append(*r_pnewlist, pitem);
+            heap_gcPopTempRoot(objid);
             PM_RETURN_IF_ERROR(retval);
         }
     }
