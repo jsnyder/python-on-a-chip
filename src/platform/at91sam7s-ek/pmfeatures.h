@@ -149,4 +149,16 @@
 #error HAVE_BYTEARRAY requires HAVE_CLASSES
 #endif
 
+
+/*
+ * Platform-specific definitions that are used in the VM
+ */
+
+/**
+ * Define a processor-specific specifier for use in declaring the heap.
+ * See <code>pmHeap</code> in heap.c for its use, which is:<br>
+ * <code>static PmHeap_t pmHeap PM_PLAT_HEAP_ATTR;</code>
+ */
+#define PM_PLAT_HEAP_ATTR __attribute__((aligned (4)))
+
 #endif /* FEATURES_H_ */
