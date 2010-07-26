@@ -74,12 +74,13 @@ PM_FEATURES = {
     "HAVE_FLOAT": True,
     "HAVE_DEL": True,
     "HAVE_IMPORTS": True,
-    "HAVE_ASSERT": True,
     "HAVE_DEFAULTARGS": True,
     "HAVE_REPLICATION": True, # This flag currently has no effect in this file
     "HAVE_CLASSES": True,
+    "HAVE_ASSERT": True,
     "HAVE_GENERATORS": True,
     "HAVE_BACKTICK": True,
+    "HAVE_STRING_FORMAT": True,  # This flag currently has no effect in this file
     "HAVE_CLOSURES": True,
     "HAVE_BYTEARRAY": False,  # This flag currently has no effect in this file
 }

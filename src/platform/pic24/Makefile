@@ -46,10 +46,10 @@ export CFLAGS IPM PM_LIB_FN CC AR LDFLAGS
 
 all : $(TARGET).hex $(TARGET)_nat.c $(TARGET)_img.c
 
-bytecode: $(TARGET)_nat.c $(TARGET)_img.c
+bytecode: $(TARGET)_nat.c $(TARGET)_img.c $(PMIMGCREATOR)
 	make -C ../../vm bytecode
 
-bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c
+bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c $(PMIMGCREATOR)
 	make -C ../../vm bytecode
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
@@ -60,10 +60,10 @@ $(TARGET).hex : $(OBJS) $(PM_LIB_PATH)
 	$(B2H) $(TARGET).cof
 
 # Generate native code and module images from the python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) $(PMIMGCREATOR)
 	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
-system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c: $(PM_TEST_USR_SOURCES)
+system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c: $(PM_TEST_USR_SOURCES) $(PMIMGCREATOR)
 	$(PMIMGCREATOR) -c -u -o system_test/$(TARGET)_img.c --native-file=system_test/$(TARGET)_nat.c $(PM_TEST_USR_SOURCES)
 
 clean :
