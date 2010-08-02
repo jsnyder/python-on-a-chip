@@ -829,14 +829,8 @@ interpret(const uint8_t returnOnNoThreads)
                 if ((FP != (pPmFrame_t)(&gVmGlobal.nativeframe)) &&
                     !(FP->fo_func->f_co->co_flags & CO_GENERATOR))
                 {
-                    /* Get this func's number of locals */
-                    pobj3 = (pPmObj_t)(((uint8_t *)
-                            (FP->fo_func->f_co->co_codeimgaddr))
-                            + CI_NLOCALS_FIELD);
-                    t8 = mem_getByte(FP->fo_func->f_co->co_memspace,
-                                     (uint8_t const **)&pobj3);
-
                     /* An empty stack points one past end of locals */
+                    t8 = FP->fo_func->f_co->co_nlocals;
                     C_ASSERT(SP == &(FP->fo_locals[t8]));
                 }
 #endif /* __DEBUG__ */

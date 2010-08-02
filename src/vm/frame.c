@@ -33,11 +33,8 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t fsize = 0;
-    int8_t stacksz = (int8_t)0;
-    int8_t nlocals = (int8_t)0;
     pPmCo_t pco = C_NULL;
     pPmFrame_t pframe = C_NULL;
-    uint8_t const *paddr = C_NULL;
     uint8_t *pchunk;
 
     /* Get fxn's code obj */
@@ -50,28 +47,14 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
         return retval;
     }
 
-    /* Get sizes needed to calc frame size */
-    if (pco->co_memspace == MEMSPACE_RAM)
-    {
-        paddr = (uint8_t *)((pPmCodeImgObj_t)pco->co_codeimgaddr)->val + CI_STACKSIZE_FIELD;
-    }
-    else
-    {
-        paddr = pco->co_codeimgaddr + CI_STACKSIZE_FIELD;
-    }
-    stacksz = mem_getByte(pco->co_memspace, &paddr);
-
-    /* Now paddr points to CI_NLOCALS_FIELD */
-    nlocals = mem_getByte(pco->co_memspace, &paddr);
-
 #ifdef HAVE_GENERATORS
     /* #207: Initializing a Generator using CALL_FUNC needs extra stack slot */
-    fsize = sizeof(PmFrame_t) + (stacksz + nlocals + 2) * sizeof(pPmObj_t);
+    fsize = sizeof(PmFrame_t) + (pco->co_stacksize + pco->co_nlocals + 2) * sizeof(pPmObj_t);
 #elif defined(HAVE_CLASSES)
     /* #230: Calling a class's __init__() takes two extra spaces on the stack */
-    fsize = sizeof(PmFrame_t) + (stacksz + nlocals + 1) * sizeof(pPmObj_t);
+    fsize = sizeof(PmFrame_t) + (pco->co_stacksize + pco->co_nlocals + 1) * sizeof(pPmObj_t);
 #else
-    fsize = sizeof(PmFrame_t) + (stacksz + nlocals - 1) * sizeof(pPmObj_t);
+    fsize = sizeof(PmFrame_t) + (pco->co_stacksize + pco->co_nlocals - 1) * sizeof(pPmObj_t);
 #endif /* HAVE_CLASSES */
 
 #ifdef HAVE_CLOSURES
@@ -91,7 +74,7 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
     pframe->fo_func = (pPmFunc_t)pfunc;
     pframe->fo_memspace = pco->co_memspace;
 
-    /* Init instruction pointer, line number and block stack */
+    /* Init instruction pointer and block stack */
     pframe->fo_ip = pco->co_codeaddr;
     pframe->fo_blockstack = C_NULL;
 
@@ -101,10 +84,10 @@ frame_new(pPmObj_t pfunc, pPmObj_t *r_pobj)
 
 #ifndef HAVE_CLOSURES
     /* Empty stack points to one past locals */
-    pframe->fo_sp = &(pframe->fo_locals[nlocals]);
+    pframe->fo_sp = &(pframe->fo_locals[pco->co_nlocals]);
 #else
     /* #256: Add support for closures */
-    pframe->fo_sp = &(pframe->fo_locals[nlocals + pco->co_nfreevars
+    pframe->fo_sp = &(pframe->fo_locals[pco->co_nlocals + pco->co_nfreevars
         + ((pco->co_cellvars == C_NULL) ? 0 : pco->co_cellvars->length)]);
 #endif /* HAVE_CLOSURES */
 

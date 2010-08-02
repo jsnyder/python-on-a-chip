@@ -98,8 +98,9 @@ obj_loadFromImgObj(pPmObj_t pimg, pPmObj_t *r_pobj)
     retval = obj_loadFromImg(MEMSPACE_RAM, &imgaddr, r_pobj);
     C_ASSERT(OBJ_GET_TYPE(*r_pobj) == OBJ_TYPE_COB);
 
-    /* The CO must reference the top of the code img obj */
-    ((pPmCo_t)*r_pobj)->co_codeimgaddr = (uint8_t const *)pimg;
+    /* All COs must reference the top of the code img obj 
+     * so the image is marked and prevented from being reclaimed */
+    co_rSetCodeImgAddr((pPmCo_t)*r_pobj, (uint8_t const *)pimg);
 
     return retval;
 }

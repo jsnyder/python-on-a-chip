@@ -71,7 +71,7 @@ def _getImg():
         pimg->val[i] = b;
     }
 
-    /* Return the image as a string object on the stack */
+    /* Return the image as a code image object on the stack */
     NATIVE_SET_TOS((pPmObj_t)pimg);
     return retval;
     """

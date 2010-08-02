@@ -28,6 +28,7 @@
 #include "pm.h"
 
 
+/* The image format is defined by co_to_str() in src/tools/pmImgCreator.py */
 PmReturn_t
 co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
 {
@@ -51,22 +52,22 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     /* Fill in the CO struct */
     OBJ_SET_TYPE(pco, OBJ_TYPE_COB);
     pco->co_memspace = memspace;
-    pco->co_codeimgaddr = pci;
     pco->co_argcount = mem_getByte(memspace, paddr);
     pco->co_flags = mem_getByte(memspace, paddr);
-    
+    pco->co_stacksize = mem_getByte(memspace, paddr);
+    pco->co_nlocals = mem_getByte(memspace, paddr);
+
+    /* Do not set code image address if image is in RAM.
+     * CIs in RAM have their image address set in obj_loadFromImgObj() */
+    pco->co_codeimgaddr = (memspace == MEMSPACE_RAM) ? C_NULL : pci;
+
     /* Set these to null in case a GC occurs before their objects are alloc'd */
     pco->co_names = C_NULL;
     pco->co_consts = C_NULL;
-#ifdef HAVE_CLOSURES
-    pco->co_cellvars = C_NULL;
 
-    /* Get number of local and free variables */
-    *paddr = pci + CI_NLOCALS_FIELD;
-    pco->co_nlocals = mem_getByte(memspace, paddr);
+#ifdef HAVE_CLOSURES
     pco->co_nfreevars = mem_getByte(memspace, paddr);
-#else
-    *paddr = pci + CI_NAMES_FIELD;
+    pco->co_cellvars = C_NULL;
 #endif /* HAVE_CLOSURES */
 
 
@@ -109,6 +110,26 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
 
     *r_pco = (pPmObj_t)pco;
     return PM_RET_OK;
+}
+
+
+void
+co_rSetCodeImgAddr(pPmCo_t pco, uint8_t const *pimg)
+{
+    uint8_t i;
+
+    pco->co_codeimgaddr = pimg;
+
+    /* Set the image address for any COs in the constant pool */
+    for (i = 0; i < pco->co_consts->length; i++)
+    {
+        if (OBJ_GET_TYPE(pco->co_consts->val[i]) == OBJ_TYPE_COB)
+        {
+            co_rSetCodeImgAddr((pPmCo_t)pco->co_consts->val[i], pimg);
+        }
+    }
+
+    return;
 }
 
 
