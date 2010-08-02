@@ -5,7 +5,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -76,7 +76,7 @@ COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
 INIT_MESSAGE = """Python-on-a-Chip is Copyright 2003, 2006, 2007, 2009 Dean Hall and others.
 Python-on-a-Chip is licensed under the GNU LESSER GENERAL PUBLIC LICENSE V 2.1
-PyMite is Copyright 2003, 2006, 2007, 2009 Dean Hall.  
+PyMite is Copyright 2003, 2006, 2007, 2009 Dean Hall.
 PyMite is licensed under the GNU GENERAL PUBLIC LICENSE V 2.
 This software is offered with NO WARRANTY.  See LICENSE for details.
 """
@@ -160,8 +160,13 @@ class SerialConnection(Connection):
             print NEED_PYSERIAL
             raise e
 
-        self.s = serial.Serial(serdev, baud)
+        # Issue #110: Force PySerial to have readline API with eol argument
+        class Serial(serial.PosixSerial, serial.FileLike):
+            pass
+
+        self.s = Serial(serdev, baud)
         self.s.setTimeout(4)
+
 
     def read(self,):
         # Collect all characters up to and including the ipm reply terminator
@@ -205,7 +210,7 @@ class Interactive(cmd.Cmd):
         # Ensure the filename arg names a python source file
         fn = args[0]
         if not os.path.exists(fn):
-            self.stdout.write('File "%s" does not exist in %s.\n' 
+            self.stdout.write('File "%s" does not exist in %s.\n'
                               % (fn, os.getcwd()))
             return
         if not fn.endswith(".py"):
@@ -215,9 +220,9 @@ class Interactive(cmd.Cmd):
 
         src = open(fn).read()
         code = compile(src, fn, "exec")
- 
+
         img = self.pic.co_to_str(code)
- 
+
         self.conn.write(img)
         self.stdout.write(self.conn.read())
 
