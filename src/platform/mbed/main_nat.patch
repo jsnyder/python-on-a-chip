@@ -1,6 +1,31 @@
-16d15
-< #include "pm.h"
-21a21,23
-> /* Relocated via patch */
-> #include "pm.h"
-> 
+*** main_nat.c.orig	2010-08-03 11:15:39.000000000 -0500
+--- main_nat.c	2010-08-03 11:14:22.000000000 -0500
+***************
+*** 13,24 ****
+   */
+  
+  #define __IN_LIBNATIVE_C__
+- #include "pm.h"
+  
+  /* From: mbed.py */
+  #include "mbed.h"
+  #include "TextLCD.h"
+  
+  
+  static DigitalOut led1(LED1);
+  static DigitalOut led2(LED2);
+--- 13,26 ----
+   */
+  
+  #define __IN_LIBNATIVE_C__
+  
+  /* From: mbed.py */
+  #include "mbed.h"
+  #include "TextLCD.h"
+  
++ /* Relocated via patch */
++ #include "pm.h"
++ 
+  
+  static DigitalOut led1(LED1);
+  static DigitalOut led2(LED2);
