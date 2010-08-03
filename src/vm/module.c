@@ -50,6 +50,16 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     OBJ_SET_TYPE(*pmod, OBJ_TYPE_MOD);
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
 
+#ifdef HAVE_DEFAULTARGS
+    /* Clear the default args (only used by funcs) */
+    ((pPmFunc_t)*pmod)->f_defaultargs = C_NULL;
+#endif /* HAVE_DEFAULTARGS */
+
+#ifdef HAVE_CLOSURES
+    /* Clear field for closure tuple */
+    ((pPmFunc_t)*pmod)->f_closure = C_NULL;
+#endif /* HAVE_CLOSURES */
+
     /* Alloc and init attrs dict */
     heap_gcPushTempRoot(*pmod, &objid);
     retval = dict_new(&pobj);
@@ -58,11 +68,6 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
 
     /* A module's globals is the same as its attrs */
     ((pPmFunc_t)*pmod)->f_globals = (pPmDict_t)pobj;
-
-#ifdef HAVE_DEFAULTARGS
-    /* Clear the default args (only used by funcs) */
-    ((pPmFunc_t)*pmod)->f_defaultargs = C_NULL;
-#endif /* HAVE_DEFAULTARGS */
 
     return retval;
 }
