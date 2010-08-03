@@ -525,7 +525,7 @@ zip: pymite_mbed.zip
 
 pymite_mbed.zip: $(TARGET)_nat.c $(TARGET)_img.c ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c
 	$(RM) $@
-	patch -N -p0 $(TARGET)_nat.c $(TARGET)_nat.patch
+	-patch -N -p0 $(TARGET)_nat.c < $(TARGET)_nat.patch
 	cd ../../.. && zip src/platform/mbed/$@ src/vm/*.c src/vm/*.h src/platform/mbed/* -x src/platform/mbed/Makefile -x src/platform/mbed/README -x src/platform/mbed/*.py -x src/platform/mbed/main_nat.patch
 
 
