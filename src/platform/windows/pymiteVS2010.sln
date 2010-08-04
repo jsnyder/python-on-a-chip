@@ -1,7 +1,6 @@
-
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pymite", "pymite.vcproj", "{95D2BB14-A2AD-4CB9-8AEF-EE5F5F9A3C60}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pymite", "pymiteVS2010.vcxproj", "{95D2BB14-A2AD-4CB9-8AEF-EE5F5F9A3C60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
