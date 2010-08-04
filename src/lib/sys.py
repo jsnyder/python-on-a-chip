@@ -67,7 +67,7 @@ def exit(val):
 def gc():
     """__NATIVE__
     PmReturn_t retval = PM_RET_OK;
-
+#ifdef HAVE_GC
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
     {
@@ -76,7 +76,7 @@ def gc():
     }
 
     retval = heap_gcRun();
-
+#endif
     NATIVE_SET_TOS(PM_NONE);
 
     return retval;
