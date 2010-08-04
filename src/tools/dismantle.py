@@ -30,20 +30,15 @@ __usage__ = """Usage:
 #  into a code object and recursively dismantling
 #  and disassembling the code object.
 
-#### CONSTS ####
+
 STRINGTOOLONG = 32
 
 
-#### MODULES ####
 import dis, sys, types, py_compile, time
 
 
-#### FXNS ####
-
 def dismantle_file(fn):
-    """
-    Dismantle the .py file, fn.
-    Returns the root code object.
+    """Dismantles the .py file, fn. Returns the root code object.
     """
 
     #create a code object
@@ -63,24 +58,23 @@ def dismantle(source, fn=""):
         pyc = ""
 
     else:
-        #compile the .py file
+        # Compile to .pyc and open
         py_compile.compile(fn)
-        #open the .pyc file
         f = open(fn + 'c','rb')
         pyc = f.read()
         f.close()
 
-        #check for magic number
+        # Check for magic number
         magic = int((ord(pyc[0])      ) | (ord(pyc[1]) <<  8) |
                     (ord(pyc[2]) << 16) | (ord(pyc[3]) << 24))
 
-        #grab the next 4 bytes (don't know what they do)
+        # Grab the next 4 bytes (don't know what they do)
         ignore = int((ord(pyc[4])      ) | (ord(pyc[5]) <<  8) |
                      (ord(pyc[6]) << 16) | (ord(pyc[7]) << 24))
 
     code = compile(source, fn, "exec")
 
-    #print header
+    # Print header
     print "BEGIN DISMANTLE"
     print "date:           \t", time.ctime(time.time())
     print "src file:       \t", fn
@@ -91,7 +85,7 @@ def dismantle(source, fn=""):
     print "ignore:         \t0x%08x" % ignore
     print
 
-    #recurse into the code object
+    # Recurse into the code object
     rdismantle(code)
 
     print "END DISMANTLE"
@@ -99,34 +93,32 @@ def dismantle(source, fn=""):
 
 
 def rdismantle(co, parent = None):
-    """
-    Dismantle the code object, co.
-    Prints the co_* field values and
-    the co_code disassembly for each code object
-    in the file and recurses into any code objects
-    in the constant pool.
+    """Dismantles the code object, co.  Prints the co_* field values and
+    the co_code disassembly for each code object in the file and recurses
+    into any code objects in the constant pool.
     """
 
-    #create full name
+    # Create full name
     if parent:
         fullname = parent + "." + co.co_name
     else:
         fullname = co.co_name
 
-    #print object fields and values
+    # Print object fields and values
     print "fullname:       \t", fullname
     print " co_name:       \t", co.co_name
     print " co_filename:   \t", co.co_filename
     print " co_firstlineno:\t", co.co_firstlineno
     print " co_flags:      \t0x%04x"  % co.co_flags
     print " co_stacksize:  \t", co.co_stacksize
-    print " co_lnotab:     \t", repr(co.co_lnotab[:8]), "..."
+    print " co_lnotab[%3d]:\t%s" % \
+          (len(co.co_lnotab), repr(co.co_lnotab[:8]))
     print " co_argcount:   \t", co.co_argcount
     print " co_nlocals:    \t", co.co_nlocals
     print " co_freevars:   \t", co.co_freevars
     print " co_cellvars:   \t", co.co_cellvars
 
-    #print vital compound components
+    # Print vital compound components
     tabspacing = "\t\t"
 
     print " co_varnames:"
@@ -151,29 +143,28 @@ def rdismantle(co, parent = None):
             print tabspacing, i, ":\t", repr(item)
         i += 1
 
-    #print disassembly
+    # Print disassembly
     print " co_code:"
     dis.dis(co)
     print "\n"
 
-    #dismantle code objects in constant pool
+    # Dismantle code objects in constant pool
     for obj in co.co_consts:
         if type(obj) == types.CodeType:
             rdismantle(obj, fullname)
     return
 
 
-#### MAIN ####
-
 def main():
+    """Dismantles the source file given as an arg.
     """
-    Perform a dismantling of the source file, fn.
-    """
+
     if len(sys.argv) == 2:
         return dismantle_file(sys.argv[1])
     else:
         print __usage__
 
+
 if __name__ == "__main__":
-        main()
+    main()
 

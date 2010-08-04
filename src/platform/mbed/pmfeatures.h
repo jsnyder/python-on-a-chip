@@ -149,6 +149,13 @@
 #error HAVE_BYTEARRAY requires HAVE_CLASSES
 #endif
 
+/* Issue #103 Add debug info to exception reports */
+/**
+ * When defined, the code to support debug information in exception reports
+ * is included in the build.
+ */
+/*#define HAVE_DEBUG_INFO*/
+
 
 /*
  * Platform-specific definitions that are used in the VM

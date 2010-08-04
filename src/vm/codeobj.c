@@ -37,6 +37,10 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pPmCo_t pco = C_NULL;
     uint8_t *pchunk;
     uint8_t objid;
+#ifdef HAVE_DEBUG_INFO
+    uint8_t objtype;
+    uint16_t len_str;
+#endif /* HAVE_DEBUG_INFO */
 
     /* Store ptr to top of code img (less type byte) */
     uint8_t const *pci = *paddr - 1;
@@ -70,6 +74,11 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     pco->co_cellvars = C_NULL;
 #endif /* HAVE_CLOSURES */
 
+#ifdef HAVE_DEBUG_INFO
+    pco->co_firstlineno = mem_getWord(memspace, paddr);
+    pco->co_lnotab = C_NULL;
+    pco->co_filename = C_NULL;
+#endif /* HAVE_DEBUG_INFO */
 
     /* Load names (tuple obj) */
     heap_gcPushTempRoot((pPmObj_t)pco, &objid);
@@ -77,6 +86,22 @@ co_loadFromImg(PmMemSpace_t memspace, uint8_t const **paddr, pPmObj_t *r_pco)
     heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
     pco->co_names = (pPmTuple_t)pobj;
+
+#ifdef HAVE_DEBUG_INFO
+    /* Get address in memspace of line number table (including length) */
+    objtype = mem_getByte(memspace, paddr);
+    C_ASSERT(objtype == OBJ_TYPE_STR);
+    pco->co_lnotab = *paddr;
+    len_str = mem_getWord(memspace, paddr);
+    *paddr = *paddr + len_str;
+
+    /* Get address in memspace of CO's filename (excluding length) */
+    objtype = mem_getByte(memspace, paddr);
+    C_ASSERT(objtype == OBJ_TYPE_STR);
+    len_str = mem_getWord(memspace, paddr);
+    pco->co_filename = *paddr;
+    *paddr = *paddr + len_str;
+#endif /* HAVE_DEBUG_INFO */
 
     /* Load consts (tuple obj) assume it follows names */
     heap_gcPushTempRoot((pPmObj_t)pco, &objid);

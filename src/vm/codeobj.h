@@ -32,12 +32,24 @@
 #define CI_FLAGS_FIELD      4
 #define CI_STACKSIZE_FIELD  5
 #define CI_NLOCALS_FIELD    6
+
 #ifdef HAVE_CLOSURES
-#define CI_FREEVARS_FIELD   7
-#define CI_NAMES_FIELD      8
+# define CI_FREEVARS_FIELD  7
+# ifdef HAVE_DEBUG_INFO
+#  define CI_FIRST_LINE_NO  8
+#  define CI_NAMES_FIELD    10
+# else
+#  define CI_NAMES_FIELD    8
+# endif /* HAVE_DEBUG_INFO */
 #else
-#define CI_NAMES_FIELD      7
+# ifdef HAVE_DEBUG_INFO
+#  define CI_FIRST_LINE_NO  7
+#  define CI_NAMES_FIELD    9
+# else
+#  define CI_NAMES_FIELD    7
+# endif /* HAVE_DEBUG_INFO */
 #endif /* HAVE_CLOSURES */
+
 
 /** Native code image size */
 #define NATIVE_IMAGE_SIZE   4
@@ -70,6 +82,15 @@ typedef struct PmCo_s
     pPmTuple_t co_consts;
     /** Address in memspace of bytecode (or native function) */
     uint8_t const *co_codeaddr;
+
+#ifdef HAVE_DEBUG_INFO
+    /** Address in memspace of the line number table */
+    uint8_t const *co_lnotab;
+    /** Address in memspace of the filename */
+    uint8_t const *co_filename;
+    /** Line number of first source line of lnotab */
+    uint16_t co_firstlineno;
+#endif /* HAVE_DEBUG_INFO */
 
 #ifdef HAVE_CLOSURES
     /** Address in RAM of cellvars tuple */

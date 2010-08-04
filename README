@@ -92,10 +92,11 @@ Thanks
 
 My personal thanks go out to these people for their recent contribution to PyMite:
 
+- Michael (xinx): Reported PySerial issue in ipm and provided fix.
 - Michael Reithinger: Reported GC defects and provided fixes.
 - Davide Carboni: Reported a build break, implemented module loading in ipm.
 - Markus Gritsch: Feedback on PIC port and ipm docs.
-- Bryan Jones: Making Doxygen docs, developing port to PIC24/dsPIC33 platform.
+- Bryan Jones: Making Doxygen docs, developing port to PIC24/dsPIC33 platform, mainlining VM bug fixes.
 - Trammell Hudson: Patches for string concatenation and backtick operator (UNARY_CONVERT).
 - Duncan McGreggor: Creating an excellent Python-on-a-Chip logo.
 - Tyler Wilson: Porting PyMite to the Windows platform and making good VM improvement suggestions.
