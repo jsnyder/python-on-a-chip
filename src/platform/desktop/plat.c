@@ -270,7 +270,6 @@ plat_reportError(PmReturn_t result)
                linesum,
                ((pPmString_t)pstr)->val);
     }
-    printf("  <module>.\n");
 
     /* Print error */
     res = (uint8_t)result;
