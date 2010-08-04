@@ -31,7 +31,10 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     printf("Running Python...\n");
+    // Uncommon one or the other to run the main code, or
+    // to run sample code.
     retval = pm_run((uint8_t *)"main");
+    //retval = pm_run((uint8_t *)"sample_lib");
 
     printf("\n\nPython finished, return of 0x%02x.\nResetting...\n\n", retval);
     // Wait a bit, so reset so flash by too fast.

@@ -15,28 +15,33 @@
 //@{
 /** Implements the Python \ref pic24_dspic33::digital_io::__init__ function. 
  *  The \ref configDigitalPin function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 configDigitalPinPy(pPmFrame_t *ppframe);
 
 /** Implements the Python \ref pic24_dspic33::digital_io::set function.
  *  The \ref setDigitalPin function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 setDigitalPinPy(pPmFrame_t *ppframe);
 
 /** Implements the Python \ref pic24_dspic33::digital_io::get function.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 readDigitalValuePy(pPmFrame_t *ppframe);
 
 /** Implements the Python \ref pic24_dspic33::digital_io::getPin function.
  *  The \ref readDigitalPin function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t readDigitalPinPy(pPmFrame_t *ppframe);
 
 /** Implements the Python \ref pic24_dspic33::digital_io::getLatch function.
  *  The \ref readDigitalLatch function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t readDigitalLatchPy(pPmFrame_t *ppframe);
 //@}
@@ -46,17 +51,20 @@ PmReturn_t readDigitalLatchPy(pPmFrame_t *ppframe);
 //@{
 /** Implements the Python \ref pic24_dspic33::analog_input::__init__ function. 
  *  The \ref configAnalogPin function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 configAnalogPinPy(pPmFrame_t *ppframe);
 
 
 /** Implements the Python \ref pic24_dspic33::analog_input::getCode function. 
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 readAnalogCodePy(pPmFrame_t *ppframe);
 
 /** Implements the Python \ref pic24_dspic33::analog_input::getVoltage function.
+ *  @param ppframe Python stack frame containing arguments to the function.
  *  @param f_scale Scale factor to multiply the code by before returning a value.
  */
 PmReturn_t
@@ -68,6 +76,7 @@ readAnalogFloatPy(pPmFrame_t *ppframe, float f_scale);
 
 /** Implements the Python \ref pic24_dspic33::pwm::__init__ function.
  *  The \ref configPwm function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 configPwmPy(pPmFrame_t *ppframe);
@@ -87,6 +96,7 @@ configPwm(uint32_t u32_freq, bool_t b_isTimer2, uint16_t u16_oc,
 
 /** Implements the Python \ref pic24_dspic33::pwm::setCounts function.
  *  The \ref setPwmCounts function does the work.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 setPwmCountsPy(pPmFrame_t *ppframe);
@@ -101,6 +111,7 @@ PmReturn_t
 setPwmCounts(uint16_t u16_counts, uint16_t u16_oc);
 
 /** Implements the Python \ref pic24_dspic33::pwm::set function.
+ *  @param ppframe Python stack frame containing arguments to the function.
  */
 PmReturn_t
 setPwmRatioPy(pPmFrame_t *ppframe);

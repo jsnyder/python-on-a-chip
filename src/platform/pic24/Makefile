@@ -3,7 +3,8 @@ PLATFORM := $(notdir $(CURDIR))
 PM_LIB_ROOT = pmvm_$(PLATFORM)
 PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
-PM_USR_SOURCES = pic24_dspic33.py main.py
+PM_USR_SOURCES = pic24_dspic33.py main.py \
+    # sample_lib.py # Uncomment to run sample code
 PM_TEST_USR_SOURCES = pic24_dspic33.py system_test/main.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
 IPM = true
@@ -21,7 +22,8 @@ TARGET = main
 PIC24_LIB_SOURCES = common/pic24_clockfreq.c \
 	common/pic24_configbits.c common/pic24_uart.c \
 	common/pic24_util.c common/pic24_serial.c \
-	common/pic24_timer.c common/pic24_pyports.c
+	common/pic24_timer.c common/pic24_pyports.c \
+    common/pic24_adc.c
 SOURCES = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c \
 	pyFuncsInC.c pyToC.c $(PIC24_LIB_SOURCES)
 OBJS = $(SOURCES:.c=.o)

@@ -156,7 +156,7 @@ class pwm(object):
         pass
 
     ## Set the duty cycle for a PWM output.
-    #  @param ucounts A number of PR2/3 counts which gives the on
+    #  @param counts The number of PR2/3 counts which gives the on
     #      time of the PWM wave to generate.
     def setCounts(self, counts):
         """__NATIVE__

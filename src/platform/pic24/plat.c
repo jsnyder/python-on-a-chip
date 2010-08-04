@@ -164,18 +164,163 @@ plat_getMsTicks(uint32_t *r_ticks)
     return PM_RET_OK;
 }
 
-#define PSTR(x) x
-#define printf_P printf
-#define puts_P puts
-
 void
 plat_reportError(PmReturn_t result)
 {
+
+#ifdef HAVE_DEBUG_INFO
+#define LEN_FNLOOKUP 26
+#define LEN_EXNLOOKUP 17
+
+    uint8_t res;
+    pPmFrame_t pframe;
+    pPmObj_t pstr;
+    PmReturn_t retval;
+    uint8_t bcindex;
+    uint16_t bcsum;
+    uint16_t linesum;
+    uint16_t len_lnotab;
+    uint8_t const *plnotab;
+    uint16_t i;
+
+    /* This table should match src/vm/fileid.txt */
+    char const * const fnlookup[LEN_FNLOOKUP] = {
+        "<no file>",
+        "codeobj.c",
+        "dict.c",
+        "frame.c",
+        "func.c",
+        "global.c",
+        "heap.c",
+        "img.c",
+        "int.c",
+        "interp.c",
+        "pmstdlib_nat.c",
+        "list.c",
+        "main.c",
+        "mem.c",
+        "module.c",
+        "obj.c",
+        "seglist.c",
+        "sli.c",
+        "strobj.c",
+        "tuple.c",
+        "seq.c",
+        "pm.c",
+        "thread.c",
+        "float.c",
+        "class.c",
+        "bytearray.c",
+    };
+
+    /* This table should match src/vm/pm.h PmReturn_t */
+    char const * const exnlookup[LEN_EXNLOOKUP] = {
+        "Exception",
+        "SystemExit",
+        "IoError",
+        "ZeroDivisionError",
+        "AssertionError",
+        "AttributeError",
+        "ImportError",
+        "IndexError",
+        "KeyError",
+        "MemoryError",
+        "NameError",
+        "SyntaxError",
+        "SystemError",
+        "TypeError",
+        "ValueError",
+        "StopIteration",
+        "Warning",
+    };
+
+    /* Print traceback */
+    printf("Traceback (most recent call first):\n");
+
+    /* Get the top frame */
+    pframe = gVmGlobal.pthread->pframe;
+
+    /* If it's the native frame, print the native function name */
+    if (pframe == (pPmFrame_t)&(gVmGlobal.nativeframe))
+    {
+
+        /* The last name in the names tuple of the code obj is the name */
+        retval = tuple_getItem((pPmObj_t)gVmGlobal.nativeframe.nf_func->
+                               f_co->co_names, -1, &pstr);
+        if ((retval) != PM_RET_OK)
+        {
+            printf("  Unable to get native func name.\n");
+            return;
+        }
+        else
+        {
+            printf("  %s() __NATIVE__\n", ((pPmString_t)pstr)->val);
+        }
+
+        /* Get the frame that called the native frame */
+        pframe = (pPmFrame_t)gVmGlobal.nativeframe.nf_back;
+    }
+
+    /* Print the remaining frame stack */
+    for (; pframe != C_NULL; pframe = pframe->fo_back)
+    {
+        /* The last name in the names tuple of the code obj is the name */
+        retval = tuple_getItem((pPmObj_t)pframe->fo_func->f_co->co_names,
+                               -1,
+                               &pstr);
+        if ((retval) != PM_RET_OK) break;
+
+        /*
+         * Get the line number of the current bytecode. Algorithm comes from:
+         * http://svn.python.org/view/python/trunk/Objects/lnotab_notes.txt?view=markup
+         */
+        bcindex = pframe->fo_ip - pframe->fo_func->f_co->co_codeaddr;
+        plnotab = pframe->fo_func->f_co->co_lnotab;
+        len_lnotab = mem_getWord(MEMSPACE_PROG, &plnotab);
+        bcsum = 0;
+        linesum = pframe->fo_func->f_co->co_firstlineno;
+        for (i = 0; i < len_lnotab; i += 2)
+        {
+            bcsum += mem_getByte(MEMSPACE_PROG, &plnotab);
+            if (bcsum > bcindex) break;
+            linesum += mem_getByte(MEMSPACE_PROG, &plnotab);
+        }
+        printf("  File \"%s\", line %d, in %s\n",
+               ((pPmFrame_t)pframe)->fo_func->f_co->co_filename,
+               linesum,
+               ((pPmString_t)pstr)->val);
+    }
+    printf("  <module>.\n");
+
     /* Print error */
-    printf_P(PSTR("Error:     0x%02X\n"), result);
-    printf_P(PSTR("  Release: 0x%02X\n"), gVmGlobal.errVmRelease);
-    printf_P(PSTR("  FileId:  0x%02X\n"), gVmGlobal.errFileId);
-    printf_P(PSTR("  LineNum: %d\n"), gVmGlobal.errLineNum);
+    res = (uint8_t)result;
+    if ((res > 0) && ((res - PM_RET_EX) < LEN_EXNLOOKUP))
+    {
+        printf("%s", exnlookup[res - PM_RET_EX]);
+    }
+    else
+    {
+        printf("Error code 0x%02X", result);
+    }
+    printf(" detected by ");
+
+    if ((gVmGlobal.errFileId > 0) && (gVmGlobal.errFileId < LEN_FNLOOKUP))
+    {
+        printf("%s:", fnlookup[gVmGlobal.errFileId]);
+    }
+    else
+    {
+        printf("FileId 0x%02X line ", gVmGlobal.errFileId);
+    }
+    printf("%d\n", gVmGlobal.errLineNum);
+
+#else /* HAVE_DEBUG_INFO */
+
+    /* Print error */
+    printf("Error:     0x%02X\n", result);
+    printf("  Release: 0x%02X\n", gVmGlobal.errVmRelease);
+    printf("  FileId:  0x%02X\n", gVmGlobal.errFileId);
+    printf("  LineNum: %d\n", gVmGlobal.errLineNum);
 
     /* Print traceback */
     {
@@ -183,7 +328,7 @@ plat_reportError(PmReturn_t result)
         pPmObj_t pstr;
         PmReturn_t retval;
 
-        puts_P(PSTR("Traceback (top first):"));
+        printf("Traceback (top first):\n");
 
         /* Get the top frame */
         pframe = (pPmObj_t)gVmGlobal.pthread->pframe;
@@ -197,12 +342,12 @@ plat_reportError(PmReturn_t result)
                                    f_co->co_names, -1, &pstr);
             if ((retval) != PM_RET_OK)
             {
-                puts_P(PSTR("  Unable to get native func name."));
+                printf("  Unable to get native func name.\n");
                 return;
             }
             else
             {
-                printf_P(PSTR("  %s() __NATIVE__\n"), ((pPmString_t)pstr)->val);
+                printf("  %s() __NATIVE__\n", ((pPmString_t)pstr)->val);
             }
 
             /* Get the frame that called the native frame */
@@ -219,8 +364,9 @@ plat_reportError(PmReturn_t result)
                                    fo_func->f_co->co_names, -1, &pstr);
             if ((retval) != PM_RET_OK) break;
 
-            printf_P(PSTR("  %s()\n"), ((pPmString_t)pstr)->val);
+            printf("  %s()\n", ((pPmString_t)pstr)->val);
         }
-        puts_P(PSTR("  <module>."));
+        printf("  <module>.\n");
     }
+#endif /* HAVE_DEBUG_INFO */
 }

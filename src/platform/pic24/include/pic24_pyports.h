@@ -37,11 +37,14 @@
  *
  *  \section pinConfiguration Pin configuration
  *  The PIC24 and dsPIC33 processors support a rich and varied I/O
- *  ability. Before configuring a pin, the I/O system must first be
- *  initialized by a call to \ref initIoConst. Next, each pin
- *  most be configured. The high-level functions 
- *  \ref configDigitalPin, \ref configAnalogPinC simplify this
- *  process. \todo more here
+ *  ability. To use I/O, each pin
+ *  must first be configured. The high-level functions 
+ *  \ref configDigitalPin, \ref configAnalogPin simplify this
+ *  process. Low-level commands, detailed below, can also be used.
+ *  After configuring the pin, perform I/O by reading the value on the pin
+ *  (\ref readDigitalPin) or the value last written 
+ *  (\ref readDigitalLatch), or by writing the pin
+ *  (\ref setDigitalPin).
  *
  *  \subsection lowLevelPinConfiguration Low-level pin configuration
  *  Low-level I/O pin configuration requires making the following

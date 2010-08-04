@@ -11,30 +11,12 @@
 # is seen in the file COPYING up one directory from this.
 
 ## @file
-#  @brief PIC24/dsPIC33-specific Python functions
+#  @brief PIC24/dsPIC33 main code to run ipm.
 #
 
-import pic24_dspic33 as pic
 import sys
 import ipm
 
-# Demo some of the PIC hardware functions
-# ---------------------------------------
-# Toggle a pin
-#                    port pin isInput isOpenDrain pullDir
-dio = pic.digital_io(1,   1,  False,  False,      0)
-dio.set(not dio.get())
-
-# Do some analog input
-ain = pic.analog_input(0)
-# Uncomment below if not in simulation mode
-#print ain.get()
-
-# Do some PWM
-#              freq  isTimer2 oc ocPin
-pwm1 = pic.pwm(1000, True,    2, 0)
-pwm1.set(0.5)
-
-print "Welcome to PIC24 Python! Free space:", sys.heap()
+print "Welcome to PIC24/dsPIC33 Python! (Free space, total RAM):", sys.heap()
 print "Starting interactive mode."
 ipm.ipm()

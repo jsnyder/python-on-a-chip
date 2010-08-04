@@ -23,6 +23,9 @@ In the module \ref src/platform/pic24/main.py "main.py", we see that
 the program prints a "Hello world" message, defines and runs an 
 initialization function and then executes ipm.
 
+Additional sample code in sample_lib.py illustrates use of the
+\ref src/platform/pic24/pic24_dspic33.py "PIC24/dsPIC33" library.
+
 
 \section building Building the Project
 
@@ -34,29 +37,33 @@ the Cygwin Python</b> and
 Cygwin Python before the standard Windows Python, since this project
 WILL NOT BUILD with Windows Python. 
 
+Open the p14p.mcp project file with the 
+Microchip MPLAB IDE
+then build the project. However, you must have the path to Cygwin's
+make.exe in your Windows path for this to work.
+
+Alternatively, you can compile from the command line.
 Start with a clean PyMite tree.  Edit 
 <a href="../../../src/platform/pic24/Makefile">src/platform/pic24/Makefile</a>
-near line 14 to set the part number of your PIC.
-
-<a href="../../../src/platform/pic24/Makefile">src/platform/pic24/Makefile</a>
-will build the PyMite VM archive as well as the 
-sample application
+near line 14 to set the part number of your PIC. Then, execute the following
+at the command prompt, which will build the PyMite VM archive as well as the 
+sample application.
 
 @verbatim
     $ cd src/platform/pic24
     $ make
 @endverbatim
 
-As a second alternative, the p14p.mcp project file loaded into the Microchip
-MPLAB IDE will build the project. However, you must have the path to Cygwin's
-make.exe in your Windows path for this to work.
-
 
 \section flashing Flashing the Binary
 
 The steps above result in the binary file that need to go on the PIC.
+Use a PICKit2/3 to program your PIC.
+
+*/
+
+/* Old info
 The Makefile is configured for use with the 
 <a href="http://www.reesemicro.com/Home/pic24-software-library-collection/pic24-bully-bootloader">Bully
-Bootloader</a>. Alternatively, use a PICKit2/3 to program your PIC.
-
+Bootloader</a>. 
 */

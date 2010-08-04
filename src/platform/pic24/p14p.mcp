@@ -116,6 +116,8 @@ file_088=.
 file_089=.
 file_090=.
 file_091=.
+file_092=.
+file_093=.
 [GENERATED_FILES]
 file_000=no
 file_001=yes
@@ -209,6 +211,8 @@ file_088=no
 file_089=no
 file_090=no
 file_091=no
+file_092=no
+file_093=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -302,6 +306,8 @@ file_088=yes
 file_089=yes
 file_090=yes
 file_091=yes
+file_092=yes
+file_093=yes
 [FILE_INFO]
 file_000=main.c
 file_001=main_img.c
@@ -395,6 +401,8 @@ file_088=README
 file_089=include\devices\gen_ports_h.pl
 file_090=pic24_dspic33.py
 file_091=..\..\lib\__bi.py
+file_092=..\..\tools\pmImgCreator.py
+file_093=sample_lib.py
 [SUITE_INFO]
 suite_guid={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 suite_state=
@@ -408,7 +416,7 @@ enable=0
 transport=0
 format=0
 [CUSTOM_BUILD]
-Pre-Build=make -C . bytecode
+Pre-Build=make bytecode
 Pre-BuildEnabled=1
 Post-Build=
 Post-BuildEnabled=1

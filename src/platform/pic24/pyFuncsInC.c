@@ -236,7 +236,7 @@ configAnalogPinPy(pPmFrame_t *ppframe)
 /** Read an analog code from the ADC and return it.
  *  @param ppframe Stack frame of Python arguments 
  *      passed to the function
- *  @param pu16_code Code read from the ADC.
+ *  @param pu16_analogCode Code read from the ADC.
  */
 static PmReturn_t
 readAnalogCode(pPmFrame_t *ppframe, uint16_t* pu16_analogCode)
@@ -406,8 +406,8 @@ configPwm(uint32_t u32_freq, bool_t b_isTimer2, uint16_t u16_oc,
  *  Python PWM object.
  *  @param ppframe Stack frame containing Python arguments.
  *                 Argument 0 should be the object.
- *  @param u16_oc Output compare module to use.
- *  @param u16_prn The value of the PR2/3 register. The register
+ *  @param pu16_oc Output compare module to use.
+ *  @param pu16_prn The value of the PR2/3 register. The register
  *      passed is based on which timer (Timer 2 or 3) the OC
  *      module was configured to use.
  */
