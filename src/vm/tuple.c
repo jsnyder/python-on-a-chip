@@ -46,8 +46,8 @@ tuple_loadFromImg(PmMemSpace_t memspace,
 
     /* Create empty tuple */
     retval = tuple_new(n, r_ptuple);
-    ((pPmTuple_t)*r_ptuple)->length = 0;
     PM_RETURN_IF_ERROR(retval);
+    ((pPmTuple_t)*r_ptuple)->length = 0;
 
     /* Load the next n objs into tuple */
     heap_gcPushTempRoot((pPmObj_t)*r_ptuple, &objid);
