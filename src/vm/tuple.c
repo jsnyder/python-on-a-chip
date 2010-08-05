@@ -182,7 +182,7 @@ tuple_print(pPmObj_t ptup)
             plat_putByte(',');
             plat_putByte(' ');
         }
-        retval = obj_print(((pPmTuple_t)ptup)->val[index], 1);
+        retval = obj_print(((pPmTuple_t)ptup)->val[index], C_FALSE, C_TRUE);
         PM_RETURN_IF_ERROR(retval);
     }
 

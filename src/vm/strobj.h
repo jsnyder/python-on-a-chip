@@ -160,14 +160,14 @@ int8_t string_compare(pPmString_t pstr1, pPmString_t pstr2);
 #ifdef HAVE_PRINT
 /**
  * Sends out a string object bytewise. Escaping and framing is configurable
- * via marshall.
+ * via is_escaped.
  *
  * @param pstr Ptr to string object
- * @param marshall If 0, print out string as is. Otherwise escape unprintable
- *                 characters and surround string with single quotes.
+ * @param is_escaped If 0, print out string as is. Otherwise escape unprintable
+ *                   characters and surround string with single quotes.
  * @return Return status
  */
-PmReturn_t string_print(pPmObj_t pstr, uint8_t marshall);
+PmReturn_t string_print(pPmObj_t pstr, uint8_t is_escaped);
 #endif /* HAVE_PRINT */
 
 /**
@@ -207,15 +207,15 @@ string_concat(pPmString_t pstr1, pPmString_t pstr2, pPmObj_t *r_pstring);
 PmReturn_t string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring);
 
 /**
- * Prints n bytes, formatting them if marshall is true
+ * Prints n bytes, formatting them if is_escaped is true
  *
  * @param pb Pointer to C bytes
- * @param marshall Boolean true if bytes are to be formatted
+ * @param is_escaped Boolean true if string is to be escaped
  * @param n Number of bytes to print
  * @return Return status
  */
 PmReturn_t string_printFormattedBytes(uint8_t *pb,
-                                      uint8_t marshall,
+                                      uint8_t is_escaped,
                                       uint16_t n);
 #endif /* HAVE_STRING_FORMAT */
 

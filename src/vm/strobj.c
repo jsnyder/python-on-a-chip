@@ -160,14 +160,14 @@ string_compare(pPmString_t pstr1, pPmString_t pstr2)
 
 #ifdef HAVE_PRINT
 PmReturn_t
-string_printFormattedBytes(uint8_t *pb, uint8_t marshall, uint16_t n)
+string_printFormattedBytes(uint8_t *pb, uint8_t is_escaped, uint16_t n)
 {
     uint16_t i;
     uint8_t ch;
     uint8_t nibble;
     PmReturn_t retval = PM_RET_OK;
 
-    if (marshall)
+    if (is_escaped)
     {
         retval = plat_putByte('\'');
         PM_RETURN_IF_ERROR(retval);
@@ -176,15 +176,16 @@ string_printFormattedBytes(uint8_t *pb, uint8_t marshall, uint16_t n)
     for (i = 0; i < n; i++)
     {
         ch = pb[i];
-        if (ch == '\\')
+        if (is_escaped && (ch == '\\'))
         {
             /* Output an additional backslash to escape it. */
             retval = plat_putByte('\\');
             PM_RETURN_IF_ERROR(retval);
         }
 
-        /* If the marshalled char is not printable, print its hex escape code */
-        if (marshall && (ch < (uint8_t)32 || ch >= (uint8_t)128))
+        /* Print the hex escape code of non-printable characters */
+        if (is_escaped
+            && ((ch < (uint8_t)32) || (ch >= (uint8_t)128) || (ch == '\'')))
         {
             plat_putByte('\\');
             plat_putByte('x');
@@ -206,7 +207,7 @@ string_printFormattedBytes(uint8_t *pb, uint8_t marshall, uint16_t n)
             PM_RETURN_IF_ERROR(retval);
         }
     }
-    if (marshall)
+    if (is_escaped)
     {
         retval = plat_putByte('\'');
     }
@@ -216,7 +217,7 @@ string_printFormattedBytes(uint8_t *pb, uint8_t marshall, uint16_t n)
 
 
 PmReturn_t
-string_print(pPmObj_t pstr, uint8_t marshall)
+string_print(pPmObj_t pstr, uint8_t is_escaped)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -230,7 +231,7 @@ string_print(pPmObj_t pstr, uint8_t marshall)
     }
 
     retval = string_printFormattedBytes(&(((pPmString_t)pstr)->val[0]),
-                                        marshall,
+                                        is_escaped,
                                         ((pPmString_t)pstr)->length);
 
     return retval;

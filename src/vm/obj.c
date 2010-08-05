@@ -342,7 +342,7 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 
 #ifdef HAVE_PRINT
 PmReturn_t
-obj_print(pPmObj_t pobj, uint8_t marshallString)
+obj_print(pPmObj_t pobj, uint8_t is_expr_repr, uint8_t is_nested)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -351,7 +351,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
     switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_NON:
-            if (marshallString)
+            if (!is_expr_repr || is_nested)
             {
                 plat_putByte('N');
                 plat_putByte('o');
@@ -368,7 +368,7 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             break;
 #endif /* HAVE_FLOAT */
         case OBJ_TYPE_STR:
-            retval = string_print(pobj, marshallString);
+            retval = string_print(pobj, (is_expr_repr || is_nested));
             break;
         case OBJ_TYPE_TUP:
             retval = tuple_print(pobj);
@@ -424,11 +424,6 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
         case OBJ_TYPE_CIO:
         case OBJ_TYPE_MTH:
         case OBJ_TYPE_SQI:
-            if (marshallString)
-            {
-                retval = plat_putByte('\'');
-                PM_RETURN_IF_ERROR(retval);
-            }
             plat_putByte('<');
             plat_putByte('o');
             plat_putByte('b');
@@ -449,10 +444,6 @@ obj_print(pPmObj_t pobj, uint8_t marshallString)
             plat_putByte('x');
             _int_printHex((intptr_t)pobj);
             retval = plat_putByte('>');
-            if (marshallString)
-            {
-                retval = plat_putByte('\'');
-            }
             break;
 
         default:

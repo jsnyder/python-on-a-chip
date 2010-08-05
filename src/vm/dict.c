@@ -278,13 +278,13 @@ dict_print(pPmObj_t pdict)
         }
         retval = seglist_getItem(keys, index, &pobj1);
         PM_RETURN_IF_ERROR(retval);
-        retval = obj_print(pobj1, 1);
+        retval = obj_print(pobj1, C_FALSE, C_TRUE);
         PM_RETURN_IF_ERROR(retval);
 
         plat_putByte(':');
         retval = seglist_getItem(vals, index, &pobj1);
         PM_RETURN_IF_ERROR(retval);
-        retval = obj_print(pobj1, 1);
+        retval = obj_print(pobj1, C_FALSE, C_TRUE);
         PM_RETURN_IF_ERROR(retval);
     }
 

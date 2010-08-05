@@ -763,7 +763,7 @@ interpret(const uint8_t returnOnNoThreads)
 
             case PRINT_ITEM:
                 /* Print out topmost stack element */
-                retval = obj_print(TOS, (uint8_t)0);
+                retval = obj_print(TOS, (uint8_t)(bc == PRINT_EXPR), C_FALSE);
                 PM_BREAK_IF_ERROR(retval);
                 SP--;
                 if (bc != PRINT_EXPR)

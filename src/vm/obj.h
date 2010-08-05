@@ -346,13 +346,18 @@ int8_t obj_compare(pPmObj_t pobj1, pPmObj_t pobj2);
  * Print an object, thereby using objects helpers.
  *
  * @param   pobj Ptr to object for printing.
- * @param   marshallString Only has influence on the way strings are printed.
- *                         If 0, just output the string bytewise. Otherwise,
- *                         surround with single quotes and escape unprintable
- *                         characters.
+ * @param   is_expr_repr Influences the way None and strings are printed.
+ *                       If 0, None is printed, strings are printed.
+ *                       If 1, None is not printed and strings are printed
+ *                       surrounded with single quotes and unprintable
+ *                       characters are escaped.
+ * @param   is_nested    Influences the way None and strings are printed.
+ *                       If 1, None will be printed and strings will be
+ *                       surrounded with single quotes and escaped.
+ *                       This argument overrides the is_expr_repr argument.
  * @return  Return status
  */
-PmReturn_t obj_print(pPmObj_t pobj, uint8_t marshallString);
+PmReturn_t obj_print(pPmObj_t pobj, uint8_t is_expr_repr, uint8_t is_nested);
 
 #ifdef HAVE_BACKTICK
 /**

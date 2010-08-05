@@ -92,6 +92,7 @@ Thanks
 
 My personal thanks go out to these people for their recent contribution to PyMite:
 
+- J.W. Bruce: Reporting build issue and provided fix.
 - Michael (xinx): Reported PySerial issue in ipm and provided fix.
 - Michael Reithinger: Reported GC defects and provided fixes.
 - Davide Carboni: Reported a build break, implemented module loading in ipm.
