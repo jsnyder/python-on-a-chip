@@ -32,34 +32,29 @@
 #define INTERP_RETURN_ON_NO_THREADS  1
 
 
-/** frame pointer ; currently for single thread */
-#define FP              (gVmGlobal.pthread->pframe)
-/** main module pointer (referred to by root frame) */
-#define MP              (gVmGlobal.pmod)
-/** instruction pointer */
-#define IP              (FP->fo_ip)
-/** argument stack pointer */
-#undef SP
-#define SP              (FP->fo_sp)
-/** memspace where the frame's func's CO came from */
-#define MS              (FP->fo_memspace)
+/** Frame pointer ; currently for single thread */
+#define PM_FP (gVmGlobal.pthread->pframe)
+/** Instruction pointer */
+#define PM_IP (PM_FP->fo_ip)
+/** Argument stack pointer */
+#define PM_SP (PM_FP->fo_sp)
 
 /** top of stack */
-#define TOS             (*(SP - 1))
+#define TOS             (*(PM_SP - 1))
 /** one under TOS */
-#define TOS1            (*(SP - 2))
+#define TOS1            (*(PM_SP - 2))
 /** two under TOS */
-#define TOS2            (*(SP - 3))
+#define TOS2            (*(PM_SP - 3))
 /** three under TOS */
-#define TOS3            (*(SP - 4))
+#define TOS3            (*(PM_SP - 4))
 /** index into stack; 0 is top, 1 is next */
-#define STACK(n)        (*(SP - ((n) + 1)))
+#define STACK(n)        (*(PM_SP - ((n) + 1)))
 /** pops an obj from the stack */
-#define PM_POP()        (*(--SP))
+#define PM_POP()        (*(--PM_SP))
 /** pushes an obj on the stack */
-#define PM_PUSH(pobj)   (*(SP++) = (pobj))
+#define PM_PUSH(pobj)   (*(PM_SP++) = (pobj))
 /** gets the argument (S16) from the instruction stream */
-#define GET_ARG()       mem_getWord(MS, &IP)
+#define GET_ARG()       mem_getWord(PM_FP->fo_memspace, &PM_IP)
 
 /** pushes an obj in the only stack slot of the native frame */
 #define NATIVE_SET_TOS(pobj) (gVmGlobal.nativeframe.nf_stack = \
