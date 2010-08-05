@@ -17,7 +17,7 @@ ifeq ($(DEBUG),true)
 endif
 CINCS = -I../../vm -I../../platform/desktop
 # Removed -Werror until Issue 53 is resolved.
-CFLAGS = -Os -Wall -Wstrict-prototypes $(CDEFS) $(CINCS) 
+CFLAGS = -Os -fno-strict-aliasing -Wall -Wstrict-prototypes $(CDEFS) $(CINCS) 
 
 .PHONY: all check clean $(PRODUCT)
 
@@ -29,7 +29,7 @@ all : check
 check : $(PRODUCT)
 
 $(PRODUCT) : $(OBJS) $(PM_LIB_PATH) ../../platform/$(PLATFORM)/plat.o
-	$(CC) -o $@ $(OBJS) $(PM_LIB_PATH) ../../platform/$(PLATFORM)/plat.o
+	$(CC) -lm -o $@ $(OBJS) $(PM_LIB_PATH) ../../platform/$(PLATFORM)/plat.o
 ifeq ($(PLATFORM), desktop)
 	$(addprefix ./,$@)
 endif

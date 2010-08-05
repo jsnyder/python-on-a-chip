@@ -18,12 +18,12 @@ ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
 CINCS = -I../../vm -I../../platform/desktop
-CFLAGS = -Os -Wall -Wstrict-prototypes -Werror $(CDEFS) $(CINCS) 
+CFLAGS = -Os -fno-strict-aliasing -Wall -Wstrict-prototypes -Werror $(CDEFS) $(CINCS) 
 
 
 # Build an executable from the C sources
 %.out : %_nat.c %_img.c %.c ../../platform/$(PLATFORM)/plat.o
-	$(CC) $(CFLAGS) -o $@ $*_nat.c $*_img.c $*.c ../../platform/$(PLATFORM)/plat.o $(PM_LIB_PATH)
+	$(CC) $(CFLAGS) -lm -o $@ $*_nat.c $*_img.c $*.c ../../platform/$(PLATFORM)/plat.o $(PM_LIB_PATH)
 ifeq ($(PLATFORM), desktop)
 	$(addprefix ./,$@)
 endif

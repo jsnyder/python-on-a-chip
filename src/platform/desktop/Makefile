@@ -17,7 +17,8 @@ ifeq ($(DEBUG),true)
 	CDEFS += -g -ggdb -D__DEBUG__=1
 endif
 CINCS = -I$(abspath .)
-CFLAGS = -Os -Wall -gstabs -Wstrict-prototypes -Wdeclaration-after-statement -Werror -I../../vm $(CDEFS) $(CINCS)
+CFLAGS = -Os -Wall -gstabs -fno-strict-aliasing -Wstrict-prototypes \
+         -Wdeclaration-after-statement -Werror -I../../vm $(CDEFS) $(CINCS)
 
 export CFLAGS IPM PM_LIB_FN
 
@@ -30,7 +31,7 @@ $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
 
 $(TARGET).out : $(OBJS) $(PM_LIB_PATH)
-	$(CC) -o $@ $(OBJS) $(PM_LIB_PATH)
+	$(CC) -lm -o $@ $(OBJS) $(PM_LIB_PATH)
 
 # Generate native code and module images from the python source
 $(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
