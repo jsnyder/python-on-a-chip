@@ -260,4 +260,13 @@ def time():
     pass
 
 
+#
+# Waits in a busy loop for the given number of milliseconds
+#
+def wait(ms):
+    t = time() + ms
+    while time() < t:
+        pass
+
+
 # :mode=c:

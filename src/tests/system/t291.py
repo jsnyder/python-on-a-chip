@@ -32,7 +32,7 @@ print foo.baz()
 
 # Cause a GC
 print "sys.heap() = ", sys.heap()
-a = range(140) 
+a = range(120) 
 print "sys.heap() = ", sys.heap()
 
 # Overwrite a reclaimed chunk
