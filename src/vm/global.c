@@ -160,6 +160,11 @@ global_init(void)
     gVmGlobal.imgPaths.pimg[0] = (uint8_t *)&stdlib_img;
     gVmGlobal.imgPaths.pathcount = 1;
 
+#ifdef HAVE_PRINT
+    gVmGlobal.needSoftSpace = C_FALSE;
+    gVmGlobal.somethingPrinted = C_FALSE;
+#endif /* HAVE_PRINT */
+
     return retval;
 }
 

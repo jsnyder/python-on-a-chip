@@ -78,6 +78,14 @@ def _getImg():
     pass
 
 
+def x04():
+    """__NATIVE__
+    NATIVE_SET_TOS(PM_NONE);
+    return plat_putByte(0x04);
+    """
+    pass
+
+
 ##
 # Runs the target device-side interactive session.
 #
@@ -89,8 +97,6 @@ def ipm(g={}):
         s = _getImg()
         co = Co(s)
         rv = eval(co, g)
-
-        # Send a byte to indicate completion of evaluation
-        print '\x04',
+        x04()
 
 # :mode=c:

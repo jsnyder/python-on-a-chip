@@ -134,6 +134,13 @@ typedef struct PmVmGlobal_s
     pPmString_t pexnStr;
 #endif /* HAVE_ASSERT */
 
+#ifdef HAVE_PRINT
+    /** Remembers when a space is needed before printing the next object */
+    uint8_t needSoftSpace;
+    /** Remembers when something has printed since the last newline */
+    uint8_t somethingPrinted;
+#endif /* HAVE_PRINT */
+
     /** Flag to trigger rescheduling */
     uint8_t reschedule;
 } PmVmGlobal_t,

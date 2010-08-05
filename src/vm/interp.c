@@ -762,20 +762,30 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Fallthrough */
 
             case PRINT_ITEM:
+                if (gVmGlobal.needSoftSpace && (bc == PRINT_ITEM))
+                {
+                    retval = plat_putByte(' ');
+                    PM_BREAK_IF_ERROR(retval);
+                }
+                gVmGlobal.needSoftSpace = C_TRUE;
+
                 /* Print out topmost stack element */
                 retval = obj_print(TOS, (uint8_t)(bc == PRINT_EXPR), C_FALSE);
                 PM_BREAK_IF_ERROR(retval);
                 SP--;
                 if (bc != PRINT_EXPR)
                 {
-                    retval = plat_putByte(' ');
-                    PM_BREAK_IF_ERROR(retval);
                     continue;
                 }
                 /* If PRINT_EXPR, Fallthrough to print a newline */
 
             case PRINT_NEWLINE:
-                retval = plat_putByte('\n');
+                gVmGlobal.needSoftSpace = C_FALSE;
+                if (gVmGlobal.somethingPrinted)
+                {
+                    retval = plat_putByte('\n');
+                    gVmGlobal.somethingPrinted = C_FALSE;
+                }
                 PM_BREAK_IF_ERROR(retval);
                 continue;
 #endif /* HAVE_PRINT */

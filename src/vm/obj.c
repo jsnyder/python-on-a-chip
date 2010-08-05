@@ -348,6 +348,12 @@ obj_print(pPmObj_t pobj, uint8_t is_expr_repr, uint8_t is_nested)
 
     C_ASSERT(pobj != C_NULL);
 
+    /* Something gets printed unless it's None in an unnested expression */
+    if (!((OBJ_GET_TYPE(pobj) == OBJ_TYPE_NON) && is_expr_repr && !is_nested))
+    {
+        gVmGlobal.somethingPrinted = C_TRUE;
+    }
+
     switch (OBJ_GET_TYPE(pobj))
     {
         case OBJ_TYPE_NON:
