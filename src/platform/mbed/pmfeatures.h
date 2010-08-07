@@ -154,7 +154,7 @@
  * When defined, the code to support debug information in exception reports
  * is included in the build.
  */
-/*#define HAVE_DEBUG_INFO*/
+#define HAVE_DEBUG_INFO
 
 
 /*
