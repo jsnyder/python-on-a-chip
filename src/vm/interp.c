@@ -864,23 +864,10 @@ interpret(const uint8_t returnOnNoThreads)
                 /* If returning function was a generator */
                 if (((pPmFrame_t)pobj1)->fo_func->f_co->co_flags & CO_GENERATOR)
                 {
-                    /* If a loop handler is in-place, use it and pop it */
-                    if ((PM_FP->fo_blockstack != C_NULL)
-                        && (PM_FP->fo_blockstack->b_type == B_LOOP))
-                    {
-                        PM_SP = ((pPmBlock_t)pobj1)->b_sp;
-                        PM_IP = ((pPmBlock_t)pobj1)->b_handler;
-                        PM_FP->fo_blockstack = PM_FP->fo_blockstack->next;
-                    }
-
-                    /* Otherwise, raise a StopIteration exception */
-                    else
-                    {
-                        PM_RAISE(retval, PM_RET_EX_STOP);
-                        break;
-                    }
+                    /* Raise a StopIteration exception */
+                    PM_RAISE(retval, PM_RET_EX_STOP);
+                    break;
                 }
-                PM_BREAK_IF_ERROR(retval);
 #endif /* HAVE_GENERATORS */
 
 #ifdef HAVE_CLASSES
@@ -2166,10 +2153,10 @@ CALL_FUNC_CLEANUP:
         if (retval == PM_RET_EX_STOP)
         {
             pobj1 = (pPmObj_t)PM_FP;
-            while (pobj1 != C_NULL)
+            while ((retval == PM_RET_EX_STOP) && (pobj1 != C_NULL))
             {
                 pobj2 = (pPmObj_t)((pPmFrame_t)pobj1)->fo_blockstack;
-                while (pobj2 != C_NULL)
+                while ((retval == PM_RET_EX_STOP) && (pobj2 != C_NULL))
                 {
                     if (((pPmBlock_t)pobj2)->b_type == B_LOOP)
                     {
