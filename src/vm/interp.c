@@ -1739,6 +1739,31 @@ interpret(const uint8_t returnOnNoThreads)
                     && (OBJ_GET_TYPE(((pPmFunc_t)pobj1)->f_co) == OBJ_TYPE_COB)
                     && (((pPmFunc_t)pobj1)->f_co->co_flags & CO_GENERATOR))
                 {
+#ifdef HAVE_DEFAULTARGS
+                    /* Num required args := argcount - num default args */
+                    t8 = ((pPmFunc_t)pobj1)->f_co->co_argcount;
+                    if (((pPmFunc_t)pobj1)->f_defaultargs != C_NULL)
+                    {
+                        t8 -= ((pPmTuple_t)((pPmFunc_t)pobj1)->f_defaultargs)->
+                            length;
+                    }
+
+                    /*
+                     * Raise a TypeError if num args passed
+                     * is more than allowed or less than required
+                     */
+                    if (((t16 & ((uint8_t)0xFF))
+                         > ((pPmFunc_t)pobj1)->f_co->co_argcount)
+                        || ((t16 & ((uint8_t)0xFF)) < t8))
+#else
+                    if ((t16 & ((uint8_t)0xFF)) !=
+                        ((pPmFunc_t)pobj1)->f_co->co_argcount)
+#endif /* HAVE_DEFAULTARGS */
+                    {
+                        PM_RAISE(retval, PM_RET_EX_TYPE);
+                        break;
+                    }
+
                     /* Collect the function and arguments into a tuple */
                     retval = tuple_new(t16 + 1, &pobj2);
                     heap_gcPushTempRoot(pobj2, &objid2);
