@@ -72,6 +72,7 @@ if not sys.platform.lower().startswith("win"):
 else:
     PMVM_EXE = "../platform/windows/Debug/pymite.exe"
 IPM_PROMPT = "ipm> "
+IPM_PROMPT2 = ".... "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
 INIT_MESSAGE = """Python-on-a-Chip is Copyright 2003, 2006, 2007, 2009 Dean Hall and others.
@@ -271,6 +272,7 @@ class Interactive(cmd.Cmd):
 
                 # Get more input if needed
                 while not line.endswith("\n\n"):
+                    self.stdout.write(IPM_PROMPT2)
                     line += self.stdin.readline()
 
             # Print any other exception
