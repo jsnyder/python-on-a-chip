@@ -13,32 +13,17 @@
 #
 # This is a sample application that calls functions in the AVR module.
 #
-
-"""__NATIVE__
-#include <avr/io.h>
-"""
-
-
 print "Hello world."
 
-
-#
-# Initialize the AVR's port A pin direction
-#
-def init():
-    """__NATIVE__
-    /* Set port A pins as all outputs */
-    DDRA = 0xFF;
-    NATIVE_SET_TOS(PM_NONE);
-
-    return PM_RET_OK;
-    """
-    pass
-
-init()
 import avr
-avr.portA(0xaa)
 
 
-print "Expect a NameError (0xEA) after this."
-foo()
+print "Counting from 0 to 249 on portA's pins"
+
+avr.ddrA(0xFF)
+i = 0
+while i < 250:
+    avr.portA(i)
+    avr.delay(250)
+    i += 1
+print "Done."
