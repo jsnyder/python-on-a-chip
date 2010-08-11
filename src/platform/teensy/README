@@ -1,0 +1,86 @@
+===========================
+The Teensy++ Sample Project
+===========================
+
+:Author: Angus Gratton
+
+
+Purpose
+-------
+
+This is a sample project that demonstrates the use of PyMite on the
+"Teensy++" USB development boards, which are based on Atmel AT90USBxxx AVR
+microcontrollers.
+
+Find out about Teensy here: http://pjrc.com/teensy/index.html
+
+This code should work on any AT90USBxxx board. It is very similar
+to the 'avr' platform for PyMite, although it emulates USB serial
+inside the AVR itself (appears as /dev/ttyACM? on linux.)
+
+
+Details
+-------
+
+This sample project demonstrates a simple use case of PyMite on a
+microcontroller.  The file ``main.c`` is used to initialize PyMite
+and indicate the name of the module it should run.  In this case, it
+will run the module ``main.py``
+
+The module ``main.py`` contains a reimplementation of the Teensy "blinky.c"
+Morse code blinker and USB output program.
+
+There are two key differences between the Python version and the C version:
+
+* Python version uses nearly all the resources available on the Teensy++ (76% flash,
+  nearly all RAM) whereas the C version uses ~3% flash and not very much RAM(!!)
+
+* Python version is less LOC and also simpler to read, and uses easy to read "naive" 
+  methods like strings to represent morse code, as opposed to more embedded-savvy
+  bitfields in blinky.c
+
+
+Device Selection
+----------------
+
+At the time of this writing, there are two versions of the Teensy++ hardware.
+Teensy++ version 1.0 uses an Atmel AT90US646 and version 2.0 uses an Atmel
+AT90USB1286.  Edit the Makefile near line 19 to choose which device you have.
+
+As is, this code defaults to version 1.0.  If you have version 2.0 hardware
+you should edit the Makefile and also edit PM_HEAP_SIZE in pmfeatures.h near 
+line 33 to give yourself more heap.
+
+
+Building the Project
+--------------------
+
+Start with a clean PyMite tree.  Edit the ``src/platform/teensy/Makefile`` near
+line 20 to set the type of Teensy++/AVR you are using.
+
+	MCU = at90usb646       # Teensy++ 1.0
+
+You shouldn't need to change F_CPU from the default 16Mhz clock, for Teensy++.
+
+Remember to also edit src/tools/pmImgCreator.py and change the PM_FEATURES dict to match
+the #ifdefs in src/platform/teensy/pmfeatures.h (they don't match "out of the box" and nothing
+will work.)
+
+``platform/teensy/Makefile`` will build the PyMite VM archive as well as the 
+sample application::
+
+    $ cd src/platform/teensy
+    $ make
+
+
+Flashing the Binary
+-------------------
+
+Teensy comes with the nice simple Halfkay bootloader and Teensy Loader
+application, so once you have the file "src/platform/teensy/main.hex"
+then you should be able to flash according to the instructions at
+http://pjrc.com/teensy/loader.html
+
+If you are using a different bootloader or wish to flash with
+avr-dude, that section is still present in the Makefile and the
+instructions can be found at src/platform/avr/README
