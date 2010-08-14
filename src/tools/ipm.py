@@ -39,7 +39,7 @@ and the host computer prints the result.
 #  The target device then packages any result, sends it to the host computer
 #  and the host computer prints the result.
 
-import cmd, dis, getopt, os, subprocess, sys
+import cmd, code, dis, getopt, os, subprocess, sys
 import pmImgCreator
 
 
@@ -252,33 +252,25 @@ class Interactive(cmd.Cmd):
             return
 
         # Gather input from the interactive line
-        codeobj = None
-        while not codeobj:
+        try:
+            codeobj = code.compile_command(line, COMPILE_FN, COMPILE_MODE)
 
-            # Try to compile the given line
-            try:
-                codeobj = compile(line, COMPILE_FN, COMPILE_MODE)
-
-            # Get more input if syntax error reports unexpected end of file
-            except SyntaxError, se:
-
-                # Print any other syntax error
-                if not se.msg.startswith("unexpected EOF while parsing"):
-                    self.stdout.write("%s:%s\n" % (se.__class__.__name__, se))
-                    return
+            # If the line was incomplete, get more input and try to compile it
+            if not codeobj:
 
                 # Restore the newline chopped by cmd.py:140
                 line += "\n"
 
-                # Get more input if needed
-                while not line.endswith("\n\n"):
+                while not line.endswith("\n\n") or not codeobj:
                     self.stdout.write(IPM_PROMPT2)
                     line += self.stdin.readline()
+                    codeobj = code.compile_command(line.rstrip(),
+                                                   COMPILE_FN,
+                                                   COMPILE_MODE)
 
-            # Print any other exception
-            except Exception, e:
-                self.stdout.write("%s:%s\n" % (e.__class__.__name__, e))
-                return
+        except Exception, e:
+            self.stdout.write("%s:%s\n" % (e.__class__.__name__, e))
+            return
 
         # DEBUG: Uncomment the next line to print the statement's bytecodes
         #dis.disco(codeobj)
