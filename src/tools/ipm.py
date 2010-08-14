@@ -264,7 +264,7 @@ class Interactive(cmd.Cmd):
                 while not line.endswith("\n\n") or not codeobj:
                     self.stdout.write(IPM_PROMPT2)
                     line += self.stdin.readline()
-                    codeobj = code.compile_command(line.rstrip(),
+                    codeobj = code.compile_command(line,
                                                    COMPILE_FN,
                                                    COMPILE_MODE)
 
