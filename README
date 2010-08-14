@@ -92,6 +92,7 @@ Thanks
 
 My personal thanks go out to these people for their recent contribution to PyMite:
 
+- Michael (michaelnt): Reporting mbed sys.time() and including a patch.
 - Angus Gratton: enhancements to lib/avr, port to Teensy++
 - J.W. Bruce: Reporting build issue and provided fix.
 - Michael (xinx): Found mbed name conflict, reported PySerial issue in ipm and provided fix.

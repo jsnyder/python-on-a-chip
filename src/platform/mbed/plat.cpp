@@ -24,7 +24,7 @@
 #include "pm.h"
 
 
-#define CALLBACK_MS 100
+#define CALLBACK_MS 10
 
 
 Serial serial(USBTX, USBRX, "serial");
@@ -36,7 +36,7 @@ ticker_callback(void)
 {
     PmReturn_t retval;
 
-    retval = pm_vmPeriodic(CALLBACK_MS);
+    retval = pm_vmPeriodic(CALLBACK_MS * 1000);
     PM_REPORT_IF_ERROR(retval);
 }
 
