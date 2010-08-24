@@ -258,20 +258,11 @@ bytearray_print(pPmObj_t pobj)
 {
     PmReturn_t retval;
     pPmBytes_t pb;
-    uint8_t pclassname[] = "bytearray";
-    uint8_t *pc;
 
-    pb = ((pPmBytearray_t)pobj)->val;
-
-    pc = &pclassname[0];
-    while (*pc != C_NULL)
-    {
-        plat_putByte(*pc);
-        pc++;
-    }
-
+    obj_print(PM_BYTEARRAY_STR, C_FALSE, C_FALSE);
     plat_putByte('(');
     plat_putByte('b');
+    pb = ((pPmBytearray_t)pobj)->val;
     retval = string_printFormattedBytes(&(pb->val[0]),
                                         C_TRUE,
                                         ((pPmBytearray_t)pobj)->length);

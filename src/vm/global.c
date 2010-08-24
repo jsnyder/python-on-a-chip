@@ -55,6 +55,9 @@ global_init(void)
 #ifdef HAVE_ASSERT
     uint8_t const *exnstr = (uint8_t const *)"Exception";
 #endif /* HAVE_ASSERT */
+#ifdef HAVE_BYTEARRAY
+    uint8_t const *pbastr = (uint8_t const *)"bytearray";
+#endif /* HAVE_BYTEARRAY */
 
     /* Clear the global struct */
     sli_memset((uint8_t *)&gVmGlobal, '\0', sizeof(PmVmGlobal_t));
@@ -139,6 +142,13 @@ global_init(void)
     PM_RETURN_IF_ERROR(retval);
     gVmGlobal.pexnStr = (pPmString_t)pobj;
 #endif /* HAVE_ASSERT */
+
+#ifdef HAVE_BYTEARRAY
+    /* Init "bytearray" string obj */
+    retval = string_new((uint8_t const **)&pbastr, &pobj);
+    PM_RETURN_IF_ERROR(retval);
+    gVmGlobal.pbaStr = (pPmString_t)pobj;
+#endif /* HAVE_BYTEARRAY */
 
     /* Init empty builtins */
     gVmGlobal.builtins = C_NULL;

@@ -66,6 +66,11 @@
 #define PM_EXCEPTION_STR (pPmObj_t)(gVmGlobal.pexnStr)
 #endif /* HAVE_ASSERT */
 
+#ifdef HAVE_BYTEARRAY
+/** The global string "bytearray" */
+#define PM_BYTEARRAY_STR (pPmObj_t)(gVmGlobal.pbaStr)
+#endif /* HAVE_BYTEARRAY */
+
 /**
  * This struct contains ALL of PyMite's globals
  */
@@ -133,6 +138,11 @@ typedef struct PmVmGlobal_s
     /** The string "Exception", used in RAISE_VARARGS */
     pPmString_t pexnStr;
 #endif /* HAVE_ASSERT */
+
+#ifdef HAVE_BYTEARRAY
+    /** The global string "bytearray" */
+    pPmString_t pbaStr;
+#endif /* HAVE_BYTEARRAY */
 
 #ifdef HAVE_PRINT
     /** Remembers when a space is needed before printing the next object */

@@ -1,0 +1,126 @@
+diff --git a/lib/gpio.c b/lib/gpio.c
+index 03849c0..3319e08 100644
+--- a/lib/gpio.c
++++ b/lib/gpio.c
+@@ -34,7 +34,6 @@
+  */
+ 
+ #include <mc1322x.h>
+-#include <types.h>
+ 
+ inline void gpio_pad_dir(volatile uint64_t data) 
+ {
+diff --git a/lib/include/crm.h b/lib/include/crm.h
+index 5891fd9..0b5ec04 100644
+--- a/lib/include/crm.h
++++ b/lib/include/crm.h
+@@ -36,7 +36,7 @@
+ #ifndef CRM_H
+ #define CRM_H
+ 
+-#include <types.h>
++#include <stdint.h>
+ 
+ #define CRM_BASE         (0x80003000)
+ #define CRM_SYS_CNTL     ((volatile uint32_t *) (CRM_BASE+0x00))
+diff --git a/lib/include/maca.h b/lib/include/maca.h
+index f3a45c9..11e3ebd 100644
+--- a/lib/include/maca.h
++++ b/lib/include/maca.h
+@@ -36,8 +36,8 @@
+ #ifndef _MACA_H_
+ #define _MACA_H_
+ 
++#include <stdint.h>
+ #include <packet.h>
+-#include <types.h>
+ #include <utils.h>
+ 
+ /* maca initialization and on off routines */
+diff --git a/lib/include/mc1322x.h b/lib/include/mc1322x.h
+index bf61e52..58ed490 100644
+--- a/lib/include/mc1322x.h
++++ b/lib/include/mc1322x.h
+@@ -36,7 +36,7 @@
+ #ifndef MC1322X_H
+ #define MC1322X_H
+ 
+-#include "types.h"
++#include <stdint.h>
+ #include "isr.h"
+ #include "gpio.h"
+ #include "crm.h"
+diff --git a/lib/include/nvm.h b/lib/include/nvm.h
+index 05ad7a6..5a78be4 100644
+--- a/lib/include/nvm.h
++++ b/lib/include/nvm.h
+@@ -36,7 +36,7 @@
+ #ifndef NVM_H
+ #define NVM_H
+ 
+-#include "types.h"
++#include <stdint.h>
+ 
+ typedef enum
+ {
+diff --git a/lib/include/uart1.h b/lib/include/uart1.h
+index 0b0ef08..3feab22 100644
+--- a/lib/include/uart1.h
++++ b/lib/include/uart1.h
+@@ -36,7 +36,7 @@
+ #ifndef UART1_H
+ #define UART1_H
+ 
+-#include <types.h>
++#include <stdint.h>
+ 
+ #define UCON      (0)
+ /* UCON bits */
+diff --git a/lib/printf.c b/lib/printf.c
+index 64da212..0401426 100644
+--- a/lib/printf.c
++++ b/lib/printf.c
+@@ -70,7 +70,6 @@
+ #include <string.h>
+ 
+ #include <mc1322x.h>
+-#include <types.h>
+ 
+ #define __putc(x) uart1_putc(x)
+ 
+diff --git a/lib/uart1.c b/lib/uart1.c
+index 672c795..be57b2c 100644
+--- a/lib/uart1.c
++++ b/lib/uart1.c
+@@ -34,7 +34,6 @@
+  */
+ 
+ #include <mc1322x.h>
+-#include <types.h>
+ 
+ volatile char u1_tx_buf[64];
+ volatile uint32_t u1_head, u1_tail;
+diff --git a/src/default_lowlevel.c b/src/default_lowlevel.c
+index dcf0d8b..9ce0b65 100644
+--- a/src/default_lowlevel.c
++++ b/src/default_lowlevel.c
+@@ -34,7 +34,6 @@
+  */
+ 
+ #include <mc1322x.h>
+-#include <types.h>
+ 
+ void default_vreg_init(void) {
+ 	volatile uint32_t i;
+diff --git a/src/isr.c b/src/isr.c
+index b69cdf6..569c283 100644
+--- a/src/isr.c
++++ b/src/isr.c
+@@ -34,7 +34,6 @@
+  */
+ 
+ #include <mc1322x.h>
+-#include <types.h>
+ 
+ __attribute__ ((section (".irq")))
+ __attribute__ ((interrupt("IRQ"))) 
