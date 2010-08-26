@@ -561,6 +561,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t i = 0;
+    int16_t n;
     PmType_t type;
 
     /* Return if ptr is null or object is already marked */
@@ -785,27 +786,36 @@ heap_gcMarkObj(pPmObj_t pobj)
             retval = heap_gcMarkObj((pPmObj_t)((pPmBlock_t)pobj)->next);
             break;
 
-        case OBJ_TYPE_SEG:
-            /* Mark the segment obj head */
-            OBJ_SET_GCVAL(pobj, pmHeap.gcval);
-
-            /* Mark each obj in the segment */
-            for (i = 0; i < SEGLIST_OBJS_PER_SEG; i++)
-            {
-                retval = heap_gcMarkObj(((pSegment_t)pobj)->s_val[i]);
-                PM_RETURN_IF_ERROR(retval);
-            }
-
-            /* Mark the next segment */
-            retval = heap_gcMarkObj((pPmObj_t)((pSegment_t)pobj)->next);
-            break;
-
         case OBJ_TYPE_SGL:
             /* Mark the seglist obj head */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
 
-            /* Mark the root segment */
-            retval = heap_gcMarkObj((pPmObj_t)((pSeglist_t)pobj)->sl_rootseg);
+            /* Mark the seglist's segments */
+            n = ((pSeglist_t)pobj)->sl_length;
+            pobj = (pPmObj_t)((pSeglist_t)pobj)->sl_rootseg;
+            for (i = 0; i < n; i++)
+            {
+                /* Mark the segment item */
+                retval = heap_gcMarkObj(((pSegment_t)pobj)->s_val[i % SEGLIST_OBJS_PER_SEG]);
+                PM_RETURN_IF_ERROR(retval);
+
+                /* Mark the segment obj head */
+                if ((i % SEGLIST_OBJS_PER_SEG) == 0)
+                {
+                    OBJ_SET_GCVAL(pobj, pmHeap.gcval);
+                }
+
+                /* Point to the next segment */
+                else
+                if ((i % SEGLIST_OBJS_PER_SEG) == (SEGLIST_OBJS_PER_SEG - 1))
+                {
+                    pobj = (pPmObj_t)((pSegment_t)pobj)->next;
+                    if (pobj == C_NULL)
+                    {
+                        break;
+                    }
+                }
+            }
             break;
 
         case OBJ_TYPE_SQI:
