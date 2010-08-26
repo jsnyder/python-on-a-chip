@@ -302,6 +302,12 @@ def id(o):
     pass
 
 
+# Yields every (i)tem in the (s)equence; requires HAVE_GENERATORS
+#def iter(s):
+#    for i in s:
+#        yield i
+
+
 def len(s):
     """__NATIVE__
     PmReturn_t retval;

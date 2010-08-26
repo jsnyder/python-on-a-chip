@@ -647,6 +647,7 @@ heap_gcMarkObj(pPmObj_t pobj)
             {
                 retval = heap_gcMarkObj((pPmObj_t)
                                         (((pPmCo_t)pobj)->co_codeimgaddr));
+                PM_RETURN_IF_ERROR(retval);
             }
 
 #ifdef HAVE_CLOSURES
@@ -673,6 +674,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 #ifdef HAVE_DEFAULTARGS
             /* Mark the default args tuple */
             retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_defaultargs);
+            PM_RETURN_IF_ERROR(retval);
 #endif /* HAVE_DEFAULTARGS */
 
 #ifdef HAVE_CLOSURES
@@ -692,7 +694,6 @@ heap_gcMarkObj(pPmObj_t pobj)
 
             /* Mark the attrs dict */
             retval = heap_gcMarkObj((pPmObj_t)((pPmInstance_t)pobj)->cli_attrs);
-            PM_RETURN_IF_ERROR(retval);
             break;
 
         case OBJ_TYPE_MTH:
@@ -709,7 +710,6 @@ heap_gcMarkObj(pPmObj_t pobj)
 
             /* Mark the attrs dict */
             retval = heap_gcMarkObj((pPmObj_t)((pPmMethod_t)pobj)->m_attrs);
-            PM_RETURN_IF_ERROR(retval);
             break;
 
         case OBJ_TYPE_CLO:
@@ -741,9 +741,13 @@ heap_gcMarkObj(pPmObj_t pobj)
             /* Mark the frame obj head */
             OBJ_SET_GCVAL(pobj, pmHeap.gcval);
 
-            /* Mark the previous frame */
-            retval = heap_gcMarkObj((pPmObj_t)((pPmFrame_t)pobj)->fo_back);
-            PM_RETURN_IF_ERROR(retval);
+            /* Mark the previous frame, if this isn't a generator's frame */
+            /* Issue #129: Fix iterator losing its object */
+            if ((((pPmFrame_t)pobj)->fo_func->f_co->co_flags & CO_GENERATOR) == 0)
+            {
+                retval = heap_gcMarkObj((pPmObj_t)((pPmFrame_t)pobj)->fo_back);
+                PM_RETURN_IF_ERROR(retval);
+            }
 
             /* Mark the fxn obj */
             retval = heap_gcMarkObj((pPmObj_t)((pPmFrame_t)pobj)->fo_func);
@@ -915,6 +919,7 @@ heap_gcMarkRoots(void)
 
     /* Mark the thread list */
     retval = heap_gcMarkObj((pPmObj_t)gVmGlobal.threadList);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Mark the temporary roots */
     for (i = 0; i < pmHeap.temp_root_index; i++)

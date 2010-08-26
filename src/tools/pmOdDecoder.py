@@ -68,7 +68,7 @@ TYPES = (
 
 
 def od_decode(odvalue):
-    return {        
+    return {
         "val": odvalue,
         "size": (odvalue & 0x001F) * 4,
         "type": TYPES[(odvalue & 0x3E00) >> 9],
@@ -77,9 +77,15 @@ def od_decode(odvalue):
     }
 
 
+def to_int(s):
+    if s.startswith("0x"):
+        return int(s, 16)
+    return int(s)
+
+
 def main():
     odvalues = sys.argv[1:]
-    odvalues = map(int, odvalues)
+    odvalues = map(to_int, odvalues)
     ods = map(od_decode, odvalues)
     for od in ods:
         print("%d (0x%04x): %s[%d], f=%d, m=%d"
