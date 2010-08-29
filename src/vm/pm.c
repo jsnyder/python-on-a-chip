@@ -40,7 +40,7 @@ volatile uint32_t pm_lastRescheduleTimestamp = 0;
 
 
 PmReturn_t
-pm_init(PmMemSpace_t memspace, uint8_t *pusrimg)
+pm_init(PmMemSpace_t memspace, uint8_t const * const pusrimg)
 {
     PmReturn_t retval;
 

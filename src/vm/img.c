@@ -135,7 +135,7 @@ img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
 
 
 PmReturn_t
-img_appendToPath(PmMemSpace_t memspace, uint8_t *paddr)
+img_appendToPath(PmMemSpace_t memspace, uint8_t const * const paddr)
 {
     uint8_t i;
 

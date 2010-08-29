@@ -224,7 +224,7 @@ extern volatile uint32_t pm_timerMsTicks;
  * @param pusrimg       Address of the user image in the memory space
  * @return Return status
  */
-PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t *pusrimg);
+PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t const * const pusrimg);
 
 /**
  * Executes the named module

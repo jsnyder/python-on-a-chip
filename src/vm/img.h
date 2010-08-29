@@ -77,6 +77,6 @@ PmReturn_t img_findInPaths(pPmObj_t pname, PmMemSpace_t *r_memspace,
  * @param paddr The address
  * @return Return status
  */
-PmReturn_t img_appendToPath(PmMemSpace_t memspace, uint8_t *paddr);
+PmReturn_t img_appendToPath(PmMemSpace_t memspace, uint8_t const * const paddr);
 
 #endif /* __IMG_H__ */
