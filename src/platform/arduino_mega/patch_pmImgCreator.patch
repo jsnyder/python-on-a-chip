@@ -1,0 +1,13 @@
+Index: ../../tools/pmImgCreator.py
+===================================================================
+--- ../../tools/pmImgCreator.py	(revision 587)
++++ ../../tools/pmImgCreator.py	(working copy)
+@@ -71,7 +71,7 @@
+ PM_FEATURES = {
+     "HAVE_PRINT": True, # This flag currently has no effect in this file
+     "HAVE_GC": True, # This flag currently has no effect in this file
+-    "HAVE_FLOAT": True,
++    "HAVE_FLOAT": False,
+     "HAVE_DEL": True,
+     "HAVE_IMPORTS": True,
+     "HAVE_DEFAULTARGS": True,

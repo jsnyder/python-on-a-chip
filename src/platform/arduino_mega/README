@@ -1,0 +1,98 @@
+===============================
+The Arduino Mega Sample Project
+===============================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This is a sample project that demonstrates the use of PyMite on the
+`Arduino Mega`_ platform.
+
+.. _`Arduino Mega`: http://arduino.cc/en/Main/ArduinoBoardMega
+
+
+Details
+-------
+
+This sample project demonstrates running the interactive prompt (ipm).
+The file ``main.c`` is used to initialize the PyMite VM
+and indicate the name of the module it should run.  In this case, it
+will run the module ``main.py`` which prints "Hello World" and then runs
+the interactive prompt.
+
+
+Requirements
+------------
+
+The Arduino Mega has an FTDI USB-to-Serial device on-board.  You will need
+to install `FTDI device drivers`_ for your operating system.
+
+You also need to make sure you have PySerial_ installed so that Python 
+can talk to your target device over the serial port::
+
+    $ easy_install pyserial
+
+.. _PySerial: http://pyserial.sourceforge.net/
+.. _`FTDI device drivers`: http://www.ftdichip.com/Drivers/VCP.htm
+
+
+Building the Project
+--------------------
+
+Perform the following commands only once::
+    
+    $ cd src/platform/arduino_mega
+    $ make once
+    $ cd ../../../
+
+From the project root directory::
+
+    $ make PLATFORM=arduino_mega
+
+
+Flashing the Binary
+-------------------
+
+The steps above result in the binary file that needs to go on the Arduino Mega.
+The Arduino Mega should have the Arduino serial bootloader installed already.
+This bootloader is compatible with the stk500v2 protocol so we will use
+avrdude from within the makefile.  All you have to do is type:
+
+    $ cd src/platform/arduino_mega
+
+    # Reset the Arduino Mega, and do the next line within 2 seconds
+
+    $ make program
+
+If the program did not load onto the Arduino Mega, first check if you have a 
+bootloader: press and release the reset button and watch the LED labeled "L"
+on the opposite end of the FTDI chip from the USB plug.  If it does not flash, 
+a bootloader is not present and one must be installed.  See instructions on 
+`the Bootloader page`_ to install a bootloader.
+
+.. _`the Bootloader page`: http://arduino.cc/en/Hacking/Bootloader
+
+
+Connect via ipm
+---------------
+
+Now, the Arduino Mega is running ipm and waiting for input from the host
+computer.  So on your computer you need to run the host-side ipm
+(the name of your serial device may vary)::
+
+    $ ../../tools/ipm.py --serial /dev/tty.usbserial-A6008hox --baud=57600
+
+    
+Notes
+-----
+
+The Arduino Bootloader waits about 2 seconds after reset to execute the binary.
+So, while experimenting with ipm, be sure to give the board those two seconds
+after reset before you issue commands.
+
+
+.. :mode=rest:
