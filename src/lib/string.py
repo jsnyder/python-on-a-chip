@@ -134,7 +134,7 @@ def count(s1, s2):
     pc2len = ((pPmString_t)ps2)->length;
     n = 0;
 
-    /* Handle some quick special cases */
+    /* Handle some quick special cases (order of if-clauses is important) */
     if (pc2len == 0)
     {
         n = pc1len + 1;
@@ -144,6 +144,7 @@ def count(s1, s2):
         n = 0;
     }
 
+    /* Count the number of matches */
     else
     {
         n = 0;
@@ -193,7 +194,9 @@ def find(s1, s2):
     pPmObj_t ps2;
     uint8_t *pc1;
     uint8_t *pc2;
-    uint8_t *pscan;
+    uint8_t *pmatch;
+    uint8_t pc1len;
+    uint8_t pc2len;
     int32_t n;
     pPmObj_t pn;
     PmReturn_t retval = PM_RET_OK;
@@ -210,15 +213,28 @@ def find(s1, s2):
 
     pc1 = ((pPmString_t)ps1)->val;
     pc2 = ((pPmString_t)ps2)->val;
+    pc1len = ((pPmString_t)ps1)->length;
+    pc2len = ((pPmString_t)ps2)->length;
     n = -1;
 
-    /* If the strings are non-null, try to find the index of the substring */
-    if ((*pc1 != C_NULL) && (*pc2 != C_NULL))
+    /* Handle a quick special case */
+    if (pc2len == 0)
     {
-        pscan = (uint8_t *)strstr((const char *)pc1, (const char *)pc2);
-        if (pscan != C_NULL)
+        n = 0;
+    }
+
+    /* Try to find the index of the substring */
+    else
+    {
+        /* Find the next possible start */
+        pmatch = memchr(pc1, pc2[0], pc1len);
+        if (pmatch != C_NULL)
         {
-            n = pscan - pc1;
+            /* If it matches, calculate the index */
+            if (memcmp(pmatch, pc2, pc2len) == 0)
+            {
+                n = pmatch - pc1;
+            }
         }
     }
 

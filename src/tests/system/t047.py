@@ -75,12 +75,14 @@ assert string.find("timmy", "y") == 4
 assert string.find("timmy", "z") == -1
 assert string.find("timmy", "M") == -1
 
-assert string.find("","") == -1
+assert string.find("","") == 0
 assert string.find("","a") == -1
-assert string.find("a","") == -1
+assert string.find("a","") == 0
 assert string.find("","\0") == -1
-assert string.find("\0","\0") == -1
-assert string.find("\0","") == -1
+assert string.find("\0","\0") == 0
+assert string.find("\0","") == 0
+assert string.find(" \0","") == 0
+assert string.find(" \0","\0") == 1
 
 #string.find("") # Expect TypeError (0xED)
 #string.find("","","") # Expect TypeError (0xED)
