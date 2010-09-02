@@ -57,12 +57,12 @@ assert string.count("cccccancun","n") == 2
 assert string.count("cccccancun","C") == 0
 assert string.count("cccccancun","\0") == 0
 
-assert string.count("","") == 0
+assert string.count("","") == 1
 assert string.count("","a") == 0
-assert string.count("a","") == 0
+assert string.count("a","") == 2
 assert string.count("","\0") == 0
-assert string.count("\0","\0") == 0
-assert string.count("\0","") == 0
+assert string.count("\0","\0") == 1
+assert string.count("\0","") == 2
 
 #string.count("") # Expect TypeError (0xED)
 #string.count("","","") # Expect TypeError (0xED)

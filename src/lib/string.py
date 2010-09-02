@@ -3,7 +3,7 @@
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
 # it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
-# 
+#
 # Python-on-a-Chip is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
@@ -108,9 +108,13 @@ def count(s1, s2):
     uint8_t *pc1;
     uint8_t *pc2;
     uint8_t *pscan;
+    uint8_t *pmatch;
+    uint8_t pc2c0;
     uint16_t pc1len;
     uint16_t pc2len;
     uint16_t n;
+    uint16_t remaining;
+    uint16_t cmp;
     pPmObj_t pn;
     PmReturn_t retval = PM_RET_OK;
 
@@ -130,15 +134,43 @@ def count(s1, s2):
     pc2len = ((pPmString_t)ps2)->length;
     n = 0;
 
-    if (*pc2 != C_NULL)
+    /* Handle some quick special cases */
+    if (pc2len == 0)
     {
-        pscan = (uint8_t *)strstr((const char *)pc1, (const char *)pc2);
-        while (pscan != C_NULL)
+        n = pc1len + 1;
+    }
+    else if (pc1len == 0)
+    {
+        n = 0;
+    }
+
+    else
+    {
+        n = 0;
+        remaining = pc1len;
+        pscan = pc1;
+        pc2c0 = pc2[0];
+        while (pscan <= (pc1 + (pc1len - pc2len)))
         {
-            n++;
-            pscan += pc2len;
-            if (pscan > pc1 + pc1len) break;
-            pscan = (uint8_t *)strstr((const char *)pscan, (const char *)pc2);
+            /* Find the next possible start */
+            pmatch = memchr(pscan, pc2c0, remaining);
+            if (pmatch == C_NULL) break;
+            remaining -= (pmatch - pscan);
+            pscan = pmatch;
+
+            /* If it matches, increase the count, else try the next char */
+            cmp = memcmp(pscan, pc2, pc2len);
+            if (cmp == 0)
+            {
+                n++;
+                pscan += pc2len;
+                remaining -= pc2len;
+            }
+            else
+            {
+                pscan++;
+                remaining--;
+            }
         }
     }
 
