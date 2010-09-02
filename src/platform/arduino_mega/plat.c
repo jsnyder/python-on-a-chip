@@ -375,7 +375,7 @@ plat_reportError(PmReturn_t result)
         if (pframe->fo_func->f_co->co_memspace == MEMSPACE_PROG)
         {
             strncpy_P(pstrbuf,
-                      pframe->fo_func->f_co->co_filename,
+                      (char *)pframe->fo_func->f_co->co_filename,
                       MAX(FN_MAX_LEN, EXN_MAX_LEN));
         }
         printf_P(PSTR("  File \"%s\", line %d, in %s\n"),
