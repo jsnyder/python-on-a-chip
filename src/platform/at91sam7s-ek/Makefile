@@ -40,6 +40,7 @@ PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 
 FLASH_TOOL = SAM7UTILS
 #FLASH_TOOL = UVISION
@@ -328,7 +329,7 @@ ALL_ASFLAGS = -mcpu=$(MCU) $(THUMB) $(THUMB_IW) -I. -x assembler-with-cpp $(ASFL
 
 
 # Default target.
-all: begin gccversion pmvm sizebefore build sizeafter finished end
+all: begin gccversion pmfeatures.h pmvm sizebefore build sizeafter finished end
 
 ifeq ($(FORMAT),ihex)
 build: elf hex bin lss sym
@@ -347,6 +348,9 @@ endif
 elf: $(TARGET).elf
 lss: $(TARGET).lss
 sym: $(TARGET).sym
+
+pmfeatures.h: pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
 
 # PyMite: Build the VM archive if it doesn't exist
 pmvm : $(PM_LIB_PATH)
@@ -503,7 +507,7 @@ $(AOBJARM) : %.o : %.S
 
 # PyMite: Generate native code and module images from the python source
 $(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 
 # Target: clean project.
@@ -542,6 +546,7 @@ clean_list :
 #	$(REMOVE) .dep/*
 	$(REMOVE) $(TARGET)_img.c
 	$(REMOVE) $(TARGET)_nat.c
+	$(REMOVE) pmfeatures.h
 
 
 # Include the dependency files.

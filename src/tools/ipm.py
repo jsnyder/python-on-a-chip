@@ -44,11 +44,12 @@ import pmImgCreator
 
 
 __usage__ = """USAGE:
-    ipm.py -[d|s /dev/tty] --[desktop | serial=/dev/tty [baud=19200]]
+    ipm.py -f pmfeaturesfilename -[d|s /dev/tty] --[desktop | serial=/dev/tty [baud=19200]]
 
     -h          Prints this usage message.
     --help
 
+    -f <fn>     Specify the file containing the PM_FEATURES dict to use
     -d          Specifies a desktop connection; uses pipes to send/receive bytes
     --desktop   to/from the target, which is the vm also running on the desktop.
                 ipm spawns the vm and runs ipm-desktop as a subprocess.
@@ -191,11 +192,11 @@ class Interactive(cmd.Cmd):
     ipmcommands = ("?", "help", "load",)
 
 
-    def __init__(self, conn):
+    def __init__(self, conn, pmfn):
         cmd.Cmd.__init__(self,)
         self.prompt = IPM_PROMPT
         self.conn = conn
-        self.pic = pmImgCreator.PmImgCreator()
+        self.pic = pmImgCreator.PmImgCreator(pmfn)
 
 
     def do_help(self, *args):
@@ -333,7 +334,7 @@ def parse_cmdline():
     serdev = None
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "dhs",
+        opts, args = getopt.getopt(sys.argv[1:], "dhsf:",
             ["desktop", "help", "serial=", "baud="])
     except Exception, e:
         print __usage__
@@ -357,6 +358,8 @@ def parse_cmdline():
         elif opt[0] == "--baud":
             assert serdev, "--serial must be specified before --baud."
             baud = int(opt[1])
+        elif opt[0] == "-f":
+            pmfeatures_filename = opt[1]
         else:
             print __usage__
             sys.exit(0)
@@ -366,12 +369,12 @@ def parse_cmdline():
     else:
         c = Conn()
 
-    return c
+    return (c, pmfeatures_filename)
 
 
 def main():
-    conn = parse_cmdline()
-    i = Interactive(conn)
+    conn, pmfeatures_filename = parse_cmdline()
+    i = Interactive(conn, pmfeatures_filename)
     i.run()
 
 
@@ -384,7 +387,7 @@ def ser_test():
         print NEED_PYSERIAL
         raise e
 
-    pic = pmImgCreator.PmImgCreator()
+    pic = pmImgCreator.PmImgCreator("../platform/desktop/pmfeatures.py")
     serconn = serial.Serial("/dev/cu.SLAB_USBtoUART", 19200)
     serconn.setTimeout(2)
 

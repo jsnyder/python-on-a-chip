@@ -79,6 +79,6 @@ Read ``docs/src/InteractivePyMite.txt`` to learn more about ipm.
 Here is the shortcut (the path to your serial device will vary)::
 
     $ cd ../../tools
-    $ ./ipm.py --serial /dev/tty.usbserial-000030FDB --baud=115200
+    $ ./ipm.py -f ../platform/econotag/pmfeatures.py --serial /dev/tty.usbserial-000030FDB --baud=115200
 
 .. :mode=rest:

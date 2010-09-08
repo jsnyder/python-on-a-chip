@@ -6,6 +6,7 @@ PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py econotag.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 IPM := true
 
 # Serial device used to connect to Econotag
@@ -236,7 +237,7 @@ TARGETS_WITH_ROM_VARS :=
 -include $(MC1322X)/Makefile.include
 
 
-all: pmvm build
+all: pmfeatures.h pmvm build
 
 ifeq ($(FORMAT),ihex)
 build: elf hex bin lss sym
@@ -277,7 +278,6 @@ once2:
 	&& sed 's/arm-linux-/$(TCHAIN)/g' Makefile.include > Makefile.include.tmp \
 	&& mv Makefile.include.tmp Makefile.include \
 	&& patch -p 1 -i ../patch_libmc1322x_types.patch
-	patch -p 0 -i patch_pmImgCreator.patch
 	patch -p 0 -i patch_bi.patch
 
 once3: libmc1322x
@@ -289,6 +289,9 @@ load:
 
 loadpy:
 	./red-bsl.py -f $(TARGET).bin -t $(PM_SER_DEV)
+
+pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
 
 # PyMite: Build the VM archive if it doesn't exist
 pmvm : $(PM_LIB_PATH)
@@ -386,8 +389,8 @@ $(STARTOBJ) : %.o : %.s
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 # PyMite: Generate native code and module images from the python source
-$(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES) pmfeatures.py
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c :
 	$(MAKE) -C ../../vm pmstdlib_img.c pmstdlib_nat.c
@@ -425,6 +428,7 @@ clean:
 	$(REMOVE) $(CPPSRCARM:.cpp=.d)
 	$(REMOVE) $(TARGET)_img.c
 	$(REMOVE) $(TARGET)_nat.c
+	$(REMOVE) pmfeatures.h
 	$(REMOVEDIR) .dep | exit 0
 
 

@@ -43,12 +43,6 @@ can talk to your target device over the serial port::
 Building the Project
 --------------------
 
-Perform the following commands only once::
-    
-    $ cd src/platform/arduino_mega
-    $ make once
-    $ cd ../../../
-
 From the project root directory::
 
     $ make PLATFORM=arduino_mega

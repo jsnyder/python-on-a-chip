@@ -12,6 +12,7 @@ PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py ../../lib/avr.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 IPM=true
 
 
@@ -147,7 +148,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 
 # Default target.
-all: pmvm build
+all: pmfeatures.h pmvm build
 
 build: elf hex eep
 
@@ -179,9 +180,11 @@ pmvm : $(PM_LIB_PATH)
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
 
-$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) pmfeatures.py
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u --memspace=flash -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
+pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
 
 coff: $(TARGET).elf
 	$(COFFCONVERT) -O coff-avr $(TARGET).elf $(TARGET).cof
@@ -228,9 +231,6 @@ $(TARGET).elf: $(OBJ)
 # Assemble: create object files from assembler source files.
 .S.o:
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
-
-once:
-	patch -p 0 -i patch_pmImgCreator.patch
 
 
 # Target: clean project.

@@ -189,6 +189,7 @@ extern volatile uint32_t pm_timerMsTicks;
 
 
 /* WARNING: The order of the following includes is critical */
+#include "plat.h"
 #include "pmfeatures.h"
 #include "pmEmptyPlatformDefs.h"
 #include "sli.h"
@@ -212,7 +213,7 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "class.h"
 #include "thread.h"
 #include "float.h"
-#include "plat.h"
+#include "plat_interface.h"
 #include "bytearray.h"
 
 /**

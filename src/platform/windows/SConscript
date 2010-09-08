@@ -25,9 +25,13 @@ env = Environment(variables = vars,
 
 vmlib = SConscript(["../../vm/SConscript"], ["env", "vars"])
 
+pmfeatures = env.Command(["pmfeatures.h"], ["pmfeatures.py"], 
+    "%s src/tools/pmGenPmFeatures.py $SOURCE > $TARGET" % sys.executable)
+
 img_sources = env.Command(["main_img.c", "main_nat.c"], [PY_SOURCES],
-    "%s src/tools/pmImgCreator.py -c -u -o src/platform/%s/main_img.c" \
-    " --native-file=src/platform/%s/main_nat.c $SOURCES" %
+    "%s src/tools/pmImgCreator.py -f src/platform/windows/pmfeatures.py " \
+    "-c -u -o src/platform/%s/main_img.c " \
+    "--native-file=src/platform/%s/main_nat.c $SOURCES" %
     	(sys.executable, vars.args["PLATFORM"], vars.args["PLATFORM"]))
 
 

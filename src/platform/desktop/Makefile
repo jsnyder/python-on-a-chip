@@ -6,6 +6,7 @@ PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py
 PM_HEAP_SIZE = 0x2000
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 IPM = true
 DEBUG = true
 
@@ -25,7 +26,7 @@ export CFLAGS IPM PM_LIB_FN
 
 .PHONY: all clean
 
-all : $(TARGET).out
+all : pmfeatures.h $(TARGET).out
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
@@ -33,10 +34,13 @@ $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 $(TARGET).out : $(OBJS) $(PM_LIB_PATH)
 	$(CC) -lm -o $@ $(OBJS) $(PM_LIB_PATH)
 
+pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
+
 # Generate native code and module images from the python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) pmfeatures.py
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 clean :
 	$(MAKE) -C ../../vm clean
-	$(RM) $(TARGET).out $(OBJS) $(TARGET)_img.* $(TARGET)_nat.*
+	$(RM) $(TARGET).out $(OBJS) $(TARGET)_img.* $(TARGET)_nat.* pmfeatures.h

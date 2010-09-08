@@ -30,9 +30,9 @@ endif
 
 # The module images and native code are generated from python source
 %_nat.c %_img.c : %.py
-	$(PMIMGCREATOR) -c -u -o $*_img.c --native-file=$*_nat.c $*.py $(PMSTDLIB_SOURCES)
+	$(PMIMGCREATOR) -f ../../platform/$(PLATFORM)/pmfeatures.py -c -u -o $*_img.c --native-file=$*_nat.c $*.py $(PMSTDLIB_SOURCES)
 %_nat.c %_img.c : %a.py %b.py
-	$(PMIMGCREATOR) -c -u -o $*_img.c --native-file=$*_nat.c $*a.py $*b.py $(PMSTDLIB_SOURCES)
+	$(PMIMGCREATOR) -f ../../platform/$(PLATFORM)/pmfeatures.py -c -u -o $*_img.c --native-file=$*_nat.c $*a.py $*b.py $(PMSTDLIB_SOURCES)
 
 .PHONY: all check clean
 

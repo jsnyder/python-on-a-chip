@@ -16,15 +16,30 @@ board.  The STM32 has an ARM Cortex M3 core.
 .. _`ET-STM32 Stamp Module`: http://www.futurlec.com/ET-STM32_Stamp.shtml
 
 
+Requirements
+------------
+
+Follow `this explanation`_ to build ARM EABI GCC tools
+
+.. _`this explanation`: http://fanplastic.org/gcc-for-arm-eabi/
+
+
 Building the Project
 --------------------
 
 :Note: This platform does not have Makefile build support.
 
-Follow `this explanation`_ to build ARM EABI GCC tools, then run 
-``scons PLATFORM=stm32`` from the trunk directory.  
+Run the following commands once to download files from ST Microelectronics::
 
-.. _`this explanation`: http://fanplastic.org/gcc-for-arm-eabi/
+    $ cd src/platform/stm32
+    $ python update_periph_lib.py
 
+Now use scons to build the project::
+
+    $ cd ../../..
+    $ scons PLATFORM=stm32
+
+Now load the following file into your target's flash:
+``src/platform/stm32/main.o``
 
 .. :mode=rest:

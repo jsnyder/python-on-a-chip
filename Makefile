@@ -22,7 +22,7 @@ pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(PATH)))))
 VPATH := . src/vm src/lib docs/src
 
 # Default target
-PLATFORM ?= desktop
+PLATFORM = desktop
 
 
 .PHONY: all vm ipm html dox indent TAGS dist check clean
@@ -32,7 +32,7 @@ all :
 
 ipm :
 	$(MAKE) -C src/platform/desktop
-	cd src/tools && ./ipm.py -d
+	cd src/tools && ./ipm.py -f ../platform/desktop/pmfeatures.py -d
 
 html : docs/src/*.txt dox
 	$(MKDIR) docs/html

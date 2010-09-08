@@ -7,6 +7,7 @@ PM_USR_SOURCES = pic24_dspic33.py main.py \
     # sample_lib.py # Uncomment to run sample code
 PM_TEST_USR_SOURCES = pic24_dspic33.py system_test/main.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 IPM = true
 DEBUG = false
 # The PIC30 compiler binaries must be in your path.
@@ -46,7 +47,7 @@ export CFLAGS IPM PM_LIB_FN CC AR LDFLAGS
 
 .PHONY: all clean
 
-all : $(TARGET).hex $(TARGET)_nat.c $(TARGET)_img.c
+all : pmfeatures.h $(TARGET).hex $(TARGET)_nat.c $(TARGET)_img.c
 
 bytecode: $(TARGET)_nat.c $(TARGET)_img.c $(PMIMGCREATOR)
 	make -C ../../vm bytecode
@@ -57,17 +58,20 @@ bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c $(PMIMGCR
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
 
+pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
+
 $(TARGET).hex : $(OBJS) $(PM_LIB_PATH)
 	$(CC) $(LDFLAGS) -o $(TARGET).cof $(OBJS) $(PM_LIB_PATH)
 	$(B2H) $(TARGET).cof
 
 # Generate native code and module images from the python source
-$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) $(PMIMGCREATOR)
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) $(PMIMGCREATOR) pmfeatures.py
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c: $(PM_TEST_USR_SOURCES) $(PMIMGCREATOR)
 	$(PMIMGCREATOR) -c -u -o system_test/$(TARGET)_img.c --native-file=system_test/$(TARGET)_nat.c $(PM_TEST_USR_SOURCES)
 
 clean :
 	$(MAKE) -C ../../vm clean
-	$(RM) $(TARGET).out $(OBJS) $(TARGET)_img.* $(TARGET)_nat.*
+	$(RM) $(TARGET).out $(OBJS) $(TARGET)_img.* $(TARGET)_nat.* pmfeatures.h

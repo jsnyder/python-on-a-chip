@@ -12,6 +12,7 @@
 #
 
 
+PLATFORM = desktop
 PMIMGCREATOR := ../tools/pmImgCreator.py
 PMSTDLIB_SOURCES = ../lib/list.py \
                    ../lib/dict.py \
@@ -59,7 +60,7 @@ $(PM_LIB_FN) : $(PM_LIB_FN)($(OBJECTS))
 
 # Build the standard library into an image file and native function file
 $(SOURCE_IMG) $(SOURCE_NAT) : $(PMSTDLIB_SOURCES) $(PMIMGCREATOR)
-	$(PMIMGCREATOR) -c -s --memspace=flash -o $(SOURCE_IMG) --native-file=$(SOURCE_NAT) $(PMSTDLIB_SOURCES)
+	$(PMIMGCREATOR) -f ../platform/$(PLATFORM)/pmfeatures.py -c -s --memspace=flash -o $(SOURCE_IMG) --native-file=$(SOURCE_NAT) $(PMSTDLIB_SOURCES)
 
 size : $(PM_LIB_FN)
 	@$(SIZE) $(PM_LIB_FN)

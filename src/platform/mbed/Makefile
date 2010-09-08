@@ -45,6 +45,7 @@ PM_LIB_FN = lib$(PM_LIB_ROOT).a
 PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
 PM_USR_SOURCES = main.py mbed.py
 PMIMGCREATOR := ../../tools/pmImgCreator.py
+PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
 IPM := true
 
 # Toolchain prefix (i.e arm-elf -> arm-elf-gcc.exe)
@@ -342,7 +343,7 @@ ALL_ASFLAGS = -mcpu=$(MCU) $(THUMB) $(THUMB_IW) -I. -x assembler-with-cpp $(ASFL
 
 # Default target.
 #all: begin gccversion pmvm sizebefore build sizeafter finished end
-all: zip
+all: pmfeatures.h zip
 
 ifeq ($(FORMAT),ihex)
 build: elf hex bin lss sym
@@ -367,6 +368,9 @@ endif
 elf: $(TARGET).elf
 lss: $(TARGET).lss 
 sym: $(TARGET).sym
+
+pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+	$(PMGENPMFEATURES) pmfeatures.py > $@
 
 # PyMite: Build the VM archive if it doesn't exist
 pmvm : $(PM_LIB_PATH)
@@ -515,15 +519,15 @@ $(AOBJARM) : %.o : %.S
 
 
 # PyMite: Generate native code and module images from the python source
-$(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
-	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+$(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES) pmfeatures.py
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c : 
 	$(MAKE) -C ../../vm pmstdlib_img.c pmstdlib_nat.c
 
 zip: pymite_mbed.zip
 
-pymite_mbed.zip: $(TARGET)_nat.c $(TARGET)_img.c ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c
+pymite_mbed.zip: $(TARGET)_nat.c $(TARGET)_img.c ../../vm/pmstdlib_img.c ../../vm/pmstdlib_nat.c pmfeatures.py
 	$(RM) $@
 	cd ../../.. && zip src/platform/mbed/$@ src/vm/*.c src/vm/*.h src/platform/mbed/* -x src/platform/mbed/Makefile -x src/platform/mbed/README -x src/platform/mbed/*.py -x src/platform/mbed/main_nat.patch
 
@@ -564,6 +568,7 @@ clean_list :
 	$(REMOVE) $(TARGET)_img.c
 	$(REMOVE) $(TARGET)_nat.c
 	$(REMOVE) pymite_mbed.zip
+	$(REMOVE) pmfeatures.h
 	$(REMOVEDIR) .dep | exit 0
 
 

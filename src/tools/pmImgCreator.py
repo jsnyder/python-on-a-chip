@@ -44,8 +44,9 @@ respectively.
 #  See the source docstring for more details.
 
 __usage__ = """USAGE:
-    pmImgCreator.py [-b|c] [-s|u] [OPTIONS] -o imgfilename file0.py [files...]
+    pmImgCreator.py -f pmfeaturesfilename [-b|c] [-s|u] [OPTIONS] -o imgfilename file0.py [files...]
 
+    -f <fn> Specify the file containing the PM_FEATURES dict to use
     -b      Generates a raw binary file of the image
     -c      Generates a C file of the image (default)
 
@@ -61,30 +62,6 @@ __usage__ = """USAGE:
 
 
 import exceptions, string, sys, types, dis, os, time, getopt, struct, types
-
-
-#
-# IMPORTANT: The following dict MUST reflect the HAVE_* items in pmfeatures.h.
-# If the item is defined in pmfeatures.h, the corresponding dict value should
-# be True; False otherwise.
-#
-PM_FEATURES = {
-    "HAVE_PRINT": True, # This flag currently has no effect in this file
-    "HAVE_GC": True, # This flag currently has no effect in this file
-    "HAVE_FLOAT": True,
-    "HAVE_DEL": True,
-    "HAVE_IMPORTS": True,
-    "HAVE_DEFAULTARGS": True,
-    "HAVE_REPLICATION": True, # This flag currently has no effect in this file
-    "HAVE_CLASSES": True,
-    "HAVE_ASSERT": True,
-    "HAVE_GENERATORS": True,
-    "HAVE_BACKTICK": True,
-    "HAVE_STRING_FORMAT": True,  # This flag currently has no effect in this file
-    "HAVE_CLOSURES": True,
-    "HAVE_BYTEARRAY": False,  # This flag currently has no effect in this file
-    "HAVE_DEBUG_INFO": True,
-}
 
 
 ################################################################
@@ -113,14 +90,6 @@ OBJ_TYPE_CIM = 0x0A     # Code image
 OBJ_TYPE_NIM = 0x0B     # Native func img
 OBJ_TYPE_NOB = 0x0C     # Native func obj
 # All types after this never appear in an image
-
-# Number of bytes from top of code img to start of consts:
-# type, sizelo, sizehi, co_argcount, co_flags, co_stacksize, co_nlocals
-CO_IMG_FIXEDPART_SIZE = 7
-if PM_FEATURES["HAVE_CLOSURES"]:
-    CO_IMG_FIXEDPART_SIZE += 1  # [co_nfreevars]
-if PM_FEATURES["HAVE_DEBUG_INFO"]:
-    CO_IMG_FIXEDPART_SIZE += 2  # [co_firstlineno]
 
 # Number of bytes in a native image (constant)
 NATIVE_IMG_SIZE = 4
@@ -164,6 +133,18 @@ if float(sys.version[:3]) < 2.5:
 else:
     MODULE_IDENTIFIER = "<module>"
 
+# Old #152: Byte to append after the last image in the list
+IMG_LIST_TERMINATOR = "\xFF"
+
+
+################################################################
+# GLOBALS
+################################################################
+
+# Number of bytes from top of code img to start of consts:
+# type, sizelo, sizehi, co_argcount, co_flags, co_stacksize, co_nlocals
+CO_IMG_FIXEDPART_SIZE = 7
+
 # PyMite's unimplemented bytecodes (from Python 2.0 through 2.5)
 UNIMPLEMENTED_BCODES = [
     "SLICE+1", "SLICE+2", "SLICE+3",
@@ -179,75 +160,86 @@ UNIMPLEMENTED_BCODES = [
     "EXTENDED_ARG",
     ]
 
-if not PM_FEATURES["HAVE_DEL"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "DELETE_SUBSCR",
-        "DELETE_NAME",
-        "DELETE_GLOBAL",
-        "DELETE_ATTR",
-        "DELETE_FAST",
-        ])
-
-if not PM_FEATURES["HAVE_IMPORTS"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "IMPORT_STAR",
-        "IMPORT_FROM",
-        ])
-
-if not PM_FEATURES["HAVE_ASSERT"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "RAISE_VARARGS",
-        ])
-
-if not PM_FEATURES["HAVE_CLASSES"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "BUILD_CLASS",
-        ])
-
-# Issue #7: Add support for the yield keyword
-if not PM_FEATURES["HAVE_GENERATORS"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "YIELD_VALUE",
-        ])
-
-# Issue #44: Add support for the backtick operation (UNARY_CONVERT)
-if not PM_FEATURES["HAVE_BACKTICK"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "UNARY_CONVERT",
-        ])
-
-# Issue #13: Add support for Python 2.6 bytecodes.
-# The *_TRUE_DIVIDE bytecodes require support for float type
-if not PM_FEATURES["HAVE_FLOAT"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "BINARY_TRUE_DIVIDE",
-        "INPLACE_TRUE_DIVIDE",
-        ])
-
-# Old #152: Byte to append after the last image in the list
-IMG_LIST_TERMINATOR = "\xFF"
-
-# Issue #56: Add support for decorators
-if not PM_FEATURES["HAVE_CLOSURES"]:
-    UNIMPLEMENTED_BCODES.extend([
-        "MAKE_CLOSURE",
-        "LOAD_CLOSURE",
-        "LOAD_DEREF",
-        "STORE_DEREF",
-        ])
-
-################################################################
-# GLOBALS
-################################################################
-
 
 ################################################################
 # CLASS
 ################################################################
 
 class PmImgCreator:
+    def __init__(self, pmfeatures_filename):
 
-    def __init__(self,):
+        # Issue #88: Consolidate HAVE_* platform feature definitions
+        # Execute the pmfeatures file to get the features dict
+        locs = {}
+        execfile(pmfeatures_filename, {}, locs)
+        global PM_FEATURES
+        PM_FEATURES = locs['PM_FEATURES']
+        assert type(PM_FEATURES) == dict
+
+        # Modify some globals based on the platform features
+        global CO_IMG_FIXEDPART_SIZE
+        global UNIMPLEMENTED_BCODES
+
+        if PM_FEATURES["HAVE_CLOSURES"]:
+            CO_IMG_FIXEDPART_SIZE += 1  # [co_nfreevars]
+
+        if PM_FEATURES["HAVE_DEBUG_INFO"]:
+            CO_IMG_FIXEDPART_SIZE += 2  # [co_firstlineno]
+
+        if not PM_FEATURES["HAVE_DEL"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "DELETE_SUBSCR",
+                "DELETE_NAME",
+                "DELETE_GLOBAL",
+                "DELETE_ATTR",
+                "DELETE_FAST",
+                ])
+
+        if not PM_FEATURES["HAVE_IMPORTS"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "IMPORT_STAR",
+                "IMPORT_FROM",
+                ])
+
+        if not PM_FEATURES["HAVE_ASSERT"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "RAISE_VARARGS",
+                ])
+
+        if not PM_FEATURES["HAVE_CLASSES"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "BUILD_CLASS",
+                ])
+
+        # Issue #7: Add support for the yield keyword
+        if not PM_FEATURES["HAVE_GENERATORS"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "YIELD_VALUE",
+                ])
+
+        # Issue #44: Add support for the backtick operation (UNARY_CONVERT)
+        if not PM_FEATURES["HAVE_BACKTICK"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "UNARY_CONVERT",
+                ])
+
+        # Issue #13: Add support for Python 2.6 bytecodes.
+        # The *_TRUE_DIVIDE bytecodes require support for float type
+        if not PM_FEATURES["HAVE_FLOAT"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "BINARY_TRUE_DIVIDE",
+                "INPLACE_TRUE_DIVIDE",
+                ])
+
+        # Issue #56: Add support for decorators
+        if not PM_FEATURES["HAVE_CLOSURES"]:
+            UNIMPLEMENTED_BCODES.extend([
+                "MAKE_CLOSURE",
+                "LOAD_CLOSURE",
+                "LOAD_DEREF",
+                "STORE_DEREF",
+                ])
+
 
         self.formatFromExt = {".c": self.format_img_as_c,
                               ".bin": self.format_img_as_bin,
@@ -899,7 +891,7 @@ def parse_cmdline():
     """
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-                                   "bcsuo:",
+                                   "f:bcsuo:",
                                    ["memspace=", "native-file="])
     except:
         print __usage__
@@ -934,6 +926,8 @@ def parse_cmdline():
                 print __usage__
                 sys.exit(EX_USAGE)
             nativeFilename = opt[1]
+        elif opt[0] == "-f":
+            pmfeatures_filename = opt[1]
         elif opt[0] == "-o":
             # Error if out filename switch given without arg
             if not opt[1]:
@@ -951,12 +945,12 @@ def parse_cmdline():
         print __usage__
         sys.exit(EX_USAGE)
 
-    return outfn, imgtype, imgtarget, memspace, nativeFilename, args
+    return outfn, imgtype, imgtarget, memspace, nativeFilename, args, pmfeatures_filename
 
 
 def main():
-    pic = PmImgCreator()
-    outfn, imgtyp, imgtarget, memspace, natfn, fns = parse_cmdline()
+    outfn, imgtyp, imgtarget, memspace, natfn, fns, pmfn = parse_cmdline()
+    pic = PmImgCreator(pmfn)
     pic.set_options(outfn, imgtyp, imgtarget, memspace, natfn, fns)
     pic.convert_files()
     pic.write_image_file()
