@@ -46,12 +46,15 @@ Here is a step-by-step guide to porting PyMite to a new platform.
 - Copy an existing platform directory that most closely resembles the new target
   platform.  For the rest of this document, the new directory is referred to as
   ``<plat>``.  The core files needed for the port are ``main.c``, ``plat.c``,
-  ``pmfeatures.h`` and ``Makefile``.  Other files that might be useful are
-  `` main.py`` and ``SConscript``.  Remove all the extraneous files.
+  ``plat.h``, ``pmfeatures.py`` and ``Makefile``.  Other files that might be
+  useful are `` main.py`` and ``SConscript``.  Remove all the extraneous files.
 
-- Edit ``pmfeatures.h`` to include the features that you want the VM to have.
-  Set the size of the platform's heap in ``PM_HEAP_SIZE`` and be sure
-  to leave enough RAM for the C stack.
+- Edit ``pmfeatures.py`` to set the features that you want the VM to have.
+  Find the meaning of all the ``HAVE_*`` variables in
+  ``src/vm/pmFeatureDependencies.h``.
+
+- Edit ``plat.h`` to set the size of the platform's heap in ``PM_HEAP_SIZE``
+  and be sure to leave enough RAM for the C stack.
 
 - Edit the build environment so that it builds the PyMite library,
   ``../../vm/libpmvm_<plat>.a``, and links it to ``main.c``, ``plat.c``
@@ -66,6 +69,7 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       PM_LIB_PATH = ../../vm/$(PM_LIB_FN)
       PM_USR_SOURCES = main.py
       PMIMGCREATOR := ../../tools/pmImgCreator.py
+      PMGENPMFEATURES := ../../tools/pmGenPmFeatures.py
       TARGET = main
       SRC = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
       # If you want to be able to run ipm, uncomment the following line
@@ -91,11 +95,14 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       pmvm : $(PM_LIB_PATH)
 
       $(PM_LIB_PATH) :
-      	make -C ../../vm
+          make -C ../../vm
+
+      pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
+          $(PMGENPMFEATURES) pmfeatures.py > $@
 
       # PyMite: Generate native code and module images from the python source
       $(TARGET)_nat.c $(TARGET)_img.c : $(PM_USR_SOURCES)
-      	$(PMIMGCREATOR) -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
+      	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
       # PyMite: tell the compiler where to find pm.h and libpmvm_<plat>.a
       CFLAGS += -I../../
@@ -111,6 +118,7 @@ Here is a step-by-step guide to porting PyMite to a new platform.
       clean :
           $(REMOVE) $(TARGET)_img.c
           $(REMOVE) $(TARGET)_nat.c
+          $(REMOVE) pmfeatures.py
 
 - Edit ``plat.c`` to replace ``#include`` statements with ones for the new
   platform.  Edit the ``plat_init()`` function to enable the peripheral to be
