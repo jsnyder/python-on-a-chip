@@ -162,17 +162,20 @@ class SerialConnection(Connection):
             print NEED_PYSERIAL
             raise e
 
-        # Issue #110: Force PySerial to have readline API with eol argument
-        class Serial(serial.PosixSerial, serial.FileLike):
-            pass
-
-        self.s = Serial(serdev, baud)
+        self.s = serial.Serial(serdev, baud)
         self.s.setTimeout(4)
 
 
     def read(self,):
         # Collect all characters up to and including the ipm reply terminator
-        return self.s.readline(eol=REPLY_TERMINATOR)
+        # Issue #110 Readline with eol is not available on all platforms
+        # return self.s.readline(eol=REPLY_TERMINATOR)
+        b = bytearray()
+        c = None
+        while c != REPLY_TERMINATOR:
+            c = self.s.read(1)
+            b.append(c)
+        return str(b)
 
 
     def write(self, msg):
