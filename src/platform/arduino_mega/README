@@ -53,20 +53,25 @@ Flashing the Binary
 
 The steps above result in the binary file that needs to go on the Arduino Mega.
 The Arduino Mega should have the Arduino serial bootloader installed already.
-This bootloader is compatible with the stk500v2 protocol so we will use
-avrdude from within the makefile.  All you have to do is type:
+This bootloader is compatible with the stk500v1 protocol so we will use
+avrdude from within the makefile.  Edit the Makefile to set ``AVRDUDE_PORT``
+to match your serial port or give the serial device path on the command line::
 
     $ cd src/platform/arduino_mega
 
     # Reset the Arduino Mega, and do the next line within 2 seconds
 
-    $ make program
+    $ make program AVRDUDE_PORT=/dev/tty.usbserial
 
 If the program did not load onto the Arduino Mega, first check if you have a 
 bootloader: press and release the reset button and watch the LED labeled "L"
 on the opposite end of the FTDI chip from the USB plug.  If it does not flash, 
 a bootloader is not present and one must be installed.  See instructions on 
 `the Bootloader page`_ to install a bootloader.
+
+The Arduino Bootloader waits about 2 seconds after reset to execute the binary.
+So, while experimenting with ipm, be sure to give the board those two seconds
+after reset before you issue commands.
 
 .. _`the Bootloader page`: http://arduino.cc/en/Hacking/Bootloader
 
@@ -78,15 +83,35 @@ Now, the Arduino Mega is running ipm and waiting for input from the host
 computer.  So on your computer you need to run the host-side ipm
 (the name of your serial device may vary)::
 
-    $ ../../tools/ipm.py --serial /dev/tty.usbserial-A6008hox --baud=57600
+    $ ../../tools/ipm.py -f pmfeatures.py --serial /dev/tty.usbserial --baud=57600
 
+
+Using ipm
+---------
+
+The following is an example session using ipm::
     
-Notes
------
+    ipm> import avr, sys
+    ipm> avr.ddrA(0xff)
+    ipm> avr.portA(0)       # Pins 22-29 all at 0 V
+    ipm> avr.portA(0xa5)
+    ipm> sys.heap()
+    (2622, 7424)
 
-The Arduino Bootloader waits about 2 seconds after reset to execute the binary.
-So, while experimenting with ipm, be sure to give the board those two seconds
-after reset before you issue commands.
+After setting port A, the pin voltages are close to what you'd expect
+(0xa5 = 0b10100101):
 
+======= ======= =======
+Pin     Label   [Volts]
+======= ======= =======
+PA0     22      4.8
+PA1     23      0
+PA2     24      4.8
+PA3     25      0
+PA4     26      0
+PA5     27      4.8
+PA6     28      0
+PA7     29      4.8
+======= ======= =======
 
 .. :mode=rest:
