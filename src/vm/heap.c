@@ -184,27 +184,59 @@ static void
 heap_dump(void)
 {
     static int n = 0;
-    int i;
+    uint16_t s;
+    uint32_t i;
+    void *b;
     char filename[32];
     FILE *fp;
 
     snprintf(filename, 32, "pmheapdump%02d.bin", n++);
     fp = fopen(filename, "wb");
 
-    /* Write size of heap */
+    /* magic : PMDUMP for little endian or PMUDMP for big endian */
+    fwrite(&"PM", 1, 2, fp);
+    s = 0x5544;
+    fwrite(&s, sizeof(uint16_t), 1, fp);
+    fwrite(&"MP", 1, 2, fp);
+
+    /* pointer size */
+    s = sizeof(intptr_t);
+    fwrite(&s, sizeof(uint16_t), 1, fp);
+
+    /* dump version */
+    s = 1;
+    fwrite(&s, sizeof(uint16_t), 1, fp);    
+
+    /* pmfeatures */
+    s = 0;
+#ifdef USE_STRING_CACHE
+    s |= 1<<0;
+#endif
+#ifdef HAVE_DEFAULTARGS
+    s |= 1<<1;
+#endif
+#ifdef HAVE_CLOSURES
+    s |= 1<<2;
+#endif
+#ifdef HAVE_CLASSES
+    s |= 1<<3;
+#endif
+    fwrite(&s, sizeof(uint16_t), 1, fp);
+
+    /* size of heap */
     i = PM_HEAP_SIZE;
-    fwrite(&i, sizeof(int), 1, fp);
+    fwrite(&i, sizeof(uint32_t), 1, fp);
 
     /* Write base address of heap */
-    i = (int)&pmHeap.base;
-    fwrite(&i, sizeof(int *), 1, fp);
+    b=&pmHeap.base;
+    fwrite((void*)(&b), sizeof(intptr_t), 1, fp);
 
     /* Write contents of heap */
     fwrite(&pmHeap.base, 1, PM_HEAP_SIZE, fp);
 
     /* Write num roots*/
     i = 10;
-    fwrite(&i, sizeof(int), 1, fp);
+    fwrite(&i, sizeof(uint32_t), 1, fp);
 
     /* Write heap root ptrs */
     fwrite((void *)&gVmGlobal.pnone, sizeof(intptr_t), 1, fp);
