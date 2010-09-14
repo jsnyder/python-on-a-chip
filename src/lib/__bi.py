@@ -659,6 +659,16 @@ def type(o):
     pass
 
 
+# At this time, xrange() works in a for loop, but not in a generator expression
+# Yes: for i in xrange(42): pass
+# No:  [x for x in xrange(42)]
+#def xrange(n):
+#    i = 0
+#    while i < n:
+#        yield i
+#        i += 1
+
+
 #
 # Creates a code object from the given image string
 #
