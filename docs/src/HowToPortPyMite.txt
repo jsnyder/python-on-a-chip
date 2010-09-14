@@ -126,7 +126,7 @@ Here is a step-by-step guide to porting PyMite to a new platform.
   is desired, also edit ``plat_init()`` to initialize a timer or other periodic
   callback and the corresponding timer interrupt service routine (ISR) or
   callback function.  The ISR or callback function simply needs to call
-  ``pm_vmPeriodic(<ms>);`` with an argument that is the number of milliseconds
+  ``pm_vmPeriodic(<us>);`` with an argument that is the number of microseconds
   that have passed since it was last called.
 
 - Edit the ``plat_memGetByte()`` function in ``plat.c`` to match the platform's

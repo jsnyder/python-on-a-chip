@@ -96,7 +96,7 @@ My personal thanks go out to these people for their recent contribution to PyMit
 - Michael (michaelnt): Reporting mbed sys.time() and including a patch.
 - Angus Gratton: enhancements to lib/avr, port to Teensy++
 - J.W. Bruce: Reporting build issue and provided fix.
-- Michael (xinx): Found mbed name conflict, reported PySerial issue in ipm and provided fix.
+- Michael (xinx): Found mbed name conflict, reported PySerial issue in ipm and provided fix, reported error in the porting document.
 - Michael Reithinger: Reported GC defects and provided fixes.
 - Davide Carboni: Reported a build break, implemented module loading in ipm.
 - Markus Gritsch: Feedback on PIC port and ipm docs.
