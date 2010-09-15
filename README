@@ -92,7 +92,7 @@ Thanks
 
 My personal thanks go out to these people for their recent contribution to PyMite:
 
-- monnet.antoine: Recommended to use 'const' for the native func table to save RAM.
+- Tonio Monnet: Recommended to use 'const' for the native func table to save RAM, enhancements to src/tools/pmHeapDump.py
 - Michael (michaelnt): Reporting mbed sys.time() and including a patch.
 - Angus Gratton: enhancements to lib/avr, port to Teensy++
 - J.W. Bruce: Reporting build issue and provided fix.
