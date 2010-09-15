@@ -30,7 +30,8 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t149");
-
+    C_ASSERT((int)retval == PM_RET_EX_ATTR);
+    if (retval == PM_RET_EX_ATTR) return (int)PM_RET_OK;
     return (int)retval;
 }
 

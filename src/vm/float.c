@@ -130,6 +130,7 @@ float_op(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn, int8_t op)
     if ((y == 0.0) && ((op == '/') || (op == '%')))
     {
         PM_RAISE(retval, PM_RET_EX_ZDIV);
+        return retval;
     }
 
     /* Calculate x raised to y */

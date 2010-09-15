@@ -21,6 +21,6 @@ class C():
 
 c = C()
 
-# Uncomment the following two lines and expect a TypeError for proper operation
-#for i in c:
-#    print i
+print "Expect TypeError:"
+for i in c:
+    print i

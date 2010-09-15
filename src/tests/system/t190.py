@@ -42,4 +42,5 @@ print foo2(1,2)
 #print foo2(1,2,3) # Expect TypeError (0xED)
 
 # If the following line causes a segfault, it's a regression.
-#map(map, range(5)) # Expect TypeError (0xED)
+print "Expect TypeError:"
+map(map, range(5)) # Expect TypeError (0xED)

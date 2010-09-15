@@ -37,7 +37,6 @@ class Bar(Foo):
     def foo(self,):
         print "In Bar's foo."
 
-#bar = Bar() # Expect TypeError (0xED) (too few args)
 bar = Bar(99)
 bar.foo()
 assert bar.a == 42
@@ -55,3 +54,6 @@ assert baz.v == 100
 
 # Test how unknown attr fails
 #print baz.zilch # Expect AttributeError (0xE5)
+
+print "Expect TypeError:"
+bar = Bar() # Expect TypeError (0xED) (too few args)

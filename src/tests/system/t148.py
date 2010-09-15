@@ -30,14 +30,12 @@ assert 0.0 / 3.0 == 0.0
 assert 3.0 / 1.0 == 3.0
 assert 3.0 / 3.0 == 1.0
 assert 256.0 / 16.0 == 16.0
-#assert 3.0 / 0.0 == 999.0 # Expect ZeroDivisionError (0xE3)
 
 print "0.0 % 3.0 == ", 0.0 % 3.0
 assert 0.0 % 3.0 == 0.0
 assert 3.0 % 1.0 == 0.0
 assert 3.0 % 3.0 == 0.0
 assert 256.0 % 16.0 == 0.0
-#assert 3.0 % 0.0 == 999.0 # Expect ZeroDivisionError (0xE3)
 
 print "3.0 ** 3.0 == ", 3.0 ** 3.0
 assert 2.0 ** 8.0 == 256.0
@@ -116,3 +114,6 @@ assert (3 > 3.0) == False
 assert (3 >= 3.0) == True
 assert (3 is 3.0) == False
 assert (3 is not 3.0) == True
+
+assert 3.0 / 0.0 == 999.0 # Expect ZeroDivisionError (0xE3)
+#assert 3.0 % 0.0 == 999.0 # Expect ZeroDivisionError (0xE3)

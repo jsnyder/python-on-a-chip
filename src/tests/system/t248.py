@@ -18,4 +18,5 @@
 # Expect an AssertionError (0xE4)
 # Receiving a TypeError (0xED) is a regression
 
-#assert 0 == 1
+print "Expect AssertionError:"
+assert 0 == 1

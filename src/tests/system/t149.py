@@ -58,15 +58,6 @@ print "globals=", dict.keys(globals())
 
 
 #
-# Test the DELETE_ATTR bytecode
-#
-delglob.foo = "foo"
-print delglob.foo
-del delglob.foo
-#print delglob.foo # Expect AttributeError (0xE5)
-
-
-#
 # Test the DELETE_FAST bytecode
 #
 def delfast():
@@ -75,3 +66,12 @@ def delfast():
     assert i == None
 
 delfast()
+
+#
+# Test the DELETE_ATTR bytecode
+#
+delglob.foo = "foo"
+print delglob.foo
+del delglob.foo
+print "Expect AttributeError:"
+print delglob.foo # Expect AttributeError (0xE5)

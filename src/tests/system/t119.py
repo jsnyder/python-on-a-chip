@@ -30,4 +30,5 @@ def baz():
 
 if ismain():
     print "calling baz()"
-#    baz()  # expect exception and traceback
+    print "Expecting a ZeroDiv exception and traceback to print"
+    baz()  # expect exception and traceback

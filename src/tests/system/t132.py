@@ -11,17 +11,12 @@
 # is seen in the file COPYING up one directory from this.
 
 #
-# Test for Issue #132: VM doesn't throw TypeError 
+# Test for Issue #132: VM doesn't throw TypeError
 # when function has wrong number of arguments
-#
-# Run code that should cause a TypeError.
-# See that it doesn't.  Fix the defect, and see that a TypeError occurs.
-#
-# Then REMOVE this test from the suite since it expects an error.
 #
 
 def foo(n):
     return n * 1
-    
-# Expect TypeError
+
+print "Expecting a TypeError"
 foo(1, 2)

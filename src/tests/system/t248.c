@@ -31,5 +31,7 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t248");
+    C_ASSERT((int)retval == PM_RET_EX_ASSRT);
+    if (retval == PM_RET_EX_ASSRT) return (int)PM_RET_OK;
     return (int)retval;
 }
