@@ -371,7 +371,9 @@ string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring)
             smallfmtcstr[j] = fmtcstr[i];
             j++;
 
-            if (fmtcstr[i] == 'd')
+            if ((fmtcstr[i] == 'd')
+                || (fmtcstr[i] == 'x')
+                || (fmtcstr[i] == 'X'))
             {
                 if (OBJ_GET_TYPE(pobj) != OBJ_TYPE_INT)
                 {
@@ -477,7 +479,9 @@ string_format(pPmString_t pstr, pPmObj_t parg, pPmObj_t *r_pstring)
             smallfmtcstr[j] = fmtcstr[i];
             j++;
 
-            if (fmtcstr[i] == 'd')
+            if ((fmtcstr[i] == 'd')
+                || (fmtcstr[i] == 'x')
+                || (fmtcstr[i] == 'X'))
             {
                 smallfmtcstr[j] = '\0';
                 snprintretval = snprintf((char *)fmtdbuf, SIZEOF_FMTDBUF,
