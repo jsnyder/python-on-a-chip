@@ -1,0 +1,115 @@
+.. Copyright 2006 Dean Hall
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.2
+   or any later version published by the Free Software Foundation;
+   with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+   Texts.  A copy of the license is in the file docs/LICENSE.
+
+
+========================
+Pyton-on-a-Chip Overview
+========================
+
+:Author:    Dean Hall
+:Id:        $Id$
+
+
+Purpose
+-------
+
+This document gives an overview of Python-on-a-Chip, the software and
+the project that develops it.  In doing so, it helps the newcomer understand
+the scope of the project and intended purpose of the software.
+
+
+Introduction
+------------
+
+Python-on-a-Chip (p14p) is a project to develop a reduced Python virtual machine
+(codenamed PyMite) that runs a significant subset of the Python language on
+microcontrollers without an OS. The other parts of p14p are the device drivers,
+high-level libraries and other tools.
+
+The flyweight PyMite VM was written from scratch to execute on
+8-bit and larger microcontrollers with resources as limited as 64 KiB of
+program memory (flash) and 4 KiB of RAM.  PyMite supports a subset of the
+Python syntax and can execute a subset of its bytecodes.  The PyMite VM must
+be linked to the rest of the p14p software to provide a working system.
+P14p can be compiled, tested and executed on an embedded platform as well as
+a desktop computer.
+
+P14p is targeted toward microcontrollers with limited program memory and RAM.
+In order to operate in this embedded environment, p14p has to sacrifice some
+features found in desktop Python.  However, p14p's features list is impressive
+and growing.
+
+
+Intended Audience
+-----------------
+
+With Python's reputation for being friendly to beginning programmers, p14p
+should appeal to those who are programming microcontrollers for the first time.
+For those familiar with Python, p14p provides a rapid development environment.
+And for those with Python and C or assembly experience, p14p's `Native Function`
+interface provides a powerful way to embed low-level code in a Python function.
+In short, p14p has something for all levels of programmers.
+
+Python is a language that is easy to learn.  P14p is just as easy to learn,
+if not more so because there is less to learn.  This should allow brand new
+and novice programmers a straightforward path to writing code for a
+microcontroller.  The entry-level programmer, though, will have to wait until
+p14p is `ported` to the microcontroller that they are using.  By this, I mean,
+that in order to use the pins and peripherals of a specific microcontroller,
+a C or assembly code library must be written to interface p14p to that
+microcontroller.
+
+P14p supports the important datatypes an experienced Python programmer
+expects: 32-bit signed integers, Strings, Tuples, Lists and Dictionaries
+(a.k.a. Dicts, Hashes and Maps).  P14p also supports the basic flow
+control statements and logic statements.  Even some of Python's more
+advanced features such as generators, classes and decorators are supported.
+See `PyMiteFeatures`_ for a detailed description of what p14p supports.
+Suffice to say, p14p has enough to keep you busy.
+
+P14p would not be complete without a way for the Python application code
+to call low-level routines to access the special features of a microcontroller.
+P14p provides this advanced feature called `Native Function` and has a
+slick and easy way to implement them.  `Native Functions` are written by
+defining a function in Python code with the keyword ``pass`` as the function's
+body, but inserting C code in the function's documentation string.  Macros are
+provided to access the VM stack and arguments to the function.  Within
+the C code, the developer may write assembly code using the ``asm()`` statement
+if desired.  The context switch overhead to call a ``Native Function`` is near
+that of calling a function from within C.  This fast and convenient interface
+between Python code and C code provides the advanced developer a means to access
+the low-level features of the microcontroller and the VM itself.
+
+.. _PyMiteFeatures: ../html/PyMiteFeatures
+
+
+The P14p Project
+----------------
+
+The P14p project is hosted at http://code.google.com/p/python-on-a-chip/
+The latest release is available for download from that site.
+The site also explains how to obtain the latest development version
+of via the Subversion_ source code management tool.
+
+P14p does not have a set schedule for releases.  The current system is
+to make a release when a significant set of changes have been mainlined
+and a fair set of tests has shown the changes to be working to some degree.
+The determination of "significant" is up to the lead developer.
+
+http://code.google.com/p/python-on-a-chip/ serves as the center for p14p
+development.  P14p comes as a source distribution only.  The user should be
+familiar with ``.tar.gz`` files and installing a cross-compile toolchain in
+order to build p14p for a target platform.  P14p uses a `Makefile` system
+and the GCC toolchain by default to build for the default desktop platform.
+
+If p14p does not support your needs now, join the `P14p discussion list`_
+to make your desire known and help make it happen.
+
+.. _Subversion: http://subversion.tigris.org/
+.. _`P14p discussion list`: http://groups.google.com/group/python-on-a-chip
+
+.. :mode=rest:
