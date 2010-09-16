@@ -32,6 +32,7 @@ PmReturn_t
 list_append(pPmObj_t plist, pPmObj_t pobj)
 {
     PmReturn_t retval;
+    uint8_t objid;
 
     C_ASSERT(plist != C_NULL);
     C_ASSERT(pobj != C_NULL);
@@ -43,8 +44,17 @@ list_append(pPmObj_t plist, pPmObj_t pobj)
         return retval;
     }
 
+    /* Create new seglist if needed */
+    if (((pPmList_t)plist)->length == 0)
+    {
+        retval = seglist_new(&((pPmList_t)plist)->val);
+        PM_RETURN_IF_ERROR(retval);
+    }
+
     /* Append object to list */
+    heap_gcPushTempRoot((pPmObj_t)((pPmList_t)plist)->val, &objid);
     retval = seglist_appendItem(((pPmList_t)plist)->val, pobj);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
 
     /* Increment list length */
@@ -90,6 +100,7 @@ list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj)
 {
     PmReturn_t retval;
     int16_t len;
+    uint8_t objid;
 
     C_ASSERT(plist != C_NULL);
     C_ASSERT(pobj != C_NULL);
@@ -116,8 +127,17 @@ list_insert(pPmObj_t plist, int16_t index, pPmObj_t pobj)
         index = len;
     }
 
+    /* Create new seglist if needed */
+    if (((pPmList_t)plist)->length == 0)
+    {
+        retval = seglist_new(&((pPmList_t)plist)->val);
+        PM_RETURN_IF_ERROR(retval);
+    }
+
     /* Insert the item in the container */
+    heap_gcPushTempRoot((pPmObj_t)((pPmList_t)plist)->val, &objid);
     retval = seglist_insertItem(((pPmList_t)plist)->val, pobj, index);
+    heap_gcPopTempRoot(objid);
     PM_RETURN_IF_ERROR(retval);
 
     /* Increment list length */
@@ -131,7 +151,6 @@ list_new(pPmObj_t *r_pobj)
 {
     PmReturn_t retval = PM_RET_OK;
     pPmList_t plist = C_NULL;
-    uint8_t objid;
 
     /* Allocate a list */
     retval = heap_getChunk(sizeof(PmList_t), (uint8_t **)r_pobj);
@@ -141,11 +160,8 @@ list_new(pPmObj_t *r_pobj)
     plist = (pPmList_t)*r_pobj;
     OBJ_SET_TYPE(plist, OBJ_TYPE_LST);
     plist->length = 0;
+    plist->val = C_NULL;
 
-    /* Create empty seglist */
-    heap_gcPushTempRoot((pPmObj_t)plist, &objid);
-    retval = seglist_new(&plist->val);
-    heap_gcPopTempRoot(objid);
     return retval;
 }
 
@@ -251,8 +267,14 @@ list_remove(pPmObj_t plist, pPmObj_t item)
     /* Remove the item and decrement the list length */
     retval = seglist_removeItem(((pPmList_t)plist)->val, index);
     ((pPmList_t)plist)->length--;
-    return retval;
 
+    /* Unlink seglist if there are no contents */
+    if (((pPmList_t)plist)->length == 0)
+    {
+        ((pPmList_t)plist)->val = C_NULL;
+    }
+
+    return retval;
 }
 
 
@@ -268,6 +290,13 @@ list_index(pPmObj_t plist, pPmObj_t pitem, uint16_t *r_index)
     if (OBJ_GET_TYPE(plist) != OBJ_TYPE_LST)
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Raise a ValueError if the list is empty */
+    if (((pPmList_t)plist)->length == 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_VAL);
         return retval;
     }
 
@@ -319,6 +348,13 @@ list_delItem(pPmObj_t plist, int16_t index)
     /* Remove the item and decrement the list length */
     retval = seglist_removeItem(((pPmList_t)plist)->val, index);
     ((pPmList_t)plist)->length--;
+
+    /* Unlink seglist if there are no contents */
+    if (((pPmList_t)plist)->length == 0)
+    {
+        ((pPmList_t)plist)->val = C_NULL;
+    }
+
     return retval;
 }
 
@@ -380,13 +416,9 @@ list_clear(pPmObj_t plist)
         return retval;
     }
 
-    /* clear length */
+    /* Clear length and unlink seglist */
     ((pPmList_t)plist)->length = 0;
+    ((pPmList_t)plist)->val = C_NULL;
 
-    /* clear the keys and values seglists if needed */
-    if (((pPmList_t)plist)->val != C_NULL)
-    {
-        retval = seglist_clear(((pPmList_t)plist)->val);
-    }
     return retval;
 }
