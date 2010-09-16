@@ -247,4 +247,16 @@ def find(s1, s2):
     pass
 
 
+def join(s, sep=' '):
+    len_s = len(s)
+    if len_s == 0:
+        return ''
+    rs = s[0]
+    i = 1
+    while i < len_s:
+        rs = rs + sep + s[i]
+        i += 1
+    return rs
+
+
 # :mode=c:
