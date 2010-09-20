@@ -870,9 +870,9 @@ class PmImgCreator:
                             "}\n\n" % (funcname, funcstr))
 
         # create fxn table
-        fileBuff.append("/* native function lookup table */\n"
-                        "PmReturn_t (* const %s[])(pPmFrame_t *) =\n"
-                        "{\n" % (NATIVE_TABLE_NAME[self.imgtarget]))
+        fileBuff.append("/* Native function lookup table */\n"
+                        "pPmNativeFxn_t const %s[] =\n"
+                        "{\n" % NATIVE_TABLE_NAME[self.imgtarget])
 
         # put all native funcs in the table
         for (funcname, funcstr) in self.nativetable:

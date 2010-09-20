@@ -216,6 +216,13 @@ extern volatile uint32_t pm_timerMsTicks;
 #include "plat_interface.h"
 #include "bytearray.h"
 
+
+/** Pointer to a native function used for lookup tables in interp.c */
+typedef PmReturn_t (* pPmNativeFxn_t)(pPmFrame_t *);
+extern pPmNativeFxn_t const std_nat_fxn_table[];
+extern pPmNativeFxn_t const usr_nat_fxn_table[];
+
+
 /**
  * Initializes the PyMite virtual machine and indexes the user's application
  * image.  The VM heap and globals are reset.  The argument, pusrimg, may be
@@ -247,9 +254,8 @@ PmReturn_t pm_run(uint8_t const *modstr);
  */
 PmReturn_t pm_vmPeriodic(uint16_t usecsSinceLastCall);
 
-#endif /* __PM_H__ */
-
-
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* __PM_H__ */

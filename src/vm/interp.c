@@ -28,10 +28,6 @@
 #include "pm.h"
 
 
-extern PmReturn_t (* const std_nat_fxn_table[]) (pPmFrame_t *);
-extern PmReturn_t (* const usr_nat_fxn_table[]) (pPmFrame_t *);
-
-
 PmReturn_t
 interpret(const uint8_t returnOnNoThreads)
 {

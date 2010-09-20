@@ -154,7 +154,7 @@ def count(s1, s2):
         while (pscan <= (pc1 + (pc1len - pc2len)))
         {
             /* Find the next possible start */
-            pmatch = memchr(pscan, pc2c0, remaining);
+            pmatch = (uint8_t *)memchr(pscan, pc2c0, remaining);
             if (pmatch == C_NULL) break;
             remaining -= (pmatch - pscan);
             pscan = pmatch;
@@ -227,7 +227,7 @@ def find(s1, s2):
     else
     {
         /* Find the next possible start */
-        pmatch = memchr(pc1, pc2[0], pc1len);
+        pmatch = (uint8_t *)memchr(pc1, pc2[0], pc1len);
         if (pmatch != C_NULL)
         {
             /* If it matches, calculate the index */
