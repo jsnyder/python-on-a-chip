@@ -1,5 +1,5 @@
 /** 
-\mainpage API_docs API documentation
+\mainpage API documentation
 Copyright 2010 Dean Hall
 
 Permission is granted to copy, distribute and/or modify this document
@@ -9,7 +9,7 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts.  A copy of the license is in the file 
 <a href="../../../LICENSE">LICENSE</a>.
 
-See the <a href="../index.html">index</a> for an user/developer 
+See the <a href="../index.html">index</a> for user/developer 
 documentation. The following items describe the implementation
 of Python-on-a-chip (abbreviated p14p).
 
