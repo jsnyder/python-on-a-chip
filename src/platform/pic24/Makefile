@@ -49,10 +49,10 @@ export CFLAGS IPM PM_LIB_FN CC AR LDFLAGS
 
 all : pmfeatures.h $(TARGET).hex $(TARGET)_nat.c $(TARGET)_img.c
 
-bytecode: $(TARGET)_nat.c $(TARGET)_img.c $(PMIMGCREATOR)
+bytecode: $(TARGET)_nat.c $(TARGET)_img.c $(PMIMGCREATOR) pmfeatures.h
 	make -C ../../vm bytecode
 
-bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c $(PMIMGCREATOR)
+bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c $(PMIMGCREATOR) pmfeatures.h
 	make -C ../../vm bytecode
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
@@ -70,7 +70,7 @@ $(TARGET)_nat.c $(TARGET)_img.c: $(PM_USR_SOURCES) $(PMIMGCREATOR) pmfeatures.py
 	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o $(TARGET)_img.c --native-file=$(TARGET)_nat.c $(PM_USR_SOURCES)
 
 system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c: $(PM_TEST_USR_SOURCES) $(PMIMGCREATOR)
-	$(PMIMGCREATOR) -c -u -o system_test/$(TARGET)_img.c --native-file=system_test/$(TARGET)_nat.c $(PM_TEST_USR_SOURCES)
+	$(PMIMGCREATOR) -f pmfeatures.py -c -u -o system_test/$(TARGET)_img.c --native-file=system_test/$(TARGET)_nat.c $(PM_TEST_USR_SOURCES)
 
 clean :
 	$(MAKE) -C ../../vm clean

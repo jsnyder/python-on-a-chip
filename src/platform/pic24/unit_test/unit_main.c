@@ -34,7 +34,7 @@
 
 
 /* Need to declare this array since no PyMite application is linked */
-const unsigned char usr_nat_fxn_table[] = {};
+pPmNativeFxn_t const usr_nat_fxn_table[];
 
 /** A series of tests on the existance of digital IO pins.
   * @param tc Test object.
