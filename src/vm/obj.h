@@ -231,7 +231,7 @@ typedef enum PmType_e
  * (CodeObj, Frame, Dict, List, Tuple, etc.).
  *
  * The following is a diagram of the object descriptor:
- *
+ * \verbatim
  *              MSb           LSb
  *               7 6 5 4 3 2 1 0
  *     pchunk-> +-+-+-+-+-+-+-+-+     S := Size of the chunk (2 LSbs dropped)
@@ -244,7 +244,7 @@ typedef enum PmType_e
  *              | end data      |     Theoretical min size == 2
  *              +---------------+     Effective min size == 8
  *                                    (due to pmHeapDesc_t)
- *
+ * \endverbatim
  * Macros are used to get and set field values.
  * Using macros eliminates declaring bit fields which fails on some compilers.
  */

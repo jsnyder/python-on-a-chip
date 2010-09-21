@@ -33,11 +33,10 @@ subset</a> of the Python language:
 Several ports, listed below, enable use of p14p on specific 
 microprocessors. All ports reside in the <code>src/platform</code>
 <a href="dirs.html">directory</a>.
-- The <a href="../../src/platform/avr/README">AVR</a> port provides
+- The <a href="../../../src/platform/avr/README">AVR</a> port provides
   read/write access to PORTA only.
-- The \ref PIC24_dsPIC33_port "PIC24 and dsPIC33 processors". 
-  Currently, this is a skeleton implementation 
-  with little hardware interfacing.
+- The \ref PIC24_dsPIC33_port "PIC24 and dsPIC33 processor" port provides
+  digital I/O, Analog input, and PWM outputs.
 
 \section tools Tools
 
