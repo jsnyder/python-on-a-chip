@@ -105,6 +105,7 @@ file_077=.
 file_078=p14p
 file_079=p14p
 file_080=.
+file_081=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -187,6 +188,7 @@ file_077=no
 file_078=no
 file_079=no
 file_080=no
+file_081=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -268,7 +270,8 @@ file_076=no
 file_077=no
 file_078=no
 file_079=no
-file_080=yes
+file_080=no
+file_081=yes
 [FILE_INFO]
 file_000=..\common\pic24_clockfreq.c
 file_001=..\common\pic24_configbits.c
@@ -350,7 +353,8 @@ file_076=..\pmfeatures.h
 file_077=CuTestSmall.h
 file_078=..\..\..\vm\bytearray.h
 file_079=..\..\..\vm\pmFeatureDependencies.h
-file_080=..\pmfeatures.py
+file_080=..\plat.h
+file_081=..\pmfeatures.py
 [SUITE_INFO]
 suite_guid={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 suite_state=
