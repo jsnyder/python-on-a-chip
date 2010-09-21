@@ -462,7 +462,7 @@ test_configPwm(CuTest* tc)
     CuAssertTrue(tc, configPwm(1000,     C_TRUE,     2,      0) == PM_RET_OK);
     CuAssertTrue(tc, OC2CON == (OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE));
 #if (FCY == 1000000L)
-    CuAssertTrue(tc, T2CON == (T2_OFF | T2_IDLE_CON | T2_GATE_OFF
+    CuAssertTrue(tc, T2CON == (T2_ON | T2_IDLE_CON | T2_GATE_OFF
           | T2_32BIT_MODE_OFF | T2_SOURCE_INT | T2_PS_1_1));
     CuAssertTrue(tc, PR2 == 999);
 #endif

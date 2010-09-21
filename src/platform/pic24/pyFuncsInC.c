@@ -390,6 +390,7 @@ configPwm(uint32_t u32_freq, bool_t b_isTimer2, uint16_t u16_oc,
         TMR2 = 0;
         PR2 = u16_counts;
         OC_REG(OC1CON, u16_oc) = OC_TIMER2_SRC | OC_PWM_FAULT_PIN_DISABLE;
+        T2CONbits.TON = 1;
     } else {
         T3CON = T3_OFF | T3_IDLE_CON | T3_GATE_OFF
           | T3_SOURCE_INT
@@ -397,6 +398,7 @@ configPwm(uint32_t u32_freq, bool_t b_isTimer2, uint16_t u16_oc,
         PR3 = 0;
         PR3 = u16_counts;
         OC_REG(OC1CON, u16_oc) = OC_TIMER3_SRC | OC_PWM_FAULT_PIN_DISABLE;
+        T3CONbits.TON = 1;
     }
 
     return retval;

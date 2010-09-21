@@ -25,22 +25,21 @@ initialization function and then executes ipm.
 
 Additional sample code in sample_lib.py illustrates use of the
 \ref src/platform/pic24/pic24_dspic33.py "PIC24/dsPIC33" library.
+The program \ref src/platform/pic24/robot.py "robot.py" 
+gives code to operate a simple robot.
 
 
 \section building Building the Project
 
 First, install <a href="http://www.cygwin.com">Cygwin</a>, manually
-selecting installation of make and python. To build documentation,
-install <a href="http://docutils.sourceforge.net">docutils</a> <b>to
-the Cygwin Python</b> and
-<a href="http://www.doxygen.org">Doxygen</a>. Put the path to the
-Cygwin Python before the standard Windows Python, since this project
-WILL NOT BUILD with Windows Python. 
+selecting installation of make. To build documentation,
+install <a href="http://docutils.sourceforge.net">docutils</a> and
+<a href="http://www.doxygen.org">Doxygen</a>. 
 
 Open the p14p.mcp project file with the 
-Microchip MPLAB IDE
-then build the project. However, you must have the path to Cygwin's
-make.exe in your Windows path for this to work.
+<a href="http://www.microchip.com/stellent/idcplg?IdcService=SS_GET_PAGE&nodeId=1406&dDocName=en019469&part=SW007002">Microchip
+MPLAB IDE</a> then build the project. However, you must have the path to 
+Cygwin's make.exe in your Windows path for this to work.
 
 Alternatively, you can compile from the command line.
 Start with a clean PyMite tree.  Edit 
