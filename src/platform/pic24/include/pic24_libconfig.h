@@ -203,6 +203,9 @@
     #define HB_LED _LATA8
     /** Define a config function for the heartbeat pin. */
     #define CONFIG_HB_LED() CONFIG_RA8_AS_DIG_OUTPUT()
+  #elif defined(MICROSTIK)
+    #define HB_LED _LATB15
+    #define CONFIG_HB_LED() CONFIG_RB15_AS_DIG_OUTPUT()
   #else
     /// \copysee{pic24_uart.h::HB_LED}
     #define HB_LED _LATB15

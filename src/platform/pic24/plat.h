@@ -20,8 +20,10 @@
 // allows that.
 #ifdef UNIT_TEST
 #define PM_HEAP_SIZE 100
+#elif defined(__DEBUG)
+#define PM_HEAP_SIZE 6900
 #else
-#define PM_HEAP_SIZE 6800
+#define PM_HEAP_SIZE 6980
 #endif
 
 #define PM_FLOAT_LITTLE_ENDIAN

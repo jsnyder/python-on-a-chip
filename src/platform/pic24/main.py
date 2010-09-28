@@ -14,9 +14,6 @@
 #  @brief PIC24/dsPIC33 main code to run ipm.
 #
 
-import sys
 import ipm
-
-print "Welcome to PIC24/dsPIC33 Python! (Free space, total RAM):", sys.heap()
-print "Starting interactive mode."
+print "Welcome to PIC24/dsPIC33 Python! Starting interactive mode."
 ipm.ipm()
