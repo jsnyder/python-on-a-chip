@@ -1,0 +1,59 @@
+===========================
+The MoSync Platform Project
+===========================
+
+:Author:    Oscar Lindberg
+:Id:        $Id$
+
+Purpose
+-------
+
+This is a sample project that demonstrates running a simple example in
+MoSync_.  Since no obvious stdin exist on the platform unfortunately the
+IPM is not an option yet.
+
+.. _MoSync: http://www.mosync.com/
+
+
+Building the Project
+--------------------
+
+- Start with a clean PyMite tree.
+- Start the MoSync IDE.
+- Create a new project: File -> New -> Project.
+- In the Wizard choose: MoSync Project -> Choose a name -> MoSync C Project.
+- Delete the main.c.
+- Move the src/vm, src/lib and src/platform/mosync directories into the project.
+  The easiest way is to move the entire src directory into the project directory,
+  then delete ``tests/`` and everything in "``platform/`` except for mosync.
+- In src/vm/Makefile replace "PLATFORM = desktop" with "PLATFORM = mosync".
+- Build the PyMite VM source archive as well as the sample application source::
+
+    $ cd src/platform/mosync
+    $ make
+
+- The VM depends on the newlib library. Right click on Project -> Properties.
+  MoSync Project -> Build Settings -> Paths and Files.
+  Put "C:\MoSync\lib\newlib_release" (depending on the location of your MoSync
+  installation) in Additional Library Paths. Put "newlib.lib" in Additional
+  Libraries.
+- Add the path to platform\mosync, vm and "C:\MoSync\include\newlib" to the
+  Additional Include Paths, with colon (;) between.
+- Check "Ignore Default" for all three options.
+
+- Right click on project -> Refresh.
+- Build project in the MoSync IDE and run.
+
+The program should print to the log. When you press a key or click the screen
+the program will log another line and exit.
+
+
+Accessing the MoSync API
+------------------------
+
+The sample project only wraps one function from maapi.h. Other functions can
+be wrapped in a similar manner. To find out more about this native wrapping,
+look at the code in the lib directory.
+
+
+.. :mode=rest:
