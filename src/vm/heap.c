@@ -704,6 +704,10 @@ heap_gcMarkObj(pPmObj_t pobj)
             retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_attrs);
             PM_RETURN_IF_ERROR(retval);
 
+            /* Mark the globals dict */
+            retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_globals);
+            PM_RETURN_IF_ERROR(retval);
+
 #ifdef HAVE_DEFAULTARGS
             /* Mark the default args tuple */
             retval = heap_gcMarkObj((pPmObj_t)((pPmFunc_t)pobj)->f_defaultargs);
