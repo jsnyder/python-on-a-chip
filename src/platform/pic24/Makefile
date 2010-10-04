@@ -50,10 +50,10 @@ export CFLAGS IPM PM_LIB_FN CC AR LDFLAGS
 all : pmfeatures.h $(TARGET).hex $(TARGET)_nat.c $(TARGET)_img.c
 
 bytecode: $(TARGET)_nat.c $(TARGET)_img.c $(PMIMGCREATOR) pmfeatures.h
-	make -C ../../vm bytecode
+	make -C ../../vm bytecode PLATFORM=pic24
 
 bytecode-test: system_test/$(TARGET)_nat.c system_test/$(TARGET)_img.c $(PMIMGCREATOR) pmfeatures.h
-	make -C ../../vm bytecode
+	make -C ../../vm bytecode PLATFORM=pic24
 
 $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
