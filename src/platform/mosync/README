@@ -26,7 +26,6 @@ Building the Project
 - Move the src/vm, src/lib and src/platform/mosync directories into the project.
   The easiest way is to move the entire src directory into the project directory,
   then delete ``tests/`` and everything in "``platform/`` except for mosync.
-- In src/vm/Makefile replace "PLATFORM = desktop" with "PLATFORM = mosync".
 - Build the PyMite VM source archive as well as the sample application source::
 
     $ cd src/platform/mosync
@@ -38,22 +37,52 @@ Building the Project
   installation) in Additional Library Paths. Put "newlib.lib" in Additional
   Libraries.
 - Add the path to platform\mosync, vm and "C:\MoSync\include\newlib" to the
-  Additional Include Paths, with colon (;) between.
+  Additional Include Paths, with comma (,) between.
+
 - Check "Ignore Default" for all three options.
+
+  Additional Include Paths:
+    C:\MoSync\workspace\MoPyncR1\src\vm,C:\MoSync\workspace\MoPyncR1\src\platform\mosync,C:\MoSync\include\newlib
+  Additional Library Paths:
+    C:\MoSync\lib\newlib_release
+  Additional Libraries:
+    newlib.lib
 
 - Right click on project -> Refresh.
 - Build project in the MoSync IDE and run.
 
-The program should print to the log. When you press a key or click the screen
-the program will log another line and exit.
+The program will show some moving rectangles. If you press a key or click on 
+the screen, the events will be logged. 
 
 
 Accessing the MoSync API
 ------------------------
 
-The sample project only wraps one function from maapi.h. Other functions can
-be wrapped in a similar manner. To find out more about this native wrapping,
-look at the code in the lib directory.
+The ma.py contains many of the maapi functions and definitions. So far almost 
+all of the graphics and most of the basic events are supported. The ma_gen.py 
+file contains some untested functions. If you miss a function a good start is 
+to look in the ma_gen.py file, maybe there is something to build on there. 
 
+
+Things to remember
+------------------
+
+Each time you make a change to the python source, you need to run make again. 
+If you just rebuild from inside the IDE the old python program will be used. 
+
+The print statement will print to the MoSync log. This is a great way to debug 
+your code. 
+
+The MoSync IDE can not edit python files, so you will need to use your 
+favorite editor instead. 
+
+If you need more memory for the pymite Python VM, increase the value of 
+PM_HEAP_SIZE in the plat.h file. Don't forget to rebuild the MoSync project 
+after that, only doing a build will not work. 
+
+When using resources and .lst files, you need to handle all the resource ids 
+manually. So far MAHeaders.py is not automatically created, since 
+the MAHeaders.h is created as part of the IDE build. A future improvement 
+would be to build everything from the command line. 
 
 .. :mode=rest:

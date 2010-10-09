@@ -15,7 +15,7 @@
 #ifndef _PLAT_H_
 #define _PLAT_H_
 
-#define PM_HEAP_SIZE 0x2000
+#define PM_HEAP_SIZE 0x10000 // 256k
 #define PM_FLOAT_LITTLE_ENDIAN
 #define PM_PLAT_HEAP_ATTR __attribute__((aligned (4)))
 

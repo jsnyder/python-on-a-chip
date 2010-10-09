@@ -1,11 +1,23 @@
-# This file contains wrappers for the basic 
-# functions in maapi. 
+# This file contains wrappers for the basic
+# functions in maapi.
 
 # If a function or constant is missing, look in ma_gen.py, it
-# might be there. 
+# might be there.
 
 """__NATIVE__
 #include <ma.h>
+
+#define POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid) \
+    do \
+    { \
+        if ((retval) != PM_RET_OK) \
+        { \
+            heap_gcPopTempRoot((objid)); \
+            return (retval); \
+        } \
+    } \
+    while (0)
+
 """
 
 TRANS_NONE = 0
@@ -44,6 +56,30 @@ MAK_LEFT = 276
 MAK_FIRE = 284
 MAK_SOFTLEFT = 285
 MAK_SOFTRIGHT = 286
+
+MAKB_LEFT = 0x00001
+MAKB_UP = 0x00002
+MAKB_RIGHT = 0x00004
+MAKB_DOWN = 0x00008
+MAKB_FIRE = 0x00010
+MAKB_SOFTLEFT = 0x00020
+MAKB_SOFTRIGHT = 0x00040
+MAKB_0 = 0x00080
+MAKB_1 = 0x00100
+MAKB_2 = 0x00200
+MAKB_3 = 0x00400
+MAKB_4 = 0x00800
+MAKB_5 = 0x01000
+MAKB_6 = 0x02000
+MAKB_7 = 0x04000
+MAKB_8 = 0x08000
+MAKB_9 = 0x10000
+MAKB_ASTERISK = 0x20000
+MAKB_STAR = 0x20000
+MAKB_HASH = 0x40000
+MAKB_POUND = 0x40000
+MAKB_GRID = 0x40000
+MAKB_CLEAR = 0x80000
 
 def sin(x):
     """__NATIVE__
@@ -209,6 +245,7 @@ def maGetClipRect():
     MARect rect;
     pPmObj_t pn = C_NULL;
     pPmObj_t r_ptuple = C_NULL;
+    uint8_t objid;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
@@ -220,18 +257,20 @@ def maGetClipRect():
     maGetClipRect(&rect);
     retval = tuple_new(4, &r_ptuple);
     PM_RETURN_IF_ERROR(retval);
+    heap_gcPushTempRoot(r_ptuple, &objid);
     retval = int_new(rect.left, &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[0] = pn;
     retval = int_new(rect.top, &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[1] = pn;
     retval = int_new(rect.width, &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[2] = pn;
     retval = int_new(rect.height, &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[3] = pn;
+    heap_gcPopTempRoot(objid);
 
     NATIVE_SET_TOS(r_ptuple);
 
@@ -454,6 +493,7 @@ def maGetTextSize(s):
     int extent;
     pPmObj_t pn = C_NULL;
     pPmObj_t r_ptuple = C_NULL;
+    uint8_t objid;
 
     const char* str;
     pPmObj_t p_str = C_NULL;
@@ -478,12 +518,14 @@ def maGetTextSize(s):
     extent = maGetTextSize(str);
     retval = tuple_new(2, &r_ptuple);
     PM_RETURN_IF_ERROR(retval);
+    heap_gcPushTempRoot(r_ptuple, &objid);
     retval = int_new(EXTENT_X(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[0] = pn;
     retval = int_new(EXTENT_Y(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[1] = pn;
+    heap_gcPopTempRoot(objid);
 
     NATIVE_SET_TOS(r_ptuple);
 
@@ -587,6 +629,7 @@ def maGetScrSize():
     int extent;
     pPmObj_t pn = C_NULL;
     pPmObj_t r_ptuple = C_NULL;
+    uint8_t objid;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
@@ -599,12 +642,14 @@ def maGetScrSize():
     extent = maGetScrSize();
     retval = tuple_new(2, &r_ptuple);
     PM_RETURN_IF_ERROR(retval);
+    heap_gcPushTempRoot(r_ptuple, &objid);
     retval = int_new(EXTENT_X(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[0] = pn;
     retval = int_new(EXTENT_Y(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[1] = pn;
+    heap_gcPopTempRoot(objid);
 
     NATIVE_SET_TOS(r_ptuple);
 
@@ -775,6 +820,7 @@ def maGetImageSize(image):
     int extent;
     pPmObj_t pn = C_NULL;
     pPmObj_t r_ptuple = C_NULL;
+    uint8_t objid;
 
     int image;
     pPmObj_t p_image = C_NULL;
@@ -800,12 +846,14 @@ def maGetImageSize(image):
 
     retval = tuple_new(2, &r_ptuple);
     PM_RETURN_IF_ERROR(retval);
+    heap_gcPushTempRoot(r_ptuple, &objid);
     retval = int_new(EXTENT_X(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[0] = pn;
     retval = int_new(EXTENT_Y(extent), &pn);
-    PM_RETURN_IF_ERROR(retval);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
     ((pPmTuple_t)r_ptuple)->val[1] = pn;
+    heap_gcPopTempRoot(objid);
 
     NATIVE_SET_TOS(r_ptuple);
 
@@ -897,14 +945,18 @@ def maGetKeys():
     """
     pass
 
-
 def _maGetEvent():
     """__NATIVE__
-    PmReturn_t retval = PM_RET_OK;
-    pPmObj_t r_ptuple = C_NULL;
-    pPmObj_t pn = C_NULL;
-    pPmObj_t ptuple = C_NULL;
+    PmReturn_t retval;
     MAEvent event;
+    int type;
+    int v1;
+    int v2;
+    pPmObj_t p1;
+    pPmObj_t p2;
+    pPmObj_t p3;
+    pPmObj_t r_ptuple;
+    uint8_t objid;
 
     /* If wrong number of args, raise TypeError */
     if (NATIVE_GET_NUM_ARGS() != 0)
@@ -918,73 +970,103 @@ def _maGetEvent():
         return retval;
     }
 
-    if (event.type == EVENT_TYPE_KEY_PRESSED ||
-        event.type == EVENT_TYPE_KEY_RELEASED) {
-        retval = tuple_new(3, &r_ptuple);
-        PM_RETURN_IF_ERROR(retval);
-
-        retval = int_new(event.type, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)r_ptuple)->val[0] = pn;
-        retval = int_new(event.key, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)r_ptuple)->val[1] = pn;
-        retval = int_new(event.nativeKey, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)r_ptuple)->val[2] = pn;
-    } else if (event.type == EVENT_TYPE_POINTER_PRESSED ||
-               event.type == EVENT_TYPE_POINTER_DRAGGED ||
-               event.type == EVENT_TYPE_POINTER_RELEASED) {
-        retval = tuple_new(2, &r_ptuple);
-        PM_RETURN_IF_ERROR(retval);
-
-        retval = int_new(event.type, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)r_ptuple)->val[0] = pn;
-
-        retval = tuple_new(2, &ptuple);
-        PM_RETURN_IF_ERROR(retval);
-
-        retval = int_new(event.point.x, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)ptuple)->val[0] = pn;
-        retval = int_new(event.point.y, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)ptuple)->val[1] = pn;
-        ((pPmTuple_t)r_ptuple)->val[1] = ptuple;
-
-    } else { // Other event
-        retval = tuple_new(1, &r_ptuple);
-        PM_RETURN_IF_ERROR(retval);
-
-        retval = int_new(event.type, &pn);
-        PM_RETURN_IF_ERROR(retval);
-        ((pPmTuple_t)r_ptuple)->val[0] = pn;
+    type = event.type;
+    if (type == EVENT_TYPE_KEY_PRESSED ||
+        type == EVENT_TYPE_KEY_RELEASED) {
+        v1 = event.key;
+        v2 = event.nativeKey;
+    } else if (type == EVENT_TYPE_POINTER_PRESSED ||
+               type == EVENT_TYPE_POINTER_DRAGGED ||
+               type == EVENT_TYPE_POINTER_RELEASED) {
+        v1 = event.point.x;
+        v2 = event.point.y;
     }
+
+    /* Allocate a tuple to store the return values */
+    retval = tuple_new(3, &r_ptuple);
+    PM_RETURN_IF_ERROR(retval);
+
+    heap_gcPushTempRoot(r_ptuple, &objid);
+    retval = int_new(type, &p1);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
+    ((pPmTuple_t)r_ptuple)->val[0] = p1;
+    retval = int_new(v1, &p2);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
+    ((pPmTuple_t)r_ptuple)->val[1] = p2;
+    retval = int_new(v2, &p3);
+    POP_TMPROOT_AND_RETURN_IF_ERROR(retval, objid);
+    ((pPmTuple_t)r_ptuple)->val[2] = p3;
+    heap_gcPopTempRoot(objid);
+
+    /* Return the tuple on the stack */
     NATIVE_SET_TOS(r_ptuple);
+
     return retval;
     """
     pass
 
-class Event():
-    pass
+_pointer_events = {EVENT_TYPE_POINTER_PRESSED: 'Pointer Pressed',
+                   EVENT_TYPE_POINTER_DRAGGED: 'Pointer Dragged',
+                   EVENT_TYPE_POINTER_RELEASED: 'Pointer Released'}
+
+_key_events = {EVENT_TYPE_KEY_PRESSED: 'Key Pressed',
+               EVENT_TYPE_KEY_RELEASED: 'Key Released'}
+
+class Event:
+    def __init__(self, event_type):
+        self.type = event_type
+    def __str__(self):
+        if self.type in _pointer_events:
+            return '%s: x=%d y=%d' % (_pointer_events[self.type], self.x, self.y)
+        elif self.type in _key_events:
+            return ('%s: key=%d nativekey=%d' % 
+                    (_key_events[self.type], self.key, self.nativekey))
+        else:
+            return 'Event type: %d' % self.type
 
 def maGetEvent():
     t = _maGetEvent()
-    e = Event()
-    if t == None:
+    if not t:
         return None
-    if t[0] in [EVENT_TYPE_KEY_PRESSED,
-                EVENT_TYPE_KEY_RELEASED]:
-        e.type, e.key, e.nativekey = t
-    elif t[0] in [EVENT_TYPE_POINTER_PRESSED,
-                  EVENT_TYPE_POINTER_DRAGGED,
-                  EVENT_TYPE_POINTER_RELEASED]:
-        e.type, e.point = t
-    else: # Other events
-        e.type = t[0]
-    return e
+    etype, v1, v2 = t
+    event = Event(etype)
+    if etype in [EVENT_TYPE_POINTER_PRESSED,
+                 EVENT_TYPE_POINTER_DRAGGED,
+                 EVENT_TYPE_POINTER_RELEASED]:
+        event.x = v1
+        event.y = v2
+    elif etype in [EVENT_TYPE_KEY_PRESSED,
+                  EVENT_TYPE_KEY_RELEASED]:
+        event.key = v1
+        event.nativekey = v2
+    return event
 
+def maGetEvents():
+    while True:
+        event = maGetEvent()
+        if event:
+            yield event
+        else:
+            break
+
+def _maGetNone():
+    """__NATIVE__
+    PmReturn_t retval;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    NATIVE_SET_TOS(PM_NONE);
+    return retval;
+    """
+    pass
+
+def maGetNone():
+    return _maGetNone()
 
 def maWait(timeout):
     """__NATIVE__
@@ -1385,4 +1467,74 @@ def maSoundSetVolume(vol):
     pass
 
 #int maInvokeExtension(int function, int a, int b, int c);
-# - - - - - Right order above - - - - - -
+
+# This doesn't really belong here, but it plenty useful.
+def int(v):
+    """__NATIVE__
+
+    PmReturn_t retval = PM_RET_OK;
+
+    int func_retval;
+    pPmObj_t p_func_retval = C_NULL;
+
+    int int_val;
+    pPmObj_t p_float = C_NULL;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 1)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    /* Raise TypeError if arg is not correct type */
+    p_float = NATIVE_GET_LOCAL(0);
+    if (OBJ_GET_TYPE(p_float) != OBJ_TYPE_FLT)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    int_val = (int)(((pPmFloat_t)p_float)->val);
+
+    retval = int_new(int_val, &p_func_retval);
+
+    NATIVE_SET_TOS(p_func_retval);
+
+    return retval;
+    """
+    pass
+
+# Relatively cheap 16 bit pseudo randomness
+def rand():
+    """__NATIVE__
+    static unsigned long randx = 0x01234567;
+    PmReturn_t retval = PM_RET_OK;
+
+    int func_retval;
+    pPmObj_t p_func_retval = C_NULL;
+
+    /* If wrong number of args, raise TypeError */
+    if (NATIVE_GET_NUM_ARGS() != 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    randx *= 1103515245;
+    randx += 12345;
+    func_retval = (randx >> 16) & 0xffff;
+    retval = int_new(func_retval, &p_func_retval);
+
+    NATIVE_SET_TOS(p_func_retval);
+
+    return retval;
+    """
+    pass
+
+def xrange(n):
+    i = 0
+    while i < n:
+        yield i
+        i += 1
+
