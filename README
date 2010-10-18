@@ -6,9 +6,9 @@ featuring PyMite
 
 
 :Author:    Dean Hall
-:Copyright: Copyright 2003, 2006, 2007, 2009 Dean Hall.
+:Copyright: Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.
             See `License`_ for details.
-:Release:   08
+:Release:   09
 :Site:      http://www.pythononachip.org
 :Id:        $Id: README 116 2006-08-24 13:42:09Z dwhall $
 
@@ -16,12 +16,13 @@ featuring PyMite
 Purpose
 -------
 
-The Python-on-a-Chip program consists of the PyMite virtual machine,
-ports to specific platforms, libraries, tests, tools and documentation.
-PyMite is a flyweight Python bytecode interpreter written from scratch
-to execute in low memory on microcontrollers without an operating system.
-PyMite supports a subset of Python 2.5 and can also be compiled, tested
-and executed on a desktop computer.
+Python-on-a-Chip (p14p) is a project to develop a reduced Python virtual machine
+(codenamed PyMite) that runs a significant subset of the Python 2.6 language
+on microcontrollers without an OS.  The other parts of p14p are the device
+drivers, high-level libraries and other tools.  Please join the
+`python-on-a-chip google group`_ to discuss this project.
+
+.. _`python-on-a-chip google group`: http://groups.google.com/group/python-on-a-chip
 
 
 License
@@ -40,15 +41,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 Build
 -----
 
-You must build PyMite on a system with a POSIX-like terminal:
-Mac OS X, Linux or Cygwin.  GNU Make should be installed.
+P14p is built, for most platforms, using a POSIX-like terminal, a Makefile
+(or using SCons) and a GCC [cross] compiler.  The desktop platform is the 
+default target platform and it builds for Mac OS X, Linux or Cygwin.
+See src/platform/desktop/README for one extra step if you have 64-bit hardware.
+
+GNU Make should be installed since other forms of Make aren't 100% compatible.
 The development system should have installed the
-`GNU Compiler Collection`_ version 3.4 or later and `Python`_ 2.5 or 2.6.
+`GNU Compiler Collection`_ version 3.4 or later and `Python`_ 2.6.
 The SCons build system is experimental.
 Please read ``docs/src/BuildSystem.txt`` for more details.
 
-To build PyMite for the desktop platform and run the interactive prompt
-(press Control+D when done)::
+To build p14p for the desktop platform and run the interactive prompt::
 
     $ make ipm
     ...
@@ -56,6 +60,7 @@ To build PyMite for the desktop platform and run the interactive prompt
     Hello world.
     ipm> ^D
 
+Press Control+D when done with the interactive prompt.
 To run the system tests on the desktop::
 
     $ make check
@@ -66,11 +71,12 @@ For example::
 
     $ make PLATFORM=avr
 
-The author uses avr-gcc to compile for Atmel AVR microcontrollers
-and arm-elf-gcc to compile for ARM7TDMI microcontrollers.
+The author uses avr-gcc to compile for Atmel AVR microcontrollers.
+Other platforms use other compilers.  The windows platform uses a MicroSoft IDE.
 
-Since PyMite is so deeply embedded, it does not rely on many libraries.
-When compiling for the AVR, it will need avr-libc.
+Since p14p is so deeply embedded, it does not rely on many libraries.
+For example, the avr platform needs only avr-libc and the econotag platform
+requires newlib but also uses libmc1322x for advanced wireless features.
 
 .. _`GNU Compiler Collection`: http://gcc.gnu.org/
 .. _`Python`: http://www.python.org/download
@@ -80,8 +86,7 @@ Discussion
 ----------
 
 Please browse the `Python-on-a-chip project`_ site for up-to-date information.
-and join the `Python-on-a-chip maillist`_ for discussion about the project and
-the PyMite virtual machine.
+and join the `Python-on-a-chip maillist`_ for discussion about the p14p project.
 
 .. _`Python-on-a-chip project`: http://code.google.com/p/python-on-a-chip/
 .. _`Python-on-a-chip maillist`: http://groups.google.com/group/python-on-a-chip
@@ -90,8 +95,9 @@ the PyMite virtual machine.
 Thanks
 ------
 
-My personal thanks go out to these people for their recent contribution to PyMite:
+My personal thanks go out to these people for their recent contribution to p14p:
 
+- Oscar Lindberg: Porting p14p to the MoSync platform.
 - Alex Litz: Reported an error on the windows platform.
 - Tonio Monnet: Recommended to use 'const' for the native func table to save RAM, enhancements to src/tools/pmHeapDump.py.
 - Michael (michaelnt): Reporting mbed sys.time() and including a patch.
@@ -101,56 +107,74 @@ My personal thanks go out to these people for their recent contribution to PyMit
 - Michael Reithinger: Reported GC defects and provided fixes.
 - Davide Carboni: Reported a build break, implemented module loading in ipm.
 - Markus Gritsch: Feedback on PIC port and ipm docs.
-- Bryan Jones: Making Doxygen docs, developing port to PIC24/dsPIC33 platform, mainlining VM bug fixes.
+- Bryan Jones: Making Doxygen docs, developing port to PIC24/dsPIC33 platform, mainlining VM bug fixes and helping the windows port.
 - Trammell Hudson: Patches for string concatenation and backtick operator (UNARY_CONVERT).
 - Duncan McGreggor: Creating an excellent Python-on-a-Chip logo.
 - Jan Wedel: Reporting an issue and providing a fix for the DELETE_ATTR bytecode.
-- Tyler Wilson: Porting PyMite to the Windows platform and making good VM improvement suggestions.
+- Tyler Wilson: Porting and maintaining p14p on the Windows platform and making good VM improvement suggestions.
 - Thomas Fenzl: Patching and testing for 64-bit systems.
 - Alex Clausen: Reporting a build break and including a patch for 64-bit systems.
-- Diego Martins: Reporting a build break and including a patch.
-- Mark Eichin: Feedback on system tests and Makefile
+- James Snyder: Porting and maintaining p14p on the STM32 platform.
+
+
+Target Platforms
+----------------
+
+Platforms in **bold** are new since the previous release:
+
+    - **arduino_mega**: The Atmel ATmega1280 based `Arduino Mega board`_
+    - at91sam7s-ek: The Atmel `evaluation kit for the ARM7 AT91SAM7S64`_ **[Not Recommended]**
+    - avr: Generic `Atmel AVR`_
+    - desktop: Mac OS X, Linux, Cygwin or any other Posix-like desktop OS
+    - **econotag**: The Freescale MC13224 based `Redbee EconoTAG`_ 802.15.4 wireless module
+    - mbed: The NXP LPC1368 based mbed_ microcontroller platform
+    - mmb103: The Atmel ATmega103 based Mega Mini Board **[Not Recommended]**
+    - **mosync**: The MoSync_ cross-platform framework for mobile platforms.
+    - **pic24**: The `Microchip PIC24/dsPIC family`_
+    - **stm32**: The ST Microelectronics STM32F103 `ET-STM32 Stamp Module`_
+    - **teensy**: The Atmel ATmega 1280 based `Teensy++ 2.0`_
+    - **windows**: The MicroSoft Windows desktop OS
+
+.. _`Arduino Mega board`: http://arduino.cc/en/Main/ArduinoBoardMega
+.. _`evaluation kit for the ARM7 AT91SAM7S64`:  http://www.atmel.com/dyn/products/tools_card.asp?tool_id=3784
+.. _`Atmel AVR`: http://www.atmel.com/products/AVR/megaavr.asp?family_id=607&source=avrhomereadmore
+.. _`Redbee EconoTAG`: http://redwirellc.com/store/index.php?route=product/product&product_id=56
+.. _mbed: http://mbed.org/
+.. _MoSync: http://www.mosync.com/
+.. _`Microchip PIC24/dsPIC family`: http://www.microchip.com/stellent/idcplg?IdcService=SS_GET_PAGE&nodeId=2629&param=en533465
+.. _`ET-STM32 Stamp Module`: http://www.futurlec.com/ET-STM32_Stamp.shtml
+.. _`Teensy++ 2.0`: http://www.pjrc.com/teensy/
 
 
 Release Notes
 -------------
 
-This is PyMite release 08
+This is release 09
+
+* Release 09, 2010/09/21
+
+    For a complete list of changes for this release, `go here`_.
+    Added support for the following major new features:
+
+        - Classes with multiple inheritance
+        - Generators with iterators, expressions and coroutines
+        - String concatenation using the addition operator '+'
+        - Migrated to Python 2.6 compiler and bytecodes
+        - The backtick operator (s=`x`) for integers and floats
+        - String format (%) using %d,s,f format chars
+        - Closures. Also allows decorators with an argument
+        - The Bytearray class: packet = bytearray(128); b = bytearray(b"abc")
+
+    And:
+
+        - Improved appearance of ipm
+        - Fixed three nasty defects in the Garbage Collector
+        - Improved readability of exception tracebacks for some platforms
+        - Moved native function tables to "const" to save RAM
+        - Added iter() to builtins (commented out)
+        - Fixed string.count and string.find
 
 * Release 08, 2009/04/20
-
-    New issue tracker:
-
-	- 9  Add "IPM=true" to the Makefile mods in docs/src/HowToPortPyMite.txt
-	- 11 Create a sizeof module
-	- 12 Fix float endian issue   float
-	- 16 Fix 64-bit FTBFS
-	- 17 Make pyserial module optional for ipm-host
-	- 18 Make ipm help messages cross-platform
-	- 19 Document a useful scons option
-	- 24 Update DevelopmentProcess.txt for new repos and issue tracker
-	- 25 Create release 08
-	- 26 Update HowToReleasePyMite.txt
-
-    Old Trac system:
-
-    - #196 Use snprintf() in float_print() and int_print() since -ansi was lifted
-    - #195 Restored #include <math.h> to float.c
-    - #194 Added -h/--help args to ipm
-    - #193 Updated ipm usage message to comply with GPL
-    - #192 Updated ipm docs with pyserial dependency and win32 args
-    - #180 Fixed gc bug during ipm
-    - #190 Fixed segfault when num args is fewer than expected
-    - #189 Updated README with correct build instructions
-    - #72  Implemented plat module for other targets
-    - #182 Created I/O funcs so plat_reportError can be removed from plat interface
-    - #187 Allowed removal of __doc__ from co_names
-    - #185 Created porting document
-    - #184 Added scons build capability
-    - #179 Unified plat and samples directories
-    - #183 Updated the FAQ
-    - #181 Fixed AT91SAM7 demo
-
 * Release 07, 2009/03/08
 * Release 06, 2009/01/30
 * Release 05, 2007/05/10
@@ -158,5 +182,7 @@ This is PyMite release 08
 * Release 03, 2006/09/17
 * Release 02, 2006/08/11
 * Release 01, 2003/03/18
+
+.. _`go here`: http://code.google.com/p/python-on-a-chip/issues/list?can=1&q=Milestone%3D09
 
 .. :mode=rest:

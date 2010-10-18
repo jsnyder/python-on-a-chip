@@ -1,5 +1,5 @@
 /*
-# This file is Copyright 2007, 2009 Dean Hall.
+# This file is Copyright 2007, 2009, 2010 Dean Hall.
 #
 # This file is part of the PyMite VM.
 # The PyMite VM is free software: you can redistribute it and/or modify

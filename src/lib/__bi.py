@@ -1,4 +1,4 @@
-# This file is Copyright 2003, 2006, 2007, 2009 Dean Hall.
+# This file is Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
@@ -574,7 +574,7 @@ def sum(s):
     }
     else if (OBJ_GET_TYPE(ps) == OBJ_TYPE_LST)
     {
-        len = ((pPmTuple_t)ps)->length;
+        len = ((pPmList_t)ps)->length;
     }
 
     /* Raise TypeError if arg is not a sequence */

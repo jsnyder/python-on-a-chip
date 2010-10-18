@@ -40,7 +40,7 @@ Details
 -------
 
 The files in the directory src/vm/ constitute the PyMite VM.
-The PyMite VM is Copyright 2003, 2006, 2007, 2009 Dean Hall.  All rights reserved.
+The PyMite VM is Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.  All rights reserved.
 The author offers the PyMite VM under two separate licenses: open source
 and commercial.  The PyMite VM is offered under the
 GNU GENERAL PUBLIC LICENSE Version 2.  See src/vm/COPYING for details.
@@ -55,6 +55,23 @@ The remaining components of the Python-on-a-Chip program are copyrighted
 by the individual author(s) of the file and offered under the
 GNU LESSER GENERAL PUBLIC LICENSE Version 2.1.
 See src/lib/COPYING for details.
+
+
+Effective Licensing
+-------------------
+
+The cumulitive effect of the licensing above results in two intended scenarios:
+
+1. The licensee may use Python-on-a-Chip (including the PyMite VM) free of
+   charge according to the terms of the GNU GENERAL PUBLIC LICENSE Version 2.
+   This means that the licensee must offer his or her software that links with
+   Python-on-a-Chip under the GNU GENERAL PUBLIC LICENSE Version 2 as well
+   and make said software available for public download.
+
+2. The licensee may purchase a commercial license for the PyMite VM by
+   negotiating the license with Dean Hall (dwhall256@yahoo.com).  The terms
+   of the negotiated commercial license allow the licensee's software that is
+   linked to the PyMite VM to remain private if so desired.
 
 
 .. :mode=rest:

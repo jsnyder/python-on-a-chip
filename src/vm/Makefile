@@ -3,16 +3,16 @@
 # This Makefile is not meant to be invoked directly.
 # This Makefile is meant to be invoked by a Makefile in src/platform/<plat>/
 # and requires the following environment variables to be exported by the caller:
-#   CC OBJCOPY NM CFLAGS AR IPM PM_LIB_FN
+#   CC OBJCOPY NM CFLAGS AR IPM PM_LIB_FN PLATFORM
 #
 # The primary function of this makefile is to:
 #
 #   1. Build pmstdlib_img.c and pmstdlib_nat.c from PMSTDLIB_SOURCES
-#   2. Build libpmbm.a from all *.c files
+#   2. Build libpmvm_<plat>.a from all *.c files
 #
 
 
-PLATFORM = desktop
+PLATFORM ?= desktop
 PMIMGCREATOR := ../tools/pmImgCreator.py
 PMSTDLIB_SOURCES = ../lib/list.py \
                    ../lib/dict.py \

@@ -1,4 +1,4 @@
-# This file is Copyright 2007, 2009 Dean Hall.
+# This file is Copyright 2007, 2009, 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
@@ -11,9 +11,9 @@
 # is seen in the file COPYING in this directory.
 
 ## @file
-#  @copybrief ipmMite
+#  @copybrief ipm_target
 
-## @package ipmMite
+## @package ipm_target
 #  @brief Provides PyMite's interactive interface for the target.
 
 

@@ -63,6 +63,11 @@
       <TargetMachine>MachineX86</TargetMachine>
       <OutputFile>main$(TargetExt)</OutputFile>
     </Link>
+    <PreBuildEvent>
+      <Command>python ../../tools/pmGenPmFeatures.py pmfeatures.py &gt; pmfeatures.h
+python ../../tools/pmImgCreator.py -c -s -f pmfeatures.py -o ../../vm/pmstdlib_img.c --native-file=../../vm/pmstdlib_nat.c ../../lib/ipm.py ../../lib/list.py ../../lib/dict.py ../../lib/__bi.py ../../lib/sys.py ../../lib/string.py
+python ../../tools/pmImgCreator.py -c -u -f pmfeatures.py -o main_img.c --native-file=main_nat.c main.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -85,6 +90,11 @@
       <TargetMachine>MachineX86</TargetMachine>
       <OutputFile>main$(TargetExt)</OutputFile>
     </Link>
+    <PreBuildEvent>
+      <Command>python ../../tools/pmGenPmFeatures.py pmfeatures.py &gt; pmfeatures.h
+python ../../tools/pmImgCreator.py -c -s -f pmfeatures.py -o ../../vm/pmstdlib_img.c --native-file=../../vm/pmstdlib_nat.c ../../lib/ipm.py ../../lib/list.py ../../lib/dict.py ../../lib/__bi.py ../../lib/sys.py ../../lib/string.py
+python ../../tools/pmImgCreator.py -c -u -f pmfeatures.py -o main_img.c --native-file=main_nat.c main.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\vm\class.c" />

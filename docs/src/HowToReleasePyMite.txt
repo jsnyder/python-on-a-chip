@@ -38,8 +38,7 @@ in the prescribed order:
         - Update the ":Release:" number near the top of the file
         - Add thanks to anyone who gave helpful feedback
         - In the "Release Notes" section, create a new entry for the release
-        - Add a line item into the entry for each ticket that went into this
-          release.
+        - Add a line item into the entry for each significant new feature or fix
 
     - Edit ``src/vm/pm.h``, update the value for the definition, ``PM_RELEASE``
     - Run GNU indent on src/vm using the command ``make indent``
@@ -53,61 +52,18 @@ in the prescribed order:
         - ``Ctrl+D``
         - ``make PLATFORM=at91sam7s-ek``
         - ``make PLATFORM=avr``
-        - ``cd src/platform/avr; avr-size main.elf``
-        - Record the size of the AVR sample app in the ticket
+        - ``cd src/platform/at91sam7s-ek; arm-elf-size main.elf``
+        - ``cd ../avr; avr-size main.elf``
 
-    - Verify that a sample app runs on an AVR device; this can be done in
-      one of the following ways:
-
-        - Download and run a known good app on an actual AVR device
-        - Build and run a known good app in Atmel's AvrStudio simulator
-        - Run a known good app on an AVR simulator
-
-    - Verify that a sample app runs on an AT91SAM7 device; this can be done in
-      one of the following ways:
-
-        - Download and run a known good app on an actual AT91SAM7 device
-
-            - ``cd src/platform/at91sam7s-ek; make``
-            - Connect the AT91SAM7S-EK to the computer via a USB cable
-            - Apply a jumper to JP5 for 10 seconds to restore SAM-BA; remove
-              the jumper
-            - Disconnect, pause and reconnect the AT91SAM7S-EK's USB cable
-              to reset the connection
-            - Run ``sam7``::
-
-                % sam7
-                found boot agent
-                Chip Version: 0
-                Embedded Processor: ARM7TDMI
-                NVRAM Region 1 Size: 64 K
-                NVRAM Region 2 Size: 0 K
-                SRAM Size: 16 K
-                Series: AT91SAM7Sxx
-                Page Size: 128 bytes
-                Lock Regions: 16
-
-                sam7> unlock_regions
-                unlocking region 0: done
-                unlocking region 1: done
-
-                sam7> flash sample.bin
-                sam7> boot_from_flash
-                sam7> <ctrl+c>
-
-        - Build and run a known good app in IAR's Embedded Workbench for Arm,
-          Kickstart edition
-        - Run a known good app on an ARM simulator
-
+    - Record the sizes of main.elf for at91sam7s-ek and avr in the ticket
+    - Verify that a sample app runs on as many platforms as available
     - Check-in the branch and review
     - Mainline the branch
-
     - Tag the release in the repository and make the distribution file::
 
         $ make dist PM_RELEASE=RR
 
-    - Upload the distribution file to the `Python-on-a-chip downloads`_ page.
-
+    - Upload the distribution file to the `Python-on-a-chip downloads`_ page
     - Announce the release on:
 
         - The Python-on-a-chip_ Project front page

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This file is Copyright 2007, 2009 Dean Hall.
+# This file is Copyright 2007, 2009, 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
@@ -26,9 +26,9 @@ and the host computer prints the result.
 """
 
 ## @file
-#  @copybrief ipm
+#  @copybrief ipm_host
 
-## @package ipm
+## @package ipm_host
 #  @brief Interactive PyMite
 #
 #
@@ -71,14 +71,14 @@ NEED_PYSERIAL = "Install the pySerial module from http://pyserial.sourceforge.ne
 if not sys.platform.lower().startswith("win"):
     PMVM_EXE = "../platform/desktop/main.out"
 else:
-    PMVM_EXE = "../platform/windows/Debug/pymite.exe"
+    PMVM_EXE = "../platform/windows/main.exe"
 IPM_PROMPT = "ipm> "
 IPM_PROMPT2 = ".... "
 COMPILE_FN = "<ipm>"
 COMPILE_MODE = "single"
-INIT_MESSAGE = """Python-on-a-Chip is Copyright 2003, 2006, 2007, 2009 Dean Hall and others.
+INIT_MESSAGE = """Python-on-a-Chip is Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall and others.
 Python-on-a-Chip is licensed under the GNU LESSER GENERAL PUBLIC LICENSE V 2.1
-PyMite is Copyright 2003, 2006, 2007, 2009 Dean Hall.
+PyMite is Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.
 PyMite is licensed under the GNU GENERAL PUBLIC LICENSE V 2.
 This software is offered with NO WARRANTY.  See LICENSE for details.
 """
@@ -174,6 +174,8 @@ class SerialConnection(Connection):
         c = None
         while c != REPLY_TERMINATOR:
             c = self.s.read(1)
+            if len(c) == 0:
+                break
             b.append(c)
         return str(b)
 

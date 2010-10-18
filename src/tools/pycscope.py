@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This file is Copyright 2003, 2006, 2007, 2009 Dean Hall.
+# This file is Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
 # Python-on-a-Chip is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@ PyCscope creates a Cscope-like index file for a tree of Python source.
 
 
 __author__ = "Dean Hall"
-__copyright__ = "Copyright 2006 Dean Hall.  See LICENSE for details."
+__copyright__ = "Copyright 2003, 2006, 2007, 2009, 2010 Dean Hall.  See LICENSE for details."
 __date__ = "2007/12/25"
 __version__ = "0.3"
 __usage__ = """Usage: pycscope.py [-R] [-f reffile] [-i srclistfile] [files ...]
