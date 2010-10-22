@@ -12,6 +12,3 @@ python ../../tools/pmImgCreator.py -f pmfeatures.py -c -s -o ../../vm/pmstdlib_i
 
 @rem build the 'local' libraries
 python ../../tools/pmImgCreator.py -f pmfeatures.py -c -u -o main_img.c --native-file=main_nat.c main.py 
-
-@rem build the pmfeatures.h file
-python ../../tools/pmGenPmFeatures.py pmfeatures.py > pmfeatures.h
