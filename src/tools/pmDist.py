@@ -35,6 +35,7 @@ print "Building package for release", RELEASE_NUM, "..."
 PM_RELEASE = "pymite-%s" % RELEASE_NUM
 
 # Tag the release in the repository
+tempdir = tempfile.gettempdir()
 subprocess.check_call(["svn",
                        "cp",
                        REPOS + "trunk",
@@ -43,7 +44,6 @@ subprocess.check_call(["svn",
                       cwd = tempdir)
 
 # Export (no .svn folders) the tagged release in a temporary directory
-tempdir = tempfile.gettempdir()
 subprocess.check_call(["svn", 
                        "export", 
                        REPOS + "tags/%s" % PM_RELEASE, 
