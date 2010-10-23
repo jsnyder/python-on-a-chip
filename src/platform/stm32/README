@@ -21,7 +21,10 @@ Requirements
 
 Follow `this explanation`_ to build ARM EABI GCC tools
 
-.. _`this explanation`: http://fanplastic.org/gcc-for-arm-eabi/
+.. _`this explanation`: http://github.com/jsnyder/arm-eabi-toolchain
+
+If you use the current version of this guide, make sure to edit
+``src/platform/stm32/SConscript`` so that TCHAIN is set to ``arm-none-eabi``
 
 
 Building the Project
@@ -40,6 +43,18 @@ Now use scons to build the project::
     $ scons PLATFORM=stm32
 
 Now load the following file into your target's flash:
-``src/platform/stm32/main.o``
+``src/platform/stm32/main.bin``
+
+You should be able to do this using the `stm32ld`_ tool (among
+others). If you already have this tool compiled and in your path you
+can flash with this command::
+
+    $ stm32ld <port> 115200 src/platform/stm32/main.bin
+
+.. _`stm32ld`: http://github.com/jsnyder/stm32ld
+
+You should now be able to use IPM with this port::
+
+    $ ./src/tools/ipm.py -f src/platform/stm32/pmfeatures.py -s <port>
 
 .. :mode=rest:

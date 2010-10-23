@@ -32,7 +32,7 @@ for file in stm32lib.filelist:
     print file.filename
     stm32lib.extract(file)
   if path.basename(file.filename) in startup_files:
-    if path.split(path.dirname(file.filename))[1] == 'gcc':
+    if path.split(path.dirname(file.filename))[1] == 'gcc_ride7':
       file.filename = path.join('FWlib','src',path.basename(file.filename))
       print file.filename
       stm32lib.extract(file)

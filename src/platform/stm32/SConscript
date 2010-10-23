@@ -23,7 +23,7 @@ CFLAGS = " -DUART_BAUD=$PM_UART_BAUD -Dgcc" \
          " -ffunction-sections -fdata-sections -fno-strict-aliasing"
          
 LDFLAGS = "-mcpu=$MCU -mthumb -Wl,-T -Xlinker src/platform/stm32/stm32f10x.ld" \
-          " -u _start-Wl,-e,Reset_Handler -Wl,-static -Wl,--gc-sections" \
+          " -u _start -Wl,-e,Reset_Handler -Wl,-static -Wl,--gc-sections" \
           " -nostartfiles -Wl,--allow-multiple-definition"
           
 AFLAGS = "-x assembler-with-cpp $_CPPINCFLAGS -mcpu=$MCU -mthumb -Wall -c"
