@@ -250,3 +250,74 @@ int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn)
 
     return retval;
 }
+
+
+PmReturn_t
+int_divmod(pPmObj_t px, pPmObj_t py, uint8_t op, pPmObj_t *r_pxopy)
+{
+    int32_t x;
+    int32_t y;
+    int32_t xdivy;
+    int32_t xmody;
+    int32_t xopy;
+    PmReturn_t retval = PM_RET_OK;
+
+    /* Raise TypeError if args aren't ints */
+    if ((OBJ_GET_TYPE(px) != OBJ_TYPE_INT)
+        || (OBJ_GET_TYPE(py) != OBJ_TYPE_INT))
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    x = ((pPmInt_t)px)->val;
+    y = ((pPmInt_t)py)->val;
+
+    /* Raise ZeroDivisionError if denominator is zero */
+    if (y == 0)
+    {
+        PM_RAISE(retval, PM_RET_EX_ZDIV);
+        return retval;
+    }
+
+    /* (-sys.maxint-1)/-1 is the only overflow case. */
+    if ((y == -1) && (op == '/') && (x < 0)
+        && ((uint32_t)x == (0 - (uint32_t)x)))
+    {
+        PM_RAISE(retval, PM_RET_EX_OFLOW);
+        return retval;
+    }
+
+    /* Shortcut when denominator is one or negative one */
+    if (y == 1)
+    {
+        xdivy = x;
+        xmody = 0;
+    }
+    else if (y == -1)
+    {
+        xdivy = -x;
+        xmody = 0;
+    }
+
+    else
+    {
+        xdivy = x / y;
+        xmody = x - xdivy * y;
+
+        /*
+         * If the remainder is non-0 and the signs of x and y differ,
+         * C89 doesn't define whether xdivy is now the floor or the
+         * ceiling of the infinitely precise quotient.  We want the floor,
+         * and we have it iff the remainder's sign matches y's.
+         */
+        if ((xmody != 0) && ((y ^ xmody) < 0))
+        {
+            xmody += y;
+            --xdivy;
+            C_ASSERT(xmody && ((y ^ xmody) >= 0));
+        }
+    }
+    xopy = (op == '/') ? xdivy : xmody;
+    return int_new(xopy, r_pxopy);
+}

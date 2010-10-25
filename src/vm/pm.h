@@ -182,6 +182,7 @@ typedef enum PmReturn_e
     PM_RET_EX_VAL = 0xEE,       /**< Value error */
     PM_RET_EX_STOP = 0xEF,      /**< Stop iteration */
     PM_RET_EX_WARN = 0xF0,      /**< Warning */
+    PM_RET_EX_OFLOW = 0xF1,     /**< Overflow */
 } PmReturn_t;
 
 

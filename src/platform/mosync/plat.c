@@ -124,7 +124,7 @@ plat_reportError(PmReturn_t result)
 
 #ifdef HAVE_DEBUG_INFO
 #define LEN_FNLOOKUP 26
-#define LEN_EXNLOOKUP 17
+#define LEN_EXNLOOKUP 18
 
     uint8_t res;
     pPmFrame_t pframe;
@@ -186,6 +186,7 @@ plat_reportError(PmReturn_t result)
         "ValueError",
         "StopIteration",
         "Warning",
+        "OverflowError",
     };
 
     /* Print traceback */

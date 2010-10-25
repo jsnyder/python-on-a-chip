@@ -227,7 +227,7 @@ plat_getMsTicks(uint32_t *r_ticks)
 
 #ifdef HAVE_DEBUG_INFO
 #define LEN_FNLOOKUP 26
-#define LEN_EXNLOOKUP 17
+#define LEN_EXNLOOKUP 18
 #define FN_MAX_LEN 15
 #define EXN_MAX_LEN 18
 #ifndef MAX
@@ -291,6 +291,7 @@ static char exnstr_13[] PROGMEM = "TypeError";
 static char exnstr_14[] PROGMEM = "ValueError";
 static char exnstr_15[] PROGMEM = "StopIteration";
 static char exnstr_16[] PROGMEM = "Warning";
+static char exnstr_17[] PROGMEM = "OverflowError";
 
 static PGM_P exnlookup[LEN_EXNLOOKUP] PROGMEM =
 {
@@ -298,7 +299,7 @@ static PGM_P exnlookup[LEN_EXNLOOKUP] PROGMEM =
     exnstr_04, exnstr_05, exnstr_06, exnstr_07,
     exnstr_08, exnstr_09, exnstr_10, exnstr_11,
     exnstr_12, exnstr_13, exnstr_14, exnstr_15,
-    exnstr_16
+    exnstr_16, exnstr_17
 };
 #endif /* HAVE_DEBUG_INFO */
 

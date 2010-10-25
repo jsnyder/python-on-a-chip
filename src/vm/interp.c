@@ -331,24 +331,8 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 #endif /* HAVE_FLOAT */
 
-                /* Raise TypeError if args aren't ints */
-                if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* Raise ZeroDivisionError if denominator is zero */
-                if (((pPmInt_t)TOS)->val == 0)
-                {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV);
-                    break;
-                }
-
                 /* Otherwise perform operation */
-                retval = int_new(((pPmInt_t)TOS1)->val /
-                                 ((pPmInt_t)TOS)->val, &pobj3);
+                retval = int_divmod(TOS1, TOS, '/', &pobj3);
                 PM_BREAK_IF_ERROR(retval);
                 PM_SP--;
                 TOS = pobj3;
@@ -381,24 +365,8 @@ interpret(const uint8_t returnOnNoThreads)
                 }
 #endif /* HAVE_FLOAT */
 
-                /* Raise TypeError if args aren't ints */
-                if ((OBJ_GET_TYPE(TOS) != OBJ_TYPE_INT)
-                    || (OBJ_GET_TYPE(TOS1) != OBJ_TYPE_INT))
-                {
-                    PM_RAISE(retval, PM_RET_EX_TYPE);
-                    break;
-                }
-
-                /* Raise ZeroDivisionError if denominator is zero */
-                if (((pPmInt_t)TOS)->val == 0)
-                {
-                    PM_RAISE(retval, PM_RET_EX_ZDIV);
-                    break;
-                }
-
                 /* Otherwise perform operation */
-                retval = int_new(((pPmInt_t)TOS1)->val %
-                                 ((pPmInt_t)TOS)->val, &pobj3);
+                retval = int_divmod(TOS1, TOS, '%', &pobj3);
                 PM_BREAK_IF_ERROR(retval);
                 PM_SP--;
                 TOS = pobj3;

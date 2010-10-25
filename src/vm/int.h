@@ -136,4 +136,15 @@ PmReturn_t int_printHex(pPmObj_t pint);
  */
 PmReturn_t int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn);
 
+/**
+ * Returns by reference the result of the selected operation.
+ *
+ * @param px The integer numerator
+ * @param py The integer denominator
+ * @param op The operator selector.  '/' selects division, all else is modulus.
+ * @param r_pn Return by reference; New integer with value of x / y or x % y.
+ * @return Return status
+ */
+PmReturn_t int_pow(pPmObj_t px, pPmObj_t py, pPmObj_t *r_pn);PmReturn_t int_divmod(pPmObj_t px, pPmObj_t py, uint8_t op, pPmObj_t *r_pxopy);
+
 #endif /* __INT_H__ */
