@@ -133,4 +133,28 @@ def values(d):
     pass
 
 
+def update(d1, d2):
+    # Updates dict d1 with the contents of d2.  Returns None
+    """__NATIVE__
+    pPmObj_t pd1;
+    pPmObj_t pd2;
+    PmReturn_t retval;
+
+    /* Raise TypeError if wrong number of args, */
+    if (NATIVE_GET_NUM_ARGS() != 2)
+    {
+        PM_RAISE(retval, PM_RET_EX_TYPE);
+        return retval;
+    }
+
+    pd1 = NATIVE_GET_LOCAL(0);
+    pd2 = NATIVE_GET_LOCAL(1);
+    retval = dict_update(pd1, pd2);
+
+    NATIVE_SET_TOS(PM_NONE);
+    return retval;
+    """
+    pass
+
+
 # :mode=c:

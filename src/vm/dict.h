@@ -122,4 +122,13 @@ PmReturn_t dict_print(pPmObj_t pdict);
  */
 PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
 
+/**
+ * Returns C_SAME if the two given dictionaries have the same contents
+ *
+ * @param d1 ptr to a dictionary object
+ * @param d2 ptr to another dictionary object
+ * @return C_DIFFER or C_SAME
+ */ 
+int8_t dict_compare(pPmObj_t d1, pPmObj_t d2);
+
 #endif /* __DICT_H__ */

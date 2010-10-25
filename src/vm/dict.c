@@ -34,7 +34,7 @@ dict_new(pPmObj_t *r_pdict)
     PmReturn_t retval = PM_RET_OK;
     pPmDict_t pdict = C_NULL;
     uint8_t *pchunk;
-    
+
     /* Allocate a dict */
     retval = heap_getChunk(sizeof(PmDict_t), &pchunk);
     PM_RETURN_IF_ERROR(retval);
@@ -332,4 +332,46 @@ dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
     }
 
     return retval;
+}
+
+
+int8_t
+dict_compare(pPmObj_t d1, pPmObj_t d2)
+{
+    pPmDict_t pd1 = (pPmDict_t)d1;
+    pPmDict_t pd2 = (pPmDict_t)d2;
+    pPmObj_t pkey1;
+    pPmObj_t pval1;
+    pPmObj_t pval2;
+    uint16_t i;
+    PmReturn_t retval;
+
+    /* Return if lengths are not equal */
+    if (pd1->length != pd2->length)
+    {
+        return C_DIFFER;
+    }
+
+    for (i = 0; i < pd1->length; i++)
+    {
+        /* Get the key,val from one dict */
+        retval = seglist_getItem(pd1->d_keys, i, &pkey1);
+        PM_RETURN_IF_ERROR(retval);
+        retval = seglist_getItem(pd1->d_vals, i, &pval1);
+        PM_RETURN_IF_ERROR(retval);
+
+        /* Return if the key,val pair is not in the other dict */
+        retval = dict_getItem(d2, pkey1, &pval2);
+        if (retval != PM_RET_OK)
+        {
+            return C_DIFFER;
+        }
+        if (obj_compare(pval1, pval2) != C_SAME)
+        {
+            return C_DIFFER;
+        }
+    }
+
+    /* All key,values match */
+    return C_SAME;
 }

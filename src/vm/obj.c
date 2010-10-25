@@ -330,7 +330,8 @@ obj_compare(pPmObj_t pobj1, pPmObj_t pobj2)
             return seq_compare(pobj1, pobj2);
 
         case OBJ_TYPE_DIC:
-            /* #17: PyMite does not support Dict comparisons (yet) */
+            return dict_compare(pobj1, pobj2);
+
         default:
             break;
     }
