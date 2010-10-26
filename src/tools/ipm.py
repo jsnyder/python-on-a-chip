@@ -23,6 +23,13 @@ interactive statement and converts it to a form that PyMite can handle,
 sends that over the connection where the target device loads and interprets it.
 The target device then packages any result, sends it to the host computer
 and the host computer prints the result.
+
+REQUIRES: pySerial package from http://pyserial.sourceforge.net/
+
+::
+
+    $ easy_install pyserial
+
 """
 
 ## @file
@@ -38,34 +45,16 @@ and the host computer prints the result.
 #  sends that over the connection where the target device loads and interprets it.
 #  The target device then packages any result, sends it to the host computer
 #  and the host computer prints the result.
+#
+#  REQUIRES: pySerial package from http://pyserial.sourceforge.net/
+#
+#    $ easy_install pyserial
+#
 
-import cmd, code, dis, getopt, os, subprocess, sys
+
+import cmd, code, dis, optparse, os, subprocess, sys
 import pmImgCreator
 
-
-__usage__ = """USAGE:
-    ipm.py -f pmfeaturesfilename -[d|s /dev/tty] --[desktop | serial=/dev/tty [baud=19200]]
-
-    -h          Prints this usage message.
-    --help
-
-    -f <fn>     Specify the file containing the PM_FEATURES dict to use
-    -d          Specifies a desktop connection; uses pipes to send/receive bytes
-    --desktop   to/from the target, which is the vm also running on the desktop.
-                ipm spawns the vm and runs ipm-desktop as a subprocess.
-
-    -s <port> [<baud>] Specifies the port (device) for a serial connection.
-                <port> resembles `com5` on Win32 or `/dev/cu.usbmodem1912`.
-                Optional argument, <baud>, defaults to 19200.
-
-    --serial=<port> Specifies the port (device) for a serial connection.
-
-    --baud=<baud>   Specifies the baud rate for a serial connection.
-
-REQUIREMENTS:
-
-    - pySerial package from http://pyserial.sourceforge.net/
-    """
 
 NEED_PYSERIAL = "Install the pySerial module from http://pyserial.sourceforge.net/"
 if not sys.platform.lower().startswith("win"):
@@ -334,47 +323,38 @@ class Interactive(cmd.Cmd):
 def parse_cmdline():
     """Parses the command line for options.
     """
-    baud = 19200
-    Conn = PipeConnection
-    serdev = None
+    parser = optparse.OptionParser(usage="%prog -f PMFEATURES [options]")
+    parser.add_option("-d", "--desktop",
+                      action="store_true",
+                      dest="desktop",
+                      help="connect to VM running on the desktop via OS pipes")
+    parser.add_option("-s", "--serial",
+                      dest="serdev",
+                      help="connect to VM over a serial device")
+    parser.add_option("-b", "--baud",
+                      dest="baud",
+                      type="int",
+                      default=19200,
+                      help="baudrate (bps) (default = 19200)",
+                      metavar="BAUD")
+    parser.add_option("-f",
+                      dest="features_fn",
+                      help="path to the platform's pmfeatures.py file (REQUIRED)",
+                      metavar="PMFEATURES")
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "dhsf:",
-            ["desktop", "help", "serial=", "baud="])
-    except Exception, e:
-        print __usage__
-        sys.exit()
+    (options, args) = parser.parse_args()
+    if not options.features_fn:
+        raise Exception("Must give the path to the pmfeatures.py file using -f.")
+    if options.desktop and options.serdev:
+        raise Exception("Must not specify desktop and serial connections simultaneously.")
+    if not options.desktop and not options.serdev:
+        raise Exception("Must specify a desktop or serial connection.")
 
-    if not opts:
-        print __usage__
-        sys.exit()
-
-    for opt in opts:
-        if opt[0] == "-d" or opt[0] == "--desktop":
-            Conn = PipeConnection
-        elif opt[0] == "-s":
-            Conn = SerialConnection
-            serdev = args[0]
-            if len(args) > 1:
-                baud = int(args[1])
-        elif opt[0] == "--serial":
-            Conn = SerialConnection
-            serdev = opt[1]
-        elif opt[0] == "--baud":
-            assert serdev, "--serial must be specified before --baud."
-            baud = int(opt[1])
-        elif opt[0] == "-f":
-            pmfeatures_filename = opt[1]
-        else:
-            print __usage__
-            sys.exit(0)
-
-    if Conn == SerialConnection:
-        c = Conn(serdev, baud)
-    else:
-        c = Conn()
-
-    return (c, pmfeatures_filename)
+    if options.desktop:
+        c = PipeConnection()
+    elif options.serdev:
+        c = SerialConnection(options.serdev, options.baud)
+    return (c, options.features_fn)
 
 
 def main():
