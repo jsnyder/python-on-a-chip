@@ -420,7 +420,9 @@ class PmImgCreator:
                 imgstr += _U8_to_str(OBJ_TYPE_NON)
 
             # if it is a float
-            elif objtype == types.FloatType and PM_FEATURES["HAVE_FLOAT"]:
+            elif objtype == types.FloatType: 
+                assert PM_FEATURES["HAVE_FLOAT"], \
+                       "Platform not configured with HAVE_FLOAT"
                 imgstr += _U8_to_str(OBJ_TYPE_FLT) + self._float_to_str(obj)
 
             # other type?
