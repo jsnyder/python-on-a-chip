@@ -280,13 +280,17 @@ int_divmod(pPmObj_t px, pPmObj_t py, uint8_t op, pPmObj_t *r_pxopy)
         return retval;
     }
 
+    /* Issue #167: Make overflow silent until exceptions can be caught */
     /* (-sys.maxint-1)/-1 is the only overflow case. */
+    /* TODO:  enable the overflow for Issue #169 */
+    /*
     if ((y == -1) && (op == '/') && (x < 0)
         && ((uint32_t)x == (0 - (uint32_t)x)))
     {
         PM_RAISE(retval, PM_RET_EX_OFLOW);
         return retval;
     }
+    */
 
     /* Shortcut when denominator is one or negative one */
     if (y == 1)
