@@ -19,16 +19,19 @@
 #ifdef __cplusplus
 extern
 #endif
+
+#define HEAP_SIZE 0x7000
+
 unsigned char const usrlib_img[];
 
 
 int
 main(void)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    /* Init PyMite */
-    retval = pm_init(MEMSPACE_PROG, (uint8_t *)usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     /* Run the sample program */

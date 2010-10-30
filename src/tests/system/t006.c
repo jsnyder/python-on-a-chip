@@ -27,17 +27,20 @@
 
 
 extern unsigned char stdlib_img[];
+#define HEAP_SIZE 0x2000
+
 extern unsigned char usrlib_img[];
 
 
 int main(void)
 {
+    uint8_t heap[HEAP_SIZE];
     uint8_t const *pimg;
     PmReturn_t retval = PM_RET_OK;
     uint16_t size;
     uint8_t type;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     PM_RETURN_IF_ERROR(retval);
     retval = global_init();
     PM_RETURN_IF_ERROR(retval);

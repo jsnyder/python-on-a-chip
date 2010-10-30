@@ -22,6 +22,9 @@
 #include "CuTest.h"
 #include "pm.h"
 
+
+#define HEAP_SIZE 0x2000
+
 /* Max chunk size for 32-bit desktop target */
 #define HEAP_MAX_CHUNK_SIZE 2044
 
@@ -36,9 +39,10 @@
 void
 ut_heap_init_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
 
     CuAssertTrue(tc, retval == PM_RET_OK);
 
@@ -55,11 +59,12 @@ ut_heap_init_000(CuTest *tc)
 void
 ut_heap_getChunk_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     uint8_t *pchunk;
     PmReturn_t retval;
     pPmObj_t pobj;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     retval = heap_getChunk(8, &pchunk);
     pobj = (pPmObj_t)pchunk;
 
@@ -76,11 +81,12 @@ ut_heap_getChunk_000(CuTest *tc)
 void
 ut_heap_getChunk_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     uint8_t *pchunk;
     PmReturn_t retval;
     pPmObj_t pobj;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     retval = heap_getChunk(HEAP_MAX_CHUNK_SIZE, &pchunk);
     pobj = (pPmObj_t)pchunk;
 
@@ -98,13 +104,14 @@ ut_heap_getChunk_001(CuTest *tc)
 void
 ut_heap_getAvail_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     uint16_t avail1;
     uint16_t avail2;
     uint16_t actualsize;
     uint8_t *pchunk;
     PmReturn_t retval;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     avail1 = heap_getAvail();
 
     retval = heap_getChunk(16, &pchunk);
@@ -123,13 +130,14 @@ ut_heap_getAvail_000(CuTest *tc)
 void
 ut_heap_freeChunk_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     uint16_t avail1;
     uint16_t avail2;
     uint16_t actualsize;
     uint8_t *pchunk;
     PmReturn_t retval;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     retval = heap_getChunk(16, &pchunk);
     actualsize = OBJ_GET_SIZE(pchunk);
     avail1 = heap_getAvail();
@@ -148,6 +156,7 @@ ut_heap_freeChunk_000(CuTest *tc)
 void
 ut_heap_freeChunk_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     uint16_t avail1;
     uint16_t avail2;
     uint8_t *pchunk1;
@@ -155,7 +164,7 @@ ut_heap_freeChunk_001(CuTest *tc)
     uint8_t *pchunk3;
     PmReturn_t retval;
 
-    retval = heap_init();
+    retval = heap_init(heap, HEAP_SIZE);
     avail1 = heap_getAvail();
     retval = heap_getChunk(19, &pchunk1);
     retval = heap_getChunk(33, &pchunk2);

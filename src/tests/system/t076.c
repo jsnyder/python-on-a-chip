@@ -22,21 +22,24 @@
 #include "stdio.h"
 
 
+#define HEAP_SIZE 0x2000
+
 extern unsigned char usrlib_img[];
 
 
 int main(void)
 {
-    #ifdef HAVE_PRINT
+#ifdef HAVE_PRINT
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
-    
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t076");
     return (int)retval;
-    #else
+#else
     printf("HAVE_PRINT is not defined. Skipping test.\n");
     return 0;
-    #endif /* !HAVE_PRINT */
+#endif /* !HAVE_PRINT */
 }

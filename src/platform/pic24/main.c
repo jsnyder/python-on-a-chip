@@ -20,13 +20,25 @@
 #include "pm.h"
 #include "pic24_all.h"
 
+// Note: for unit testing, no Python heap is needed, so make it tiny.
+// The unit tests need lots of heap and stack, so a small Python heap
+// allows that.
+#ifdef UNIT_TEST
+#define HEAP_SIZE 100
+#elif defined(__DEBUG)
+#define HEAP_SIZE 6900
+#else
+#define HEAP_SIZE 6980
+#endif
+
 extern unsigned char usrlib_img[];
 
 int main(void)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     printf("Python initialized; result was 0x%02x.\n", retval);
     PM_RETURN_IF_ERROR(retval);
 

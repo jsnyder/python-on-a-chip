@@ -229,11 +229,15 @@ extern pPmNativeFxn_t const usr_nat_fxn_table[];
  * image.  The VM heap and globals are reset.  The argument, pusrimg, may be
  * null for interactive sessions.
  *
+ * @param heap_base The address where the contiguous heap begins
+ * @param heap_size The size in bytes (octets) of the given heap.
+ *             Must be a multiple of four.
  * @param memspace      Memory space in which the user image is located
  * @param pusrimg       Address of the user image in the memory space
  * @return Return status
  */
-PmReturn_t pm_init(PmMemSpace_t memspace, uint8_t const * const pusrimg);
+PmReturn_t pm_init(uint8_t *heap_base, uint32_t heap_size,
+                   PmMemSpace_t memspace, uint8_t const * const pusrimg);
 
 /**
  * Executes the named module

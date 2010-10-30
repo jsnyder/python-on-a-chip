@@ -22,12 +22,15 @@
 #include "stdio.h"
 
 
+#define HEAP_SIZE 0x2000
+
 extern unsigned char usrlib_img[];
 
 
+/* replicate pm_run()'s functionality to allow two initial threads. */
 int main(void)
 {
-    /* replicate pm_run()'s functionality to allow two initial threads. */
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pmodA;
     pPmObj_t pmodB;
@@ -35,7 +38,7 @@ int main(void)
     uint8_t const *pmodstrA = (uint8_t const *)"t075a";
     uint8_t const *pmodstrB = (uint8_t const *)"t075b";
 
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     /* Import modules from global struct */

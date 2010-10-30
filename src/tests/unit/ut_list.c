@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /**
  * Test list_new():
  *      Pass valid vals,
@@ -35,10 +38,11 @@
 void
 ut_list_new_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     CuAssertTrue(tc, retval == PM_RET_OK);
@@ -59,11 +63,12 @@ ut_list_new_000(CuTest *tc)
 void
 ut_list_append_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = list_append(PM_ONE, PM_ONE);
@@ -106,12 +111,13 @@ ut_list_append_000(CuTest *tc)
 void
 ut_list_removeItem_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     pPmObj_t pitem0, pitem1, pitem2, pitem3, pitem4, pitem5;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = int_new(0, &pitem0);
@@ -201,11 +207,12 @@ ut_list_removeItem_000(CuTest *tc)
 void
 ut_list_getItem_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = list_getItem(PM_ONE, 0, &pval);
@@ -238,6 +245,7 @@ ut_list_getItem_000(CuTest *tc)
 void
 ut_list_getItem_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t plist;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
@@ -245,7 +253,7 @@ ut_list_getItem_001(CuTest *tc)
     pPmObj_t pget;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
 
     retval = list_new(&plist);
     retval = dict_new(&pobj0);
@@ -282,11 +290,12 @@ ut_list_getItem_001(CuTest *tc)
 void
 ut_list_setItem_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = list_setItem(PM_ONE, 0, PM_ONE);
@@ -322,6 +331,7 @@ ut_list_setItem_000(CuTest *tc)
 void
 ut_list_setItem_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t plist;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
@@ -329,7 +339,7 @@ ut_list_setItem_001(CuTest *tc)
     pPmObj_t pget;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
 
     retval = list_new(&plist);
     retval = dict_new(&pobj0);
@@ -374,11 +384,12 @@ ut_list_setItem_001(CuTest *tc)
 void
 ut_list_copy_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = list_copy(PM_ONE, &pval);
@@ -414,11 +425,12 @@ ut_list_copy_000(CuTest *tc)
 void
 ut_list_replicate_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&pobj);
 
     retval = list_replicate(PM_ONE, 1, &pval);
@@ -445,6 +457,7 @@ ut_list_replicate_000(CuTest *tc)
 void
 ut_list_replicate_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t plist;
     pPmObj_t preplicated;
     pPmObj_t pexpected;
@@ -453,7 +466,7 @@ ut_list_replicate_001(CuTest *tc)
     pPmObj_t pobj2;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
 
     /* Build the original list */
     retval = list_new(&plist);
@@ -504,13 +517,14 @@ ut_list_replicate_001(CuTest *tc)
 void
 ut_list_insert_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t plist;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
     pPmObj_t pget;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&plist);
     retval = tuple_new(0, &pobj0);
     retval = dict_new(&pobj1);
@@ -564,6 +578,7 @@ ut_list_insert_000(CuTest *tc)
 void
 ut_list_index_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t plist;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
@@ -571,7 +586,7 @@ ut_list_index_000(CuTest *tc)
     uint16_t index;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = list_new(&plist);
     retval = tuple_new(0, &pobj0);
     retval = dict_new(&pobj1);

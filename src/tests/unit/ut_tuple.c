@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /**
  * Tests tuple_new():
  *      retval is OK
@@ -31,10 +34,11 @@
 void
 ut_tuple_new_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t ptuple;
     PmReturn_t retval;
     
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     
     /* Check the return value is Ok and length is 0 */
     retval = tuple_new(0, &ptuple);
@@ -57,6 +61,7 @@ ut_tuple_new_000(CuTest *tc)
 void
 ut_tuple_copy_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t ptuple;
     pPmObj_t ptuplecopy;
     pPmObj_t pobj0;
@@ -64,7 +69,7 @@ ut_tuple_copy_000(CuTest *tc)
     pPmObj_t pobj2;
     PmReturn_t retval;
     
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     
     retval = tuple_new(3, &ptuple);
     retval = dict_new(&pobj0);
@@ -89,6 +94,7 @@ ut_tuple_copy_000(CuTest *tc)
 void
 ut_tuple_getItem_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t ptuple;
     pPmObj_t pobj0;
     pPmObj_t pobj1;
@@ -96,7 +102,7 @@ ut_tuple_getItem_000(CuTest *tc)
     pPmObj_t pget;
     PmReturn_t retval;
     
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     
     retval = tuple_new(3, &ptuple);
     retval = dict_new(&pobj0);

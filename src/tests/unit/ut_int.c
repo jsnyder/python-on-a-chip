@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /* BEGIN unit tests ported from Snarf */
 /**
  * Tests int_new():
@@ -33,10 +36,11 @@
 void
 ut_int_new_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(42, &pint);
     
     /* Check the return value of the load function */
@@ -61,11 +65,12 @@ ut_int_new_000(CuTest *tc)
 void
 ut_int_dup_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t pdup;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(42, &pint);
     retval = int_dup(pint, &pdup);
     
@@ -93,11 +98,12 @@ ut_int_dup_000(CuTest *tc)
 void
 ut_int_positive_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t ppos;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(42, &pint);
     retval = int_positive(pint, &ppos);
     
@@ -125,11 +131,12 @@ ut_int_positive_000(CuTest *tc)
 void
 ut_int_positive_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t ppos;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(-42, &pint);
     retval = int_positive(pint, &ppos);
     
@@ -157,11 +164,12 @@ ut_int_positive_001(CuTest *tc)
 void
 ut_int_positive_002(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t ppos;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(0, &pint);
     retval = int_positive(pint, &ppos);
     
@@ -189,11 +197,12 @@ ut_int_positive_002(CuTest *tc)
 void
 ut_int_negative_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t pneg;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(42, &pint);
     retval = int_negative(pint, &pneg);
     
@@ -221,11 +230,12 @@ ut_int_negative_000(CuTest *tc)
 void
 ut_int_negative_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t pneg;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(-42, &pint);
     retval = int_negative(pint, &pneg);
     
@@ -253,11 +263,12 @@ ut_int_negative_001(CuTest *tc)
 void
 ut_int_negative_002(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t pneg;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(0, &pint);
     retval = int_negative(pint, &pneg);
     
@@ -285,11 +296,12 @@ ut_int_negative_002(CuTest *tc)
 void
 ut_int_bitInvert_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     pPmObj_t pint;
     pPmObj_t pinv;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = int_new(42, &pint);
     retval = int_bitInvert(pint, &pinv);
     

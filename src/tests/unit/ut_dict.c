@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /**
  * Test dict_new():
  *      retval is OK
@@ -34,10 +37,11 @@
 void
 ut_dict_new_000(CuTest* tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = dict_new(&pobj);
 
     CuAssertTrue(tc, retval == PM_RET_OK);
@@ -56,11 +60,12 @@ ut_dict_new_000(CuTest* tc)
 void
 ut_dict_setItem_000(CuTest* tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pobj_orig;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = dict_new(&pobj);
     pobj_orig = pobj;
 
@@ -79,11 +84,12 @@ ut_dict_setItem_000(CuTest* tc)
 void
 ut_dict_setItem_001(CuTest* tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = dict_new(&pobj);
 
     retval = dict_setItem(pobj, PM_ZERO, PM_ONE);
@@ -109,10 +115,11 @@ ut_dict_setItem_001(CuTest* tc)
 void
 ut_dict_clear_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = dict_new(&pobj);
 
     retval = dict_clear(PM_ONE);
@@ -139,11 +146,12 @@ ut_dict_clear_000(CuTest *tc)
 void
 ut_dict_getItem_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pobj = C_NULL;
     pPmObj_t pval;
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = dict_new(&pobj);
 
     retval = dict_getItem(PM_ONE, PM_ONE, &pval);
@@ -205,13 +213,14 @@ char sol;
 void
 ut_dict_getItem_001(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     p_test_str1 = test_str1;
     p_test_str2 = test_str2;
     p_test_str3 = test_str3;
     p_test_strnew = test_strnew;
     PmReturn_t retval;
     
-    retval = pm_init(MEMSPACE_RAM, C_NULL);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     
     retval = string_new((uint8_t const **)&test_str1, &p_firstval);
     retval = string_new((uint8_t const **)&test_str2, &p_secondval);

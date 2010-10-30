@@ -18,6 +18,8 @@
 #include "windows.h"
 #include "tchar.h"
 
+#define HEAP_SIZE 0x2000
+
 // the usr modules that were converted to C from Python
 extern unsigned char usrlib_img[];
 
@@ -28,9 +30,10 @@ extern unsigned char usrlib_img[];
     int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #endif
  {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"main");

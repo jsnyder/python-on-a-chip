@@ -15,6 +15,4 @@
 #ifndef _PLAT_H_
 #define _PLAT_H_
 
-#define PM_HEAP_SIZE 0x1D00
-
 #endif /* _PLAT_H_ */

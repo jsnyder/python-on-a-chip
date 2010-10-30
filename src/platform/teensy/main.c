@@ -18,14 +18,18 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x0D00 /* Teensy++ 1.0 at90usb646 4K RAM */
+/*#define HEAP_SIZE 0x1C00 *//* Teensy++ 2.0 at90usb1286 8K RAM */
+
 extern unsigned char usrlib_img[];
 
 
 int main(void)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"main");

@@ -15,17 +15,6 @@
 #ifndef _PLAT_H_
 #define _PLAT_H_
 
-// Note: for unit testing, no Python heap is needed, so make it tiny.
-// The unit tests need lots of heap and stack, so a small Python heap
-// allows that.
-#ifdef UNIT_TEST
-#define PM_HEAP_SIZE 100
-#elif defined(__DEBUG)
-#define PM_HEAP_SIZE 6900
-#else
-#define PM_HEAP_SIZE 6980
-#endif
-
 #define PM_FLOAT_LITTLE_ENDIAN
 
 #define PM_PLAT_HEAP_ATTR __attribute__((far)) __attribute__((aligned ((4))))

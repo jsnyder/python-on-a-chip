@@ -40,7 +40,8 @@ volatile uint32_t pm_lastRescheduleTimestamp = 0;
 
 
 PmReturn_t
-pm_init(PmMemSpace_t memspace, uint8_t const * const pusrimg)
+pm_init(uint8_t *heap_base, uint32_t heap_size,
+        PmMemSpace_t memspace, uint8_t const * const pusrimg)
 {
     PmReturn_t retval;
 
@@ -49,7 +50,7 @@ pm_init(PmMemSpace_t memspace, uint8_t const * const pusrimg)
     PM_RETURN_IF_ERROR(retval);
 
     /* Initialize the heap and the globals */
-    retval = heap_init();
+    retval = heap_init(heap_base, heap_size);
     PM_RETURN_IF_ERROR(retval);
 
     retval = global_init();

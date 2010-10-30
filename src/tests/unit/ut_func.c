@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /* BEGIN unit tests ported from Snarf */
 /**
  * The following source code was compiled to an image using pmImgCreator.py
@@ -63,13 +66,14 @@ extern uint8_t test_code_image0[];
 void
 ut_func_new_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
     uint8_t const *pimg = test_code_image0;
     pPmObj_t pcodeobject;
     pPmObj_t pfuncobject;
     pPmObj_t pglobals;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
     retval = obj_loadFromImg(MEMSPACE_PROG, &pimg, &pcodeobject);
     retval = dict_new(&pglobals);
 

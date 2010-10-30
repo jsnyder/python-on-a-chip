@@ -16,6 +16,7 @@
 #include "Board.h"
 #include "pm.h"
 
+#define HEAP_SIZE 0x1D00
 
 extern unsigned char usrlib_img[];
 
@@ -23,10 +24,11 @@ extern unsigned char usrlib_img[];
 int
 main(void)
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
     /* Init PyMite */
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
 
     /* Configure PIOA for LEDs and clear them */
     AT91F_PIO_CfgOutput(AT91C_BASE_PIOA, LED_MASK);

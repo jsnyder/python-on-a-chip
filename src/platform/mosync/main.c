@@ -13,12 +13,14 @@
 */
 
 #include "pm.h"
+#define HEAP_SIZE 0x10000 // 256k
 extern unsigned char usrlib_img[];
 int MAMain()
 {
+    uint8_t heap[HEAP_SIZE];
     PmReturn_t retval;
 
-    retval = pm_init(MEMSPACE_PROG, usrlib_img);
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"main");

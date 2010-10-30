@@ -15,7 +15,4 @@
 #ifndef _PLAT_H_
 #define _PLAT_H_
 
-#define PM_HEAP_SIZE 0x0D00 /* Teensy++ 1.0 at90usb646 4K RAM */
-/*#define PM_HEAP_SIZE 0x1C00 *//* Teensy++ 2.0 at90usb1286 8K RAM */
-
 #endif /* _PLAT_H_ */

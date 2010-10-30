@@ -23,6 +23,9 @@
 #include "pm.h"
 
 
+#define HEAP_SIZE 0x2000
+
+
 /**
  * Tests string_new():
  *      retval is OK
@@ -31,12 +34,13 @@
 void
 ut_string_new_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pstring;
     uint8_t cstring[] = "forty-two";
     uint8_t const *pcstring = cstring;
     PmReturn_t retval;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
 
     /* Check the return value is Ok */
     retval = string_new(&pcstring, &pstring);
@@ -53,11 +57,12 @@ ut_string_new_000(CuTest *tc)
 void
 ut_string_newFromChar_000(CuTest *tc)
 {
+    uint8_t heap[HEAP_SIZE];
     pPmObj_t pstring;
     uint8_t cchar = 'Z';
     PmReturn_t retval;
 
-    pm_init(MEMSPACE_RAM, C_NULL);
+    pm_init(heap, HEAP_SIZE, MEMSPACE_RAM, C_NULL);
 
     /* Check the return value is Ok */
     retval = string_newFromChar(cchar, &pstring);

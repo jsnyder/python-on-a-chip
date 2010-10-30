@@ -23,7 +23,6 @@
     #define snprintf(buf, count, format, ...) _snprintf_s(buf, count, _TRUNCATE, format, __VA_ARGS__)
 #endif
 
-#define PM_HEAP_SIZE 0x2000
 #define PM_FLOAT_LITTLE_ENDIAN
 
 #endif /* _PLAT_H_ */

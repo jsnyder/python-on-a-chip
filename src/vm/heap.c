@@ -30,14 +30,6 @@
 #include "pm.h"
 
 
-/** Checks for heap size definition. */
-#ifndef PM_HEAP_SIZE
-#warning PM_HEAP_SIZE not defined in src/platform/<yourplatform>/pmfeatures.h
-#elif PM_HEAP_SIZE & 3
-#error PM_HEAP_SIZE is not a multiple of four
-#endif
-
-
 /** The size of the temporary roots stack */
 #define HEAP_NUM_TEMP_ROOTS 24
 
@@ -120,23 +112,17 @@ typedef struct PmHeapDesc_s
 
 typedef struct PmHeap_s
 {
-    /*
-     * WARNING: Leave 'base' field at the top of struct to increase chance
-     * of alignment when compiler doesn't recognize the aligned attribute
-     * which is specific to GCC
-     */
-    /** Global declaration of heap. */
-    uint8_t base[PM_HEAP_SIZE];
+    /** Pointer to base of heap.  Set at initialization of VM */
+    uint8_t *base;
 
+    /** Size of the heap.  Set at initialization of VM */
+    uint32_t size;
+    
     /** Ptr to list of free chunks; sorted smallest to largest. */
     pPmHeapDesc_t pfreelist;
 
     /** The amount of heap space available in free list */
-#if PM_HEAP_SIZE > 65535
     uint32_t avail;
-#else
-    uint16_t avail;
-#endif
 
 #ifdef HAVE_GC
     /** Garbage collection mark value */
@@ -189,6 +175,7 @@ heap_dump(void)
     void *b;
     char filename[32];
     FILE *fp;
+    uint8_t *pheap;
 
     snprintf(filename, 32, "pmheapdump%02d.bin", n++);
     fp = fopen(filename, "wb");
@@ -223,16 +210,16 @@ heap_dump(void)
 #endif
     fwrite(&s, sizeof(uint16_t), 1, fp);
 
-    /* size of heap */
-    i = PM_HEAP_SIZE;
-    fwrite(&i, sizeof(uint32_t), 1, fp);
+    /* Size of heap */
+    fwrite(&pmHeap.size, sizeof(uint32_t), 1, fp);
 
     /* Write base address of heap */
     b=&pmHeap.base;
     fwrite((void*)(&b), sizeof(intptr_t), 1, fp);
 
     /* Write contents of heap */
-    fwrite(&pmHeap.base, 1, PM_HEAP_SIZE, fp);
+    pheap = pmHeap.base;
+    fwrite(&pheap, 1, pmHeap.size, fp);
 
     /* Write num roots*/
     i = 10;
@@ -345,23 +332,24 @@ heap_linkToFreelist(pPmHeapDesc_t pchunk)
 }
 
 
-/*
- * Initializes the heap state variables
- */
 PmReturn_t
-heap_init(void)
+heap_init(uint8_t *base, uint32_t size)
 {
     pPmHeapDesc_t pchunk;
-
-#if PM_HEAP_SIZE > 65535
     uint32_t hs;
-#else
-    uint16_t hs;
-#endif
+
+    /* Heap base & size must be a multiple of four */
+    if (((intptr_t)base & (uint8_t)3) || (size & (uint8_t)3))
+    {
+        return PM_RET_NO;
+    }
+    
+    pmHeap.base = base;
+    pmHeap.size = size;
 
 #if __DEBUG__
     /* Fill the heap with a non-NULL value to bring out any heap bugs. */
-    sli_memset(pmHeap.base, 0xAA, sizeof(pmHeap.base));
+    sli_memset(pmHeap.base, 0xAA, pmHeap.size);
 #endif
 
     /* Init heap globals */
@@ -374,7 +362,7 @@ heap_init(void)
 #endif /* HAVE_GC */
 
     /* Create as many max-sized chunks as possible in the freelist */
-    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = PM_HEAP_SIZE;
+    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = pmHeap.size;
          hs >= HEAP_MAX_FREE_CHUNK_SIZE; hs -= HEAP_MAX_FREE_CHUNK_SIZE)
     {
         OBJ_SET_FREE(pchunk, 1);
@@ -555,7 +543,7 @@ heap_freeChunk(pPmObj_t ptr)
 
     /* Ensure the chunk falls within the heap */
     C_ASSERT(((uint8_t *)ptr >= pmHeap.base)
-             && ((uint8_t *)ptr < pmHeap.base + PM_HEAP_SIZE));
+             && ((uint8_t *)ptr < pmHeap.base + pmHeap.size));
 
     /* Insert the chunk into the freelist */
     OBJ_SET_FREE(ptr, 1);
@@ -569,15 +557,17 @@ heap_freeChunk(pPmObj_t ptr)
 }
 
 
-/* Returns, by reference, the number of bytes available in the heap */
-#if PM_HEAP_SIZE > 65535
 uint32_t
-#else
-uint16_t
-#endif
 heap_getAvail(void)
 {
     return pmHeap.avail;
+}
+
+
+uint32_t
+heap_getSize(void)
+{
+    return pmHeap.size;
 }
 
 
@@ -608,7 +598,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 
     /* The pointer must be within the heap (native frame is special case) */
     C_ASSERT((((uint8_t *)pobj >= &pmHeap.base[0])
-              && ((uint8_t *)pobj <= &pmHeap.base[PM_HEAP_SIZE]))
+              && ((uint8_t *)pobj <= &pmHeap.base[pmHeap.size]))
              || ((uint8_t *)pobj == (uint8_t *)&gVmGlobal.nativeframe));
 
     /* The object must not already be free */
@@ -1050,18 +1040,18 @@ heap_gcSweep(void)
 
     /* Start at the base of the heap */
     pobj = (pPmObj_t)pmHeap.base;
-    while ((uint8_t *)pobj < &pmHeap.base[PM_HEAP_SIZE])
+    while ((uint8_t *)pobj < &pmHeap.base[pmHeap.size])
     {
         /* Skip to the next unmarked or free chunk within the heap */
         while (!OBJ_GET_FREE(pobj)
                && (OBJ_GET_GCVAL(pobj) == pmHeap.gcval)
-               && ((uint8_t *)pobj < &pmHeap.base[PM_HEAP_SIZE]))
+               && ((uint8_t *)pobj < &pmHeap.base[pmHeap.size]))
         {
             pobj = (pPmObj_t)((uint8_t *)pobj + OBJ_GET_SIZE(pobj));
         }
 
         /* Stop if reached the end of the heap */
-        if ((uint8_t *)pobj >= &pmHeap.base[PM_HEAP_SIZE])
+        if ((uint8_t *)pobj >= &pmHeap.base[pmHeap.size])
         {
             break;
         }
@@ -1107,7 +1097,7 @@ heap_gcSweep(void)
                 ((uint8_t *)pchunk + OBJ_GET_SIZE(pchunk));
 
             /* Stop if it's past the end of the heap */
-            if ((uint8_t *)pchunk >= &pmHeap.base[PM_HEAP_SIZE])
+            if ((uint8_t *)pchunk >= &pmHeap.base[pmHeap.size])
             {
                 break;
             }

@@ -44,9 +44,12 @@
 /**
  * Initializes the heap for use.
  *
- * @return  nothing.
+ * @param base The address where the contiguous heap begins
+ * @param size The size in bytes (octets) of the given heap.
+ *             Must be a multiple of four.
+ * @return  Return code.  Returns PM_RET_NO if size is not a multiple of four.
  */
-PmReturn_t heap_init(void);
+PmReturn_t heap_init(uint8_t *base, uint32_t size);
 
 /**
  * Returns a free chunk from the heap.
@@ -68,12 +71,10 @@ PmReturn_t heap_getChunk(uint16_t requestedsize, uint8_t **r_pchunk);
 PmReturn_t heap_freeChunk(pPmObj_t ptr);
 
 /** @return  Return number of bytes available in the heap */
-#if PM_HEAP_SIZE > 65535
-uint32_t
-#else
-uint16_t
-#endif
-  heap_getAvail(void);
+uint32_t heap_getAvail(void);
+
+/** @return  Return the size of the heap in bytes */
+uint32_t heap_getSize(void);
 
 #ifdef HAVE_GC
 /**

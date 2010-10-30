@@ -118,7 +118,7 @@ def heap():
     """__NATIVE__
     PmReturn_t retval;
     pPmObj_t pavail;
-    pPmObj_t pmax;
+    pPmObj_t psize;
     pPmObj_t ptup;
     uint8_t objid;
 
@@ -135,7 +135,7 @@ def heap():
 
     /* Get the maximum heap size */
     heap_gcPushTempRoot(ptup, &objid);
-    retval = int_new(PM_HEAP_SIZE, &pmax);
+    retval = int_new(heap_getSize(), &psize);
     if (retval != PM_RET_OK)
     {
         heap_gcPopTempRoot(objid);
@@ -149,7 +149,7 @@ def heap():
 
     /* Put the two heap values in the tuple */
     ((pPmTuple_t)ptup)->val[0] = pavail;
-    ((pPmTuple_t)ptup)->val[1] = pmax;
+    ((pPmTuple_t)ptup)->val[1] = psize;
 
     /* Return the tuple on the stack */
     NATIVE_SET_TOS(ptup);
