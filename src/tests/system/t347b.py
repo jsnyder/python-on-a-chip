@@ -1,4 +1,4 @@
-def _bar():
+def bar1():
    """__NATIVE__
    PmReturn_t retval = PM_RET_OK;
 
@@ -14,5 +14,5 @@ def _bar():
    """
    pass
 
-def bar():
-   return _bar()
+def bar2():
+   return bar1()

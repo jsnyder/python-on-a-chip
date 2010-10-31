@@ -1,3 +1,4 @@
+/*
 # This file is Copyright 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
@@ -9,19 +10,30 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING up one directory from this.
+*/
 
-#
-# System Test 347
-#
+/**
+ * System Test 350
+ */
 
-import string
-from sys import gc
-from t347b import *
+#include "pm.h"
 
 
-print bar1()
-print bar2()
-gc()
-print 'did gc'
-print bar1()
-print bar2()
+#define HEAP_SIZE 0x2000
+
+extern unsigned char usrlib_img[];
+
+
+int main(void)
+{
+    uint8_t heap[HEAP_SIZE];
+    PmReturn_t retval;
+
+    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
+    PM_RETURN_IF_ERROR(retval);
+
+    retval = pm_run((uint8_t *)"t350a");
+    C_ASSERT((int)retval == PM_RET_EX_TYPE);
+    if (retval == PM_RET_EX_NAME) return (int)PM_RET_OK;
+    return (int)retval;
+}

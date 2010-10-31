@@ -149,7 +149,7 @@ def update(d1, d2):
 
     pd1 = NATIVE_GET_LOCAL(0);
     pd2 = NATIVE_GET_LOCAL(1);
-    retval = dict_update(pd1, pd2);
+    retval = dict_update(pd1, pd2, C_FALSE);
 
     NATIVE_SET_TOS(PM_NONE);
     return retval;

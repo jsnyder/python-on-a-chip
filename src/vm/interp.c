@@ -872,7 +872,8 @@ interpret(const uint8_t returnOnNoThreads)
 
                 /* Update PM_FP's attrs with those of the module on the stack */
                 retval = dict_update((pPmObj_t)PM_FP->fo_attrs,
-                                     (pPmObj_t)((pPmFunc_t)TOS)->f_attrs);
+                                     (pPmObj_t)((pPmFunc_t)TOS)->f_attrs,
+                                     C_TRUE);
                 PM_BREAK_IF_ERROR(retval);
                 PM_SP--;
                 continue;

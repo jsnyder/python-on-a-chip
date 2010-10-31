@@ -118,9 +118,12 @@ PmReturn_t dict_print(pPmObj_t pdict);
  *
  * @param   pdestdict ptr to destination dict in which key,val pairs will go
  * @param   psourcedict ptr to source dict which has all key,val pairs to copy
+ * @param   omit_underscored Boolean set to true to omit key,val pairs where
+ *          the key starts with an underscore '_'.
  * @return  Return status
  */
-PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
+PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict,
+                       uint8_t omit_underscored);
 
 /**
  * Returns C_SAME if the two given dictionaries have the same contents
@@ -128,7 +131,7 @@ PmReturn_t dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict);
  * @param d1 ptr to a dictionary object
  * @param d2 ptr to another dictionary object
  * @return C_DIFFER or C_SAME
- */ 
+ */
 int8_t dict_compare(pPmObj_t d1, pPmObj_t d2);
 
 #endif /* __DICT_H__ */

@@ -292,8 +292,9 @@ dict_print(pPmObj_t pdict)
 }
 #endif /* HAVE_PRINT */
 
+
 PmReturn_t
-dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
+dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict, uint8_t omit_underscored)
 {
     PmReturn_t retval = PM_RET_OK;
     int16_t i;
@@ -326,9 +327,13 @@ dict_update(pPmObj_t pdestdict, pPmObj_t psourcedict)
         retval = seglist_getItem(((pPmDict_t)psourcedict)->d_vals, i, &pval);
         PM_RETURN_IF_ERROR(retval);
 
-        /* Set the key,val to the destination dict */
-        retval = dict_setItem(pdestdict, pkey, pval);
-        PM_RETURN_IF_ERROR(retval);
+        if (!(omit_underscored && (OBJ_GET_TYPE(pkey) == OBJ_TYPE_STR)
+              && ((pPmString_t)pkey)->val[0] == '_'))
+        {
+            /* Set the key,val to the destination dict */
+            retval = dict_setItem(pdestdict, pkey, pval);
+            PM_RETURN_IF_ERROR(retval);
+        }
     }
 
     return retval;

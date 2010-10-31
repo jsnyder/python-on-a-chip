@@ -11,17 +11,10 @@
 # is seen in the file COPYING up one directory from this.
 
 #
-# System Test 347
+# System Test 350
 #
 
-import string
-from sys import gc
-from t347b import *
+from t350b import *
 
-
-print bar1()
-print bar2()
-gc()
-print 'did gc'
-print bar1()
-print bar2()
+print "Expect NameError"
+print _foo
