@@ -108,6 +108,7 @@ file_080=.
 file_081=.
 file_082=.
 file_083=.
+file_084=.
 [GENERATED_FILES]
 file_000=no
 file_001=no
@@ -193,6 +194,7 @@ file_080=no
 file_081=no
 file_082=no
 file_083=no
+file_084=no
 [OTHER_FILES]
 file_000=no
 file_001=no
@@ -274,10 +276,11 @@ file_076=no
 file_077=no
 file_078=no
 file_079=no
-file_080=yes
+file_080=no
 file_081=yes
 file_082=yes
 file_083=yes
+file_084=yes
 [FILE_INFO]
 file_000=..\common\pic24_clockfreq.c
 file_001=..\common\pic24_configbits.c
@@ -359,10 +362,11 @@ file_076=..\..\..\vm\codeobj.h
 file_077=..\include\pic24_adc.h
 file_078=..\..\..\vm\pmFeatureDependencies.h
 file_079=..\plat.h
-file_080=main.py
-file_081=..\Makefile
-file_082=..\pic24_dspic33.py
-file_083=..\pmfeatures.py
+file_080=..\heapsize.h
+file_081=main.py
+file_082=..\Makefile
+file_083=..\pic24_dspic33.py
+file_084=..\pmfeatures.py
 [SUITE_INFO]
 suite_guid={479DDE59-4D56-455E-855E-FFF59A3DB57E}
 suite_state=

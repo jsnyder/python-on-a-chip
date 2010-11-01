@@ -17,6 +17,4 @@
 
 #define PM_FLOAT_LITTLE_ENDIAN
 
-#define PM_PLAT_HEAP_ATTR __attribute__((far)) __attribute__((aligned ((4))))
-
 #endif /* _PLAT_H_ */
