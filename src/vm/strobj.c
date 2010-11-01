@@ -86,7 +86,7 @@ string_create(PmMemSpace_t memspace, uint8_t const **paddr, int16_t len,
     *paddr = psrc;
 
     /* Zero-pad end of string */
-    for (; pdst < (uint8_t *)pstr + OBJ_GET_SIZE(pstr); pdst++)
+    for (; pdst < (uint8_t *)pstr + PM_OBJ_GET_SIZE(pstr); pdst++)
     {
         *pdst = 0;
     }

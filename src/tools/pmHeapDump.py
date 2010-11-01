@@ -284,13 +284,13 @@ def PmObjectClass(dumpversion, features):
             self.free = (' ','F')[(od & 0x8000) == 0x8000]
 
             if self.free == 'F':
-                self.size = (od & 0x3FFF) << 2
+                self.size = od & 0xFFFC
                 self.objtype = self.FREE_TYPE
 
             else:
-                self.size = (od & 0x01FF) << 2
+                self.size = od & 0x07FC
                 assert self.size > 0
-                self.typeindex = (od >> 9) & 0x1f
+                self.typeindex = (od >> 11) & 0x1f
                 self.objtype = PmObject.PM_TYPES[self.typeindex]
                 if self.objtype.name == 'x':
                     raise Exception("unknown object type", self.typeindex)

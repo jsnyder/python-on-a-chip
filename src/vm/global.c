@@ -154,7 +154,7 @@ global_init(void)
     gVmGlobal.builtins = C_NULL;
 
     /* Init native frame */
-    OBJ_SET_SIZE(&gVmGlobal.nativeframe, sizeof(PmNativeFrame_t));
+    gVmGlobal.nativeframe.od = sizeof(PmNativeFrame_t);
     OBJ_SET_TYPE(&gVmGlobal.nativeframe, OBJ_TYPE_NFM);
     gVmGlobal.nativeframe.nf_func = C_NULL;
     gVmGlobal.nativeframe.nf_stack = C_NULL;

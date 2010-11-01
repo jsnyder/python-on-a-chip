@@ -70,10 +70,10 @@ TYPES = (
 def od_decode(odvalue):
     return {
         "val": odvalue,
-        "size": (odvalue & 0x001F) * 4,
-        "type": TYPES[(odvalue & 0x3E00) >> 9],
-        "mark": (odvalue & 0x4000) >> 14,
-        "free": (odvalue & 0x8000) >> 15,
+        "size": odvalue & 0x07FC,
+        "type": TYPES[(odvalue & 0xF800) >> 11],
+        "mark": odvalue & 0x0001,
+        "free": (odvalue & 0x0002) >> 1,
     }
 
 
@@ -83,13 +83,16 @@ def to_int(s):
     return int(s)
 
 
+def print_od(od):
+    print("%(val)d (0x%(val)04x): %(type)s[%(size)d], f=%(free)d, m=%(mark)d"
+          % od)
+
+
 def main():
     odvalues = sys.argv[1:]
     odvalues = map(to_int, odvalues)
     ods = map(od_decode, odvalues)
-    for od in ods:
-        print("%d (0x%04x): %s[%d], f=%d, m=%d"
-            % (od['val'], od['val'], od['type'], od['size'], od['free'], od['mark']))
+    map(print_od, ods)
 
 
 if __name__ == "__main__":
