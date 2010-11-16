@@ -132,7 +132,7 @@ uint16_t mem_getStringLength(PmMemSpace_t memspace,
  * @param paddr Pointer to address of other byte array
  * @return PM_RET_OK if all bytes in both arrays match; PM_RET_NO otherwise
  */
-PmReturn_t mem_cmpn(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
+PmReturn_t mem_cmpn(uint8_t *cname, uint16_t cnamelen, PmMemSpace_t memspace,
                     uint8_t const **paddr);
 
 #endif /* __MEM_H__ */

@@ -195,8 +195,8 @@ def find(s1, s2):
     uint8_t *pc1;
     uint8_t *pc2;
     uint8_t *pmatch;
-    uint8_t pc1len;
-    uint8_t pc2len;
+    uint16_t pc1len;
+    uint16_t pc2len;
     int32_t n;
     pPmObj_t pn;
     PmReturn_t retval = PM_RET_OK;

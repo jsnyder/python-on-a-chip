@@ -35,7 +35,7 @@
  * A module's name is stored in the last index of the names tuple of an image.
  */
 static PmReturn_t
-img_findInPath(uint8_t *cname, uint8_t cnamelen, PmMemSpace_t memspace,
+img_findInPath(uint8_t *cname, uint16_t cnamelen, PmMemSpace_t memspace,
                uint8_t const **paddr)
 {
     uint8_t const *imgtop;
