@@ -819,7 +819,7 @@ heap_gcMarkObj(pPmObj_t pobj)
 
             /* Mark each obj in the locals list and the stack */
             ppobj2 = ((pPmFrame_t)pobj)->fo_locals;
-            while (ppobj2 < ((pPmFrame_t)pobj)->fo_sp)
+            while (ppobj2 <= ((pPmFrame_t)pobj)->fo_sp)
             {
                 retval = heap_gcMarkObj(*ppobj2);
                 PM_RETURN_IF_ERROR(retval);
