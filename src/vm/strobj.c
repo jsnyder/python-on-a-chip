@@ -33,6 +33,11 @@ static pPmString_t pstrcache = C_NULL;
 #endif /* USE_STRING_CACHE */
 
 
+/* The following 2 ascii values are used to escape printing to ipm */
+#define REPLY_TERMINATOR 0x04
+#define ESCAPE_CHAR 0x1B
+
+
 /*
  * If USE_STRING_CACHE is defined nonzero, the string cache
  * will be searched for an existing String object.
@@ -202,7 +207,13 @@ string_printFormattedBytes(uint8_t *pb, uint8_t is_escaped, uint16_t n)
         }
         else
         {
-            /* Simply output character */
+            /* Escape the escape and reply terminator chars */
+            if ((ch == ESCAPE_CHAR) || (ch == REPLY_TERMINATOR))
+            {
+                plat_putByte(ESCAPE_CHAR);
+            }
+
+            /* Output character */
             retval = plat_putByte(ch);
             PM_RETURN_IF_ERROR(retval);
         }
