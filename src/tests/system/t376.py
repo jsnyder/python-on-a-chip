@@ -1,4 +1,3 @@
-/*
 # This file is Copyright 2010 Dean Hall.
 #
 # This file is part of the Python-on-a-Chip program.
@@ -10,30 +9,25 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # A copy of the GNU LESSER GENERAL PUBLIC LICENSE Version 2.1
 # is seen in the file COPYING up one directory from this.
-*/
 
-/**
- * System Test 377
- */
-
-#include "pm.h"
-
-
-#define HEAP_SIZE 0x2000
-
-extern unsigned char usrlib_img[];
+#
+# System Test 376
+# Regression will show "TypeError detected by seq.c:254"
+# because it's trying to iterate over a dict.
+#
 
 
-int main(void)
-{
-    uint8_t heap[HEAP_SIZE];
-    PmReturn_t retval;
+d = {0:None, 1:"one", 2:"two"}
 
-    retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
-    PM_RETURN_IF_ERROR(retval);
+for i in d:
+    assert i in d
 
-    retval = pm_run((uint8_t *)"t377");
-    C_ASSERT((int)retval == PM_RET_EX_TYPE);
-    if (retval == PM_RET_EX_TYPE) return (int)PM_RET_OK;
-    return (int)retval;
-}
+k1,k2,k3 = d
+assert k1 in d and k2 in d and k3 in d
+
+s = sum(d)
+assert s == 3
+
+# Requires HAVE_BYTEARRAY
+#b = bytearray(range(10))
+#assert sum(b) == 45

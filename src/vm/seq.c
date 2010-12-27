@@ -109,7 +109,7 @@ seq_compare(pPmObj_t pobj1, pPmObj_t pobj2)
 
 /* Returns the length of the sequence */
 PmReturn_t
-seq_getLength(pPmObj_t pobj, int16_t *r_index)
+seq_getLength(pPmObj_t pobj, uint16_t *r_index)
 {
     PmReturn_t retval = PM_RET_OK;
 
@@ -133,6 +133,10 @@ seq_getLength(pPmObj_t pobj, int16_t *r_index)
             break;
 #endif /* HAVE_BYTEARRAY */
 
+        case OBJ_TYPE_DIC:
+            *r_index = ((pPmDict_t)pobj)->length;
+            break;
+
         default:
             /* Raise TypeError, non-sequence object */
             PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -148,6 +152,7 @@ PmReturn_t
 seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj)
 {
     PmReturn_t retval;
+    pSeglist_t pkeys;
     uint8_t c;
 
     switch (OBJ_GET_TYPE(pobj))
@@ -189,6 +194,12 @@ seq_getSubscript(pPmObj_t pobj, int16_t index, pPmObj_t *r_pobj)
             break;
 #endif /* HAVE_BYTEARRAY */
 
+        /* Issue #176 Add support to iterate over keys in a dict */
+        case OBJ_TYPE_DIC:
+            pkeys = ((pPmDict_t)pobj)->d_keys;
+            retval = seglist_getItem(pkeys, index, r_pobj);
+            break;
+
         default:
             /* Raise TypeError, unsubscriptable object */
             PM_RAISE(retval, PM_RET_EX_TYPE);
@@ -203,7 +214,7 @@ PmReturn_t
 seqiter_getNext(pPmObj_t pobj, pPmObj_t *r_pitem)
 {
     PmReturn_t retval;
-    int16_t length;
+    uint16_t length;
 
     C_ASSERT(pobj != C_NULL);
     C_ASSERT(*r_pitem != C_NULL);
@@ -249,7 +260,8 @@ seqiter_new(pPmObj_t pobj, pPmObj_t *r_pobj)
     /* Raise a TypeError if pobj is not a sequence */
     if ((OBJ_GET_TYPE(pobj) != OBJ_TYPE_STR)
         && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_TUP)
-        && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_LST))
+        && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_LST)
+        && (OBJ_GET_TYPE(pobj) != OBJ_TYPE_DIC))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;

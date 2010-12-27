@@ -13,7 +13,7 @@
 */
 
 /**
- * System Test 377
+ * System Test 376
  */
 
 #include "pm.h"
@@ -32,7 +32,7 @@ int main(void)
     retval = pm_init(heap, HEAP_SIZE, MEMSPACE_PROG, usrlib_img);
     PM_RETURN_IF_ERROR(retval);
 
-    retval = pm_run((uint8_t *)"t377");
+    retval = pm_run((uint8_t *)"t376");
     C_ASSERT((int)retval == PM_RET_EX_TYPE);
     if (retval == PM_RET_EX_TYPE) return (int)PM_RET_OK;
     return (int)retval;

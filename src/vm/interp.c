@@ -983,7 +983,7 @@ interpret(const uint8_t returnOnNoThreads)
                  *
                  * #59: Unpacking to a Dict shall not be supported
                  */
-                retval = seq_getLength(pobj1, &t16);
+                retval = seq_getLength(pobj1, (uint16_t *)&t16);
                 if (retval != PM_RET_OK)
                 {
                     GET_ARG();

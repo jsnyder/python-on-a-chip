@@ -35,7 +35,7 @@ typedef struct PmBytes_s
     PmObjDesc_t od;
 
     /** Physical number of bytes in the C array (below) */
-    int16_t length;
+    uint16_t length;
 
     /** C array of bytes */
     uint8_t val[1];
@@ -54,7 +54,7 @@ typedef struct PmBytearray_s
     PmObjDesc_t od;
 
     /** Bytearray length; logical number of bytes */
-    int16_t length;
+    uint16_t length;
 
     /** Ptr to bytes container (may hold more bytes than length) */
     pPmBytes_t val;

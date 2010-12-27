@@ -566,23 +566,36 @@ def sum(s):
         return retval;
     }
 
-    /* Get the length of the sequence */
-    ps = NATIVE_GET_LOCAL(0);
-    if (OBJ_GET_TYPE(ps) == OBJ_TYPE_TUP)
+#ifdef HAVE_BYTEARRAY
+    /* Bytearray is a special case to save RAM converting each byte to an Int */
+    if (OBJ_GET_TYPE(ps) == OBJ_TYPE_BYA)
     {
-        len = ((pPmTuple_t)ps)->length;
+        n = 0;
+        len = ((pPmBytearray_t)ps)->length;
+        po = (pPmObj_t)((pPmBytearray_t)ps)->val;
+        for (i = 0; i < len; i++)
+        {
+            n += (uint8_t)((pPmBytes_t)po)->val[i];
+        }
+        retval = int_new(n, &pn)
+        NATIVE_SET_TOS(pn);
+        return retval;
     }
-    else if (OBJ_GET_TYPE(ps) == OBJ_TYPE_LST)
-    {
-        len = ((pPmList_t)ps)->length;
-    }
+#endif /* HAVE_BYTEARRAY */
 
     /* Raise TypeError if arg is not a sequence */
-    else
+    ps = NATIVE_GET_LOCAL(0);
+    if ((OBJ_GET_TYPE(ps) != OBJ_TYPE_TUP)
+        && (OBJ_GET_TYPE(ps) != OBJ_TYPE_LST)
+        && (OBJ_GET_TYPE(ps) != OBJ_TYPE_DIC))
     {
         PM_RAISE(retval, PM_RET_EX_TYPE);
         return retval;
     }
+
+    /* Get the length of the sequence */
+    retval = seq_getLength(ps, &len);
+    PM_RETURN_IF_ERROR(retval);
 
     /* Calculate the sum of the sequence */
     n = 0;

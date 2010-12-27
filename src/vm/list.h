@@ -34,7 +34,7 @@ typedef struct PmList_s
     PmObjDesc_t od;
 
     /** List length; number of objs linked */
-    int16_t length;
+    uint16_t length;
 
     /** Ptr to linked list of nodes */
     pSeglist_t val;

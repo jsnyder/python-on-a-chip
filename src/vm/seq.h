@@ -59,7 +59,7 @@ int8_t seq_compare(pPmObj_t pobj1, pPmObj_t pobj2);
  * @param   r_index Return arg, length of sequence
  * @return  Return status
  */
-PmReturn_t seq_getLength(pPmObj_t pobj, int16_t *r_index);
+PmReturn_t seq_getLength(pPmObj_t pobj, uint16_t *r_index);
 
 /**
  * Returns the object from sequence[index]
