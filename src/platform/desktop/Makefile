@@ -14,12 +14,14 @@ TARGET = main
 SOURCES = $(TARGET).c plat.c $(TARGET)_nat.c $(TARGET)_img.c
 OBJS = $(SOURCES:.c=.o)
 
+CINCS = -I$(abspath .) -I../../vm
 ifeq ($(DEBUG),true)
-	CDEFS += -g -ggdb -D__DEBUG__=1
+	CDEBUGS += -g -D__DEBUG__=1
+else
+    CDEBUGS += -Os
 endif
-CINCS = -I$(abspath .)
-CFLAGS = -Os -Wall -gstabs -fno-strict-aliasing -Wstrict-prototypes \
-         -Wdeclaration-after-statement -Werror -I../../vm $(CDEFS) $(CINCS)
+CFLAGS = -Wall -fno-strict-aliasing -Wstrict-prototypes \
+         -Wdeclaration-after-statement -Werror $(CDEBUGS) $(CINCS)
 
 export CFLAGS IPM PM_LIB_FN
 

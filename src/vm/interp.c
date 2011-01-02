@@ -1493,6 +1493,12 @@ interpret(const uint8_t returnOnNoThreads)
                 retval = mod_import(pobj1, &pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
+                /* #178: Fix import so globals namespace is shared */
+                /* Pass global namespace to new module */
+                heap_freeChunk((pPmObj_t)((pPmFunc_t)pobj2)->f_attrs);
+                ((pPmFunc_t)pobj2)->f_attrs = PM_FP->fo_globals;
+                ((pPmFunc_t)pobj2)->f_globals = PM_FP->fo_globals;
+
                 /* Put Module on top of stack */
                 TOS = pobj2;
 
