@@ -28,7 +28,7 @@ Decodes an object descriptor value into its bit fields.
 #  Decodes an object descriptor value into its bit fields.
 
 
-import sys, pprint
+import sys
 
 
 __usage__ = """USAGE:
@@ -68,12 +68,21 @@ TYPES = (
 
 
 def od_decode(odvalue):
+    if odvalue & 0x0002:
+        return {
+        "val": odvalue,
+        "size": odvalue & 0xFFFC,
+        "type": "free",
+        "free": (odvalue & 0x0002) >> 1,
+        "mark": odvalue & 0x0001, # Reserved bit
+        }
+    
     return {
         "val": odvalue,
         "size": odvalue & 0x07FC,
         "type": TYPES[(odvalue & 0xF800) >> 11],
-        "mark": odvalue & 0x0001,
         "free": (odvalue & 0x0002) >> 1,
+        "mark": odvalue & 0x0001,
     }
 
 

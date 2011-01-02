@@ -385,15 +385,27 @@ heap_init(uint8_t *base, uint32_t size)
     heap_gcSetAuto(C_TRUE);
 #endif /* HAVE_GC */
 
+    pchunk = (pPmHeapDesc_t)pmHeap.base;
+    hs = pmHeap.size;
+
+    /* #180 Proactively link memory previously lost/neglected at tail of heap */
+    if ((hs % HEAP_MAX_FREE_CHUNK_SIZE) < HEAP_MIN_CHUNK_SIZE)
+    {
+        OBJ_SET_FREE(pchunk, 1);
+        CHUNK_SET_SIZE(pchunk, HEAP_MIN_CHUNK_SIZE);
+        heap_linkToFreelist(pchunk);
+        hs -= HEAP_MIN_CHUNK_SIZE;
+        pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MIN_CHUNK_SIZE);
+    }
+
     /* Create as many max-sized chunks as possible in the freelist */
-    for (pchunk = (pPmHeapDesc_t)pmHeap.base, hs = pmHeap.size;
+    for (;
          hs >= HEAP_MAX_FREE_CHUNK_SIZE; hs -= HEAP_MAX_FREE_CHUNK_SIZE)
     {
         OBJ_SET_FREE(pchunk, 1);
         CHUNK_SET_SIZE(pchunk, HEAP_MAX_FREE_CHUNK_SIZE);
         heap_linkToFreelist(pchunk);
-        pchunk =
-            (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
+        pchunk = (pPmHeapDesc_t)((uint8_t *)pchunk + HEAP_MAX_FREE_CHUNK_SIZE);
     }
 
     /* Add any leftover memory to the freelist */
