@@ -40,7 +40,7 @@ typedef struct PmTuple_s
      * but if I set this type to int8_t, a 0-element tuple
      * is too small to be allocated.
      */
-    int16_t length;
+    uint16_t length;
 
     /** Array of ptrs to objs */
     pPmObj_t val[1];

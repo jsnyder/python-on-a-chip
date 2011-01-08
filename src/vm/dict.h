@@ -37,7 +37,7 @@ typedef struct PmDict_s
     /** object descriptor */
     PmObjDesc_t od;
     /** number of key,value pairs in the dict */
-    int16_t length;
+    uint16_t length;
     /** ptr to seglist containing keys */
     pSeglist_t d_keys;
     /** ptr to seglist containing values */

@@ -77,6 +77,7 @@ Type Ctrl+C to interrupt and Ctrl+D to quit (or Ctrl+Z <enter> on Win32).
 """
 
 REPLY_TERMINATOR = '\x04'
+ESCAPE_CHAR = '\x1B'
 
 if sys.platform.lower().startswith("win"):
     EOF_KEY = 'Z'
@@ -111,22 +112,28 @@ class PipeConnection(Connection):
 
 
     def read(self,):
+        """Yields each character as it arrives, observing the escape character.
+        """
         # If the child process is not alive, read in everything from the buffer.
         # It will usually be an exception message from the target
         # TODO
 
-        # Collect all characters up to and including the ipm reply terminator
-        chars = []
-        c = ''
-        while c != REPLY_TERMINATOR:
+        # Send characters as they are received, end on REPLY_TERMINATOR
+        while True:
             c = self.child.stdout.read(1)
-            if c == '':
-                # DEBUG: uncomment the next line to print the child's return val
-                #print "DEBUG: child returncode = %s\n" % hex(self.child.poll())
-                break
-            chars.append(c)
-        msg = "".join(chars)
-        return msg
+
+            # If it's an escape character, get the next char
+            if c == ESCAPE_CHAR:
+                c = self.child.stdout.read(1)
+                if c == '':
+                    return
+                yield c
+                continue
+
+            if c == '' or c == REPLY_TERMINATOR:
+                return
+            yield c
+        return
 
 
     def write(self, msg):
@@ -156,17 +163,25 @@ class SerialConnection(Connection):
 
 
     def read(self,):
-        # Collect all characters up to and including the ipm reply terminator
-        # Issue #110 Readline with eol is not available on all platforms
-        # return self.s.readline(eol=REPLY_TERMINATOR)
+        """Yields each character as it arrives, observing the escape character.
+        """
         b = bytearray()
         c = None
-        while c != REPLY_TERMINATOR:
+        while True:
             c = self.s.read(1)
-            if len(c) == 0:
-                break
-            b.append(c)
-        return str(b)
+
+            # If it's an escape character, get the next char
+            if c == ESCAPE_CHAR:
+                c = self.s.read(1)
+                if c == '':
+                    return
+                yield c
+                continue
+
+            if len(c) == 0 or c == REPLY_TERMINATOR:
+                return
+            yield c
+        return
 
 
     def write(self, msg):
@@ -292,15 +307,12 @@ class Interactive(cmd.Cmd):
                 self.stdout.write(
                     "Connection write error, type Ctrl+%s to quit.\n" % EOF_KEY)
 
-            rv = self.conn.read()
-            if rv == '':
+            try:
+                for c in self.conn.read():
+                    self.stdout.write(c)
+            except Exception, e:
                 self.stdout.write(
                     "Connection read error, type Ctrl+%s to quit.\n" % EOF_KEY)
-            else:
-                if rv.endswith(REPLY_TERMINATOR):
-                    self.stdout.write(rv[:-1])
-                else:
-                    self.stdout.write(rv)
 
 
     def run(self,):
