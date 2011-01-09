@@ -71,6 +71,10 @@
 #define PM_BYTEARRAY_STR (pPmObj_t)(gVmGlobal.pbaStr)
 #endif /* HAVE_BYTEARRAY */
 
+/** The global string "__md" */
+#define PM_MD_STR (pPmObj_t)(gVmGlobal.pmdStr)
+
+
 /**
  * This struct contains ALL of PyMite's globals
  */
@@ -143,6 +147,9 @@ typedef struct PmVmGlobal_s
     /** The global string "bytearray" */
     pPmString_t pbaStr;
 #endif /* HAVE_BYTEARRAY */
+
+    /** The global string "__md" */
+    pPmString_t pmdStr;
 
 #ifdef HAVE_PRINT
     /** Remembers when a space is needed before printing the next object */

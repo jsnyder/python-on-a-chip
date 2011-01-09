@@ -1478,19 +1478,31 @@ interpret(const uint8_t returnOnNoThreads)
                 /* Ensure "level" is -1; no support for relative import yet */
                 C_ASSERT(obj_compare(TOS, PM_NEGONE) == C_SAME);
 
-                /* #110: Prevent importing previously-loaded module */
-                /* If the named module is in globals, put it on the stack */
-                retval =
-                    dict_getItem((pPmObj_t)PM_FP->fo_globals, pobj1, &pobj2);
-                if ((retval == PM_RET_OK)
-                    && (OBJ_GET_TYPE(pobj2) == OBJ_TYPE_MOD))
+                /* #178: Fix import so modules are reused */
+                /* Return the module if found in the modules dict (cache) */
+                retval = dict_getItem(PM_PBUILTINS, PM_MD_STR, &pobj3);
+                PM_BREAK_IF_ERROR(retval);
+                retval = dict_getItem(pobj3, pobj1, &pobj2);
+                if (retval == PM_RET_OK)
                 {
                     TOS = pobj2;
                     continue;
                 }
+                if (retval != PM_RET_EX_KEY)
+                {
+                    break;
+                }
 
                 /* Load module from image */
                 retval = mod_import(pobj1, &pobj2);
+                PM_BREAK_IF_ERROR(retval);
+
+                /* #178: Fix import so modules are reused */
+                /*
+                 * Store the module's attrs/globals under the module's name
+                 * in the global module dict (cache)
+                 */
+                retval = dict_setItem(pobj3, pobj1, pobj2);
                 PM_BREAK_IF_ERROR(retval);
 
                 /* Put Module on top of stack */

@@ -967,4 +967,10 @@ def ismain():
 #        pass
 #endif /* HAVE_BYTEARRAY */
 
+
+# #178 Fix import so modules are reused
+# A Dict to hold imported modules (used like a cache so modules can be reused)
+__md = {}
+
+
 #:mode=c:

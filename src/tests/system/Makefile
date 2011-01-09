@@ -34,6 +34,9 @@ endif
 %_nat.c %_img.c : %a.py %b.py
 	$(PMIMGCREATOR) -f ../../platform/$(PLATFORM)/pmfeatures.py -c -u -o $*_img.c --native-file=$*_nat.c $*a.py $*b.py $(PMSTDLIB_SOURCES)
 
+%_nat.c %_img.c : %d.py %e.py %f.py
+	$(PMIMGCREATOR) -f ../../platform/$(PLATFORM)/pmfeatures.py -c -u -o $*_img.c --native-file=$*_nat.c $*d.py $*e.py $*f.py $(PMSTDLIB_SOURCES)
+
 .PHONY: all check clean
 
 export CFLAGS PM_LIB_FN

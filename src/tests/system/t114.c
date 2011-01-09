@@ -34,5 +34,11 @@ int main(void)
     PM_RETURN_IF_ERROR(retval);
 
     retval = pm_run((uint8_t *)"t114");
-    return (int) !(retval == PM_RET_EX_MEM);
+
+    /* Expecting an AttributeError */
+    if (retval == PM_RET_EX_ATTR)
+    {
+        return PM_RET_OK;
+    }
+    return retval;
 }
