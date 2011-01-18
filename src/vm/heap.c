@@ -196,10 +196,8 @@ heap_dump(void)
     static int n = 0;
     uint16_t s;
     uint32_t i;
-    void *b;
     char filename[32];
     FILE *fp;
-    uint8_t *pheap;
 
     snprintf(filename, 32, "pmheapdump%02d.bin", n++);
     fp = fopen(filename, "wb");
@@ -238,12 +236,10 @@ heap_dump(void)
     fwrite(&pmHeap.size, sizeof(uint32_t), 1, fp);
 
     /* Write base address of heap */
-    b=&pmHeap.base;
-    fwrite((void*)(&b), sizeof(intptr_t), 1, fp);
+    fwrite((void*)&pmHeap.base, sizeof(intptr_t), 1, fp);
 
     /* Write contents of heap */
-    pheap = pmHeap.base;
-    fwrite(&pheap, 1, pmHeap.size, fp);
+    fwrite(pmHeap.base, 1, pmHeap.size, fp);
 
     /* Write num roots*/
     i = 10;

@@ -280,8 +280,8 @@ def PmObjectClass(dumpversion, features):
             self.addr = self.fp.tell()
 
             od = unpack_fp(heap.endianchr + "H", fp, False)[0]
-            self.mark = (' ','M')[(od & 0x4000) == 0x4000]
-            self.free = (' ','F')[(od & 0x8000) == 0x8000]
+            self.mark = (' ','M')[(od & 0x01) == 0x01]
+            self.free = (' ','F')[(od & 0x02) == 0x02]
 
             if self.free == 'F':
                 self.size = od & 0xFFFC
