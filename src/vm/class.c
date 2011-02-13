@@ -110,6 +110,7 @@ class_method(pPmObj_t pinstance, pPmObj_t pfunc, pPmObj_t *r_pmeth)
     pmeth = (pPmMethod_t)pchunk;
     pmeth->m_instance = (pPmInstance_t)pinstance;
     pmeth->m_func = (pPmFunc_t)pfunc;
+    pmeth->m_attrs = C_NULL;
 
     /* Create the attributes dict */
     heap_gcPushTempRoot((pPmObj_t)pmeth, &objid);
