@@ -50,6 +50,7 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
     OBJ_SET_TYPE(pfunc, OBJ_TYPE_FXN);
     pfunc->f_co = (pPmCo_t)pco;
     pfunc->f_globals = C_NULL;
+    pfunc->f_attrs = C_NULL;
 
 #ifdef HAVE_DEFAULTARGS
     /* Clear default args (will be set later, if at all) */
@@ -72,10 +73,6 @@ func_new(pPmObj_t pco, pPmObj_t pglobals, pPmObj_t *r_pfunc)
 
         /* Store the given globals dict */
         pfunc->f_globals = (pPmDict_t)pglobals;
-    }
-    else
-    {
-        pfunc->f_attrs = C_NULL;
     }
 
     *r_pfunc = (pPmObj_t)pfunc;

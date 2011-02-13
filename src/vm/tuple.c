@@ -93,6 +93,16 @@ tuple_new(uint16_t n, pPmObj_t *r_ptuple)
     /* Set the number of objs in the tuple */
     ((pPmTuple_t)*r_ptuple)->length = n;
 
+    /* Clear entries in the tuple so the GC doesn't try to mark/sweep them */
+    if (n > 0)
+    {
+        size = n;
+        while (--size > 0)
+        {
+            ((pPmTuple_t)*r_ptuple)->val[size] = C_NULL;
+        }
+    }
+
     /* No need to null the ptrs because they are set by the caller */
     return retval;
 }

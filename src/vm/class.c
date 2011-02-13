@@ -76,8 +76,9 @@ class_instantiate(pPmObj_t pclass, pPmObj_t *r_pobj)
     pobj = (pPmObj_t)pchunk;
     OBJ_SET_TYPE(pobj, OBJ_TYPE_CLI);
 
-    /* Set the instance's class */
+    /* Set the instance's fields */
     ((pPmInstance_t)pobj)->cli_class = (pPmClass_t)pclass;
+    ((pPmInstance_t)pobj)->cli_attrs = C_NULL;
 
     /* Create the attributes dict */
     heap_gcPushTempRoot(pobj, &objid);

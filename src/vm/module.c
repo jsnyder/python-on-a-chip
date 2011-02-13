@@ -49,6 +49,8 @@ mod_new(pPmObj_t pco, pPmObj_t *pmod)
     *pmod = (pPmObj_t)pchunk;
     OBJ_SET_TYPE(*pmod, OBJ_TYPE_MOD);
     ((pPmFunc_t)*pmod)->f_co = (pPmCo_t)pco;
+    ((pPmFunc_t)*pmod)->f_attrs = C_NULL;
+    ((pPmFunc_t)*pmod)->f_globals = C_NULL;
 
 #ifdef HAVE_DEFAULTARGS
     /* Clear the default args (only used by funcs) */
