@@ -34,7 +34,7 @@ $(PM_LIB_PATH) : ../../vm/*.c ../../vm/*.h
 	make -C ../../vm
 
 $(TARGET).out : $(OBJS) $(PM_LIB_PATH)
-	$(CC) -lm -o $@ $(OBJS) $(PM_LIB_PATH)
+	$(CC) -o $@ $(OBJS) $(PM_LIB_PATH) -lm
 
 pmfeatures.h : pmfeatures.py $(PMGENPMFEATURES)
 	$(PMGENPMFEATURES) pmfeatures.py > $@
